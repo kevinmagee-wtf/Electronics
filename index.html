@@ -6,20 +6,21 @@
     <title>Random Circuit Generator</title>
     <style>
         body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
-        .circuit-container { border: 1px solid #ccc; padding: 20px; text-align: center; margin-bottom: 20px; }
-        canvas { border: 1px solid black; background-color: white; }
+        .circuit-container { border: 1px solid #ccc; padding: 20px; text-align: center; margin-bottom: 20px; background-color: #fcfcfc; }
+        canvas { background-color: white; border: 1px solid #eee; }
         .controls { text-align: center; margin-top: 10px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 5px; }
-        .solutions { margin-top: 20px; padding: 15px; background-color: #f0f0f0; border-radius: 5px; display: none; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 5px; background-color: #0056b3; color: white; border: none; border-radius: 4px; }
+        button:hover { background-color: #004494; }
+        .solutions { margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 5px; display: none; text-align: left; }
     </style>
 </head>
 <body>
 
-    <h1>2Circuit Problem Generator</h1>
-    <p>Determine the unknown voltage and current values based on the circuit diagram.</p>
+    <h1 style="text-align: center;">Circuit Problem Generator</h1>
+    <p style="text-align: center;">Find the missing voltage (?) and missing current (?) based on the values provided.</p>
 
     <div class="circuit-container">
-        <canvas id="circuitCanvas" width="600" height="400"></canvas>
+        <canvas id="circuitCanvas" width="600" height="420"></canvas>
     </div>
 
     <div class="controls">
@@ -35,76 +36,109 @@
     <script>
         function generateProblem() {
             const canvas = document.getElementById('circuitCanvas');
-            // Check if canvas exists to prevent errors
             if (!canvas) return; 
             const ctx = canvas.getContext('2d');
             
-            // 1. Generate Random Logic
-            const vTotal = 6;
-            const v1 = Math.floor(Math.random() * 4) + 1; // 1 to 4V
-            const i1 = Math.floor(Math.random() * 5) + 1; // 1 to 5mA
-            const i2 = Math.floor(Math.random() * 5) + 1; // 1 to 5mA
+            // 1. Generate Random Base Values for the circuit
+            const v1 = Math.floor(Math.random() * 10) + 1; // 1 to 10V
+            const v2 = v1; // Parallel rule
+            const v3 = Math.floor(Math.random() * 10) + 1; // 1 to 10V
+            const vTotal = v1 + v3; // Series addition rule
 
-            const v2 = v1; //
-            const i3 = i1 + i2; //
-            const i4 = i3; //
-            const v3 = vTotal - v1; //
+            const i1 = Math.floor(Math.random() * 10) + 1; // 1 to 10mA
+            const i2 = Math.floor(Math.random() * 10) + 1; // 1 to 10mA
+            const i3 = i1 + i2; // KCL rule
 
-            // 2. Draw Circuit
+            // 2. Arrays to hold our generated variables
+            const voltages = [
+                { name: 'V1', val: v1, logic: 'V1 = V2 (Parallel components share voltage)' },
+                { name: 'V2', val: v2, logic: 'V2 = V1 (Parallel components share voltage)' },
+                { name: 'V3', val: v3, logic: `V3 = Total Voltage - V1 (${vTotal}V - ${v1}V)` }
+            ];
+            
+            const currents = [
+                { name: 'I1', val: i1, logic: `I1 = I3 - I2 (${i3}mA - ${i2}mA)` },
+                { name: 'I2', val: i2, logic: `I2 = I3 - I1 (${i3}mA - ${i1}mA)` },
+                { name: 'I3', val: i3, logic: `I3 = I1 + I2 (${i1}mA + ${i2}mA)` }
+            ];
+
+            // 3. Randomly pick ONE voltage and ONE current to hide (the questions)
+            const unknownVIndex = Math.floor(Math.random() * 3);
+            const unknownIIndex = Math.floor(Math.random() * 3);
+
+            // 4. Create the text labels based on what is hidden
+            const vLabels = voltages.map((v, index) => index === unknownVIndex ? `${v.name} = ?` : `${v.name} = ${v.val}V`);
+            const iLabels = currents.map((c, index) => index === unknownIIndex ? `${c.name} = ?` : `${c.name} = ${c.val}mA`);
+
+            // 5. Draw the Circuit
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = "black";
             ctx.lineWidth = 2;
             ctx.fillStyle = "black";
             ctx.font = "16px Arial";
 
-            // Wires
-            drawLine(ctx, 50, 50, 550, 50); // Top rail (+V)
-            drawLine(ctx, 150, 50, 150, 100); // R1 top
-            drawLine(ctx, 450, 50, 450, 100); // R2 top
-            drawLine(ctx, 150, 150, 150, 200); // R1 bottom
-            drawLine(ctx, 450, 150, 450, 200); // R2 bottom
-            drawLine(ctx, 150, 200, 450, 200); // Join
-            drawLine(ctx, 300, 200, 300, 250); // R3 top
-            drawLine(ctx, 300, 300, 300, 350); // R3 bottom
-            drawLine(ctx, 50, 350, 550, 350); // Bottom rail (GND)
+            // Draw Wires
+            drawLine(ctx, 100, 60, 500, 60); // Top rail (+V)
+            drawLine(ctx, 200, 60, 200, 120); // R1 top
+            drawLine(ctx, 400, 60, 400, 120); // R2 top
+            drawLine(ctx, 200, 170, 200, 230); // R1 bottom
+            drawLine(ctx, 400, 170, 400, 230); // R2 bottom
+            drawLine(ctx, 200, 230, 400, 230); // Middle Join
+            drawLine(ctx, 300, 230, 300, 270); // R3 top
+            drawLine(ctx, 300, 320, 300, 360); // R3 bottom
+            drawLine(ctx, 100, 360, 500, 360); // Bottom rail (GND)
 
-            // Resistors (UK Box Style)
-            drawResistor(ctx, 150, 125);
-            drawResistor(ctx, 450, 125);
-            drawResistor(ctx, 300, 275);
+            // Draw Resistors (UK Box Style)
+            drawResistor(ctx, 200, 145); // R1
+            drawResistor(ctx, 400, 145); // R2
+            drawResistor(ctx, 300, 295); // R3
 
-            // Labels
-            ctx.fillText("+V", 290, 40);
-            ctx.fillText("GND", 280, 370);
-            
-            ctx.fillText("R1", 120, 130);
-            ctx.fillText("R2", 420, 130);
-            ctx.fillText("R3", 270, 280);
+            // Draw Top and Bottom Rail text (Total Voltage is ALWAYS shown so V3 is solvable)
+            ctx.font = "bold 18px Arial";
+            ctx.fillText(`+V = ${vTotal}V`, 260, 40);
+            ctx.fillText("0V (GND)", 260, 390);
 
-            // Dynamic Labels (Knowns)
-            ctx.fillText(`V1 = ${v1}V`, 60, 130);
-            ctx.fillText(`I1 = ${i1}mA`, 160, 110);
-            ctx.fillText(`I2 = ${i2}mA`, 460, 110);
+            // Draw Labels next to resistors
+            ctx.font = "16px Arial";
+            ctx.fillText("R1", 160, 150);
+            ctx.fillText("R2", 425, 150);
+            ctx.fillText("R3", 260, 300);
 
-            // Placeholder for Unknowns
-            ctx.fillText(`V2 = ?`, 460, 130);
-            ctx.fillText(`I3 = ?`, 310, 230);
-            ctx.fillText(`V3 = ?`, 310, 280);
-            ctx.fillText(`I4 = ?`, 100, 340);
+            // Draw Voltages and Currents on diagram
+            // If it's the unknown one, draw it in red, otherwise blue
+            ctx.fillStyle = unknownVIndex === 0 ? "red" : "blue";
+            ctx.fillText(vLabels[0], 110, 150);
+            ctx.fillStyle = unknownIIndex === 0 ? "red" : "blue";
+            ctx.fillText(iLabels[0], 215, 100);
 
-            // Update Solution Text
+            ctx.fillStyle = unknownVIndex === 1 ? "red" : "blue";
+            ctx.fillText(vLabels[1], 455, 150);
+            ctx.fillStyle = unknownIIndex === 1 ? "red" : "blue";
+            ctx.fillText(iLabels[1], 415, 100);
+
+            ctx.fillStyle = unknownVIndex === 2 ? "red" : "blue";
+            ctx.fillText(vLabels[2], 330, 300);
+            ctx.fillStyle = unknownIIndex === 2 ? "red" : "blue";
+            ctx.fillText(iLabels[2], 315, 250);
+
+            // 6. Update Solution Text
+            const unknownVoltageObj = voltages[unknownVIndex];
+            const unknownCurrentObj = currents[unknownIIndex];
+
             document.getElementById('solText').innerHTML = `
-                V2 = ${v2}V (Parallel to V1)<br>
-                I3 = ${i3}mA (I1 + I2)<br>
-                V3 = ${v3}V (6V - V1)<br>
-                I4 = ${i4}mA (Same as I3)
+                <strong>Missing Voltage:</strong> ${unknownVoltageObj.name} = ${unknownVoltageObj.val}V <br>
+                <em>Logic:</em> ${unknownVoltageObj.logic} <br><br>
+                <strong>Missing Current:</strong> ${unknownCurrentObj.name} = ${unknownCurrentObj.val}mA <br>
+                <em>Logic:</em> ${unknownCurrentObj.logic}
             `;
+            
+            // Hide solutions when generating a new problem
             document.getElementById('solutions').style.display = 'none';
         }
 
         function drawResistor(ctx, x, y) {
             ctx.beginPath();
-            ctx.rect(x - 10, y - 25, 20, 50); // Box style
+            ctx.rect(x - 12, y - 25, 24, 50); 
             ctx.fillStyle = "white";
             ctx.fill();
             ctx.stroke();
@@ -126,12 +160,8 @@
             }
         }
 
-        // Initialize on load using a safer method
-        if (document.readyState === 'complete') {
-            generateProblem();
-        } else {
-            window.addEventListener('load', generateProblem);
-        }
+        // Run when page loads
+        window.onload = generateProblem;
     </script>
 </body>
 </html>
