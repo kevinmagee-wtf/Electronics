@@ -10,7 +10,11 @@
         canvas { background-color: white; border: 1px solid #eee; border-radius: 4px; max-width: 100%; height: auto; }
         
         /* Interactive Quiz Section */
-        .quiz-section { background-color: #eaf4ff; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #b6d4fe; margin-bottom: 20px; }
+        .quiz-section { background-color: #eaf4ff; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #b6d4fe; margin-bottom: 20px; position: relative; }
+        
+        /* Scoreboard */
+        .scoreboard { position: absolute; top: 15px; right: 20px; background-color: #fff; padding: 8px 15px; border: 2px solid #0d6efd; border-radius: 8px; font-weight: bold; font-size: 16px; color: #0d6efd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
         .input-group { margin: 15px 0; font-size: 18px; font-weight: bold; }
         input[type="number"] { font-size: 18px; padding: 5px; width: 80px; text-align: center; margin: 0 10px; border: 1px solid #ccc; border-radius: 4px; }
         .feedback { font-size: 18px; margin-top: 15px; min-height: 27px; }
@@ -29,7 +33,7 @@
 </head>
 <body>
 
-    <h1 style="text-align: center;">Interactive Circuit Quiz</h1>
+    <h1 style="text-align: center;">2Interactive Circuit Quiz</h1>
     <p style="text-align: center;">Analyze the circuit diagram and calculate the missing values. Enter your answers below!</p>
 
     <div class="circuit-container">
@@ -37,6 +41,7 @@
     </div>
 
     <div class="quiz-section">
+        <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
         <h3>Enter Your Answers</h3>
         
         <div class="input-group">
@@ -65,17 +70,26 @@
     </div>
 
     <script>
-        // Store the correct answers globally so the check button can verify them
-        let currentAnswers = {
-            vName: '', vValue: 0,
-            iName: '', iValue: 0
-        };
+        // Global Variables for Logic and Scoring
+        let currentAnswers = { vName: '', vValue: 0, iName: '', iValue: 0 };
+        let problemsAttempted = 0;
+        let problemsCorrect = 0;
+        let hasCheckedCurrentProblem = false; 
+        let isCurrentProblemSolved = false;
+
+        function updateScoreboard() {
+            document.getElementById('scoreDisplay').innerText = `Score: ${problemsCorrect} / ${problemsAttempted}`;
+        }
 
         function generateProblem() {
             const canvas = document.getElementById('circuitCanvas');
             if (!canvas) return; 
             const ctx = canvas.getContext('2d');
             
+            // Reset state for the new problem
+            hasCheckedCurrentProblem = false;
+            isCurrentProblemSolved = false;
+
             // 1. Generate Random Logic
             const v1 = Math.floor(Math.random() * 10) + 1; 
             const v2 = v1; 
@@ -86,10 +100,12 @@
             const i2 = Math.floor(Math.random() * 10) + 1; 
             const i3 = i1 + i2; 
 
+            // Include Supply Voltage (+V) in the array of voltages
             const voltages = [
                 { name: 'V1', val: v1, logic: 'V1 = V2 (Parallel components share voltage)' },
                 { name: 'V2', val: v2, logic: 'V2 = V1 (Parallel components share voltage)' },
-                { name: 'V3', val: v3, logic: `V3 = Total Voltage - V1 (${vTotal}V - ${v1}V)` }
+                { name: 'V3', val: v3, logic: `V3 = Supply Voltage - V1 (${vTotal}V - ${v1}V)` },
+                { name: 'Supply Voltage (+V)', val: vTotal, logic: `Supply Voltage = V1 + V3 (${v1}V + ${v3}V)` }
             ];
             
             const currents = [
@@ -98,16 +114,17 @@
                 { name: 'I3', val: i3, logic: `I3 = I1 + I2 (${i1}mA + ${i2}mA)` }
             ];
 
-            const unknownVIndex = Math.floor(Math.random() * 3);
+            // Randomly pick one voltage (out of 4 now) and one current
+            const unknownVIndex = Math.floor(Math.random() * 4);
             const unknownIIndex = Math.floor(Math.random() * 3);
 
-            // Store the correct answers for the quiz logic
+            // Store correct answers
             currentAnswers.vName = voltages[unknownVIndex].name;
             currentAnswers.vValue = voltages[unknownVIndex].val;
             currentAnswers.iName = currents[unknownIIndex].name;
             currentAnswers.iValue = currents[unknownIIndex].val;
 
-            // Reset the UI inputs and feedback
+            // Reset UI
             document.getElementById('labelV').innerText = `Find ${currentAnswers.vName} = `;
             document.getElementById('labelI').innerText = `Find ${currentAnswers.iName} = `;
             document.getElementById('inputV').value = '';
@@ -115,7 +132,7 @@
             document.getElementById('feedback').innerHTML = '';
             document.getElementById('solutions').style.display = 'none';
 
-            // Create Labels for the diagram
+            // Create Labels for diagram
             const vLabels = voltages.map((v, index) => index === unknownVIndex ? `${v.name} = ?` : `${v.name} = ${v.val}V`);
             const iLabels = currents.map((c, index) => index === unknownIIndex ? `${c.name} = ?` : `${c.name} = ${c.val}mA`);
 
@@ -123,7 +140,6 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = "black";
             ctx.lineWidth = 2;
-            ctx.fillStyle = "black";
             
             // Wires
             drawLine(ctx, 100, 60, 500, 60); 
@@ -136,22 +152,28 @@
             drawLine(ctx, 300, 320, 300, 360); 
             drawLine(ctx, 100, 360, 500, 360); 
 
-            // Resistors (UK Box Style)
+            // Resistors
             drawResistor(ctx, 200, 145); 
             drawResistor(ctx, 400, 145); 
             drawResistor(ctx, 300, 295); 
 
-            // Text on diagram
+            // Top Rail (Supply Voltage) - Now handles being the unknown variable
             ctx.font = "bold 18px Arial";
-            ctx.fillText(`+V = ${vTotal}V`, 260, 40);
+            ctx.fillStyle = unknownVIndex === 3 ? "#dc3545" : "#0d6efd"; // Red if unknown, Blue if known
+            const topRailText = unknownVIndex === 3 ? "+V = ?" : `+V = ${vTotal}V`;
+            ctx.fillText(topRailText, 260, 40);
+
+            // Ground Rail
+            ctx.fillStyle = "black";
             ctx.fillText("0V (GND)", 260, 390);
 
+            // Resistor Labels
             ctx.font = "16px Arial";
             ctx.fillText("R1", 160, 150);
             ctx.fillText("R2", 425, 150);
             ctx.fillText("R3", 260, 300);
 
-            // Draw Knowns (Blue) and Unknowns (Red)
+            // Draw V1, V2, V3 and Currents
             ctx.fillStyle = unknownVIndex === 0 ? "#dc3545" : "#0d6efd";
             ctx.fillText(vLabels[0], 110, 150);
             ctx.fillStyle = unknownIIndex === 0 ? "#dc3545" : "#0d6efd";
@@ -176,32 +198,40 @@
             `;
         }
 
-        // --- NEW QUIZ LOGIC ---
         function checkAnswers() {
-            // Get what the user typed in
+            if (isCurrentProblemSolved) return; // Prevent clicking check again if already solved
+
             const userV = parseFloat(document.getElementById('inputV').value);
             const userI = parseFloat(document.getElementById('inputI').value);
             const feedback = document.getElementById('feedback');
             
-            // Check for empty fields
             if (isNaN(userV) || isNaN(userI)) {
                 feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a number in both boxes!</span>";
                 return;
             }
 
-            // Check correctness
+            // Tally Logic: Only count as an "attempt" the first time they hit check on a new problem
+            if (!hasCheckedCurrentProblem) {
+                problemsAttempted++;
+                hasCheckedCurrentProblem = true;
+            }
+
             const isVCorrect = (userV === currentAnswers.vValue);
             const isICorrect = (userI === currentAnswers.iValue);
 
             if (isVCorrect && isICorrect) {
-                feedback.innerHTML = "<span style='color: #198754; font-weight: bold;'>🎉 Both are correct! Great job!</span>";
+                problemsCorrect++;
+                isCurrentProblemSolved = true;
+                feedback.innerHTML = "<span style='color: #198754; font-weight: bold;'>🎉 Correct! Great job! Click 'Generate New Problem' to continue.</span>";
             } else if (isVCorrect && !isICorrect) {
-                feedback.innerHTML = "<span style='color: #fd7e14; font-weight: bold;'>Voltage is correct, but Current is wrong. Try checking KCL!</span>";
+                feedback.innerHTML = "<span style='color: #fd7e14; font-weight: bold;'>Voltage is correct, but Current is wrong. Try again!</span>";
             } else if (!isVCorrect && isICorrect) {
-                feedback.innerHTML = "<span style='color: #fd7e14; font-weight: bold;'>Current is correct, but Voltage is wrong. Try checking KVL!</span>";
+                feedback.innerHTML = "<span style='color: #fd7e14; font-weight: bold;'>Current is correct, but Voltage is wrong. Try again!</span>";
             } else {
                 feedback.innerHTML = "<span style='color: #dc3545; font-weight: bold;'>Both are incorrect. Check your parallel and series rules!</span>";
             }
+
+            updateScoreboard(); // Update the visual tally
         }
 
         function drawResistor(ctx, x, y) {
