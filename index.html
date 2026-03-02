@@ -54,7 +54,7 @@
 <body>
 
     <div class="header">
-        <h1><span>Abingdon</span> Physics</h1>
+        <h1><span>Abingdon</span> Electronics</h1>
         <p>Interactive Circuit Analysis</p>
     </div>
 
@@ -141,7 +141,7 @@
             ctx.textAlign = "center";
             ctx.fillStyle = brandBlack;
             ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("ABINGDON PHYSICS", 300, 80);
+            ctx.fillText("ABINGDON ELECTRONICS", 300, 80);
 
             ctx.fillStyle = brandPink;
             ctx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
@@ -174,7 +174,7 @@
             const imageURI = certCanvas.toDataURL("image/png");
             const downloadLink = document.createElement('a');
             const safeName = studentName.replace(/[^a-zA-Z0-9]/g, '_');
-            downloadLink.download = `Physics_Score_${safeName}.png`;
+            downloadLink.download = `Electronics_Score_${safeName}.png`;
             downloadLink.href = imageURI;
             downloadLink.click();
         }
