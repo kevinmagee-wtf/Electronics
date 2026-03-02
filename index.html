@@ -3,53 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Circuit Generator</title>
+    <title>Interactive Circuit Quiz</title>
     <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
-        .circuit-container { border: 1px solid #ccc; padding: 20px; text-align: center; margin-bottom: 20px; background-color: #fcfcfc; }
-        canvas { background-color: white; border: 1px solid #eee; }
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333; }
+        .circuit-container { border: 1px solid #ccc; padding: 20px; text-align: center; margin-bottom: 20px; background-color: #fcfcfc; border-radius: 8px; }
+        canvas { background-color: white; border: 1px solid #eee; border-radius: 4px; max-width: 100%; height: auto; }
+        
+        /* Interactive Quiz Section */
+        .quiz-section { background-color: #eaf4ff; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #b6d4fe; margin-bottom: 20px; }
+        .input-group { margin: 15px 0; font-size: 18px; font-weight: bold; }
+        input[type="number"] { font-size: 18px; padding: 5px; width: 80px; text-align: center; margin: 0 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .feedback { font-size: 18px; margin-top: 15px; min-height: 27px; }
+        
+        /* Buttons */
         .controls { text-align: center; margin-top: 10px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 5px; background-color: #0056b3; color: white; border: none; border-radius: 4px; }
-        button:hover { background-color: #004494; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 5px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s;}
+        button:hover { background-color: #0b5ed7; }
+        .btn-check { background-color: #198754; }
+        .btn-check:hover { background-color: #157347; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5c636a; }
+        
         .solutions { margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 5px; display: none; text-align: left; }
     </style>
 </head>
 <body>
 
-    <h1 style="text-align: center;">New Circuit Problem Generator</h1>
-    <p style="text-align: center;">Find the missing voltage (?) and missing current (?) based on the values provided.</p>
+    <h1 style="text-align: center;">Interactive Circuit Quiz</h1>
+    <p style="text-align: center;">Analyze the circuit diagram and calculate the missing values. Enter your answers below!</p>
 
     <div class="circuit-container">
         <canvas id="circuitCanvas" width="600" height="420"></canvas>
     </div>
 
+    <div class="quiz-section">
+        <h3>Enter Your Answers</h3>
+        
+        <div class="input-group">
+            <label id="labelV" for="inputV">V? = </label>
+            <input type="number" id="inputV" placeholder="..."> V
+        </div>
+        
+        <div class="input-group">
+            <label id="labelI" for="inputI">I? = </label>
+            <input type="number" id="inputI" placeholder="..."> mA
+        </div>
+
+        <button class="btn-check" onclick="checkAnswers()">Check Answers</button>
+        
+        <div id="feedback" class="feedback"></div>
+    </div>
+
     <div class="controls">
         <button onclick="generateProblem()">Generate New Problem</button>
-        <button onclick="toggleSolutions()">Show/Hide Solutions</button>
+        <button class="btn-secondary" onclick="toggleSolutions()">Need Help? (Show Solutions)</button>
     </div>
 
     <div id="solutions" class="solutions">
-        <h3>Solutions</h3>
+        <h3>Step-by-Step Logic</h3>
         <p id="solText"></p>
     </div>
 
     <script>
+        // Store the correct answers globally so the check button can verify them
+        let currentAnswers = {
+            vName: '', vValue: 0,
+            iName: '', iValue: 0
+        };
+
         function generateProblem() {
             const canvas = document.getElementById('circuitCanvas');
             if (!canvas) return; 
             const ctx = canvas.getContext('2d');
             
-            // 1. Generate Random Base Values for the circuit
-            const v1 = Math.floor(Math.random() * 10) + 1; // 1 to 10V
-            const v2 = v1; // Parallel rule
-            const v3 = Math.floor(Math.random() * 10) + 1; // 1 to 10V
-            const vTotal = v1 + v3; // Series addition rule
+            // 1. Generate Random Logic
+            const v1 = Math.floor(Math.random() * 10) + 1; 
+            const v2 = v1; 
+            const v3 = Math.floor(Math.random() * 10) + 1; 
+            const vTotal = v1 + v3; 
 
-            const i1 = Math.floor(Math.random() * 10) + 1; // 1 to 10mA
-            const i2 = Math.floor(Math.random() * 10) + 1; // 1 to 10mA
-            const i3 = i1 + i2; // KCL rule
+            const i1 = Math.floor(Math.random() * 10) + 1; 
+            const i2 = Math.floor(Math.random() * 10) + 1; 
+            const i3 = i1 + i2; 
 
-            // 2. Arrays to hold our generated variables
             const voltages = [
                 { name: 'V1', val: v1, logic: 'V1 = V2 (Parallel components share voltage)' },
                 { name: 'V2', val: v2, logic: 'V2 = V1 (Parallel components share voltage)' },
@@ -62,78 +98,110 @@
                 { name: 'I3', val: i3, logic: `I3 = I1 + I2 (${i1}mA + ${i2}mA)` }
             ];
 
-            // 3. Randomly pick ONE voltage and ONE current to hide (the questions)
             const unknownVIndex = Math.floor(Math.random() * 3);
             const unknownIIndex = Math.floor(Math.random() * 3);
 
-            // 4. Create the text labels based on what is hidden
+            // Store the correct answers for the quiz logic
+            currentAnswers.vName = voltages[unknownVIndex].name;
+            currentAnswers.vValue = voltages[unknownVIndex].val;
+            currentAnswers.iName = currents[unknownIIndex].name;
+            currentAnswers.iValue = currents[unknownIIndex].val;
+
+            // Reset the UI inputs and feedback
+            document.getElementById('labelV').innerText = `Find ${currentAnswers.vName} = `;
+            document.getElementById('labelI').innerText = `Find ${currentAnswers.iName} = `;
+            document.getElementById('inputV').value = '';
+            document.getElementById('inputI').value = '';
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('solutions').style.display = 'none';
+
+            // Create Labels for the diagram
             const vLabels = voltages.map((v, index) => index === unknownVIndex ? `${v.name} = ?` : `${v.name} = ${v.val}V`);
             const iLabels = currents.map((c, index) => index === unknownIIndex ? `${c.name} = ?` : `${c.name} = ${c.val}mA`);
 
-            // 5. Draw the Circuit
+            // Draw Circuit
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = "black";
             ctx.lineWidth = 2;
             ctx.fillStyle = "black";
-            ctx.font = "16px Arial";
+            
+            // Wires
+            drawLine(ctx, 100, 60, 500, 60); 
+            drawLine(ctx, 200, 60, 200, 120); 
+            drawLine(ctx, 400, 60, 400, 120); 
+            drawLine(ctx, 200, 170, 200, 230); 
+            drawLine(ctx, 400, 170, 400, 230); 
+            drawLine(ctx, 200, 230, 400, 230); 
+            drawLine(ctx, 300, 230, 300, 270); 
+            drawLine(ctx, 300, 320, 300, 360); 
+            drawLine(ctx, 100, 360, 500, 360); 
 
-            // Draw Wires
-            drawLine(ctx, 100, 60, 500, 60); // Top rail (+V)
-            drawLine(ctx, 200, 60, 200, 120); // R1 top
-            drawLine(ctx, 400, 60, 400, 120); // R2 top
-            drawLine(ctx, 200, 170, 200, 230); // R1 bottom
-            drawLine(ctx, 400, 170, 400, 230); // R2 bottom
-            drawLine(ctx, 200, 230, 400, 230); // Middle Join
-            drawLine(ctx, 300, 230, 300, 270); // R3 top
-            drawLine(ctx, 300, 320, 300, 360); // R3 bottom
-            drawLine(ctx, 100, 360, 500, 360); // Bottom rail (GND)
+            // Resistors (UK Box Style)
+            drawResistor(ctx, 200, 145); 
+            drawResistor(ctx, 400, 145); 
+            drawResistor(ctx, 300, 295); 
 
-            // Draw Resistors (UK Box Style)
-            drawResistor(ctx, 200, 145); // R1
-            drawResistor(ctx, 400, 145); // R2
-            drawResistor(ctx, 300, 295); // R3
-
-            // Draw Top and Bottom Rail text (Total Voltage is ALWAYS shown so V3 is solvable)
+            // Text on diagram
             ctx.font = "bold 18px Arial";
             ctx.fillText(`+V = ${vTotal}V`, 260, 40);
             ctx.fillText("0V (GND)", 260, 390);
 
-            // Draw Labels next to resistors
             ctx.font = "16px Arial";
             ctx.fillText("R1", 160, 150);
             ctx.fillText("R2", 425, 150);
             ctx.fillText("R3", 260, 300);
 
-            // Draw Voltages and Currents on diagram
-            // If it's the unknown one, draw it in red, otherwise blue
-            ctx.fillStyle = unknownVIndex === 0 ? "red" : "blue";
+            // Draw Knowns (Blue) and Unknowns (Red)
+            ctx.fillStyle = unknownVIndex === 0 ? "#dc3545" : "#0d6efd";
             ctx.fillText(vLabels[0], 110, 150);
-            ctx.fillStyle = unknownIIndex === 0 ? "red" : "blue";
+            ctx.fillStyle = unknownIIndex === 0 ? "#dc3545" : "#0d6efd";
             ctx.fillText(iLabels[0], 215, 100);
 
-            ctx.fillStyle = unknownVIndex === 1 ? "red" : "blue";
+            ctx.fillStyle = unknownVIndex === 1 ? "#dc3545" : "#0d6efd";
             ctx.fillText(vLabels[1], 455, 150);
-            ctx.fillStyle = unknownIIndex === 1 ? "red" : "blue";
+            ctx.fillStyle = unknownIIndex === 1 ? "#dc3545" : "#0d6efd";
             ctx.fillText(iLabels[1], 415, 100);
 
-            ctx.fillStyle = unknownVIndex === 2 ? "red" : "blue";
+            ctx.fillStyle = unknownVIndex === 2 ? "#dc3545" : "#0d6efd";
             ctx.fillText(vLabels[2], 330, 300);
-            ctx.fillStyle = unknownIIndex === 2 ? "red" : "blue";
+            ctx.fillStyle = unknownIIndex === 2 ? "#dc3545" : "#0d6efd";
             ctx.fillText(iLabels[2], 315, 250);
 
-            // 6. Update Solution Text
-            const unknownVoltageObj = voltages[unknownVIndex];
-            const unknownCurrentObj = currents[unknownIIndex];
-
+            // Update Solutions text
             document.getElementById('solText').innerHTML = `
-                <strong>Missing Voltage:</strong> ${unknownVoltageObj.name} = ${unknownVoltageObj.val}V <br>
-                <em>Logic:</em> ${unknownVoltageObj.logic} <br><br>
-                <strong>Missing Current:</strong> ${unknownCurrentObj.name} = ${unknownCurrentObj.val}mA <br>
-                <em>Logic:</em> ${unknownCurrentObj.logic}
+                <strong>${voltages[unknownVIndex].name} = ${voltages[unknownVIndex].val}V</strong> <br>
+                <em>Logic:</em> ${voltages[unknownVIndex].logic} <br><br>
+                <strong>${currents[unknownIIndex].name} = ${currents[unknownIIndex].val}mA</strong> <br>
+                <em>Logic:</em> ${currents[unknownIIndex].logic}
             `;
+        }
+
+        // --- NEW QUIZ LOGIC ---
+        function checkAnswers() {
+            // Get what the user typed in
+            const userV = parseFloat(document.getElementById('inputV').value);
+            const userI = parseFloat(document.getElementById('inputI').value);
+            const feedback = document.getElementById('feedback');
             
-            // Hide solutions when generating a new problem
-            document.getElementById('solutions').style.display = 'none';
+            // Check for empty fields
+            if (isNaN(userV) || isNaN(userI)) {
+                feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a number in both boxes!</span>";
+                return;
+            }
+
+            // Check correctness
+            const isVCorrect = (userV === currentAnswers.vValue);
+            const isICorrect = (userI === currentAnswers.iValue);
+
+            if (isVCorrect && isICorrect) {
+                feedback.innerHTML = "<span style='color: #198754; font-weight: bold;'>🎉 Both are correct! Great job!</span>";
+            } else if (isVCorrect && !isICorrect) {
+                feedback.innerHTML = "<span style='color: #fd7e14; font-weight: bold;'>Voltage is correct, but Current is wrong. Try checking KCL!</span>";
+            } else if (!isVCorrect && isICorrect) {
+                feedback.innerHTML = "<span style='color: #fd7e14; font-weight: bold;'>Current is correct, but Voltage is wrong. Try checking KVL!</span>";
+            } else {
+                feedback.innerHTML = "<span style='color: #dc3545; font-weight: bold;'>Both are incorrect. Check your parallel and series rules!</span>";
+            }
         }
 
         function drawResistor(ctx, x, y) {
@@ -160,7 +228,6 @@
             }
         }
 
-        // Run when page loads
         window.onload = generateProblem;
     </script>
 </body>
