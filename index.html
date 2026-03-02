@@ -18,7 +18,7 @@
         /* Interactive Quiz Section */
         .quiz-section { background-color: #fdf4f8; padding: 20px; border-radius: 8px; border: 1px solid #f2c7db; margin-bottom: 20px; }
         
-        /* New Responsive Header Area for Score and Title */
+        /* Responsive Header Area for Score and Title */
         .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 15px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .quiz-header h3 { margin: 0; }
         
@@ -54,7 +54,7 @@
 <body>
 
     <div class="header">
-        <h1><span>Abingdon</span> Electronics</h1>
+        <h1><span>Abingdon</span> Physics</h1>
         <p>Interactive Circuit Analysis</p>
     </div>
 
@@ -104,6 +104,7 @@
         let problemsCorrect = 0;
         let hasCheckedCurrentProblem = false; 
         let isCurrentProblemSolved = false;
+        let viewedSolution = false; // NEW FLAG TO PREVENT CHEATING
 
         const brandPink = "#E64097";
         const brandBlack = "#000000";
@@ -112,7 +113,6 @@
             document.getElementById('scoreDisplay').innerText = `Score: ${problemsCorrect} / ${problemsAttempted}`;
         }
 
-        // --- NEW FEATURE: Generate & Download Score Certificate ---
         function downloadScore() {
             if (problemsAttempted === 0) {
                 alert("Please attempt at least one question before downloading your score!");
@@ -120,54 +120,43 @@
             }
 
             const studentName = prompt("Enter your name for the score sheet:");
-            if (!studentName) return; // Exit if they click cancel
+            if (!studentName) return; 
 
-            // 1. Create a hidden canvas to draw the certificate
             const certCanvas = document.createElement('canvas');
             certCanvas.width = 600;
             certCanvas.height = 400;
             const ctx = certCanvas.getContext('2d');
 
-            // 2. Draw Background
+            // Background & Borders
             ctx.fillStyle = "#fdf4f8"; 
             ctx.fillRect(0, 0, certCanvas.width, certCanvas.height);
-
-            // 3. Draw Abingdon Pink Border
             ctx.strokeStyle = brandPink;
             ctx.lineWidth = 12;
             ctx.strokeRect(6, 6, 588, 388);
-
-            // Inner thin black border
             ctx.strokeStyle = brandBlack;
             ctx.lineWidth = 2;
             ctx.strokeRect(18, 18, 564, 364);
 
-            // 4. Add Typography
+            // Typography
             ctx.textAlign = "center";
-            
-            // Main Header
             ctx.fillStyle = brandBlack;
             ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("ABINGDON ELECTRONICS", 300, 80);
+            ctx.fillText("ABINGDON PHYSICS", 300, 80);
 
-            // Subtitle
             ctx.fillStyle = brandPink;
             ctx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("Circuit Analysis Knowledge Check", 300, 120);
 
-            // Line Separator
             ctx.beginPath();
             ctx.moveTo(150, 145);
             ctx.lineTo(450, 145);
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Student Name
             ctx.fillStyle = brandBlack;
             ctx.font = "28px 'Segoe UI', Arial, sans-serif";
             ctx.fillText(`Student: ${studentName}`, 300, 210);
 
-            // The Score
             ctx.fillStyle = brandPink;
             ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
             ctx.fillText(`${problemsCorrect} / ${problemsAttempted}`, 300, 285);
@@ -176,20 +165,16 @@
             ctx.font = "20px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("Questions Answered Correctly", 300, 315);
 
-            // Date
-            const today = new Date().toLocaleDateString('en-GB'); // UK Date Format
+            const today = new Date().toLocaleDateString('en-GB'); 
             ctx.fillStyle = "#666";
             ctx.font = "16px 'Segoe UI', Arial, sans-serif";
             ctx.fillText(`Date Completed: ${today}`, 300, 360);
 
-            // 5. Convert to image and force download
+            // Download Logic
             const imageURI = certCanvas.toDataURL("image/png");
             const downloadLink = document.createElement('a');
-            
-            // Clean the name so it creates a valid file name
             const safeName = studentName.replace(/[^a-zA-Z0-9]/g, '_');
-            downloadLink.download = `Electronics_Score_${safeName}.png`;
-            
+            downloadLink.download = `Physics_Score_${safeName}.png`;
             downloadLink.href = imageURI;
             downloadLink.click();
         }
@@ -199,8 +184,11 @@
             if (!canvas) return; 
             const ctx = canvas.getContext('2d');
             
+            // Reset states for the new problem
             hasCheckedCurrentProblem = false;
             isCurrentProblemSolved = false;
+            viewedSolution = false; // Reset the cheating flag
+            
             document.getElementById('helpBtn').style.display = 'none';
             document.getElementById('solutions').style.display = 'none';
 
@@ -248,7 +236,6 @@
             ctx.strokeStyle = brandBlack;
             ctx.lineWidth = 2;
             
-            // Wires
             drawLine(ctx, 100, 60, 500, 60); 
             drawLine(ctx, 200, 60, 200, 120); 
             drawLine(ctx, 400, 60, 400, 120); 
@@ -259,32 +246,27 @@
             drawLine(ctx, 300, 320, 300, 360); 
             drawLine(ctx, 100, 360, 500, 360); 
 
-            // Resistors
             drawResistor(ctx, 200, 145); 
             drawResistor(ctx, 400, 145); 
             drawResistor(ctx, 300, 295); 
 
-            // Top Rail (Supply Voltage)
             ctx.font = "bold 18px Arial";
             ctx.fillStyle = unknownVIndex === 3 ? brandPink : brandBlack; 
             const topRailText = unknownVIndex === 3 ? "+V = ?" : `+V = ${vTotal}V`;
             ctx.fillText(topRailText, 260, 40);
 
-            // Ground Rail
             ctx.fillStyle = brandBlack;
             ctx.fillText("0V (GND)", 260, 390);
 
             ctx.font = "16px Arial";
             ctx.fillStyle = brandBlack;
             
-            // R1
             ctx.fillText("R1", 160, 150);
             ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack;
             ctx.fillText(vLabels[0], 70, 150); 
             ctx.fillStyle = unknownIIndex === 0 ? brandPink : brandBlack;
             ctx.fillText(iLabels[0], 215, 100);
 
-            // R2
             ctx.fillStyle = brandBlack;
             ctx.fillText("R2", 365, 150); 
             ctx.fillStyle = unknownVIndex === 1 ? brandPink : brandBlack;
@@ -292,7 +274,6 @@
             ctx.fillStyle = unknownIIndex === 1 ? brandPink : brandBlack;
             ctx.fillText(iLabels[1], 415, 100);
 
-            // R3
             ctx.fillStyle = brandBlack;
             ctx.fillText("R3", 260, 300);
             ctx.fillStyle = unknownVIndex === 2 ? brandPink : brandBlack;
@@ -300,7 +281,7 @@
             ctx.fillStyle = unknownIIndex === 2 ? brandPink : brandBlack;
             ctx.fillText(iLabels[2], 315, 260);
 
-            // Update Solutions text
+            // Set Solution Text
             document.getElementById('solText').innerHTML = `
                 <strong>${voltages[unknownVIndex].name} = ${voltages[unknownVIndex].val}V</strong> <br>
                 <em>Logic:</em> ${voltages[unknownVIndex].logic} <br><br>
@@ -310,7 +291,7 @@
         }
 
         function checkAnswers() {
-            if (isCurrentProblemSolved) return;
+            if (isCurrentProblemSolved) return; // Prevent multiple checks if already solved
 
             const userV = parseFloat(document.getElementById('inputV').value);
             const userI = parseFloat(document.getElementById('inputI').value);
@@ -322,6 +303,7 @@
                 return;
             }
 
+            // Only count it as an attempt the very first time they hit check on this problem
             if (!hasCheckedCurrentProblem) {
                 problemsAttempted++;
                 hasCheckedCurrentProblem = true;
@@ -331,10 +313,19 @@
             const isICorrect = (userI === currentAnswers.iValue);
 
             if (isVCorrect && isICorrect) {
-                problemsCorrect++;
                 isCurrentProblemSolved = true;
-                feedback.innerHTML = "<span style='color: #198754; font-weight: bold;'>🎉 Correct! Great job! Click 'Generate New Problem' to continue.</span>";
+                
+                // Only award points if they haven't looked at the solution
+                if (!viewedSolution) {
+                    problemsCorrect++;
+                    feedback.innerHTML = "<span style='color: #198754; font-weight: bold;'>🎉 Correct! Great job! Click 'Generate New Problem' to continue.</span>";
+                } else {
+                    feedback.innerHTML = "<span style='color: #E64097; font-weight: bold;'>Correct! (No points awarded because the solution was viewed). Click 'Generate New Problem' to continue.</span>";
+                }
+                
+                helpBtn.style.display = 'none'; // Hide the help button once they get it right
             } else {
+                // They got it wrong, reveal the Help button
                 helpBtn.style.display = 'inline-block';
                 
                 if (isVCorrect && !isICorrect) {
@@ -369,7 +360,12 @@
         function toggleSolutions() {
             const solDiv = document.getElementById('solutions');
             if (solDiv) {
-                solDiv.style.display = solDiv.style.display === 'none' ? 'block' : 'none';
+                if (solDiv.style.display === 'none') {
+                    solDiv.style.display = 'block';
+                    viewedSolution = true; // Trigger the flag to prevent gaining a point
+                } else {
+                    solDiv.style.display = 'none';
+                }
             }
         }
 
