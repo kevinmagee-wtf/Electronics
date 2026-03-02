@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Circuit Generator</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        .circuit-container { border: 1px solid #ccc; padding: 20px; text-align: center; margin-bottom: 20px; }
+        canvas { border: 1px solid black; background-color: white; }
+        .controls { text-align: center; margin-top: 10px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        .solutions { margin-top: 20px; padding: 15px; background-color: #f0f0f0; border-radius: 5px; display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>Circuit Problem Generator</h1>
+    <p>Determine the unknown voltage and current values based on the circuit diagram.</p>
+
+    <div class="circuit-container">
+        <canvas id="circuitCanvas" width="600" height="400"></canvas>
+    </div>
+
+    <div class="controls">
+        <button onclick="generateProblem()">Generate New Problem</button>
+        <button onclick="toggleSolutions()">Show/Hide Solutions</button>
+    </div>
+
+    <div id="solutions" class="solutions">
+        <h3>Solutions</h3>
+        <p id="solText"></p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('circuitCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentSolutions = {};
+
+        function drawResistor(x, y, vertical=true) {
+            ctx.beginPath();
+            ctx.rect(x - 10, y - 25, 20, 50); // Box style
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function generateProblem() {
+            // 1. Generate Random Logic
+            const vTotal = 6;
+            const v1 = Math.floor(Math.random() * 4) + 1; // 1 to 4V
+            const i1 = Math.floor(Math.random() * 5) + 1; // 1 to 5mA
+            const i2 = Math.floor(Math.random() * 5) + 1; // 1 to 5mA
+
+            const v2 = v1;
+            const i3 = i1 + i2;
+            const i4 = i3;
+            const v3 = vTotal - v1;
+
+            currentSolutions = { v2, i3, v3, i4, v1, i1, i2 };
+
+            // 2. Draw Circuit
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.fillStyle = "black";
+            ctx.font = "16px Arial";
+
+            // Wires
+            drawLine(50, 50, 550, 50); // Top rail (+V)
+            drawLine(150, 50, 150, 100); // R1 top
+            drawLine(450, 50, 450, 100); // R2 top
+            drawLine(150, 150, 150, 200); // R1 bottom
+            drawLine(450, 150, 450, 200); // R2 bottom
+            drawLine(150, 200, 450, 200); // Join
+            drawLine(300, 200, 300, 250); // R3 top
+            drawLine(300, 300, 300, 350); // R3 bottom
+            drawLine(50, 350, 550, 350); // Bottom rail (GND)
+
+            // Resistors
+            drawResistor(150, 125);
+            drawResistor(450, 125);
+            drawResistor(300, 275);
+
+            // Labels
+            ctx.fillText("+V", 290, 40);
+            ctx.fillText("GND", 280, 370);
+            
+            ctx.fillText("R1", 120, 130);
+            ctx.fillText("R2", 420, 130);
+            ctx.fillText("R3", 270, 280);
+
+            // Dynamic Labels (Knowns)
+            ctx.fillText(`V1 = ${v1}V`, 60, 130);
+            ctx.fillText(`I1 = ${i1}mA`, 160, 110);
+            ctx.fillText(`I2 = ${i2}mA`, 460, 110);
+
+            // Placeholder for Unknowns
+            ctx.fillText(`V2 = ?`, 460, 130);
+            ctx.fillText(`I3 = ?`, 310, 230);
+            ctx.fillText(`V3 = ?`, 310, 280);
+            ctx.fillText(`I4 = ?`, 100, 340);
+
+            // Update Solution Text
+            document.getElementById('solText').innerHTML = `
+                V2 = ${v2}V (Parallel to V1)<br>
+                I3 = ${i3}mA (I1 + I2)<br>
+                V3 = ${v3}V (6V - V1)<br>
+                I4 = ${i4}mA (Same as I3)
+            `;
+            document.getElementById('solutions').style.display = 'none';
+        }
+
+        function toggleSolutions() {
+            const solDiv = document.getElementById('solutions');
+            solDiv.style.display = solDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Initialize on load
+        generateProblem();
+    </script>
+</body>
+</html>
