@@ -225,17 +225,18 @@
             const i2 = Math.floor(Math.random() * 10) + 1; 
             const i3 = i1 + i2; 
 
+            // \u2081 = 1, \u2082 = 2, \u2083 = 3
             const voltages = [
-                { name: 'V1', val: v1, logic: 'V1 = V2 (Parallel components share voltage)' },
-                { name: 'V2', val: v2, logic: 'V2 = V1 (Parallel components share voltage)' },
-                { name: 'V3', val: v3, logic: "V3 = VTotal - V1 (" + vTotal + "V - " + v1 + "V)" },
-                { name: 'VTotal', val: vTotal, logic: "VTotal = V1 + V3 (" + v1 + "V + " + v3 + "V)" }
+                { name: 'V\u2081', val: v1, logic: 'V\u2081 = V\u2082 (Parallel components share voltage)' },
+                { name: 'V\u2082', val: v2, logic: 'V\u2082 = V\u2081 (Parallel components share voltage)' },
+                { name: 'V\u2083', val: v3, logic: "V\u2083 = VTotal - V\u2081 (" + vTotal + "V - " + v1 + "V)" },
+                { name: 'VTotal', val: vTotal, logic: "VTotal = V\u2081 + V\u2083 (" + v1 + "V + " + v3 + "V)" }
             ];
             
             const currents = [
-                { name: 'I1', val: i1, logic: "I1 = I3 - I2 (" + i3 + "mA - " + i2 + "mA)" },
-                { name: 'I2', val: i2, logic: "I2 = I3 - I1 (" + i3 + "mA - " + i1 + "mA)" },
-                { name: 'I3', val: i3, logic: "I3 = I1 + I2 (" + i1 + "mA + " + i2 + "mA)" }
+                { name: 'I\u2081', val: i1, logic: "I\u2081 = I\u2083 - I\u2082 (" + i3 + "mA - " + i2 + "mA)" },
+                { name: 'I\u2082', val: i2, logic: "I\u2082 = I\u2083 - I\u2081 (" + i3 + "mA - " + i1 + "mA)" },
+                { name: 'I\u2083', val: i3, logic: "I\u2083 = I\u2081 + I\u2082 (" + i1 + "mA + " + i2 + "mA)" }
             ];
 
             const unknownVIndex = Math.floor(Math.random() * 4);
@@ -263,8 +264,8 @@
             if (unknownVIndex === 2 || unknownVIndex === 3) {
                 if (Math.random() < 0.5) {
                     vLabels[0] = ""; 
-                    voltages[2].logic = "V3 = VTotal - V2 (since V1 = V2, " + vTotal + "V - " + v2 + "V)";
-                    voltages[3].logic = "VTotal = V2 + V3 (since V1 = V2, " + v2 + "V + " + v3 + "V)";
+                    voltages[2].logic = "V\u2083 = VTotal - V\u2082 (since V\u2081 = V\u2082, " + vTotal + "V - " + v2 + "V)";
+                    voltages[3].logic = "VTotal = V\u2082 + V\u2083 (since V\u2081 = V\u2082, " + v2 + "V + " + v3 + "V)";
                 } else {
                     vLabels[1] = ""; 
                 }
@@ -272,7 +273,7 @@
                 const hideChoice = Math.floor(Math.random() * 3);
                 if (hideChoice === 0) {
                     vLabels[1] = ""; 
-                    voltages[0].logic = "V1 = VTotal - V3 (" + vTotal + "V - " + v3 + "V)";
+                    voltages[0].logic = "V\u2081 = VTotal - V\u2083 (" + vTotal + "V - " + v3 + "V)";
                 } else if (hideChoice === 1) {
                     vLabels[2] = ""; 
                 } else {
@@ -282,7 +283,7 @@
                 const hideChoice = Math.floor(Math.random() * 3);
                 if (hideChoice === 0) {
                     vLabels[0] = ""; 
-                    voltages[1].logic = "V2 = VTotal - V3 (" + vTotal + "V - " + v3 + "V)";
+                    voltages[1].logic = "V\u2082 = VTotal - V\u2083 (" + vTotal + "V - " + v3 + "V)";
                 } else if (hideChoice === 1) {
                     vLabels[2] = ""; 
                 } else {
@@ -320,15 +321,15 @@
                 drawResistor(ctx, 300, 295); 
                 drawLine(ctx, 300, 320, 300, 360); 
 
-                ctx.fillStyle = brandBlack; ctx.fillText("R1", 160, 150);
+                ctx.fillStyle = brandBlack; ctx.fillText("R\u2081", 160, 150);
                 ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack; ctx.fillText(vLabels[0], 70, 150); 
                 ctx.fillStyle = unknownIIndex === 0 ? brandPink : brandBlack; ctx.fillText(iLabels[0], 215, 100);
 
-                ctx.fillStyle = brandBlack; ctx.fillText("R2", 365, 150); 
+                ctx.fillStyle = brandBlack; ctx.fillText("R\u2082", 365, 150); 
                 ctx.fillStyle = unknownVIndex === 1 ? brandPink : brandBlack; ctx.fillText(vLabels[1], 435, 150); 
                 ctx.fillStyle = unknownIIndex === 1 ? brandPink : brandBlack; ctx.fillText(iLabels[1], 415, 100);
 
-                ctx.fillStyle = brandBlack; ctx.fillText("R3", 260, 300);
+                ctx.fillStyle = brandBlack; ctx.fillText("R\u2083", 260, 300);
                 ctx.fillStyle = unknownVIndex === 2 ? brandPink : brandBlack; ctx.fillText(vLabels[2], 335, 300); 
                 ctx.fillStyle = unknownIIndex === 2 ? brandPink : brandBlack; ctx.fillText(iLabels[2], 315, 260);
             } else {
@@ -344,15 +345,15 @@
                 drawLine(ctx, 200, 300, 200, 360);
                 drawLine(ctx, 400, 300, 400, 360);
 
-                ctx.fillStyle = brandBlack; ctx.fillText("R3", 260, 130);
+                ctx.fillStyle = brandBlack; ctx.fillText("R\u2083", 260, 130);
                 ctx.fillStyle = unknownVIndex === 2 ? brandPink : brandBlack; ctx.fillText(vLabels[2], 335, 130); 
                 ctx.fillStyle = unknownIIndex === 2 ? brandPink : brandBlack; ctx.fillText(iLabels[2], 315, 90);
 
-                ctx.fillStyle = brandBlack; ctx.fillText("R1", 160, 280);
+                ctx.fillStyle = brandBlack; ctx.fillText("R\u2081", 160, 280);
                 ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack; ctx.fillText(vLabels[0], 70, 280); 
                 ctx.fillStyle = unknownIIndex === 0 ? brandPink : brandBlack; ctx.fillText(iLabels[0], 215, 230);
 
-                ctx.fillStyle = brandBlack; ctx.fillText("R2", 365, 280); 
+                ctx.fillStyle = brandBlack; ctx.fillText("R\u2082", 365, 280); 
                 ctx.fillStyle = unknownVIndex === 1 ? brandPink : brandBlack; ctx.fillText(vLabels[1], 435, 280); 
                 ctx.fillStyle = unknownIIndex === 1 ? brandPink : brandBlack; ctx.fillText(iLabels[1], 415, 230);
             }
@@ -419,3 +420,17 @@
                     viewedSolution = true; 
                 } else {
                     solDiv.style.display = 'none';
+                }
+            }
+        }
+
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswers();
+            }
+        });
+
+        window.onload = generateProblem;
+    </script>
+</body>
+</html>
