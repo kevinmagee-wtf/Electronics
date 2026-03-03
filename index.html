@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abingdon School - Circuit Quiz</title>
     <style>
-        /* Abingdon Brand Colors: Cerise Pink (#E64097) and Black (#000000) */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #000; background-color: #fafafa; }
         
         .header { text-align: center; margin-bottom: 20px; }
@@ -15,14 +14,11 @@
         .circuit-container { border: 2px solid #eaeaea; padding: 20px; text-align: center; margin-bottom: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
         
-        /* Interactive Quiz Section */
         .quiz-section { background-color: #fdf4f8; padding: 20px; border-radius: 8px; border: 1px solid #f2c7db; margin-bottom: 20px; }
         
-        /* Responsive Header Area for Score and Title */
         .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 15px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .quiz-header h3 { margin: 0; }
         
-        /* Scoreboard styling */
         .score-container { text-align: right; }
         .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); display: inline-block; }
         
@@ -31,7 +27,6 @@
         input[type="number"] { font-size: 18px; padding: 5px; width: 80px; text-align: center; margin: 0 10px; border: 1px solid #ccc; border-radius: 4px; outline-color: #E64097; }
         .feedback { font-size: 18px; margin-top: 15px; min-height: 27px; text-align: center;}
         
-        /* Buttons */
         .controls { text-align: center; margin-top: 10px; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 5px; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
         button:active { transform: scale(0.98); }
@@ -226,19 +221,40 @@
 
             const vLabels = voltages.map((v, index) => index === unknownVIndex ? `${v.name} = ?` : `${v.name} = ${v.val}V`);
             const iLabels = currents.map((c, index) => index === unknownIIndex ? `${c.name} = ?` : `${c.name} = ${c.val}mA`);
+            let topRailText = unknownVIndex === 3 ? "+V = ?" : `+V = ${vTotal}V`;
 
-            // --- NEW LOGIC: Prevent V1 and V2 from both being given ---
+            // --- STRICT LOGIC: EXACTLY 2 known voltages shown & never V1/V2 together ---
             if (unknownVIndex === 2 || unknownVIndex === 3) {
-                // If we are finding V3 or +V, it means V1 and V2 would both normally be shown.
-                // We randomly hide one of them.
+                // We are finding V3 or +V. Potentials include V1 and V2. We MUST randomly hide either V1 or V2.
                 if (Math.random() < 0.5) {
                     vLabels[0] = ""; // Hide V1
-                    // Update logic text so it makes sense using V2 instead of V1
                     voltages[2].logic = `V₃ = Supply Voltage - V₂ (since V₁ = V₂, ${vTotal}V - ${v2}V)`;
                     voltages[3].logic = `Supply Voltage = V₂ + V₃ (since V₁ = V₂, ${v2}V + ${v3}V)`;
                 } else {
                     vLabels[1] = ""; // Hide V2
-                    // Logic strings for V3 and +V already use V1 by default, so they are fine.
+                    // Logic strings for V3 and +V already use V1 by default, which is fine.
+                }
+            } else if (unknownVIndex === 0) {
+                // We are finding V1. Potentials are V2, V3, and +V. Hide exactly one to leave 2.
+                const hideChoice = Math.floor(Math.random() * 3);
+                if (hideChoice === 0) {
+                    vLabels[1] = ""; // Hide V2 (They must use V3 and +V to solve)
+                    voltages[0].logic = `V₁ = Supply Voltage - V₃ (${vTotal}V - ${v3}V)`;
+                } else if (hideChoice === 1) {
+                    vLabels[2] = ""; // Hide V3
+                } else {
+                    topRailText = ""; // Hide +V
+                }
+            } else if (unknownVIndex === 1) {
+                // We are finding V2. Potentials are V1, V3, and +V. Hide exactly one to leave 2.
+                const hideChoice = Math.floor(Math.random() * 3);
+                if (hideChoice === 0) {
+                    vLabels[0] = ""; // Hide V1 (They must use V3 and +V to solve)
+                    voltages[1].logic = `V₂ = Supply Voltage - V₃ (${vTotal}V - ${v3}V)`;
+                } else if (hideChoice === 1) {
+                    vLabels[2] = ""; // Hide V3
+                } else {
+                    topRailText = ""; // Hide +V
                 }
             }
 
@@ -263,8 +279,7 @@
 
             ctx.font = "bold 18px Arial";
             ctx.fillStyle = unknownVIndex === 3 ? brandPink : brandBlack; 
-            const topRailText = unknownVIndex === 3 ? "+V = ?" : `+V = ${vTotal}V`;
-            ctx.fillText(topRailText, 260, 40);
+            ctx.fillText(topRailText, 260, 40); // Will simply draw nothing if hidden
 
             ctx.fillStyle = brandBlack;
             ctx.fillText("0V (GND)", 260, 390);
@@ -292,7 +307,7 @@
             ctx.fillStyle = unknownIIndex === 2 ? brandPink : brandBlack;
             ctx.fillText(iLabels[2], 315, 260);
 
-            // Set Solution Text
+            // Set Solution Text dynamically based on which labels were hidden
             document.getElementById('solText').innerHTML = `
                 <strong>${voltages[unknownVIndex].name} = ${voltages[unknownVIndex].val}V</strong> <br>
                 <em>Logic:</em> ${voltages[unknownVIndex].logic} <br><br>
