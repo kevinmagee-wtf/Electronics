@@ -223,38 +223,33 @@
             const iLabels = currents.map((c, index) => index === unknownIIndex ? `${c.name} = ?` : `${c.name} = ${c.val}mA`);
             let topRailText = unknownVIndex === 3 ? "+V = ?" : `+V = ${vTotal}V`;
 
-            // --- STRICT LOGIC: EXACTLY 2 known voltages shown & never V1/V2 together ---
             if (unknownVIndex === 2 || unknownVIndex === 3) {
-                // We are finding V3 or +V. Potentials include V1 and V2. We MUST randomly hide either V1 or V2.
                 if (Math.random() < 0.5) {
-                    vLabels[0] = ""; // Hide V1
+                    vLabels[0] = ""; 
                     voltages[2].logic = `V₃ = Supply Voltage - V₂ (since V₁ = V₂, ${vTotal}V - ${v2}V)`;
                     voltages[3].logic = `Supply Voltage = V₂ + V₃ (since V₁ = V₂, ${v2}V + ${v3}V)`;
                 } else {
-                    vLabels[1] = ""; // Hide V2
-                    // Logic strings for V3 and +V already use V1 by default, which is fine.
+                    vLabels[1] = ""; 
                 }
             } else if (unknownVIndex === 0) {
-                // We are finding V1. Potentials are V2, V3, and +V. Hide exactly one to leave 2.
                 const hideChoice = Math.floor(Math.random() * 3);
                 if (hideChoice === 0) {
-                    vLabels[1] = ""; // Hide V2 (They must use V3 and +V to solve)
+                    vLabels[1] = ""; 
                     voltages[0].logic = `V₁ = Supply Voltage - V₃ (${vTotal}V - ${v3}V)`;
                 } else if (hideChoice === 1) {
-                    vLabels[2] = ""; // Hide V3
+                    vLabels[2] = ""; 
                 } else {
-                    topRailText = ""; // Hide +V
+                    topRailText = ""; 
                 }
             } else if (unknownVIndex === 1) {
-                // We are finding V2. Potentials are V1, V3, and +V. Hide exactly one to leave 2.
                 const hideChoice = Math.floor(Math.random() * 3);
                 if (hideChoice === 0) {
-                    vLabels[0] = ""; // Hide V1 (They must use V3 and +V to solve)
+                    vLabels[0] = ""; 
                     voltages[1].logic = `V₂ = Supply Voltage - V₃ (${vTotal}V - ${v3}V)`;
                 } else if (hideChoice === 1) {
-                    vLabels[2] = ""; // Hide V3
+                    vLabels[2] = ""; 
                 } else {
-                    topRailText = ""; // Hide +V
+                    topRailText = ""; 
                 }
             }
 
@@ -262,52 +257,82 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = brandBlack;
             ctx.lineWidth = 2;
-            
+            ctx.font = "bold 18px Arial";
+
+            // Common Rails
             drawLine(ctx, 100, 60, 500, 60); 
-            drawLine(ctx, 200, 60, 200, 120); 
-            drawLine(ctx, 400, 60, 400, 120); 
-            drawLine(ctx, 200, 170, 200, 230); 
-            drawLine(ctx, 400, 170, 400, 230); 
-            drawLine(ctx, 200, 230, 400, 230); 
-            drawLine(ctx, 300, 230, 300, 270); 
-            drawLine(ctx, 300, 320, 300, 360); 
             drawLine(ctx, 100, 360, 500, 360); 
 
-            drawResistor(ctx, 200, 145); 
-            drawResistor(ctx, 400, 145); 
-            drawResistor(ctx, 300, 295); 
-
-            ctx.font = "bold 18px Arial";
+            // Common Texts
             ctx.fillStyle = unknownVIndex === 3 ? brandPink : brandBlack; 
-            ctx.fillText(topRailText, 260, 40); // Will simply draw nothing if hidden
-
+            ctx.fillText(topRailText, 260, 40);
             ctx.fillStyle = brandBlack;
             ctx.fillText("0V (GND)", 260, 390);
 
             ctx.font = "16px Arial";
-            ctx.fillStyle = brandBlack;
             
-            ctx.fillText("R₁", 160, 150);
-            ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack;
-            ctx.fillText(vLabels[0], 70, 150); 
-            ctx.fillStyle = unknownIIndex === 0 ? brandPink : brandBlack;
-            ctx.fillText(iLabels[0], 215, 100);
+            // Randomly pick top-heavy (original) or bottom-heavy (inverted) layout
+            const isTopHeavy = Math.random() < 0.5;
 
-            ctx.fillStyle = brandBlack;
-            ctx.fillText("R₂", 365, 150); 
-            ctx.fillStyle = unknownVIndex === 1 ? brandPink : brandBlack;
-            ctx.fillText(vLabels[1], 445, 150); 
-            ctx.fillStyle = unknownIIndex === 1 ? brandPink : brandBlack;
-            ctx.fillText(iLabels[1], 415, 100);
+            if (isTopHeavy) {
+                // Parallel on top
+                drawLine(ctx, 200, 60, 200, 120); 
+                drawLine(ctx, 400, 60, 400, 120); 
+                drawResistor(ctx, 200, 145); 
+                drawResistor(ctx, 400, 145); 
+                drawLine(ctx, 200, 170, 200, 230); 
+                drawLine(ctx, 400, 170, 400, 230); 
+                drawLine(ctx, 200, 230, 400, 230); 
+                
+                // Series on bottom
+                drawLine(ctx, 300, 230, 300, 270); 
+                drawResistor(ctx, 300, 295); 
+                drawLine(ctx, 300, 320, 300, 360); 
 
-            ctx.fillStyle = brandBlack;
-            ctx.fillText("R₃", 260, 300);
-            ctx.fillStyle = unknownVIndex === 2 ? brandPink : brandBlack;
-            ctx.fillText(vLabels[2], 340, 300); 
-            ctx.fillStyle = unknownIIndex === 2 ? brandPink : brandBlack;
-            ctx.fillText(iLabels[2], 315, 260);
+                // Labels - Original Placement
+                ctx.fillStyle = brandBlack; ctx.fillText("R₁", 160, 150);
+                ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack; ctx.fillText(vLabels[0], 70, 150); 
+                ctx.fillStyle = unknownIIndex === 0 ? brandPink : brandBlack; ctx.fillText(iLabels[0], 215, 100);
 
-            // Set Solution Text dynamically based on which labels were hidden
+                ctx.fillStyle = brandBlack; ctx.fillText("R₂", 365, 150); 
+                ctx.fillStyle = unknownVIndex === 1 ? brandPink : brandBlack; ctx.fillText(vLabels[1], 445, 150); 
+                ctx.fillStyle = unknownIIndex === 1 ? brandPink : brandBlack; ctx.fillText(iLabels[1], 415, 100);
+
+                ctx.fillStyle = brandBlack; ctx.fillText("R₃", 260, 300);
+                ctx.fillStyle = unknownVIndex === 2 ? brandPink : brandBlack; ctx.fillText(vLabels[2], 340, 300); 
+                ctx.fillStyle = unknownIIndex === 2 ? brandPink : brandBlack; ctx.fillText(iLabels[2], 315, 260);
+            } else {
+                // Series on top
+                drawLine(ctx, 300, 60, 300, 100);
+                drawResistor(ctx, 300, 125);
+                drawLine(ctx, 300, 150, 300, 190);
+                drawLine(ctx, 200, 190, 400, 190); 
+                
+                // Parallel on bottom
+                drawLine(ctx, 200, 190, 200, 250);
+                drawLine(ctx, 400, 190, 400, 250);
+                drawResistor(ctx, 200, 275);
+                drawResistor(ctx, 400, 275);
+                drawLine(ctx, 200, 300, 200, 360);
+                drawLine(ctx, 400, 300, 400, 360);
+
+                // Labels - Inverted Placement
+                // R3 is now at the top
+                ctx.fillStyle = brandBlack; ctx.fillText("R₃", 260, 130);
+                ctx.fillStyle = unknownVIndex === 2 ? brandPink : brandBlack; ctx.fillText(vLabels[2], 340, 130); 
+                ctx.fillStyle = unknownIIndex === 2 ? brandPink : brandBlack; ctx.fillText(iLabels[2], 315, 90);
+
+                // R1 is now bottom left
+                ctx.fillStyle = brandBlack; ctx.fillText("R₁", 160, 280);
+                ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack; ctx.fillText(vLabels[0], 70, 280); 
+                ctx.fillStyle = unknownIIndex === 0 ? brandPink : brandBlack; ctx.fillText(iLabels[0], 215, 230);
+
+                // R2 is now bottom right
+                ctx.fillStyle = brandBlack; ctx.fillText("R₂", 365, 280); 
+                ctx.fillStyle = unknownVIndex === 1 ? brandPink : brandBlack; ctx.fillText(vLabels[1], 445, 280); 
+                ctx.fillStyle = unknownIIndex === 1 ? brandPink : brandBlack; ctx.fillText(iLabels[1], 415, 230);
+            }
+
             document.getElementById('solText').innerHTML = `
                 <strong>${voltages[unknownVIndex].name} = ${voltages[unknownVIndex].val}V</strong> <br>
                 <em>Logic:</em> ${voltages[unknownVIndex].logic} <br><br>
