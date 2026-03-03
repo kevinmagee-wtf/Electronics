@@ -167,4 +167,47 @@
             ctx.fillText(`Student: ${studentName}`, 300, 210);
 
             ctx.fillStyle = brandPink;
-            ctx.font = "bold 56px 'Segoe UI
+            ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText(`${problemsCorrect} / ${problemsAttempted}`, 300, 285);
+            
+            ctx.fillStyle = brandBlack;
+            ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Questions Answered Correctly", 300, 315);
+
+            const today = new Date().toLocaleDateString('en-GB'); 
+            ctx.fillStyle = "#666";
+            ctx.font = "16px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText(`Date Completed: ${today}`, 300, 360);
+
+            const imageURI = certCanvas.toDataURL("image/png");
+            const downloadLink = document.createElement('a');
+            const safeName = studentName.replace(/[^a-zA-Z0-9]/g, '_');
+            downloadLink.download = `Physics_Score_${safeName}.png`;
+            downloadLink.href = imageURI;
+            downloadLink.click();
+        }
+
+        function drawResistor(ctx, x, y) {
+            ctx.beginPath();
+            ctx.rect(x - 12, y - 25, 24, 50); 
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function drawLine(ctx, x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function generateProblem() {
+            const canvas = document.getElementById('circuitCanvas');
+            if (!canvas) return; 
+            const ctx = canvas.getContext('2d');
+            
+            hasCheckedCurrentProblem = false;
+            isCurrent
