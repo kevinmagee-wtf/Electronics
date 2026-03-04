@@ -10,26 +10,34 @@
         .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
         .header p { margin-top: 5px; font-size: 18px; color: #555; }
         .header span { color: #E64097; font-weight: bold; }
+        
+        /* Tab System Styles */
         .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
         .tab { padding: 10px 25px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #eaeaea; border: 2px solid #ccc; border-radius: 8px; color: #555; transition: all 0.2s; }
         .tab.active { background-color: #E64097; color: white; border-color: #E64097; box-shadow: 0 4px 6px rgba(230, 64, 151, 0.2); }
         .tab:hover:not(.active) { background-color: #d4d4d4; }
+
         .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+        
         .left-panel { flex: 1 1 550px; max-width: 650px; }
         .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
+        
         .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
         .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
         .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
         .quiz-header h3 { margin: 0; font-size: 1.2rem; }
+        
         .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
         .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
         .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
         .btn-download:hover { background-color: #157347; }
+        
         .input-area { text-align: center; }
         .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
         input[type="number"] { font-size: 18px; padding: 5px; width: 70px; text-align: center; margin: 0 5px; border: 1px solid #ccc; border-radius: 4px; outline-color: #E64097; }
         .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center;}
+        
         .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
         button:active { transform: scale(0.98); }
@@ -39,6 +47,7 @@
         .btn-black:hover { background-color: #333333; }
         .btn-secondary { background-color: #6c757d; }
         .btn-secondary:hover { background-color: #5c636a; }
+        
         .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
         .solutions p { margin-bottom: 0; font-size: 0.95rem; }
@@ -260,7 +269,6 @@
             const i2 = Math.floor(Math.random() * 10) + 1; 
             const i3 = i1 + i2; 
 
-            // Replaced plain numbers with Unicode subscripts for canvas compatibility
             const voltages = [
                 { display: 'V₁', html: 'V<sub>1</sub>', val: v1, logic: 'V₁ = V₂ (Parallel components share voltage)' },
                 { display: 'V₂', html: 'V<sub>2</sub>', val: v2, logic: 'V₂ = V₁ (Parallel components share voltage)' },
@@ -327,7 +335,6 @@
             ctx.font = "16px Arial";
             const isTopHeavy = Math.random() < 0.5;
 
-            // Updated R1, R2, R3 to use Unicode R₁, R₂, R₃
             if (isTopHeavy) {
                 drawLine(ctx, 200, 60, 200, 120); drawLine(ctx, 400, 60, 400, 120); 
                 drawResistor(ctx, 200, 145); drawResistor(ctx, 400, 145); 
@@ -384,14 +391,14 @@
             if (inputGroupI) inputGroupI.style.display = 'none';
 
             const cleanMathScenarios = [
-                { V: 10, R1: 1, R2: 1, units: 'kOhms' }, 
-                { V: 12, R1: 1, R2: 2, units: 'kOhms' }, 
-                { V: 12, R1: 2, R2: 1, units: 'kOhms' }, 
-                { V: 20, R1: 3, R2: 1, units: 'kOhms' }, 
-                { V: 9,  R1: 1, R2: 2, units: 'kOhms' }, 
-                { V: 24, R1: 3, R2: 5, units: 'Ohms' },  
-                { V: 5,  R1: 2, R2: 3, units: 'kOhms' }, 
-                { V: 15, R1: 2, R2: 1, units: 'kOhms' }  
+                { V: 10, R1: 1, R2: 1, units: 'k\u2126' }, // Unicode kΩ
+                { V: 12, R1: 1, R2: 2, units: 'k\u2126' }, 
+                { V: 12, R1: 2, R2: 1, units: 'k\u2126' }, 
+                { V: 20, R1: 3, R2: 1, units: 'k\u2126' }, 
+                { V: 9,  R1: 1, R2: 2, units: 'k\u2126' }, 
+                { V: 24, R1: 3, R2: 5, units: '\u2126' },  // Unicode Ω
+                { V: 5,  R1: 2, R2: 3, units: 'k\u2126' }, 
+                { V: 15, R1: 2, R2: 1, units: 'k\u2126' }  
             ];
             
             const sc = cleanMathScenarios[Math.floor(Math.random() * cleanMathScenarios.length)];
@@ -402,7 +409,7 @@
             const V2 = (sc.V * sc.R2) / Rtot;
             
             currentAnswers.vNameHTML = targetIsR1 ? 'V<sub>1</sub>' : 'V<sub>2</sub>';
-            const vNameDisplay = targetIsR1 ? 'V₁' : 'V₂'; // Unicode subscripts
+            const vNameDisplay = targetIsR1 ? 'V₁' : 'V₂';
             currentAnswers.vValue = targetIsR1 ? V1 : V2;
             
             const labelV = document.getElementById('labelV');
@@ -428,7 +435,7 @@
             
             ctx.font = "16px Arial";
             ctx.fillStyle = brandBlack; 
-            // Unicode R1 and R2
+            // Omega symbols appear here via sc.units
             ctx.fillText("R₁ = " + sc.R1 + " " + sc.units, 330, 150);
             ctx.fillText("R₂ = " + sc.R2 + " " + sc.units, 330, 260);
             
