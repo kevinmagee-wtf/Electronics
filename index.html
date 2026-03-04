@@ -485,7 +485,7 @@
             }
         }
 
-      function generateResistanceProblem(ctx, canvas) {
+     function generateResistanceProblem(ctx, canvas) {
             const grpV = document.getElementById('inputGroupV');
             const grpI = document.getElementById('inputGroupI');
             const grpR = document.getElementById('inputGroupR');
@@ -525,6 +525,8 @@
                 drawResistor(ctx, 300, 255);
                 drawLine(ctx, 300, 280, 300, 360);
                 
+                // Switch paintbrush back to black!
+                ctx.fillStyle = brandBlack;
                 ctx.font = "16px Arial";
                 ctx.fillText("R\u2081 = " + r1 + " \u03A9", 330, 150);
                 ctx.fillText("R\u2082 = " + r2 + " \u03A9", 330, 260);
@@ -558,6 +560,8 @@
                 drawLine(ctx, 220, 320, 380, 320); // Merge
                 drawLine(ctx, 300, 320, 300, 360);
 
+                // Switch paintbrush back to black!
+                ctx.fillStyle = brandBlack;
                 ctx.font = "16px Arial";
                 ctx.fillText("R\u2081 = " + r1 + " \u03A9", 140, 180);
                 ctx.fillText("R\u2082 = " + r2 + " \u03A9", 400, 180);
@@ -600,6 +604,8 @@
                 drawLine(ctx, 220, 320, 380, 320); // Merge
                 drawLine(ctx, 300, 320, 300, 360);
 
+                // Switch paintbrush back to black!
+                ctx.fillStyle = brandBlack;
                 ctx.font = "16px Arial";
                 ctx.fillText("R\u2081 = " + sp.r1 + " \u03A9", 330, 120);
                 ctx.fillText("R\u2082 = " + sp.r2 + " \u03A9", 140, 250);
