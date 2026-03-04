@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abingdon School - Circuit Quiz</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1100px; margin: 0 auto; padding: 10px 20px; line-height: 1.6; color: #000; background-color: #fafafa; }
+        .header { text-align: center; margin-bottom: 15px; }
+        .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
+        .header p { margin-top: 5px; font-size: 18px; color: #555; }
+        .header span { color: #E64097; font-weight: bold; }
+        
+        /* Tab System Styles */
+        .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .tab { padding: 10px 25px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #eaeaea; border: 2px solid #ccc; border-radius: 8px; color: #555; transition: all 0.2s; }
+        .tab.active { background-color: #E64097; color: white; border-color: #E64097; box-shadow: 0 4px 6px rgba(230, 64, 151, 0.2); }
+        .tab:hover:not(.active) { background-color: #d4d4d4; }
+
+        .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+        
+        .left-panel { flex: 1 1 550px; max-width: 650px; }
+        .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
+        
+        .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
+        .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+        .quiz-header h3 { margin: 0; font-size: 1.2rem; }
+        
+        .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+        .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
+        .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
+        .btn-download:hover { background-color: #157347; }
+        
+        .input-area { text-align: center; }
+        .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
+        input[type="number"] { font-size: 18px; padding: 5px; width: 70px; text-align: center; margin: 0 5px; border: 1px solid #ccc; border-radius: 4px; outline-color: #E64097; }
+        .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center;}
+        
+        .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
+        button:active { transform: scale(0.98); }
+        .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; }
+        .btn-check:hover { background-color: #cc2b81; }
+        .btn-black { background-color: #000000; }
+        .btn-black:hover { background-color: #333333; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5c636a; }
+        
+        .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
+        .solutions p { margin-bottom: 0; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1><span>Abingdon</span> Electronics</h1>
+        <p>Basics</p>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
+        <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
+        <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
+    </div>
+
+    <div class="main-layout">
+        <div class="left-panel">
+            <div class="circuit-container">
+                <canvas id="circuitCanvas" width="600" height="420"></canvas>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="quiz-section">
+                <div class="quiz-header">
+                    <h3>Enter Your Answer</h3>
+                    <div class="score-container">
+                        <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
+                        <button class="btn-download" onclick="downloadScore()">Download</button>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-group" id="inputGroupV">
+                        <label id="labelV" for="inputV">V? = </label>
+                        <input type="number" id="inputV" placeholder="..."> V
+                    </div>
+                    
+                    <div class="input-group" id="inputGroupI">
+                        <label id="labelI" for="inputI">I? = </label>
+                        <input type="number" id="inputI" placeholder="..."> mA
+                    </div>
+
+                    <div class="input-group" id="inputGroupR" style="display:none;">
+                        <label id="labelR" for="inputR">R? = </label>
+                        <input type="number" id="inputR" placeholder="..."> Ohms
+                    </div>
+                    
+                    <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
+                    <div id="feedback" class="feedback"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
+                <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
+            </div>
+
+            <div id="solutions" class="solutions">
+                <h3>Step-by-Step Logic</h3>
+                <p id="solText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const brandPink = "#E64097";
+        const brandBlack = "#000000";
+
+        let currentMode = 'analysis'; 
+        let currentAnswers = { vNameHTML: '', vValue: 0, iNameHTML: '', iValue: 0, rValue: 0 };
+        let problemsAttempted = 0;
+        let problemsCorrect = 0;
+        let hasCheckedCurrentProblem = false; 
+        let isCurrentProblemSolved = false;
+        let viewedSolution = false; 
+
+        function switchTab(mode) {
+            if (currentMode === mode) return; 
+            currentMode = mode;
+            
+            const tabA = document.getElementById('tab-analysis');
+            const tabD = document.getElementById('tab-divider');
+            const tabR = document.getElementById('tab-resistance'); 
+            
+            if (tabA) tabA.classList.remove('active');
+            if (tabD) tabD.classList.remove('active');
+            if (tabR) tabR.classList.remove('active'); 
+            
+            const activeTab = document.getElementById('tab-' + mode);
+            if (activeTab) activeTab.classList.add('active');
+            
+            generateProblem();
+        }
+
+        function updateScoreboard() {
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            if (scoreDisplay) scoreDisplay.innerText = "Score: " + problemsCorrect + " / " + problemsAttempted;
+        }
+
+        function downloadScore() {
+            if (problemsAttempted === 0) {
+                alert("Please attempt at least one question before downloading your score!");
+                return;
+            }
+            const studentName = prompt("Enter your name for the score sheet:");
+            if (!studentName) return; 
+
+            const certCanvas = document.createElement('canvas');
+            certCanvas.width = 600;
+            certCanvas.height = 400;
+            const ctx = certCanvas.getContext('2d');
+
+            ctx.fillStyle = "#fdf4f8"; 
+            ctx.fillRect(0, 0, certCanvas.width, certCanvas.height);
+            ctx.strokeStyle = brandPink;
+            ctx.lineWidth = 12;
+            ctx.strokeRect(6, 6, 588, 388);
+            ctx.strokeStyle = brandBlack;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(18, 18, 564, 364);
+
+            ctx.textAlign = "center";
+            ctx.fillStyle = brandBlack;
+            ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("ABINGDON ELECTRONICS", 300, 80);
+
+            ctx.fillStyle = brandPink;
+            ctx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Basics Knowledge Check", 300, 120);
+
+            ctx.beginPath();
+            ctx.moveTo(150, 145);
+            ctx.lineTo(450, 145);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = brandBlack;
+            ctx.font = "28px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Student: " + studentName, 300, 210);
+
+            ctx.fillStyle = brandPink;
+            ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText(problemsCorrect + " / " + problemsAttempted, 300, 285);
+            
+            ctx.fillStyle = brandBlack;
+            ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Questions Answered Correctly", 300, 315);
+
+            const today = new Date().toLocaleDateString('en-GB'); 
+            ctx.fillStyle = "#666";
+            ctx.font = "16px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Date Completed: " + today, 300, 360);
+
+            const imageURI = certCanvas.toDataURL("image/png");
+            const downloadLink = document.createElement('a');
+            const safeName = studentName.replace(/[^a-zA-Z0-9]/g, '_');
+            
+            downloadLink.download = "Electronics_Score_" + safeName + ".png"; 
+            downloadLink.href = imageURI;
+            downloadLink.click();
+
+            problemsAttempted = 0;
+            problemsCorrect = 0;
+            updateScoreboard();
+            generateProblem();
+            alert("Certificate downloaded successfully! The score has been reset for the next student.");
+        }
+
+        function drawResistor(ctx, x, y) {
+            ctx.beginPath();
+            ctx.rect(x - 12, y - 25, 24, 50);
