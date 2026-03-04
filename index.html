@@ -608,4 +608,63 @@
                     } else if (userV !== currentAnswers.vValue && userI === currentAnswers.iValue) {
                         if (feedback) feedback.innerHTML = "<span style='color: #fd7e14; font-weight: bold;'>Current correct. Voltage is wrong.</span>";
                     } else {
-                        if (feedback) feedback.innerHTML = "<span style='color: #
+                        if (feedback) feedback.innerHTML = "<span style='color: #dc3545; font-weight: bold;'>Both are incorrect. Check rules!</span>";
+                    }
+                }
+            } else if (currentMode === 'divider') {
+                if (isNaN(userV)) {
+                    if (feedback) feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a number!</span>";
+                    hasCheckedCurrentProblem = false; 
+                    problemsAttempted--;
+                    return;
+                }
+
+                if (userV === currentAnswers.vValue) {
+                    isCurrentProblemSolved = true;
+                    if (!viewedSolution) problemsCorrect++;
+                    if (feedback) feedback.innerHTML = viewedSolution ? "<span style='color: #E64097; font-weight: bold;'>Correct! (Solution was viewed).</span>" : "<span style='color: #198754; font-weight: bold;'>Correct! Great job!</span>";
+                    if (helpBtn) helpBtn.style.display = 'none';
+                } else {
+                    if (helpBtn) helpBtn.style.display = 'block';
+                    if (feedback) feedback.innerHTML = "<span style='color: #dc3545; font-weight: bold;'>Incorrect. Check your formula!</span>";
+                }
+            } else if (currentMode === 'resistance') {
+                if (isNaN(userR)) {
+                    if (feedback) feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a number!</span>";
+                    hasCheckedCurrentProblem = false; 
+                    problemsAttempted--;
+                    return;
+                }
+
+                if (userR === currentAnswers.rValue) {
+                    isCurrentProblemSolved = true;
+                    if (!viewedSolution) problemsCorrect++;
+                    if (feedback) feedback.innerHTML = viewedSolution ? "<span style='color: #E64097; font-weight: bold;'>Correct! (Solution was viewed).</span>" : "<span style='color: #198754; font-weight: bold;'>Correct! Great job!</span>";
+                    if (helpBtn) helpBtn.style.display = 'none';
+                } else {
+                    if (helpBtn) helpBtn.style.display = 'block';
+                    if (feedback) feedback.innerHTML = "<span style='color: #dc3545; font-weight: bold;'>Incorrect. Check your formula!</span>";
+                }
+            }
+            
+            updateScoreboard();
+        }
+
+        function toggleSolutions() {
+            const sol = document.getElementById('solutions');
+            if (!sol) return;
+            if (sol.style.display === 'none' || sol.style.display === '') {
+                sol.style.display = 'block';
+                viewedSolution = true;
+            } else {
+                sol.style.display = 'none';
+            }
+        }
+
+        window.onload = function() {
+            generateProblem();
+        };
+
+    </script>
+</body>
+</html>
