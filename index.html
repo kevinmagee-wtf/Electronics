@@ -60,4 +60,35 @@
         <p>Basics</p>
     </div>
 
-    <div class
+    <div class="tabs">
+        <button class="tab active" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
+        <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
+        <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
+    </div>
+
+    <div class="main-layout">
+        <div class="left-panel">
+            <div class="circuit-container">
+                <canvas id="circuitCanvas" width="600" height="420"></canvas>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="quiz-section">
+                <div class="quiz-header">
+                    <h3>Enter Your Answer</h3>
+                    <div class="score-container">
+                        <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
+                        <button class="btn-download" onclick="downloadScore()">⬇ Download</button>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-group" id="inputGroupV">
+                        <label id="labelV" for="inputV">V? = </label>
+                        <input type="number" id="inputV" placeholder="..."> V
+                    </div>
+                    
+                    <div class="input-group" id="inputGroupI">
+                        <label id="labelI" for="inputI">I? = </label>
+                        <input type="number" id="inputI" placeholder
