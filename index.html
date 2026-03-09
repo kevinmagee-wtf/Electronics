@@ -146,11 +146,18 @@
         let viewedSolution = false; 
         let unitErrorMade = false; 
 
-        // --- Helper Function to Parse User Input (Number + Unit) ---
+        // --- Helper Function to Parse User Input (Number, Unit, and Fractions) ---
         function parseInput(str) {
             if (!str) return null;
             let cleanStr = str.toLowerCase().replace(/\s+/g, '');
             cleanStr = cleanStr.replace(/\u03a9/g, 'ohms'); 
+            
+            // Check for Mark/Space fractions (stripping accidental letters at the end)
+            let strippedStr = cleanStr.replace(/[a-z]+$/, '');
+            if (/^\d+\/\d+$/.test(strippedStr)) {
+                let parts = strippedStr.split('/');
+                return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio', isRatioString: true };
+            }
             
             const match = cleanStr.match(/^(-?[\d\.]+)([a-z]+)$/);
             if (match) {
@@ -162,6 +169,14 @@
         // --- Helper Function to Validate Answers ---
         function validateMatch(parsedInput, expectedVal, expectedUnit) {
             if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
+            
+            // Handle ratio format specifically for GCSE Mark/Space requirements
+            if (expectedUnit === 'ratio') {
+                if (parsedInput.isRatioString && Math.abs(parsedInput.val - expectedVal) < 0.001) return 'correct';
+                if (!parsedInput.isRatioString && Math.abs(parsedInput.val - expectedVal) < 0.001) return 'wrongunit'; // They used decimal instead of fraction
+                return 'wrongval';
+            }
+            
             if (parsedInput.unit === '') return 'nounit';
             
             const valMatch = Math.abs(parsedInput.val - expectedVal) < 0.001;
@@ -556,7 +571,7 @@
             }
 
             currentAnswers.rValue = rTotal;
-            currentAnswers.rUnit = expectedUnitStr; // strict checking string ('ohms' or 'kohms')
+            currentAnswers.rUnit = expectedUnitStr; 
 
             const solText = document.getElementById('solText');
             if (solText) solText.innerHTML = "<strong>R<sub>Total</sub> = " + currentAnswers.rValue + " " + rUnitVisual + "</strong><br><br>" + logicText;
@@ -599,10 +614,17 @@
             let frequency = (tBaseUnit === 'ms') ? (1000 / periodTime) : (1 / periodTime);
             frequency = Math.round(frequency * 1000) / 1000;
 
-            ctx.fillStyle = brandBlack; ctx.font = "16px Arial";
-            ctx.fillText("Oscilloscope Settings", 440, 80);
-            ctx.fillText("Time Base = " + tBase + " " + tBaseUnit + " / div", 440, 130);
-            ctx.fillText("Voltage Gain = " + vGain + " " + vGainUnit + " / div", 440, 180);
+            // Updated Settings Text Placement
+            ctx.fillStyle = brandBlack; 
+            ctx.font = "bold 15px Arial";
+            ctx.fillText("Settings:", 430, 80);
+            
+            ctx.font = "14px Arial";
+            ctx.fillText("Time Base:", 430, 110);
+            ctx.fillText(tBase + " " + tBaseUnit + " / div", 430, 130);
+            
+            ctx.fillText("Voltage Gain:", 430, 170);
+            ctx.fillText(vGain + " " + vGainUnit + " / div", 430, 190);
 
             ctx.strokeStyle = brandBlack; ctx.lineWidth = 3; ctx.lineJoin = "bevel";
             let path = []; let phaseDivs = Math.floor(Math.random() * (markDivs + spaceDivs)); 
@@ -619,24 +641,30 @@
             }
             ctx.stroke();
 
+            // Updated Question Types
             const qTypes = [
-                { text: "Time for Mark = ", ans: markDivs * tBase, unit: tBaseUnit, sol: markDivs + " divs &times; " + tBase + " " + tBaseUnit + "/div" },
-                { text: "Time for Space = ", ans: spaceDivs * tBase, unit: tBaseUnit, sol: spaceDivs + " divs &times; " + tBase + " " + tBaseUnit + "/div" },
+                { text: "Mark Time = ", ans: markDivs * tBase, unit: tBaseUnit, sol: markDivs + " divs &times; " + tBase + " " + tBaseUnit + "/div" },
+                { text: "Space Time = ", ans: spaceDivs * tBase, unit: tBaseUnit, sol: spaceDivs + " divs &times; " + tBase + " " + tBaseUnit + "/div" },
                 { text: "Time Period = ", ans: periodTime, unit: tBaseUnit, sol: "(" + markDivs + " + " + spaceDivs + ") divs &times; " + tBase + " " + tBaseUnit + "/div" },
-                { text: "Frequency = ", ans: frequency, unit: "Hz", sol: (tBaseUnit === 'ms' ? "1 / (" + periodTime + " / 1000) s" : "1 / " + periodTime + " s") }
+                { text: "Frequency = ", ans: frequency, unit: "Hz", sol: (tBaseUnit === 'ms' ? "1 / (" + periodTime + " / 1000) s" : "1 / " + periodTime + " s") },
+                { text: "Mark/Space Ratio = ", ans: markDivs / spaceDivs, unit: "ratio", sol: "Mark takes " + markDivs + " divs, Space takes " + spaceDivs + " divs. Fraction is " + markDivs + "/" + spaceDivs + "." }
             ];
 
-            const q = qTypes[Math.floor(Math.random() * 4)];
+            const q = qTypes[Math.floor(Math.random() * qTypes.length)];
             currentAnswers.osc1Value = amplitude; currentAnswers.osc1Unit = vGainUnit;
             currentAnswers.osc2Value = q.ans; currentAnswers.osc2Unit = q.unit;
 
             document.getElementById('labelOsc2').innerHTML = q.text;
+            
+            // Dynamic placeholder so they know how to format ratios
+            document.getElementById('inputOsc2').placeholder = q.unit === 'ratio' ? "e.g. 1/2" : "e.g. 20 ms";
 
             const solText = document.getElementById('solText');
             if (solText) solText.innerHTML = 
                 "<strong>Amplitude = " + amplitude + " " + vGainUnit + "</strong><br>" +
                 "<em>Logic:</em> Wave height is " + ampDivs + " divs. " + ampDivs + " &times; " + vGain + " " + vGainUnit + "/div = " + amplitude + " " + vGainUnit + ".<br><br>" +
-                "<strong>" + q.text.replace(" = ", "") + " = " + q.ans + " " + q.unit + "</strong><br>" + "<em>Logic:</em> " + q.sol;
+                "<strong>" + q.text.replace(" = ", "") + " = " + (q.unit === 'ratio' ? markDivs + "/" + spaceDivs : q.ans + " " + q.unit) + "</strong><br>" + 
+                "<em>Logic:</em> " + q.sol;
         }
 
         function checkAnswers() {
@@ -667,7 +695,6 @@
                 results.push(validateMatch(pO2, currentAnswers.osc2Value, currentAnswers.osc2Unit));
             }
 
-            // Prevent blank answers from dropping their score/mark instantly
             if (results.includes('wrongval') && results.some(r => r === 'wrongval' && document.getElementById(currentMode === 'analysis' ? 'inputV' : 'inputR').value === '')) {
                  feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
                  hasCheckedCurrentProblem = false; problemsAttempted--; return;
@@ -694,7 +721,14 @@
                     feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget your units! (Mark lost for this question)</span>";
                 } else if (results.includes('wrongunit')) {
                     unitErrorMade = true;
-                    feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost for this question)</span>";
+                    
+                    // Added custom feedback to remind them about the fraction requirement!
+                    if (currentMode === 'oscilloscope' && currentAnswers.osc2Unit === 'ratio') {
+                        feedback.innerHTML = "<span style='color: #fd7e14;'>Almost! The Mark/Space ratio must be written as a fraction (e.g. 1/2).</span>";
+                    } else {
+                        feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost for this question)</span>";
+                    }
+                    
                 } else if (results.some(r => r === 'correct')) {
                     feedback.innerHTML = "<span style='color: #dc3545;'>One is right, one is wrong. Check logic!</span>";
                 } else {
