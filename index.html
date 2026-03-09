@@ -327,31 +327,31 @@
 
             const certCanvas = document.createElement('canvas');
             certCanvas.width = 600; certCanvas.height = 420;
-            const ctx = certCanvas.getContext('2d');
+            const  = certCanvas.getContext('2d');
 
-            ctx.fillStyle = "#fdf4f8"; ctx.fillRect(0, 0, certCanvas.width, certCanvas.height);
-            ctx.strokeStyle = brandPink; ctx.lineWidth = 12; ctx.strokeRect(6, 6, 588, 408);
-            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.strokeRect(18, 18, 564, 384);
+            .fillStyle = "#fdf4f8"; .fillRect(0, 0, certCanvas.width, certCanvas.height);
+            .strokeStyle = brandPink; .lineWidth = 12; .strokeRect(6, 6, 588, 408);
+            .strokeStyle = brandBlack; .lineWidth = 2; .strokeRect(18, 18, 564, 384);
 
-            ctx.textAlign = "center";
-            ctx.fillStyle = brandBlack; ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("ABINGDON ELECTRONICS", 300, 80);
+            .textAlign = "center";
+            .fillStyle = brandBlack; .font = "bold 36px 'Segoe UI', Arial, sans-serif";
+            .fillText("ABINGDON ELECTRONICS", 300, 80);
 
-            ctx.fillStyle = brandPink; ctx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("Basics Knowledge Check", 300, 120);
+            .fillStyle = brandPink; .font = "italic 24px 'Segoe UI', Arial, sans-serif";
+            .fillText("Basics Knowledge Check", 300, 120);
 
-            ctx.beginPath(); ctx.moveTo(150, 145); ctx.lineTo(450, 145); ctx.lineWidth = 2; ctx.stroke();
+            .beginPath(); .moveTo(150, 145); .lineTo(450, 145); .lineWidth = 2; .stroke();
 
-            ctx.fillStyle = brandBlack; ctx.font = "28px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("Student: " + studentName, 300, 190);
+            .fillStyle = brandBlack; .font = "28px 'Segoe UI', Arial, sans-serif";
+            .fillText("Student: " + studentName, 300, 190);
             
-            ctx.fillStyle = "#555"; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("Topic: " + currentTopic, 300, 225);
+            .fillStyle = "#555"; .font = "20px 'Segoe UI', Arial, sans-serif";
+            .fillText("Topic: " + currentTopic, 300, 225);
 
-            ctx.fillStyle = brandPink; ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText(problemsCorrect + " / " + problemsAttempted, 300, 305);
+            .fillStyle = brandPink; .font = "bold 56px 'Segoe UI', Arial, sans-serif";
+            .fillText(problemsCorrect + " / " + problemsAttempted, 300, 305);
             
-            ctx.fillStyle = brandBlack; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            .fillStyle = brandBlack; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("Questions Answered Correctly", 300, 335);
 
             const today = new Date().toLocaleDateString('en-GB'); 
@@ -754,13 +754,13 @@
             ctx.font = "16px Arial";
             ctx.fillStyle = brandBlack;
             ctx.fillText("R", 150, 120); ctx.font = "12px Arial"; ctx.fillText("A", 162, 125);
-            ctx.font = "16px Arial"; ctx.fillText("= " + RA + " k\u03A9", 240, 130);
+            ctx.font = "16px Arial"; ctx.fillText(RA + " k\u03A9", 240, 130);
             
             ctx.fillText("R", 150, 220); ctx.font = "12px Arial"; ctx.fillText("B", 162, 225);
-            ctx.font = "16px Arial"; ctx.fillText("= " + RB + " k\u03A9", 240, 230);
+            ctx.font = "16px Arial"; ctx.fillText(RB + " k\u03A9", 240, 230);
             
             ctx.fillText("C", 160, 290);
-            ctx.fillText("= " + C_obj.val + " " + C_obj.unit, 245, 290);
+            ctx.fillText(C_obj.val + " " + C_obj.unit, 245, 290);
 
             // Solution Text
             const solText = document.getElementById('solText');
