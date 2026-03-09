@@ -193,6 +193,7 @@
             if (scoreDisplay) scoreDisplay.innerText = "Score: " + problemsCorrect + " / " + problemsAttempted;
         }
 
+        // --- ASYNC GOOGLE SHEETS UPLOAD ---
         async function downloadScore() {
             if (problemsAttempted === 0) {
                 alert("Please attempt at least one question before downloading your score!");
@@ -201,71 +202,54 @@
             const studentName = prompt("Enter your name to submit your score:");
             if (!studentName) return; 
 
-            // --- 1. SET LOADING STATE ---
+            // 1. Loading State
             const downloadBtn = document.querySelector('.btn-download');
             const originalText = downloadBtn.innerHTML;
             downloadBtn.innerHTML = "&#8987; Submitting..."; 
             downloadBtn.disabled = true;
-            downloadBtn.style.backgroundColor = "#6c757d"; // Turn button grey
+            downloadBtn.style.backgroundColor = "#6c757d"; 
             downloadBtn.style.cursor = "wait";
 
-            // --- 2. GENERATE AND DOWNLOAD CERTIFICATE ---
+            // 2. Generate Certificate Image
             const certCanvas = document.createElement('canvas');
-            certCanvas.width = 600;
-            certCanvas.height = 400;
+            certCanvas.width = 600; certCanvas.height = 400;
             const ctx = certCanvas.getContext('2d');
 
-            ctx.fillStyle = "#fdf4f8"; 
-            ctx.fillRect(0, 0, certCanvas.width, certCanvas.height);
-            ctx.strokeStyle = brandPink;
-            ctx.lineWidth = 12;
-            ctx.strokeRect(6, 6, 588, 388);
-            ctx.strokeStyle = brandBlack;
-            ctx.lineWidth = 2;
-            ctx.strokeRect(18, 18, 564, 364);
+            ctx.fillStyle = "#fdf4f8"; ctx.fillRect(0, 0, certCanvas.width, certCanvas.height);
+            ctx.strokeStyle = brandPink; ctx.lineWidth = 12; ctx.strokeRect(6, 6, 588, 388);
+            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.strokeRect(18, 18, 564, 364);
 
             ctx.textAlign = "center";
-            ctx.fillStyle = brandBlack;
-            ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
+            ctx.fillStyle = brandBlack; ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("ABINGDON ELECTRONICS", 300, 80);
 
-            ctx.fillStyle = brandPink;
-            ctx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
+            ctx.fillStyle = brandPink; ctx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("Basics Knowledge Check", 300, 120);
 
-            ctx.beginPath();
-            ctx.moveTo(150, 145);
-            ctx.lineTo(450, 145);
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(150, 145); ctx.lineTo(450, 145); ctx.lineWidth = 2; ctx.stroke();
 
-            ctx.fillStyle = brandBlack;
-            ctx.font = "28px 'Segoe UI', Arial, sans-serif";
+            ctx.fillStyle = brandBlack; ctx.font = "28px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("Student: " + studentName, 300, 210);
 
-            ctx.fillStyle = brandPink;
-            ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
+            ctx.fillStyle = brandPink; ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
             ctx.fillText(problemsCorrect + " / " + problemsAttempted, 300, 285);
             
-            ctx.fillStyle = brandBlack;
-            ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillStyle = brandBlack; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("Questions Answered Correctly", 300, 315);
 
             const today = new Date().toLocaleDateString('en-GB'); 
-            ctx.fillStyle = "#666";
-            ctx.font = "16px 'Segoe UI', Arial, sans-serif";
+            ctx.fillStyle = "#666"; ctx.font = "16px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("Date Completed: " + today, 300, 360);
 
             const imageURI = certCanvas.toDataURL("image/png");
             const downloadLink = document.createElement('a');
             const safeName = studentName.replace(/[^a-zA-Z0-9]/g, '_');
-            
             downloadLink.download = "Electronics_Score_" + safeName + ".png"; 
             downloadLink.href = imageURI;
             downloadLink.click();
 
-            // --- 3. SEND DATA TO GOOGLE SHEETS ---
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxrHYNKqWSa3BMJNSqS99KQkd7ME1zrTy_ba1RlmhShEzpTuPw6Tg7l9rIpLqC3Ki9f/exec'; // <--- PASTE YOUR URL HERE
+            // 3. Send Data to Google Sheets
+            const scriptURL = 'YOUR_GOOGLE_SCRIPT_URL_HERE'; // <--- PASTE YOUR URL HERE!
             
             const formData = new URLSearchParams();
             formData.append('name', studentName);
@@ -273,50 +257,25 @@
             formData.append('attempted', problemsAttempted);
 
             try {
-                // The "await" pauses the code here until Google responds
-                await fetch(scriptURL, { method: 'POST', body: formData });
+                // Fetch with no-cors to prevent silent block by browser security policies
+                await fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' });
                 console.log('Score submitted successfully.');
                 alert("Score submitted to teacher and certificate downloaded!");
             } catch (error) {
                 console.error('Error submitting score!', error.message);
-                alert("Certificate downloaded, but there was an internet error sending the score to the teacher.");
+                alert("Certificate downloaded! (Note: Could not connect to Google Sheets to send score to teacher.)");
             } finally {
-                // --- 4. RESET EVERYTHING ---
-                // Put the button back to normal
+                // 4. Reset Everything
                 downloadBtn.innerHTML = originalText;
                 downloadBtn.disabled = false;
                 downloadBtn.style.backgroundColor = ""; 
                 downloadBtn.style.cursor = "pointer";
 
-                // Reset the quiz
                 problemsAttempted = 0;
                 problemsCorrect = 0;
                 updateScoreboard();
                 generateProblem();
             }
-        }
-            // --- End of Certificate Generation ---
-
-
-            // --- NEW CODE: Send data to Google Sheets ---
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxrHYNKqWSa3BMJNSqS99KQkd7ME1zrTy_ba1RlmhShEzpTuPw6Tg7l9rIpLqC3Ki9f/exec'; // <--- PASTE YOUR URL HERE
-            
-            const formData = new URLSearchParams();
-            formData.append('name', studentName);
-            formData.append('correct', problemsCorrect);
-            formData.append('attempted', problemsAttempted);
-
-            // Send the data quietly in the background
-            fetch(scriptURL, { method: 'POST', body: formData })
-                .then(response => console.log('Score submitted successfully.'))
-                .catch(error => console.error('Error submitting score!', error.message));
-
-            // Reset the quiz for the next student
-            problemsAttempted = 0;
-            problemsCorrect = 0;
-            updateScoreboard();
-            generateProblem();
-            alert("Score submitted to teacher and certificate downloaded!");
         }
 
         function drawResistor(ctx, x, y) {
@@ -422,9 +381,9 @@
             document.getElementById('labelV').innerHTML = "Find <span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
             document.getElementById('labelI').innerHTML = "Find <span style='color:" + brandPink + "'>" + currentAnswers.iNameHTML + "</span> = ";
 
-            const vLabels = voltages.map(function(v, index) { return index === unknownVIndex ? v.display + " = ?" : v.display + " = " + v.val + vUnit; });
-            const iLabels = currents.map(function(c, index) { return index === unknownIIndex ? c.display + " = ?" : c.display + " = " + c.val + iUnit; });
-            let topRailText = unknownVIndex === 3 ? "+Vsupply = ?" : "+Vsupply = " + vTotal + vUnit;
+            const vLabels = voltages.map(function(v, index) { return index === unknownVIndex ? v.display + " = ?" : v.display + " = " + v.val + " " + vUnit; });
+            const iLabels = currents.map(function(c, index) { return index === unknownIIndex ? c.display + " = ?" : c.display + " = " + c.val + " " + iUnit; });
+            let topRailText = unknownVIndex === 3 ? "+Vsupply = ?" : "+Vsupply = " + vTotal + " " + vUnit;
 
             if (unknownVIndex === 2 || unknownVIndex === 3) {
                 if (Math.random() < 0.5) {
@@ -543,7 +502,7 @@
 
         function generateResistanceProblem(ctx, canvas) {
             const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
-            const expectedUnitStr = rUnitVisual === 'k\u03A9' ? 'kOhms' : 'Ohms';
+            const expectedUnitStr = rUnitVisual === 'k\u03A9' ? 'kohms' : 'ohms';
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.font = "bold 18px Arial";
@@ -558,7 +517,7 @@
                 const r1 = (Math.floor(Math.random() * 10) + 1) * 10; 
                 const r2 = (Math.floor(Math.random() * 10) + 1) * 10;
                 rTotal = r1 + r2;
-                logicText = "R<sub>Total</sub> = " + r1 + " + " + r2 + " = <strong>" + rTotal + " " + expectedUnitStr + "</strong>";
+                logicText = "R<sub>Total</sub> = " + r1 + " + " + r2 + " = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
 
                 drawLine(ctx, 300, 60, 300, 120); drawResistor(ctx, 300, 145); drawLine(ctx, 300, 170, 300, 230);
                 drawResistor(ctx, 300, 255); drawLine(ctx, 300, 280, 300, 360);
@@ -570,7 +529,7 @@
                 const pairs = [{r1: 10, r2: 10, req: 5}, {r1: 30, r2: 60, req: 20}, {r1: 12, r2: 24, req: 8}, {r1: 40, r2: 40, req: 20}];
                 const pair = pairs[Math.floor(Math.random() * pairs.length)];
                 rTotal = pair.req;
-                logicText = "R<sub>Total</sub> = (" + pair.r1 + " &times; " + pair.r2 + ") / (" + pair.r1 + " + " + pair.r2 + ") = <strong>" + rTotal + " " + expectedUnitStr + "</strong>";
+                logicText = "R<sub>Total</sub> = (" + pair.r1 + " &times; " + pair.r2 + ") / (" + pair.r1 + " + " + pair.r2 + ") = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
 
                 drawLine(ctx, 300, 60, 300, 100); drawLine(ctx, 220, 100, 380, 100); 
                 drawLine(ctx, 220, 100, 220, 150); drawResistor(ctx, 220, 175); drawLine(ctx, 220, 200, 220, 320);
@@ -584,7 +543,7 @@
                 const s = sp[Math.floor(Math.random() * sp.length)];
                 rTotal = s.req;
                 logicText = "R<sub>P</sub> = (" + s.r2 + " &times; " + s.r3 + ") / (" + s.r2 + " + " + s.r3 + ") = " + s.rp + "<br>" +
-                            "R<sub>Total</sub> = " + s.r1 + " + " + s.rp + " = <strong>" + s.req + " " + expectedUnitStr + "</strong>";
+                            "R<sub>Total</sub> = " + s.r1 + " + " + s.rp + " = <strong>" + s.req + " " + rUnitVisual + "</strong>";
 
                 drawLine(ctx, 300, 60, 300, 90); drawResistor(ctx, 300, 115); drawLine(ctx, 300, 140, 300, 180);
                 drawLine(ctx, 220, 180, 380, 180); drawLine(ctx, 220, 180, 220, 220); drawResistor(ctx, 220, 245); drawLine(ctx, 220, 270, 220, 320);
@@ -597,10 +556,10 @@
             }
 
             currentAnswers.rValue = rTotal;
-            currentAnswers.rUnit = expectedUnitStr;
+            currentAnswers.rUnit = expectedUnitStr; // strict checking string ('ohms' or 'kohms')
 
             const solText = document.getElementById('solText');
-            if (solText) solText.innerHTML = "<strong>R<sub>Total</sub> = " + currentAnswers.rValue + " " + expectedUnitStr + "</strong><br><br>" + logicText;
+            if (solText) solText.innerHTML = "<strong>R<sub>Total</sub> = " + currentAnswers.rValue + " " + rUnitVisual + "</strong><br><br>" + logicText;
         }
 
         function drawRoundRect(ctx, x, y, width, height, radius) {
