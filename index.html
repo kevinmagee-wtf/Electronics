@@ -31,6 +31,7 @@
         .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
         .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
         .btn-download:hover { background-color: #157347; }
+        .btn-download:disabled { background-color: #6c757d; cursor: wait; }
         
         .input-area { text-align: center; }
         .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
@@ -50,6 +51,16 @@
         .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
         .solutions p { margin-bottom: 0; font-size: 0.95rem; }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-top: 6px solid #E64097; }
+        .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px;}
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; font-size: 16px; outline-color: #E64097; }
+        .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
+        .modal-actions button { flex: 1; margin: 0; }
     </style>
 </head>
 <body>
@@ -79,7 +90,7 @@
                     <h3>Enter Your Answer</h3>
                     <div class="score-container">
                         <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
-                        <button class="btn-download" onclick="downloadScore()">&#11015; Download</button>
+                        <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
                     </div>
                 </div>
                 
@@ -126,6 +137,33 @@
         </div>
     </div>
 
+    <div id="submissionModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Submit Your Score</h3>
+            
+            <div class="form-group">
+                <label for="studentNameInput">Your Name:</label>
+                <input type="text" id="studentNameInput" placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="teacherSelect">Your Teacher:</label>
+                <select id="teacherSelect">
+                    <option value="">-- Select Your Teacher --</option>
+                    <option value="Mr. Magee">Mr. Magee</option>
+                    <option value="Mr. Brooks">Mr. Brooks</option>
+                    <option value="Mr. Mason">Mr. Mason</option>
+                    <option value="Mr. Willoughby">Mr. Willoughby</option>
+                </select>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-check" id="confirmSubmitBtn" onclick="processSubmission()">Submit Score</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const brandPink = "#E64097";
         const brandBlack = "#000000";
@@ -146,13 +184,11 @@
         let viewedSolution = false; 
         let unitErrorMade = false; 
 
-        // --- Helper Function to Parse User Input (Number, Unit, and Fractions) ---
         function parseInput(str) {
             if (!str) return null;
             let cleanStr = str.toLowerCase().replace(/\s+/g, '');
             cleanStr = cleanStr.replace(/\u03a9/g, 'ohms'); 
             
-            // Check for Mark/Space fractions (stripping accidental letters at the end)
             let strippedStr = cleanStr.replace(/[a-z]+$/, '');
             if (/^\d+\/\d+$/.test(strippedStr)) {
                 let parts = strippedStr.split('/');
@@ -166,14 +202,12 @@
             return { val: parseFloat(cleanStr), unit: '' }; 
         }
 
-        // --- Helper Function to Validate Answers ---
         function validateMatch(parsedInput, expectedVal, expectedUnit) {
             if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
             
-            // Handle ratio format specifically for GCSE Mark/Space requirements
             if (expectedUnit === 'ratio') {
                 if (parsedInput.isRatioString && Math.abs(parsedInput.val - expectedVal) < 0.001) return 'correct';
-                if (!parsedInput.isRatioString && Math.abs(parsedInput.val - expectedVal) < 0.001) return 'wrongunit'; // They used decimal instead of fraction
+                if (!parsedInput.isRatioString && Math.abs(parsedInput.val - expectedVal) < 0.001) return 'wrongunit'; 
                 return 'wrongval';
             }
             
@@ -208,31 +242,56 @@
             if (scoreDisplay) scoreDisplay.innerText = "Score: " + problemsCorrect + " / " + problemsAttempted;
         }
 
-        // --- ASYNC GOOGLE SHEETS UPLOAD ---
-        async function downloadScore() {
+        // --- NEW MODAL FUNCTIONS ---
+        function openSubmissionModal() {
             if (problemsAttempted === 0) {
                 alert("Please attempt at least one question before downloading your score!");
                 return;
             }
-            const studentName = prompt("Enter your name to submit your score:");
-            if (!studentName) return; 
+            // Clear previous inputs
+            document.getElementById('studentNameInput').value = '';
+            document.getElementById('teacherSelect').value = '';
+            
+            // Show modal
+            document.getElementById('submissionModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('submissionModal').style.display = 'none';
+        }
+
+        async function processSubmission() {
+            const studentName = document.getElementById('studentNameInput').value.trim();
+            const teacherName = document.getElementById('teacherSelect').value;
+
+            if (!studentName) { alert("Please enter your name."); return; }
+            if (!teacherName) { alert("Please select your teacher."); return; }
+
+            // Map the technical mode name to a readable topic string
+            const topicMap = {
+                'analysis': 'Circuit Analysis',
+                'divider': 'Potential Divider',
+                'resistance': 'Total Resistance',
+                'oscilloscope': 'Oscilloscopes'
+            };
+            const currentTopic = topicMap[currentMode] || 'Unknown Topic';
+
+            closeModal();
 
             // 1. Loading State
-            const downloadBtn = document.querySelector('.btn-download');
+            const downloadBtn = document.getElementById('downloadBtn');
             const originalText = downloadBtn.innerHTML;
             downloadBtn.innerHTML = "&#8987; Submitting..."; 
             downloadBtn.disabled = true;
-            downloadBtn.style.backgroundColor = "#6c757d"; 
-            downloadBtn.style.cursor = "wait";
 
             // 2. Generate Certificate Image
             const certCanvas = document.createElement('canvas');
-            certCanvas.width = 600; certCanvas.height = 400;
+            certCanvas.width = 600; certCanvas.height = 420;
             const ctx = certCanvas.getContext('2d');
 
             ctx.fillStyle = "#fdf4f8"; ctx.fillRect(0, 0, certCanvas.width, certCanvas.height);
-            ctx.strokeStyle = brandPink; ctx.lineWidth = 12; ctx.strokeRect(6, 6, 588, 388);
-            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.strokeRect(18, 18, 564, 364);
+            ctx.strokeStyle = brandPink; ctx.lineWidth = 12; ctx.strokeRect(6, 6, 588, 408);
+            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.strokeRect(18, 18, 564, 384);
 
             ctx.textAlign = "center";
             ctx.fillStyle = brandBlack; ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
@@ -244,17 +303,20 @@
             ctx.beginPath(); ctx.moveTo(150, 145); ctx.lineTo(450, 145); ctx.lineWidth = 2; ctx.stroke();
 
             ctx.fillStyle = brandBlack; ctx.font = "28px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("Student: " + studentName, 300, 210);
+            ctx.fillText("Student: " + studentName, 300, 190);
+            
+            ctx.fillStyle = "#555"; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Topic: " + currentTopic, 300, 225);
 
             ctx.fillStyle = brandPink; ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText(problemsCorrect + " / " + problemsAttempted, 300, 285);
+            ctx.fillText(problemsCorrect + " / " + problemsAttempted, 300, 305);
             
             ctx.fillStyle = brandBlack; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("Questions Answered Correctly", 300, 315);
+            ctx.fillText("Questions Answered Correctly", 300, 335);
 
             const today = new Date().toLocaleDateString('en-GB'); 
             ctx.fillStyle = "#666"; ctx.font = "16px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("Date Completed: " + today, 300, 360);
+            ctx.fillText("Completed on: " + today + " | Teacher: " + teacherName, 300, 380);
 
             const imageURI = certCanvas.toDataURL("image/png");
             const downloadLink = document.createElement('a');
@@ -268,14 +330,15 @@
             
             const formData = new URLSearchParams();
             formData.append('name', studentName);
+            formData.append('teacher', teacherName);
+            formData.append('topic', currentTopic);
             formData.append('correct', problemsCorrect);
             formData.append('attempted', problemsAttempted);
 
             try {
-                // Fetch with no-cors to prevent silent block by browser security policies
                 await fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' });
                 console.log('Score submitted successfully.');
-                alert("Score submitted to teacher and certificate downloaded!");
+                alert("Score submitted to " + teacherName + " and certificate downloaded!");
             } catch (error) {
                 console.error('Error submitting score!', error.message);
                 alert("Certificate downloaded! (Note: Could not connect to Google Sheets to send score to teacher.)");
@@ -283,8 +346,6 @@
                 // 4. Reset Everything
                 downloadBtn.innerHTML = originalText;
                 downloadBtn.disabled = false;
-                downloadBtn.style.backgroundColor = ""; 
-                downloadBtn.style.cursor = "pointer";
 
                 problemsAttempted = 0;
                 problemsCorrect = 0;
@@ -614,7 +675,6 @@
             let frequency = (tBaseUnit === 'ms') ? (1000 / periodTime) : (1 / periodTime);
             frequency = Math.round(frequency * 1000) / 1000;
 
-            // Updated Settings Text Placement
             ctx.fillStyle = brandBlack; 
             ctx.font = "bold 15px Arial";
             ctx.fillText("Settings:", 430, 80);
@@ -641,7 +701,6 @@
             }
             ctx.stroke();
 
-            // Updated Question Types
             const qTypes = [
                 { text: "Mark Time = ", ans: markDivs * tBase, unit: tBaseUnit, sol: markDivs + " divs &times; " + tBase + " " + tBaseUnit + "/div" },
                 { text: "Space Time = ", ans: spaceDivs * tBase, unit: tBaseUnit, sol: spaceDivs + " divs &times; " + tBase + " " + tBaseUnit + "/div" },
@@ -655,8 +714,6 @@
             currentAnswers.osc2Value = q.ans; currentAnswers.osc2Unit = q.unit;
 
             document.getElementById('labelOsc2').innerHTML = q.text;
-            
-            // Dynamic placeholder so they know how to format ratios
             document.getElementById('inputOsc2').placeholder = q.unit === 'ratio' ? "e.g. 1/2" : "e.g. 20 ms";
 
             const solText = document.getElementById('solText');
@@ -721,14 +778,11 @@
                     feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget your units! (Mark lost for this question)</span>";
                 } else if (results.includes('wrongunit')) {
                     unitErrorMade = true;
-                    
-                    // Added custom feedback to remind them about the fraction requirement!
                     if (currentMode === 'oscilloscope' && currentAnswers.osc2Unit === 'ratio') {
                         feedback.innerHTML = "<span style='color: #fd7e14;'>Almost! The Mark/Space ratio must be written as a fraction (e.g. 1/2).</span>";
                     } else {
                         feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost for this question)</span>";
                     }
-                    
                 } else if (results.some(r => r === 'correct')) {
                     feedback.innerHTML = "<span style='color: #dc3545;'>One is right, one is wrong. Check logic!</span>";
                 } else {
