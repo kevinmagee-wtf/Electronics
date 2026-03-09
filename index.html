@@ -132,11 +132,11 @@
                           <!--  <span style="font-size: 14px; color: #555;">(Note: In this circuit, R<sub>1</sub> corresponds to R<sub>A</sub> and R<sub>2</sub> corresponds to R<sub>B</sub>)</span> -->
                         </div>
                         <div style="margin-bottom: 10px;">
-                            <label id="labelAstable" for="inputAstable">Question 1: Frequency (f) = </label>
+                            <label id="labelAstable" for="inputAstable">Question 1: Frequency = </label>
                             <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
                         </div>
                         <div>
-                            <label id="labelAstableT" for="inputAstableT">Question 2: Time Period (T) = </label>
+                            <label id="labelAstableT" for="inputAstableT">Question 2: Time Period = </label>
                             <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
                         </div>
                     </div>
@@ -752,16 +752,16 @@
             currentAnswers.astableTUnit = T_unit;
             
             // Draw Labels
-            ctx.font = "16px Arial";
-            ctx.fillStyle = brandBlack;
-            ctx.fillText("R", 150, 120); ctx.font = "12px Arial"; ctx.fillText("A", 162, 125);
-            ctx.font = "16px Arial"; ctx.fillText("= " + RA + " k\u03A9", 240, 130);
+            //ctx.font = "16px Arial";
+            //ctx.fillStyle = brandBlack;
+            //ctx.fillText("R", 150, 120); ctx.font = "12px Arial"; ctx.fillText("A", 162, 125);
+            //ctx.font = "16px Arial"; ctx.fillText("= " + RA + " k\u03A9", 240, 130);
             
-            ctx.fillText("R", 150, 220); ctx.font = "12px Arial"; ctx.fillText("B", 162, 225);
-            ctx.font = "16px Arial"; ctx.fillText("= " + RB + " k\u03A9", 240, 230);
+            //ctx.fillText("R", 150, 220); ctx.font = "12px Arial"; ctx.fillText("B", 162, 225);
+            //ctx.font = "16px Arial"; ctx.fillText("= " + RB + " k\u03A9", 240, 230);
             
-            ctx.fillText("C", 160, 290);
-            ctx.fillText("= " + C_obj.val + " " + C_obj.unit, 245, 290);
+            //ctx.fillText("C", 160, 290);
+            //ctx.fillText("= " + C_obj.val + " " + C_obj.unit, 245, 290);
 
             // Solution Text
             const solText = document.getElementById('solText');
