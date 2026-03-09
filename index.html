@@ -322,35 +322,42 @@
 
             const downloadBtn = document.getElementById('downloadBtn');
             const originalText = downloadBtn.innerHTML;
-            downloadBtn.innerHTML = "&#8987; Submitting..."; 
+            downloadBtn.innerHTML = "&#8987; Submitting...";
             downloadBtn.disabled = true;
 
             const certCanvas = document.createElement('canvas');
-            cconst ctx = certCanvas.getContext('2d'); // Added 'ctx' here
-            ctx.fillStyle = "#fdf4f8";               // Added 'ctx' before all dots
+            certCanvas.width = 600;
+            certCanvas.height = 420;
+            const ctx = certCanvas.getContext('2d');
+
+            // Draw Certificate Background
+            ctx.fillStyle = "#fdf4f8";
             ctx.fillRect(0, 0, certCanvas.width, certCanvas.height);
             ctx.strokeStyle = brandPink; ctx.lineWidth = 12; ctx.strokeRect(6, 6, 588, 408);
             ctx.strokeStyle = brandBlack; ctx.lineWidth = 2;
             ctx.strokeRect(18, 18, 564, 384);
+
+            // Text content
             ctx.textAlign = "center";
             ctx.fillStyle = brandBlack; ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("ABINGDON ELECTRONICS", 300, 80);
-
-            .fillStyle = brandPink; .font = "italic 24px 'Segoe UI', Arial, sans-serif";
-            .fillText("Basics Knowledge Check", 300, 120);
-
-            .beginPath(); .moveTo(150, 145); .lineTo(450, 145); .lineWidth = 2; .stroke();
-
-            .fillStyle = brandBlack; .font = "28px 'Segoe UI', Arial, sans-serif";
-            .fillText("Student: " + studentName, 300, 190);
             
-            .fillStyle = "#555"; .font = "20px 'Segoe UI', Arial, sans-serif";
-            .fillText("Topic: " + currentTopic, 300, 225);
+            ctx.fillStyle = brandPink; ctx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Basics Knowledge Check", 300, 120);
 
-            .fillStyle = brandPink; .font = "bold 56px 'Segoe UI', Arial, sans-serif";
-            .fillText(problemsCorrect + " / " + problemsAttempted, 300, 305);
+            ctx.beginPath(); ctx.moveTo(150, 145);
+            ctx.lineTo(450, 145); ctx.lineWidth = 2; ctx.stroke();
+
+            ctx.fillStyle = brandBlack; ctx.font = "28px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Student: " + studentName, 300, 190);
             
-            .fillStyle = brandBlack; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillStyle = "#555"; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Topic: " + currentTopic, 300, 225);
+
+            ctx.fillStyle = brandPink; ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText(problemsCorrect + " / " + problemsAttempted, 300, 305);
+            
+            ctx.fillStyle = brandBlack; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
             ctx.fillText("Questions Answered Correctly", 300, 335);
 
             const today = new Date().toLocaleDateString('en-GB'); 
@@ -364,8 +371,7 @@
             downloadLink.href = imageURI;
             downloadLink.click();
 
-            const scriptURL = 'YOUR_GOOGLE_SCRIPT_URL_HERE'; // <--- PASTE YOUR URL HERE!
-            
+            const scriptURL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
             const formData = new URLSearchParams();
             formData.append('name', studentName);
             formData.append('teacher', teacherName);
@@ -375,11 +381,9 @@
 
             try {
                 await fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' });
-                console.log('Score submitted successfully.');
                 alert("Score submitted to " + teacherName + " and certificate downloaded!");
             } catch (error) {
-                console.error('Error submitting score!', error.message);
-                alert("Certificate downloaded! (Note: Could not connect to Google Sheets to send score to teacher.)");
+                alert("Certificate downloaded! (Note: Could not connect to Google Sheets.)");
             } finally {
                 downloadBtn.innerHTML = originalText;
                 downloadBtn.disabled = false;
