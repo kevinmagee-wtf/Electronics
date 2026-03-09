@@ -542,7 +542,10 @@
                 const pair = parallelPairs[Math.floor(Math.random() * parallelPairs.length)];
                 const r1 = pair.r1; const r2 = pair.r2; rTotal = pair.req;
                 
-                logicText = "1/R<sub>Total</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub> <br> 1/R<sub>Total</sub> = 1/" + r1 + " + 1/" + r2 + " <br> R<sub>Total</sub> = <strong>" + rTotal + "&Omega;</strong>";
+                // --- UPDATED PRODUCT-OVER-SUM LOGIC ---
+                logicText = "R<sub>Total</sub> = (R<sub>1</sub> &times; R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>) <br>" + 
+                            "R<sub>Total</sub> = (" + r1 + " &times; " + r2 + ") / (" + r1 + " + " + r2 + ") <br>" + 
+                            "R<sub>Total</sub> = " + (r1 * r2) + " / " + (r1 + r2) + " = <strong>" + rTotal + "&Omega;</strong>";
 
                 drawLine(ctx, 300, 60, 300, 100);
                 drawLine(ctx, 220, 100, 380, 100); // Split
@@ -579,8 +582,10 @@
                 const sp = spScenarios[Math.floor(Math.random() * spScenarios.length)];
                 rTotal = sp.req;
 
+                // --- UPDATED PRODUCT-OVER-SUM LOGIC ---
                 logicText = "<em>Step 1: Calculate parallel part (R<sub>2</sub> & R<sub>3</sub>)</em><br>" + 
-                            "1/R<sub>P</sub> = 1/" + sp.r2 + " + 1/" + sp.r3 + " &rarr; R<sub>P</sub> = " + sp.rp + "&Omega;<br><br>" +
+                            "R<sub>P</sub> = (R<sub>2</sub> &times; R<sub>3</sub>) / (R<sub>2</sub> + R<sub>3</sub>)<br>" +
+                            "R<sub>P</sub> = (" + sp.r2 + " &times; " + sp.r3 + ") / (" + sp.r2 + " + " + sp.r3 + ") = " + sp.rp + "&Omega;<br><br>" +
                             "<em>Step 2: Add series part (R<sub>1</sub>)</em><br>" +
                             "R<sub>Total</sub> = R<sub>1</sub> + R<sub>P</sub> = " + sp.r1 + " + " + sp.rp + " = <strong>" + sp.req + "&Omega;</strong>";
 
