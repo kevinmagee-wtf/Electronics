@@ -714,7 +714,13 @@
             currentAnswers.osc2Value = q.ans; currentAnswers.osc2Unit = q.unit;
 
             document.getElementById('labelOsc2').innerHTML = q.text;
-            document.getElementById('inputOsc2').placeholder = q.unit === 'ratio' ? "e.g. 1/2" : "e.g. 20 ms";
+            if (q.unit === 'ratio') {
+                document.getElementById('inputOsc2').placeholder = "e.g. 1/2";
+            } else if (q.unit === 'Hz') {
+                document.getElementById('inputOsc2').placeholder = "e.g. 50 Hz";
+            } else {
+                document.getElementById('inputOsc2').placeholder = "e.g. 20 " + q.unit; 
+            }
 
             const solText = document.getElementById('solText');
             if (solText) solText.innerHTML = 
