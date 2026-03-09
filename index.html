@@ -198,9 +198,10 @@
                 alert("Please attempt at least one question before downloading your score!");
                 return;
             }
-            const studentName = prompt("Enter your name for the score sheet:");
+            const studentName = prompt("Enter your name to submit your score:");
             if (!studentName) return; 
 
+            // --- Certificate Generation Code (Keep your existing canvas code here!) ---
             const certCanvas = document.createElement('canvas');
             certCanvas.width = 600;
             certCanvas.height = 400;
@@ -254,12 +255,28 @@
             downloadLink.download = "Electronics_Score_" + safeName + ".png"; 
             downloadLink.href = imageURI;
             downloadLink.click();
+            // --- End of Certificate Generation ---
 
+
+            // --- NEW CODE: Send data to Google Sheets ---
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxrHYNKqWSa3BMJNSqS99KQkd7ME1zrTy_ba1RlmhShEzpTuPw6Tg7l9rIpLqC3Ki9f/exec'; // <--- PASTE YOUR URL HERE
+            
+            const formData = new URLSearchParams();
+            formData.append('name', studentName);
+            formData.append('correct', problemsCorrect);
+            formData.append('attempted', problemsAttempted);
+
+            // Send the data quietly in the background
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(response => console.log('Score submitted successfully.'))
+                .catch(error => console.error('Error submitting score!', error.message));
+
+            // Reset the quiz for the next student
             problemsAttempted = 0;
             problemsCorrect = 0;
             updateScoreboard();
             generateProblem();
-            alert("Certificate downloaded successfully! The score has been reset for the next student.");
+            alert("Score submitted to teacher and certificate downloaded!");
         }
 
         function drawResistor(ctx, x, y) {
