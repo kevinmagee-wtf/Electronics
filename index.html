@@ -75,6 +75,7 @@
         <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
         <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
         <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
+        <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
     </div>
 
     <div class="main-layout">
@@ -123,6 +124,16 @@
                     <div class="input-group" id="inputGroupOsc3" style="display:none;">
                         <label id="labelOsc3" for="inputOsc3">Question 3 = </label>
                         <input type="text" id="inputOsc3" placeholder="">
+                    </div>
+
+                    <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
+                        <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
+                            Formula: <strong>f = 1.44 / ((R<sub>A</sub> + 2R<sub>B</sub>) &times; C)</strong>
+                        </div>
+                        <div>
+                            <label id="labelAstable" for="inputAstable">Frequency = </label>
+                            <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
+                        </div>
                     </div>
                     
                     <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
@@ -180,7 +191,8 @@
             rValue: 0, rUnit: '', 
             osc1Value: 0, osc1Unit: '', 
             osc2Value: 0, osc2Unit: '',
-            osc3Value: 0, osc3Unit: '' 
+            osc3Value: 0, osc3Unit: '',
+            astableValue: 0, astableUnit: ''
         };
         
         let problemsAttempted = 0;
@@ -219,7 +231,22 @@
             
             if (parsedInput.unit === '') return 'nounit';
             
-            const valMatch = Math.abs(parsedInput.val - expectedVal) < 0.001;
+            let valMatch = false;
+            
+            if (currentMode === 'astable') {
+                // If they typed kHz instead of Hz, automatically scale it so it's fair
+                let userVal = parsedInput.val;
+                let userUnit = parsedInput.unit.toLowerCase();
+                if (userUnit === 'khz' && expectedUnit === 'Hz') {
+                    userVal *= 1000;
+                    parsedInput.unit = 'hz'; 
+                }
+                // Allow a generous 2% tolerance on Astable to account for rounding differences
+                valMatch = (Math.abs(userVal - expectedVal) / expectedVal) <= 0.02;
+            } else {
+                valMatch = Math.abs(parsedInput.val - expectedVal) < 0.001;
+            }
+
             const unitMatch = parsedInput.unit === expectedUnit.toLowerCase();
             
             if (valMatch && unitMatch) return 'correct';
@@ -231,7 +258,7 @@
             if (currentMode === mode) return; 
             currentMode = mode;
             
-            const tabs = ['analysis', 'divider', 'resistance', 'oscilloscope'];
+            const tabs = ['analysis', 'divider', 'resistance', 'oscilloscope', 'astable'];
             tabs.forEach(t => {
                 const el = document.getElementById('tab-' + t);
                 if (el) el.classList.remove('active');
@@ -273,7 +300,8 @@
                 'analysis': 'Circuit Analysis',
                 'divider': 'Potential Divider',
                 'resistance': 'Total Resistance',
-                'oscilloscope': 'Oscilloscopes'
+                'oscilloscope': 'Oscilloscopes',
+                'astable': '555 Astable'
             };
             const currentTopic = topicMap[currentMode] || 'Unknown Topic';
 
@@ -324,7 +352,7 @@
             downloadLink.href = imageURI;
             downloadLink.click();
 
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxrHYNKqWSa3BMJNSqS99KQkd7ME1zrTy_ba1RlmhShEzpTuPw6Tg7l9rIpLqC3Ki9f/exec'; // <--- PASTE YOUR URL HERE!
+            const scriptURL = 'YOUR_GOOGLE_SCRIPT_URL_HERE'; // <--- PASTE YOUR URL HERE!
             
             const formData = new URLSearchParams();
             formData.append('name', studentName);
@@ -356,6 +384,10 @@
             ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.closePath();
         }
 
+        function drawDot(ctx, x, y) {
+            ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI); ctx.fillStyle = brandBlack; ctx.fill(); ctx.closePath();
+        }
+
         function generateProblem() {
             const canvas = document.getElementById('circuitCanvas');
             if (!canvas) return; 
@@ -374,13 +406,13 @@
             if (solutions) solutions.style.display = 'none';
             if (feedback) feedback.innerHTML = '';
 
-            const inputs = ['inputV', 'inputI', 'inputR', 'inputOsc1', 'inputOsc2', 'inputOsc3'];
+            const inputs = ['inputV', 'inputI', 'inputR', 'inputOsc1', 'inputOsc2', 'inputOsc3', 'inputAstable'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = '';
             });
 
-            const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOsc1', 'inputGroupOsc2', 'inputGroupOsc3'];
+            const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOsc1', 'inputGroupOsc2', 'inputGroupOsc3', 'inputGroupAstable'];
             groups.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'none';
@@ -401,6 +433,9 @@
                 document.getElementById('inputGroupOsc2').style.display = 'inline-block';
                 document.getElementById('inputGroupOsc3').style.display = 'inline-block';
                 generateOscilloscopeProblem(ctx, canvas);
+            } else if (currentMode === 'astable') {
+                document.getElementById('inputGroupAstable').style.display = 'inline-block';
+                generateAstableProblem(ctx, canvas);
             }
         }
 
@@ -577,7 +612,6 @@
             }
             ctx.stroke();
 
-            // The three specific difficulty styles
             const styles = [
                 [
                     { label: "Amplitude =", val: amplitude, unit: vGainUnit, placeholder: "e.g. 5 " + vGainUnit, sol: "Height is " + ampDivs + " divs. " + ampDivs + " &times; " + vGain + " " + vGainUnit + "/div = " + amplitude + " " + vGainUnit + "." },
@@ -595,26 +629,20 @@
                     { label: "Frequency =", val: frequency, unit: "Hz", placeholder: "e.g. 50 Hz", sol: (tBaseUnit === 'ms' ? "1 / (" + periodTime + " / 1000) s = " + frequency + " Hz" : "1 / " + periodTime + " s = " + frequency + " Hz") + "." }
                 ]
             ];
-            
-            // Pick a random style
+
             const selectedStyle = styles[Math.floor(Math.random() * styles.length)];
 
-            // Update current global answers
             currentAnswers.osc1Value = selectedStyle[0].val; currentAnswers.osc1Unit = selectedStyle[0].unit;
             currentAnswers.osc2Value = selectedStyle[1].val; currentAnswers.osc2Unit = selectedStyle[1].unit;
             currentAnswers.osc3Value = selectedStyle[2].val; currentAnswers.osc3Unit = selectedStyle[2].unit;
 
-            // Update HTML Labels and Placeholders dynamically
             document.getElementById('labelOsc1').innerHTML = selectedStyle[0].label + " ";
             document.getElementById('inputOsc1').placeholder = selectedStyle[0].placeholder;
-            
             document.getElementById('labelOsc2').innerHTML = selectedStyle[1].label + " ";
             document.getElementById('inputOsc2').placeholder = selectedStyle[1].placeholder;
-
             document.getElementById('labelOsc3').innerHTML = selectedStyle[2].label + " ";
             document.getElementById('inputOsc3').placeholder = selectedStyle[2].placeholder;
 
-            // Generate structured solution text
             const solText = document.getElementById('solText');
             if (solText) {
                 solText.innerHTML = 
@@ -627,18 +655,118 @@
             }
         }
 
+        function generateAstableProblem(ctx, canvas) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.font = "bold 16px Arial";
+
+            // Power rails
+            drawLine(ctx, 100, 60, 500, 60);
+            drawLine(ctx, 100, 360, 500, 360);
+            ctx.fillStyle = brandBlack;
+            ctx.fillText("9V", 65, 65);
+            ctx.fillText("0V", 65, 365);
+            drawDot(ctx, 100, 60); drawDot(ctx, 100, 360);
+            
+            // 555 IC Box
+            ctx.strokeRect(350, 150, 90, 120);
+            ctx.font = "bold 20px Arial";
+            ctx.fillText("555", 375, 215);
+            
+            // Pin numbers
+            ctx.font = "14px Arial";
+            ctx.fillText("4", 365, 168); ctx.fillText("8", 415, 168);
+            ctx.fillText("3", 425, 215); ctx.fillText("1", 395, 265);
+            ctx.fillText("7", 355, 185); ctx.fillText("6", 355, 215); ctx.fillText("2", 355, 245);
+            
+            // IC Connections
+            drawLine(ctx, 370, 150, 370, 60); drawDot(ctx, 370, 60); // Pin 4
+            drawLine(ctx, 420, 150, 420, 60); drawDot(ctx, 420, 60); // Pin 8
+            drawLine(ctx, 400, 270, 400, 360); drawDot(ctx, 400, 360); // Pin 1
+            drawLine(ctx, 440, 210, 520, 210); ctx.fillText("Output", 525, 215); // Pin 3
+            drawDot(ctx, 520, 210);
+            
+            // Left Side RC Network
+            drawLine(ctx, 220, 60, 220, 100); drawDot(ctx, 220, 60);
+            drawResistor(ctx, 220, 125); // y: 100-150
+            drawLine(ctx, 220, 150, 220, 200); drawDot(ctx, 220, 180);
+            drawResistor(ctx, 220, 225); // y: 200-250
+            drawLine(ctx, 220, 250, 220, 280); drawDot(ctx, 220, 240);
+            
+            // Capacitor
+            drawLine(ctx, 200, 280, 240, 280);
+            drawLine(ctx, 200, 290, 240, 290);
+            drawLine(ctx, 220, 290, 220, 360); drawDot(ctx, 220, 360);
+            
+            // Connect pins to RC network
+            // Pin 7 to between RA and RB
+            drawLine(ctx, 220, 180, 350, 180);
+            
+            // Pin 6 and 2 to between RB and C
+            drawLine(ctx, 220, 240, 320, 240);
+            drawLine(ctx, 320, 240, 320, 210);
+            drawLine(ctx, 320, 210, 350, 210); // to Pin 6
+            drawLine(ctx, 320, 240, 350, 240); // to Pin 2
+            drawDot(ctx, 320, 240); // junction for Pin 2
+
+            // Random Values
+            const raVals = [1, 2.2, 3.3, 4.7, 5.1, 10];
+            const rbVals = [10, 22, 33, 47, 68, 100];
+            const cVals = [
+                {val: 10, unit: 'nF', mult: 1e-9},
+                {val: 47, unit: 'nF', mult: 1e-9},
+                {val: 100, unit: 'nF', mult: 1e-9},
+                {val: 1, unit: '\u03BCF', mult: 1e-6},
+                {val: 10, unit: '\u03BCF', mult: 1e-6}
+            ];
+            
+            let RA = raVals[Math.floor(Math.random() * raVals.length)];
+            let RB = rbVals[Math.floor(Math.random() * rbVals.length)];
+            let C_obj = cVals[Math.floor(Math.random() * cVals.length)];
+            
+            // Calculate Freq
+            let exactF = 1.44 / ((RA * 1000 + 2 * RB * 1000) * C_obj.val * C_obj.mult);
+            let displayF = Math.round(exactF * 10) / 10; 
+            
+            currentAnswers.astableValue = displayF;
+            currentAnswers.astableUnit = 'Hz';
+            
+            // Draw Labels
+            ctx.font = "16px Arial";
+            ctx.fillStyle = brandBlack;
+            ctx.fillText("R", 150, 120); ctx.font = "12px Arial"; ctx.fillText("A", 162, 125);
+            ctx.font = "16px Arial"; ctx.fillText("= " + RA + " k\u03A9", 240, 130);
+            
+            ctx.fillText("R", 150, 220); ctx.font = "12px Arial"; ctx.fillText("B", 162, 225);
+            ctx.font = "16px Arial"; ctx.fillText("= " + RB + " k\u03A9", 240, 230);
+            
+            ctx.fillText("C", 160, 290);
+            ctx.fillText("= " + C_obj.val + " " + C_obj.unit, 245, 290);
+
+            // Solution Text
+            const solText = document.getElementById('solText');
+            if (solText) {
+                solText.innerHTML = "<strong>Frequency = " + displayF + " Hz</strong><br><br>" +
+                "<em>Step 1:</em> Formula is f = 1.44 / ((R<sub>A</sub> + 2R<sub>B</sub>) &times; C)<br>" +
+                "<em>Step 2:</em> R<sub>A</sub> = " + RA + " k\u03A9 = " + (RA*1000) + " \u03A9<br>" +
+                "<em>Step 3:</em> R<sub>B</sub> = " + RB + " k\u03A9 = " + (RB*1000) + " \u03A9<br>" +
+                "<em>Step 4:</em> C = " + C_obj.val + " " + C_obj.unit + " = " + C_obj.val + " &times; 10<sup>" + (C_obj.unit === 'nF' ? '-9' : '-6') + "</sup> F<br>" +
+                "<em>Step 5:</em> f = 1.44 / ((" + (RA*1000) + " + 2 &times; " + (RB*1000) + ") &times; " + (C_obj.val * C_obj.mult) + ")<br>" +
+                "<em>Step 6:</em> f &approx; " + displayF + " Hz";
+            }
+        }
+
         function checkAnswers() {
             if (isCurrentProblemSolved) return; 
 
             const feedback = document.getElementById('feedback');
             const helpBtn = document.getElementById('helpBtn');
 
-            // 1. Check if the relevant active boxes are genuinely blank first
             let activeInputs = [];
             if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
             else if (currentMode === 'divider') activeInputs = ['inputV'];
             else if (currentMode === 'resistance') activeInputs = ['inputR'];
-            else if (currentMode === 'oscilloscope') activeInputs = ['inputOsc1', 'inputOsc2', 'inputOsc3']; // Now checks all 3
+            else if (currentMode === 'oscilloscope') activeInputs = ['inputOsc1', 'inputOsc2', 'inputOsc3'];
+            else if (currentMode === 'astable') activeInputs = ['inputAstable'];
 
             let hasEmptyBox = false;
             activeInputs.forEach(id => {
@@ -657,7 +785,6 @@
                 hasCheckedCurrentProblem = true; 
             }
 
-            // 2. Parse inputs against expected answers
             let results = [];
             if (currentMode === 'analysis') {
                 let pV = parseInput(document.getElementById('inputV').value);
@@ -673,13 +800,15 @@
             } else if (currentMode === 'oscilloscope') {
                 let pO1 = parseInput(document.getElementById('inputOsc1').value);
                 let pO2 = parseInput(document.getElementById('inputOsc2').value);
-                let pO3 = parseInput(document.getElementById('inputOsc3').value); // Parse 3rd input
+                let pO3 = parseInput(document.getElementById('inputOsc3').value); 
                 results.push(validateMatch(pO1, currentAnswers.osc1Value, currentAnswers.osc1Unit));
                 results.push(validateMatch(pO2, currentAnswers.osc2Value, currentAnswers.osc2Unit));
                 results.push(validateMatch(pO3, currentAnswers.osc3Value, currentAnswers.osc3Unit));
+            } else if (currentMode === 'astable') {
+                let pAst = parseInput(document.getElementById('inputAstable').value);
+                results.push(validateMatch(pAst, currentAnswers.astableValue, currentAnswers.astableUnit));
             }
 
-            // 3. Grade the results
             if (results.every(r => r === 'correct')) {
                 isCurrentProblemSolved = true;
                 
