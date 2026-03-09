@@ -144,29 +144,26 @@
         let hasCheckedCurrentProblem = false; 
         let isCurrentProblemSolved = false;
         let viewedSolution = false; 
+        let unitErrorMade = false; 
 
         // --- Helper Function to Parse User Input (Number + Unit) ---
         function parseInput(str) {
             if (!str) return null;
-            // Remove all spaces and convert to lower case to make checking foolproof
             let cleanStr = str.toLowerCase().replace(/\s+/g, '');
-            cleanStr = cleanStr.replace(/\u03a9/g, 'ohms'); // Accept omega symbol as 'ohms' if they manage to type it
+            cleanStr = cleanStr.replace(/\u03a9/g, 'ohms'); 
             
-            // Regex checks for a number (allowing decimals/negatives) followed by letters
             const match = cleanStr.match(/^(-?[\d\.]+)([a-z]+)$/);
             if (match) {
                 return { val: parseFloat(match[1]), unit: match[2] };
             }
-            return { val: parseFloat(cleanStr), unit: '' }; // Just a number, no unit
+            return { val: parseFloat(cleanStr), unit: '' }; 
         }
 
         // --- Helper Function to Validate Answers ---
-        // Returns: 'correct', 'nounit', 'wrongunit', 'wrongval'
         function validateMatch(parsedInput, expectedVal, expectedUnit) {
             if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
             if (parsedInput.unit === '') return 'nounit';
             
-            // Handle floating point math errors
             const valMatch = Math.abs(parsedInput.val - expectedVal) < 0.001;
             const unitMatch = parsedInput.unit === expectedUnit.toLowerCase();
             
@@ -290,6 +287,7 @@
             hasCheckedCurrentProblem = false;
             isCurrentProblemSolved = false;
             viewedSolution = false; 
+            unitErrorMade = false; 
             
             const helpBtn = document.getElementById('helpBtn');
             const solutions = document.getElementById('solutions');
@@ -583,7 +581,6 @@
             let periodTime = (markDivs + spaceDivs) * tBase;
             
             let frequency = (tBaseUnit === 'ms') ? (1000 / periodTime) : (1 / periodTime);
-            // Round frequency nicely
             frequency = Math.round(frequency * 1000) / 1000;
 
             ctx.fillStyle = brandBlack; ctx.font = "16px Arial";
@@ -654,7 +651,7 @@
                 results.push(validateMatch(pO2, currentAnswers.osc2Value, currentAnswers.osc2Unit));
             }
 
-            // Generate Feedback based on results
+            // Prevent blank answers from dropping their score/mark instantly
             if (results.includes('wrongval') && results.some(r => r === 'wrongval' && document.getElementById(currentMode === 'analysis' ? 'inputV' : 'inputR').value === '')) {
                  feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
                  hasCheckedCurrentProblem = false; problemsAttempted--; return;
@@ -662,16 +659,26 @@
 
             if (results.every(r => r === 'correct')) {
                 isCurrentProblemSolved = true;
-                if (!viewedSolution) problemsCorrect++;
-                feedback.innerHTML = viewedSolution ? "<span style='color: #E64097;'>Correct! (Solution viewed).</span>" : "<span style='color: #198754;'>Correct! Great job!</span>";
+                
+                if (!viewedSolution && !unitErrorMade) {
+                    problemsCorrect++;
+                    feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
+                } else if (unitErrorMade) {
+                    feedback.innerHTML = "<span style='color: #fd7e14;'>Correct! (No point awarded due to earlier unit error).</span>";
+                } else {
+                    feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed).</span>";
+                }
+                
                 if (helpBtn) helpBtn.style.display = 'none';
             } else {
                 if (helpBtn) helpBtn.style.display = 'block';
                 
                 if (results.includes('nounit')) {
-                    feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget to type your units! (e.g. '10 mV')</span>";
+                    unitErrorMade = true;
+                    feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget your units! (Mark lost for this question)</span>";
                 } else if (results.includes('wrongunit')) {
-                    feedback.innerHTML = "<span style='color: #fd7e14;'>The number is right, but check your units!</span>";
+                    unitErrorMade = true;
+                    feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost for this question)</span>";
                 } else if (results.some(r => r === 'correct')) {
                     feedback.innerHTML = "<span style='color: #dc3545;'>One is right, one is wrong. Check logic!</span>";
                 } else {
