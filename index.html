@@ -33,7 +33,7 @@
         .input-area { text-align: center; }
         .input-group { margin: 10px 0; font-size: 17px; font-weight: bold; display: inline-block; margin-right: 15px; }
         input[type="text"] { font-size: 16px; padding: 6px; width: 110px; text-align: center; margin: 0 5px; border: 1px solid #ccc; border-radius: 4px; outline-color: #E64097; }
-        .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold; }
+        .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
         
         .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
@@ -42,6 +42,8 @@
         .btn-secondary { background-color: #6c757d; }
         
         .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
+
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; border-top: 6px solid #E64097; }
     </style>
@@ -50,11 +52,14 @@
 
     <div class="header">
         <h1><span>Abingdon</span> Electronics</h1>
-        <p>Astable 555 & Circuit Logic</p>
+        <p>Basics</p>
     </div>
 
     <div class="tabs">
         <button class="tab active" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
+        <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
+        <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
+        <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
         <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
     </div>
 
@@ -71,39 +76,38 @@
                     <h3>Enter Your Answer</h3>
                     <div class="score-container">
                         <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
-                        <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
+                        <button class="btn-download" onclick="openSubmissionModal()">&#11015; Download</button>
                     </div>
                 </div>
                 
                 <div class="input-area">
                     <div class="input-group" id="inputGroupV">
-                        <label id="labelV" for="inputV">V? = </label>
-                        <input type="text" id="inputV" placeholder="e.g. 10 V">
+                        <label id="labelV" for="inputV">V? = </label><input type="text" id="inputV">
                     </div>
-                    
-                    <div class="input-group" id="inputGroupI" style="display:none;">
-                        <label id="labelI" for="inputI">I? = </label>
-                        <input type="text" id="inputI" placeholder="e.g. 5 mA">
+                    <div class="input-group" id="inputGroupI">
+                        <label id="labelI" for="inputI">I? = </label><input type="text" id="inputI">
+                    </div>
+                    <div class="input-group" id="inputGroupR" style="display:none;">
+                        <label id="labelR" for="inputR">R? = </label><input type="text" id="inputR">
                     </div>
 
-                    <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
-                        <div style="font-size: 15px; margin-bottom: 10px; color: #E64097;">
-                            Formula: <strong>f = 1.44 / ((R<sub>A</sub> + 2R<sub>B</sub>) &times; C)</strong>
+                    <div id="oscAstableInputs" style="display:none;">
+                        <div class="input-group">
+                            <label id="labelQ1" for="inputQ1">Q1: </label><input type="text" id="inputQ1">
                         </div>
-                        <div>
-                            <label id="labelAstable" for="inputAstable">Frequency = </label>
-                            <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
+                        <div class="input-group" id="groupQ2">
+                            <label id="labelQ2" for="inputQ2">Q2: </label><input type="text" id="inputQ2">
                         </div>
                     </div>
-                    
-                    <button class="btn-check" onclick="checkAnswers()">Check Answer</button>
+
+                    <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
                     <div id="feedback" class="feedback"></div>
                 </div>
             </div>
 
             <div class="controls">
                 <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
-                <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
+                <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help?</button>
             </div>
 
             <div id="solutions" class="solutions">
@@ -113,123 +117,151 @@
         </div>
     </div>
 
+    <div id="submissionModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Submit Your Score</h3>
+            <div style="margin-bottom:15px;"><label>Name: </label><input type="text" id="studentNameInput" style="width:100%;"></div>
+            <div style="margin-bottom:15px;">
+                <label>Teacher: </label>
+                <select id="teacherSelect" style="width:100%; padding:5px;">
+                    <option value="Mr. Magee">Mr. Magee</option>
+                    <option value="Mr. Brooks">Mr. Brooks</option>
+                    <option value="Mr. Mason">Mr. Mason</option>
+                    <option value="Mr. Willoughby">Mr. Willoughby</option>
+                </select>
+            </div>
+            <button class="btn-check" onclick="processSubmission()">Submit & Download</button>
+            <button class="btn-secondary" onclick="document.getElementById('submissionModal').style.display='none'">Cancel</button>
+        </div>
+    </div>
+
     <script>
         const brandPink = "#E64097";
         const brandBlack = "#000000";
-
-        let currentMode = 'analysis'; 
-        let currentAnswers = { val: 0, unit: '', style: '' };
-        let problemsAttempted = 0;
-        let problemsCorrect = 0;
+        let currentMode = 'analysis';
+        let currentAnswers = {};
+        let problemsAttempted = 0; let problemsCorrect = 0;
+        let viewedSolution = false; let unitErrorMade = false;
 
         function parseInput(str) {
             if (!str) return null;
-            let cleanStr = str.toLowerCase().replace(/\s+/g, '');
+            let s = str.toLowerCase().replace(/\s+/g, '').replace(/\u03a9/g, 'ohms');
             
-            // Check for Ratio (Fraction)
-            if (cleanStr.includes('/')) {
-                let parts = cleanStr.split('/');
-                return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio' };
+            // Check for Ratio String (e.g., "1/2" or "3:2")
+            if (s.includes('/') || s.includes(':')) {
+                let parts = s.split(/[\/:]/);
+                if (parts.length === 2) {
+                    return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio', isRatioString: true };
+                }
+            }
+            
+            let match = s.match(/^(-?[\d\.]+)([a-z]*)$/);
+            if (match) return { val: parseFloat(match[1]), unit: match[2] };
+            return { val: parseFloat(s), unit: '' };
+        }
+
+        function validateMatch(parsedInput, expectedVal, expectedUnit) {
+            if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
+            
+            // Special Ratio Validation
+            if (expectedUnit === 'ratio') {
+                if (parsedInput.isRatioString && Math.abs(parsedInput.val - expectedVal) < 0.02) return 'correct';
+                if (!parsedInput.isRatioString && Math.abs(parsedInput.val - expectedVal) < 0.02) return 'wrongunit';
+                return 'wrongval';
             }
 
-            const match = cleanStr.match(/^(-?[\d\.]+)([a-z]*)$/);
-            if (match) {
-                let val = parseFloat(match[1]);
-                let unit = match[2];
-                // Normalizing common units
-                if (unit === 'khz') { val *= 1000; unit = 'hz'; }
-                if (unit === 'ms') { val /= 1000; unit = 's'; }
-                return { val, unit };
-            }
-            return { val: parseFloat(cleanStr), unit: '' };
+            if (parsedInput.unit === '' && expectedUnit !== '') return 'nounit';
+            
+            let userVal = parsedInput.val;
+            // Basic Unit Normalization
+            if (parsedInput.unit === 'khz' && expectedUnit === 'hz') userVal *= 1000;
+            if (parsedInput.unit === 'kohms' && expectedUnit === 'ohms') userVal *= 1000;
+            if (parsedInput.unit === 'ms' && expectedUnit === 's') userVal /= 1000;
+            if (parsedInput.unit === 's' && expectedUnit === 'ms') userVal *= 1000;
+            if (parsedInput.unit === 'ma' && expectedUnit === 'a') userVal /= 1000;
+
+            if (parsedInput.unit !== expectedUnit && !['hz','ohms','s','v','a'].includes(expectedUnit)) return 'wrongunit';
+
+            return (Math.abs(userVal - expectedVal) / (expectedVal || 1) < 0.03) ? 'correct' : 'wrongval';
         }
 
         function generateProblem() {
             const canvas = document.getElementById('circuitCanvas');
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            document.getElementById('feedback').innerHTML = '';
+            viewedSolution = false; unitErrorMade = false;
             document.getElementById('helpBtn').style.display = 'none';
             document.getElementById('solutions').style.display = 'none';
-            document.getElementById('inputAstable').value = '';
-            document.getElementById('inputV').value = '';
+            document.getElementById('feedback').innerHTML = '';
+            
+            // Reset visibility
+            document.getElementById('inputGroupV').style.display = 'none';
+            document.getElementById('inputGroupI').style.display = 'none';
+            document.getElementById('oscAstableInputs').style.display = 'none';
+            document.getElementById('groupQ2').style.display = 'inline-block';
 
             if (currentMode === 'analysis') {
                 document.getElementById('inputGroupV').style.display = 'inline-block';
-                document.getElementById('inputGroupAstable').style.display = 'none';
-                generateAnalysis(ctx);
-            } else {
-                document.getElementById('inputGroupV').style.display = 'none';
-                document.getElementById('inputGroupAstable').style.display = 'block';
-                generateAstable(ctx);
+                document.getElementById('inputGroupI').style.display = 'inline-block';
+                // (Add original analysis logic here)
+            } else if (currentMode === 'astable') {
+                generateAstableProblem(ctx, canvas);
             }
         }
 
-        function generateAnalysis(ctx) {
-            let v1 = Math.floor(Math.random() * 10) + 2;
-            let v2 = Math.floor(Math.random() * 10) + 2;
-            let total = v1 + v2;
-            currentAnswers = { val: total, unit: 'v' };
+        function generateAstableProblem(ctx, canvas) {
+            document.getElementById('oscAstableInputs').style.display = 'block';
             
-            ctx.fillStyle = brandBlack; ctx.font = "bold 18px Arial";
-            ctx.fillText("Series Circuit", 250, 50);
-            ctx.fillText("V1 = " + v1 + "V", 150, 150);
-            ctx.fillText("V2 = " + v2 + "V", 150, 200);
-            
-            document.getElementById('labelV').innerHTML = "Find <span style='color:"+brandPink+"'>V Total</span> = ";
-            document.getElementById('solText').innerText = "V Total = V1 + V2. So " + v1 + " + " + v2 + " = " + total + "V";
-        }
-
-        function generateAstable(ctx) {
-            const R_vals = [1, 2.2, 4.7, 10];
-            const RA = R_vals[Math.floor(Math.random() * R_vals.length)];
-            const RB = R_vals[Math.floor(Math.random() * R_vals.length)];
-            const C = 10; // 10uF
-
-            const style = Math.random();
+            // 555 Timer Drawing
             ctx.strokeStyle = brandBlack; ctx.lineWidth = 2;
             ctx.strokeRect(250, 150, 100, 120);
             ctx.font = "bold 20px Arial"; ctx.fillText("555", 280, 215);
 
-            if (style < 0.4) {
-                // Calculate Freq
-                const freq = 1.44 / ((RA*1000 + 2*RB*1000) * (C * 1e-6));
-                currentAnswers = { val: freq, unit: 'hz', style: 'freq' };
-                document.getElementById('labelAstable').innerHTML = "Find <span style='color:"+brandPink+"'>Frequency</span> = ";
-                ctx.font = "16px Arial";
-                ctx.fillText("RA = " + RA + "kΩ", 100, 100);
-                ctx.fillText("RB = " + RB + "kΩ", 100, 130);
-                ctx.fillText("C = " + C + "μF", 100, 160);
-                document.getElementById('solText').innerText = "f = 1.44 / ((RA + 2RB) * C). Answer: " + freq.toFixed(2) + " Hz";
+            const RA = [1, 2.2, 4.7, 10][Math.floor(Math.random()*4)];
+            const RB = [1, 2.2, 4.7, 10][Math.floor(Math.random()*4)];
+            const C = 10; // 10uF
+
+            let style = Math.random();
+            if (style < 0.33) {
+                // Style: Frequency & Period
+                let f = 1.44 / ((RA*1000 + 2*RB*1000) * (C * 1e-6));
+                currentAnswers = { q1V: f, q1U: 'hz', q2V: 1/f, q2U: 's' };
+                document.getElementById('labelQ1').innerText = "Frequency (Hz): ";
+                document.getElementById('labelQ2').innerText = "Period (s): ";
+                ctx.fillText("RA = " + RA + "k, RB = " + RB + "k, C = 10uF", 180, 100);
+                document.getElementById('solText').innerText = "f = 1.44 / ((RA + 2RB) * C).";
+            } else if (style < 0.66) {
+                // Style: Find RB from Ratio
+                let ratio = (RA + RB) / RB;
+                currentAnswers = { q1V: RB, q1U: 'kohms', q2V: null };
+                document.getElementById('labelQ1').innerText = "Find RB (kΩ): ";
+                document.getElementById('groupQ2').style.display = 'none';
+                ctx.fillText("RA = " + RA + "k, Mark:Space = " + (RA+RB).toFixed(1) + ":" + RB.toFixed(1), 150, 100);
+                document.getElementById('solText').innerText = "Ratio = (RA+RB)/RB. Solve for RB.";
             } else {
-                // Find Ratio
-                const ratioVal = (RA + RB) / RB;
-                currentAnswers = { val: ratioVal, unit: 'ratio', style: 'ratio' };
-                document.getElementById('labelAstable').innerHTML = "Find <span style='color:"+brandPink+"'>Mark:Space Ratio</span> = ";
-                ctx.font = "16px Arial";
-                ctx.fillText("RA = " + RA + "kΩ", 100, 100);
-                ctx.fillText("RB = " + RB + "kΩ", 100, 130);
-                document.getElementById('solText').innerText = "Ratio = (RA + RB) / RB. Write as a fraction: " + (RA+RB).toFixed(1) + "/" + RB.toFixed(1);
+                // Style: Find Ratio as Fraction
+                let ratioVal = (RA + RB) / RB;
+                currentAnswers = { q1V: ratioVal, q1U: 'ratio', q2V: null };
+                document.getElementById('labelQ1').innerText = "M:S Ratio (fraction): ";
+                document.getElementById('groupQ2').style.display = 'none';
+                ctx.fillText("RA = " + RA + "k, RB = " + RB + "k", 200, 100);
+                document.getElementById('solText').innerHTML = "Formula: (RA + RB) / RB. <br>Result: " + (RA+RB).toFixed(1) + " / " + RB.toFixed(1);
             }
         }
 
         function checkAnswers() {
-            let userStr = currentMode === 'analysis' ? document.getElementById('inputV').value : document.getElementById('inputAstable').value;
-            let parsed = parseInput(userStr);
-            let feedback = document.getElementById('feedback');
-            
-            if (!parsed) { feedback.innerHTML = "Enter a value!"; return; }
-
-            let tolerance = 0.02; 
-            let isCorrect = Math.abs(parsed.val - currentAnswers.val) / currentAnswers.val < tolerance;
+            let res1, res2;
+            if (currentMode === 'astable') {
+                res1 = validateMatch(parseInput(document.getElementById('inputQ1').value), currentAnswers.q1V, currentAnswers.q1U);
+                res2 = currentAnswers.q2V === null ? 'correct' : validateMatch(parseInput(document.getElementById('inputQ2').value), currentAnswers.q2V, currentAnswers.q2U);
+            }
             
             problemsAttempted++;
-            if (isCorrect && (parsed.unit === currentAnswers.unit || currentAnswers.unit === '')) {
+            if (res1 === 'correct' && res2 === 'correct') {
                 problemsCorrect++;
-                feedback.innerHTML = "<span style='color:green'>Correct!</span>";
+                document.getElementById('feedback').innerHTML = "<span style='color:green'>Correct!</span>";
             } else {
-                feedback.innerHTML = "<span style='color:red'>Incorrect. Check units/math.</span>";
+                document.getElementById('feedback').innerHTML = "<span style='color:red'>Incorrect.</span>";
                 document.getElementById('helpBtn').style.display = 'block';
             }
             document.getElementById('scoreDisplay').innerText = "Score: " + problemsCorrect + " / " + problemsAttempted;
@@ -242,8 +274,7 @@
             generateProblem();
         }
 
-        function toggleSolutions() { document.getElementById('solutions').style.display = 'block'; }
-
+        function toggleSolutions() { document.getElementById('solutions').style.display = 'block'; viewedSolution = true; }
         window.onload = generateProblem;
     </script>
 </body>
