@@ -591,11 +591,11 @@
                 ],
                 [
                     { label: "Amplitude =", val: amplitude, unit: vGainUnit, placeholder: "e.g. 5 " + vGainUnit, sol: "Height is " + ampDivs + " divs. " + ampDivs + " &times; " + vGain + " " + vGainUnit + "/div = " + amplitude + " " + vGainUnit + "." },
-                    { label: "M/S Ratio =", val: markSpaceRatio, unit: "ratio", placeholder: "e.g. 1/2", sol: "Mark = " + markDivs + " divs, Space = " + spaceDivs + " divs. Fraction is " + markDivs + "/" + spaceDivs + "." },
+                    { label: "Mark Space Ratio =", val: markSpaceRatio, unit: "ratio", placeholder: "e.g. 1/2", sol: "Mark = " + markDivs + " divs, Space = " + spaceDivs + " divs. Fraction is " + markDivs + "/" + spaceDivs + "." },
                     { label: "Frequency =", val: frequency, unit: "Hz", placeholder: "e.g. 50 Hz", sol: (tBaseUnit === 'ms' ? "1 / (" + periodTime + " / 1000) s = " + frequency + " Hz" : "1 / " + periodTime + " s = " + frequency + " Hz") + "." }
                 ]
             ];
-
+            
             // Pick a random style
             const selectedStyle = styles[Math.floor(Math.random() * styles.length)];
 
