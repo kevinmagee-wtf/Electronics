@@ -193,7 +193,7 @@
             if (scoreDisplay) scoreDisplay.innerText = "Score: " + problemsCorrect + " / " + problemsAttempted;
         }
 
-        function downloadScore() {
+        async function downloadScore() {
             if (problemsAttempted === 0) {
                 alert("Please attempt at least one question before downloading your score!");
                 return;
@@ -201,7 +201,15 @@
             const studentName = prompt("Enter your name to submit your score:");
             if (!studentName) return; 
 
-            // --- Certificate Generation Code (Keep your existing canvas code here!) ---
+            // --- 1. SET LOADING STATE ---
+            const downloadBtn = document.querySelector('.btn-download');
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = "&#8987; Submitting..."; 
+            downloadBtn.disabled = true;
+            downloadBtn.style.backgroundColor = "#6c757d"; // Turn button grey
+            downloadBtn.style.cursor = "wait";
+
+            // --- 2. GENERATE AND DOWNLOAD CERTIFICATE ---
             const certCanvas = document.createElement('canvas');
             certCanvas.width = 600;
             certCanvas.height = 400;
@@ -255,6 +263,38 @@
             downloadLink.download = "Electronics_Score_" + safeName + ".png"; 
             downloadLink.href = imageURI;
             downloadLink.click();
+
+            // --- 3. SEND DATA TO GOOGLE SHEETS ---
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxrHYNKqWSa3BMJNSqS99KQkd7ME1zrTy_ba1RlmhShEzpTuPw6Tg7l9rIpLqC3Ki9f/exec'; // <--- PASTE YOUR URL HERE
+            
+            const formData = new URLSearchParams();
+            formData.append('name', studentName);
+            formData.append('correct', problemsCorrect);
+            formData.append('attempted', problemsAttempted);
+
+            try {
+                // The "await" pauses the code here until Google responds
+                await fetch(scriptURL, { method: 'POST', body: formData });
+                console.log('Score submitted successfully.');
+                alert("Score submitted to teacher and certificate downloaded!");
+            } catch (error) {
+                console.error('Error submitting score!', error.message);
+                alert("Certificate downloaded, but there was an internet error sending the score to the teacher.");
+            } finally {
+                // --- 4. RESET EVERYTHING ---
+                // Put the button back to normal
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+                downloadBtn.style.backgroundColor = ""; 
+                downloadBtn.style.cursor = "pointer";
+
+                // Reset the quiz
+                problemsAttempted = 0;
+                problemsCorrect = 0;
+                updateScoreboard();
+                generateProblem();
+            }
+        }
             // --- End of Certificate Generation ---
 
 
