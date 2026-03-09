@@ -128,11 +128,16 @@
 
                     <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
                         <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
-                            Formula: <strong>f = 1.44 / ((R<sub>A</sub> + 2R<sub>B</sub>) &times; C)</strong>
+                            Formula: <strong>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</strong><br>
+                            <span style="font-size: 14px; color: #555;">(Note: In this circuit, R<sub>1</sub> corresponds to R<sub>A</sub> and R<sub>2</sub> corresponds to R<sub>B</sub>)</span>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label id="labelAstable" for="inputAstable">Question 1: Frequency (f) = </label>
+                            <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
                         </div>
                         <div>
-                            <label id="labelAstable" for="inputAstable">Frequency = </label>
-                            <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
+                            <label id="labelAstableT" for="inputAstableT">Question 2: Time Period (T) = </label>
+                            <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
                         </div>
                     </div>
                     
@@ -192,7 +197,8 @@
             osc1Value: 0, osc1Unit: '', 
             osc2Value: 0, osc2Unit: '',
             osc3Value: 0, osc3Unit: '',
-            astableValue: 0, astableUnit: ''
+            astableValue: 0, astableUnit: '',
+            astableTValue: 0, astableTUnit: ''
         };
         
         let problemsAttempted = 0;
@@ -234,13 +240,21 @@
             let valMatch = false;
             
             if (currentMode === 'astable') {
-                // If they typed kHz instead of Hz, automatically scale it so it's fair
                 let userVal = parsedInput.val;
                 let userUnit = parsedInput.unit.toLowerCase();
-                if (userUnit === 'khz' && expectedUnit === 'Hz') {
+                
+                // Allow dynamic matching for khz/hz and s/ms
+                if (userUnit === 'khz' && expectedUnit.toLowerCase() === 'hz') {
                     userVal *= 1000;
                     parsedInput.unit = 'hz'; 
+                } else if (userUnit === 's' && expectedUnit.toLowerCase() === 'ms') {
+                    userVal *= 1000;
+                    parsedInput.unit = 'ms';
+                } else if (userUnit === 'ms' && expectedUnit.toLowerCase() === 's') {
+                    userVal /= 1000;
+                    parsedInput.unit = 's';
                 }
+                
                 // Allow a generous 2% tolerance on Astable to account for rounding differences
                 valMatch = (Math.abs(userVal - expectedVal) / expectedVal) <= 0.02;
             } else {
@@ -406,7 +420,7 @@
             if (solutions) solutions.style.display = 'none';
             if (feedback) feedback.innerHTML = '';
 
-            const inputs = ['inputV', 'inputI', 'inputR', 'inputOsc1', 'inputOsc2', 'inputOsc3', 'inputAstable'];
+            const inputs = ['inputV', 'inputI', 'inputR', 'inputOsc1', 'inputOsc2', 'inputOsc3', 'inputAstable', 'inputAstableT'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = '';
@@ -690,7 +704,7 @@
             drawResistor(ctx, 220, 125); // y: 100-150
             drawLine(ctx, 220, 150, 220, 200); drawDot(ctx, 220, 180);
             drawResistor(ctx, 220, 225); // y: 200-250
-            drawLine(ctx, 220, 250, 220, 280); drawDot(ctx, 220, 240);
+            drawLine(ctx, 220, 250, 220, 280); 
             
             // Capacitor
             drawLine(ctx, 200, 280, 240, 280);
@@ -702,8 +716,9 @@
             drawLine(ctx, 220, 180, 350, 180);
             
             // Pin 6 and 2 to between RB and C
-            drawLine(ctx, 220, 240, 320, 240);
-            drawLine(ctx, 320, 240, 320, 210);
+            drawDot(ctx, 220, 265); // Properly moved to strictly between RB and C
+            drawLine(ctx, 220, 265, 320, 265);
+            drawLine(ctx, 320, 265, 320, 210);
             drawLine(ctx, 320, 210, 350, 210); // to Pin 6
             drawLine(ctx, 320, 240, 350, 240); // to Pin 2
             drawDot(ctx, 320, 240); // junction for Pin 2
@@ -723,12 +738,18 @@
             let RB = rbVals[Math.floor(Math.random() * rbVals.length)];
             let C_obj = cVals[Math.floor(Math.random() * cVals.length)];
             
-            // Calculate Freq
+            // Calculate Freq & Time Period
             let exactF = 1.44 / ((RA * 1000 + 2 * RB * 1000) * C_obj.val * C_obj.mult);
             let displayF = Math.round(exactF * 10) / 10; 
             
+            let exactT = 1 / exactF;
+            let T_unit = exactT < 1 ? 'ms' : 's';
+            let displayT = exactT < 1 ? Math.round(exactT * 1000 * 10) / 10 : Math.round(exactT * 10) / 10;
+            
             currentAnswers.astableValue = displayF;
             currentAnswers.astableUnit = 'Hz';
+            currentAnswers.astableTValue = displayT;
+            currentAnswers.astableTUnit = T_unit;
             
             // Draw Labels
             ctx.font = "16px Arial";
@@ -745,13 +766,15 @@
             // Solution Text
             const solText = document.getElementById('solText');
             if (solText) {
-                solText.innerHTML = "<strong>Frequency = " + displayF + " Hz</strong><br><br>" +
-                "<em>Step 1:</em> Formula is f = 1.44 / ((R<sub>A</sub> + 2R<sub>B</sub>) &times; C)<br>" +
-                "<em>Step 2:</em> R<sub>A</sub> = " + RA + " k\u03A9 = " + (RA*1000) + " \u03A9<br>" +
-                "<em>Step 3:</em> R<sub>B</sub> = " + RB + " k\u03A9 = " + (RB*1000) + " \u03A9<br>" +
+                solText.innerHTML = "<strong>Question 1: Frequency = " + displayF + " Hz</strong><br>" +
+                "<strong>Question 2: Time Period = " + displayT + " " + T_unit + "</strong><br><br>" +
+                "<em>Step 1:</em> Formula is f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)<br>" +
+                "<em>Step 2:</em> R<sub>1</sub> (R<sub>A</sub>) = " + RA + " k\u03A9 = " + (RA*1000) + " \u03A9<br>" +
+                "<em>Step 3:</em> R<sub>2</sub> (R<sub>B</sub>) = " + RB + " k\u03A9 = " + (RB*1000) + " \u03A9<br>" +
                 "<em>Step 4:</em> C = " + C_obj.val + " " + C_obj.unit + " = " + C_obj.val + " &times; 10<sup>" + (C_obj.unit === 'nF' ? '-9' : '-6') + "</sup> F<br>" +
                 "<em>Step 5:</em> f = 1.44 / ((" + (RA*1000) + " + 2 &times; " + (RB*1000) + ") &times; " + (C_obj.val * C_obj.mult) + ")<br>" +
-                "<em>Step 6:</em> f &approx; " + displayF + " Hz";
+                "<em>Step 6:</em> f &approx; " + displayF + " Hz<br>" +
+                "<em>Step 7:</em> T = 1 / f = 1 / " + displayF + " &approx; " + displayT + " " + T_unit;
             }
         }
 
@@ -766,7 +789,7 @@
             else if (currentMode === 'divider') activeInputs = ['inputV'];
             else if (currentMode === 'resistance') activeInputs = ['inputR'];
             else if (currentMode === 'oscilloscope') activeInputs = ['inputOsc1', 'inputOsc2', 'inputOsc3'];
-            else if (currentMode === 'astable') activeInputs = ['inputAstable'];
+            else if (currentMode === 'astable') activeInputs = ['inputAstable', 'inputAstableT'];
 
             let hasEmptyBox = false;
             activeInputs.forEach(id => {
@@ -806,7 +829,9 @@
                 results.push(validateMatch(pO3, currentAnswers.osc3Value, currentAnswers.osc3Unit));
             } else if (currentMode === 'astable') {
                 let pAst = parseInput(document.getElementById('inputAstable').value);
+                let pAstT = parseInput(document.getElementById('inputAstableT').value);
                 results.push(validateMatch(pAst, currentAnswers.astableValue, currentAnswers.astableUnit));
+                results.push(validateMatch(pAstT, currentAnswers.astableTValue, currentAnswers.astableTUnit));
             }
 
             if (results.every(r => r === 'correct')) {
