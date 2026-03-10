@@ -421,14 +421,13 @@ function generateProblem() {
     
     // --- 1. DEFINE BOTH GRADE 9 BUTTONS ---
     const grade9Btn = document.getElementById('grade9Btn'); 
-    const grade9ResBtn = document.getElementById('grade9ResistanceBtn'); // NEW
+    const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
     
     // --- 2. UPDATE VISIBILITY LOGIC ---
-    // This part ensures only the correct button shows for the current tab
     if (currentMode === 'divider') {
         if (grade9Btn) grade9Btn.style.display = 'inline-block';
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
@@ -436,7 +435,6 @@ function generateProblem() {
         if (grade9Btn) grade9Btn.style.display = 'none';
         if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
     } else {
-        // Hide both for oscilloscope, astable, etc.
         if (grade9Btn) grade9Btn.style.display = 'none';
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
     }
@@ -453,6 +451,7 @@ function generateProblem() {
         if (el) el.style.display = 'none';
     });
 
+    // --- 3. MODE LOGIC (Fixed Braces) ---
     if (currentMode === 'analysis') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
         document.getElementById('inputGroupI').style.display = 'inline-block';
@@ -460,23 +459,18 @@ function generateProblem() {
     } else if (currentMode === 'divider') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
         generateDividerProblem(ctx, canvas);
-   } else if (currentMode === 'resistance') {
-    document.getElementById('inputGroupR').style.display = 'inline-block';
-    // Force a small delay to ensure the UI is ready before drawing
-    setTimeout(() => {
-        generateGrade9Resistance();
-    }, 10);
-}
-        
-// This ensures that when you click the tab, a standard problem shows up
-// (You should have a standard version, or you can point it to the Grade 9 one)
-generateGrade9Resistance();
+    } else if (currentMode === 'resistance') {
+        document.getElementById('inputGroupR').style.display = 'inline-block';
+        // Delay ensures canvas is ready in the DOM before drawing
+        setTimeout(() => {
+            generateGrade9Resistance();
+        }, 10);
     } else if (currentMode === 'oscilloscope') {
         generateOscilloscopeProblem(ctx, canvas);
     } else if (currentMode === 'astable') {
         generateAstableProblem(ctx, canvas);
     }
-}
+} // Function finally ends here correctly
 
 function generateAnalysisProblem(ctx, canvas) {
             const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
