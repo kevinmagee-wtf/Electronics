@@ -10,171 +10,714 @@
         .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
         .header p { margin-top: 5px; font-size: 18px; color: #555; }
         .header span { color: #E64097; font-weight: bold; }
+        
         .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
         .tab { padding: 10px 25px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #eaeaea; border: 2px solid #ccc; border-radius: 8px; color: #555; transition: all 0.2s; }
         .tab.active { background-color: #E64097; color: white; border-color: #E64097; box-shadow: 0 4px 6px rgba(230, 64, 151, 0.2); }
+        .tab:hover:not(.active) { background-color: #d4d4d4; }
+
         .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
         .left-panel { flex: 1 1 550px; max-width: 650px; }
-        .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; }
+        .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
+        
         .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
         .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
-        .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; margin-bottom: 10px; text-align: center;}
-        .input-group { margin: 10px 0; text-align: center; }
-        input[type="text"] { font-size: 16px; padding: 8px; width: 120px; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
-        .btn-check { background-color: #E64097; width: 100%; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px;}
-        .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; display: none; margin-top: 15px; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; border-top: 6px solid #E64097; }
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+        .quiz-header h3 { margin: 0; font-size: 1.2rem; }
+        
+        .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+        .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
+        .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
+        .btn-download:hover { background-color: #157347; }
+        .btn-download:disabled { background-color: #6c757d; cursor: wait; }
+        
+        .input-area { text-align: center; }
+        .input-group { margin: 10px 0; font-size: 17px; font-weight: bold; display: inline-block; margin-right: 15px; }
+        input[type="text"] { font-size: 16px; padding: 6px; width: 110px; text-align: center; margin: 0 5px; border: 1px solid #ccc; border-radius: 4px; outline-color: #E64097; }
+        .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
+        
+        .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
+        button:active { transform: scale(0.98); }
+        .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; }
+        .btn-check:hover { background-color: #cc2b81; }
+        .btn-black { background-color: #000000; }
+        .btn-black:hover { background-color: #333333; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5c636a; }
+        
+        .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
+        .solutions p { margin-bottom: 0; font-size: 0.95rem; line-height: 1.5; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-top: 6px solid #E64097; }
+        .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px;}
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; font-size: 16px; outline-color: #E64097; }
+        .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
+        .modal-actions button { flex: 1; margin: 0; }
     </style>
 </head>
 <body>
-    <div class="header"><h1><span>Abingdon</span> Electronics</h1><p>Basics Knowledge Check</p></div>
-    
+
+    <div class="header">
+        <h1><span>Abingdon</span> Electronics</h1>
+        <p>Basics</p>
+    </div>
+
     <div class="tabs">
-        <button id="tab-analysis" class="tab active" onclick="switchTab('analysis')">Circuit Analysis</button>
-        <button id="tab-divider" class="tab" onclick="switchTab('divider')">Potential Divider</button>
-        <button id="tab-resistance" class="tab" onclick="switchTab('resistance')">Total Resistance</button>
-        <button id="tab-oscilloscope" class="tab" onclick="switchTab('oscilloscope')">Oscilloscopes</button>
-        <button id="tab-astable" class="tab" onclick="switchTab('astable')">Astable 555</button>
+        <button class="tab active" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
+        <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
+        <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
+        <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
+        <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
     </div>
 
     <div class="main-layout">
         <div class="left-panel">
-            <div class="circuit-container"><canvas id="circuitCanvas" width="600" height="420"></canvas></div>
+            <div class="circuit-container">
+                <canvas id="circuitCanvas" width="600" height="420"></canvas>
+            </div>
         </div>
+
         <div class="right-panel">
             <div class="quiz-section">
-                <div id="scoreDisplay" class="scoreboard">Score: 0 / 0</div>
-                <div id="quizInputs" class="input-group"></div>
-                <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
-                <button class="btn-check" style="background-color:#000; margin-top:5px;" onclick="generateProblem()">New Question</button>
-                <div id="feedback" style="margin-top:10px; text-align:center; font-weight:bold;"></div>
+                <div class="quiz-header">
+                    <h3>Enter Your Answer</h3>
+                    <div class="score-container">
+                        <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
+                        <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-group" id="inputGroupV">
+                        <label id="labelV" for="inputV">V? = </label>
+                        <input type="text" id="inputV" placeholder="e.g. 10 mV">
+                    </div>
+                    
+                    <div class="input-group" id="inputGroupI">
+                        <label id="labelI" for="inputI">I? = </label>
+                        <input type="text" id="inputI" placeholder="e.g. 5 mA">
+                    </div>
+
+                    <div class="input-group" id="inputGroupR" style="display:none;">
+                        <label id="labelR" for="inputR">R? = </label>
+                        <input type="text" id="inputR" placeholder="e.g. 100 Ohms">
+                    </div>
+
+                    <div class="input-group" id="inputGroupOsc1" style="display:none;">
+                        <label id="labelOsc1" for="inputOsc1">Amplitude = </label>
+                        <input type="text" id="inputOsc1" placeholder="e.g. 5 V">
+                    </div>
+
+                    <div class="input-group" id="inputGroupOsc2" style="display:none;">
+                        <label id="labelOsc2" for="inputOsc2">Question 2 = </label>
+                        <input type="text" id="inputOsc2" placeholder="">
+                    </div>
+                    
+                    <div class="input-group" id="inputGroupOsc3" style="display:none;">
+                        <label id="labelOsc3" for="inputOsc3">Question 3 = </label>
+                        <input type="text" id="inputOsc3" placeholder="">
+                    </div>
+
+                    <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
+                        <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
+                            Formula: <strong>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</strong><br>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label id="labelAstable" for="inputAstable">Question 1: Frequency = </label>
+                            <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
+                        </div>
+                        <div>
+                            <label id="labelAstableT" for="inputAstableT">Question 2: Time Period = </label>
+                            <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
+                        </div>
+                    </div>
+                    
+                    <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
+                    <div id="feedback" class="feedback"></div>
+                </div>
             </div>
-            <button class="btn-check" style="background-color:#6c757d;" onclick="toggleSolutions()">Show/Hide Logic</button>
-            <div id="solutions" class="solutions"><p id="solText"></p></div>
-            <button id="downloadBtn" class="btn-check" style="background-color:#198754;" onclick="openModal()">Download Certificate</button>
+
+            <div class="controls">
+                <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
+                <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
+            </div>
+
+            <div id="solutions" class="solutions">
+                <h3>Step-by-Step Logic</h3>
+                <p id="solText"></p>
+            </div>
         </div>
     </div>
 
-    <div id="certModal" class="modal-overlay">
+    <div id="submissionModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
-            <h3>Claim Certificate</h3>
-            <input type="text" id="studentName" placeholder="Your Name" style="width:100%; margin-bottom:10px; padding:10px;">
-            <select id="teacherSelect" style="width:100%; padding:10px; margin-bottom:20px;">
-                <option value="">Select Teacher</option>
-                <option value="Mr. Smith">Mr. Smith</option>
-                <option value="Ms. Jones">Ms. Jones</option>
-            </select>
-            <button class="btn-check" onclick="processCertificate()">Download PNG</button>
-            <button class="btn-check" style="background-color:#6c757d;" onclick="closeModal()">Cancel</button>
+            <h3>Submit Your Score</h3>
+            
+            <div class="form-group">
+                <label for="studentNameInput">Your Name:</label>
+                <input type="text" id="studentNameInput" placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="teacherSelect">Your Teacher:</label>
+                <select id="teacherSelect">
+                    <option value="">-- Select Your Teacher --</option>
+                    <option value="Mr. Magee">Mr. Magee</option>
+                    <option value="Mr. Brooks">Mr. Brooks</option>
+                    <option value="Mr. Mason">Mr. Mason</option>
+                    <option value="Mr. Willoughby">Mr. Willoughby</option>
+                </select>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-check" id="confirmSubmitBtn" onclick="processSubmission()">Submit Score</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const brandPink = "#E64097", brandBlack = "#000000";
-        let currentMode = 'analysis', problemsAttempted = 0, problemsCorrect = 0, currentAnswers = {};
+        const brandPink = "#E64097";
+        const brandBlack = "#000000";
+
+        let currentMode = 'analysis'; 
+        let currentAnswers = { 
+            vNameHTML: '', vValue: 0, vUnit: '', 
+            iNameHTML: '', iValue: 0, iUnit: '', 
+            rValue: 0, rUnit: '', 
+            osc1Value: 0, osc1Unit: '', 
+            osc2Value: 0, osc2Unit: '',
+            osc3Value: 0, osc3Unit: '',
+            astableValue: 0, astableUnit: '',
+            astableTValue: 0, astableTUnit: ''
+        };
+        
+        let problemsAttempted = 0;
+        let problemsCorrect = 0;
+        let hasCheckedCurrentProblem = false;
+        let isCurrentProblemSolved = false;
+        let viewedSolution = false; 
+        let unitErrorMade = false;
+
+        function parseInput(str) {
+            if (!str) return null;
+            let cleanStr = str.toLowerCase().replace(/\s+/g, '');
+            cleanStr = cleanStr.replace(/\u03a9/g, 'ohms'); 
+            
+            let strippedStr = cleanStr.replace(/[a-z]+$/, '');
+            if (/^\d+\/\d+$/.test(strippedStr)) {
+                let parts = strippedStr.split('/');
+                return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio', isRatioString: true };
+            }
+            
+            const match = cleanStr.match(/^(-?[\d\.]+)([a-z]+)$/);
+            if (match) {
+                return { val: parseFloat(match[1]), unit: match[2] };
+            }
+            return { val: parseFloat(cleanStr), unit: '' };
+        }
+
+        function validateMatch(parsedInput, expectedVal, expectedUnit) {
+            if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
+            if (expectedUnit === 'ratio') {
+                if (parsedInput.isRatioString && Math.abs(parsedInput.val - expectedVal) < 0.001) return 'correct';
+                if (!parsedInput.isRatioString && Math.abs(parsedInput.val - expectedVal) < 0.001) return 'wrongunit'; 
+                return 'wrongval';
+            }
+            
+            if (parsedInput.unit === '') return 'nounit';
+            let valMatch = false;
+            
+            if (currentMode === 'astable') {
+                let userVal = parsedInput.val;
+                let userUnit = parsedInput.unit.toLowerCase();
+                
+                if (userUnit === 'khz' && expectedUnit.toLowerCase() === 'hz') {
+                    userVal *= 1000;
+                    parsedInput.unit = 'hz'; 
+                } else if (userUnit === 's' && expectedUnit.toLowerCase() === 'ms') {
+                    userVal *= 1000;
+                    parsedInput.unit = 'ms';
+                } else if (userUnit === 'ms' && expectedUnit.toLowerCase() === 's') {
+                    userVal /= 1000;
+                    parsedInput.unit = 's';
+                }
+                
+                valMatch = (Math.abs(userVal - expectedVal) / expectedVal) <= 0.02;
+            } else {
+                valMatch = Math.abs(parsedInput.val - expectedVal) < 0.001;
+            }
+
+            const unitMatch = parsedInput.unit === expectedUnit.toLowerCase();
+            if (valMatch && unitMatch) return 'correct';
+            if (valMatch && !unitMatch) return 'wrongunit';
+            return 'wrongval';
+        }
 
         function switchTab(mode) {
+            if (currentMode === mode) return;
             currentMode = mode;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + mode).classList.add('active');
-            document.getElementById('feedback').innerHTML = "";
-            document.getElementById('solutions').style.display = 'none';
+            
+            const tabs = ['analysis', 'divider', 'resistance', 'oscilloscope', 'astable'];
+            tabs.forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                if (el) el.classList.remove('active');
+            });
+            const activeTab = document.getElementById('tab-' + mode);
+            if (activeTab) activeTab.classList.add('active');
+            
             generateProblem();
         }
 
-        function drawLine(ctx, x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
-        function drawDot(ctx, x, y) { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fillStyle = brandBlack; ctx.fill(); }
-        function drawResistor(ctx, x, y, horizontal = false) {
+        function updateScoreboard() {
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            if (scoreDisplay) scoreDisplay.innerText = "Score: " + problemsCorrect + " / " + problemsAttempted;
+        }
+
+        function openSubmissionModal() {
+            if (problemsAttempted === 0) {
+                alert("Please attempt at least one question before downloading your score!");
+                return;
+            }
+            document.getElementById('studentNameInput').value = '';
+            document.getElementById('teacherSelect').value = '';
+            document.getElementById('submissionModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('submissionModal').style.display = 'none';
+        }
+
+        async function processSubmission() {
+            const studentName = document.getElementById('studentNameInput').value.trim();
+            const teacherName = document.getElementById('teacherSelect').value;
+
+            if (!studentName) { alert("Please enter your name."); return; }
+            if (!teacherName) { alert("Please select your teacher."); return; }
+
+            const topicMap = {
+                'analysis': 'Circuit Analysis',
+                'divider': 'Potential Divider',
+                'resistance': 'Total Resistance',
+                'oscilloscope': 'Oscilloscopes',
+                'astable': '555 Astable'
+            };
+            const currentTopic = topicMap[currentMode] || 'Unknown Topic';
+
+            closeModal();
+
+            const downloadBtn = document.getElementById('downloadBtn');
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = "&#8987; Submitting...";
+            downloadBtn.disabled = true;
+
+            const certCanvas = document.createElement('canvas');
+            certCanvas.width = 600; certCanvas.height = 420;
+            const ctx = certCanvas.getContext('2d');
+
+            ctx.fillStyle = "#fdf4f8";
+            ctx.fillRect(0, 0, certCanvas.width, certCanvas.height);
+            ctx.strokeStyle = brandPink; ctx.lineWidth = 12; ctx.strokeRect(6, 6, 588, 408);
+            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2;
+            ctx.strokeRect(18, 18, 564, 384);
+
+            ctx.textAlign = "center";
+            ctx.fillStyle = brandBlack; ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("ABINGDON ELECTRONICS", 300, 80);
+
+            ctx.fillStyle = brandPink; ctx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Basics Knowledge Check", 300, 120);
+            ctx.beginPath(); ctx.moveTo(150, 145); ctx.lineTo(450, 145); ctx.lineWidth = 2; ctx.stroke();
+
+            ctx.fillStyle = brandBlack; ctx.font = "28px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Student: " + studentName, 300, 190);
+            
+            ctx.fillStyle = "#555"; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Topic: " + currentTopic, 300, 225);
+
+            ctx.fillStyle = brandPink; ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText(problemsCorrect + " / " + problemsAttempted, 300, 305);
+            
+            ctx.fillStyle = brandBlack; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Questions Answered Correctly", 300, 335);
+
+            const today = new Date().toLocaleDateString('en-GB'); 
+            ctx.fillStyle = "#666"; ctx.font = "16px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Completed on: " + today + " | Teacher: " + teacherName, 300, 380);
+
+        const dataUrl = certCanvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            link.download = studentName.replace(/\s+/g, '_') + "_Abingdon_Electronics.png";
+            link.href = dataUrl;
+            link.click();
+
+            setTimeout(() => {
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+            }, 1000);
+        }
+
+        function drawResistor(ctx, x, y, horizontal = false, label = '', val = '') {
             ctx.beginPath();
-            if (horizontal) ctx.rect(x - 25, y - 12, 50, 24);
-            else ctx.rect(x - 12, y - 25, 24, 50);
-            ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
+            ctx.strokeStyle = brandBlack;
+            ctx.lineWidth = 2;
+            if (horizontal) {
+                ctx.rect(x - 25, y - 12, 50, 24);
+                ctx.fillStyle = "white";
+                ctx.fill();
+                ctx.stroke();
+                if (label || val) {
+                    ctx.fillStyle = brandBlack;
+                    ctx.font = "14px Arial";
+                    ctx.textAlign = "center";
+                    ctx.fillText(label, x, y - 18);
+                    ctx.fillText(val, x, y + 28);
+                }
+            } else {
+                ctx.rect(x - 12, y - 25, 24, 50);
+                ctx.fillStyle = "white";
+                ctx.fill();
+                ctx.stroke();
+                if (label || val) {
+                    ctx.fillStyle = brandBlack;
+                    ctx.font = "14px Arial";
+                    ctx.textAlign = "left";
+                    ctx.fillText(label, x + 18, y - 5);
+                    ctx.fillText(val, x + 18, y + 15);
+                }
+            }
+        }
+
+        function drawBattery(ctx, x, y, horizontal = false, label = '') {
+            ctx.beginPath();
+            ctx.strokeStyle = brandBlack;
+            ctx.lineWidth = 2;
+            if (horizontal) {
+                ctx.moveTo(x - 10, y - 15); ctx.lineTo(x - 10, y + 15);
+                ctx.moveTo(x - 2, y - 8); ctx.lineTo(x - 2, y + 8);
+                ctx.moveTo(x + 6, y - 15); ctx.lineTo(x + 6, y + 15);
+                ctx.moveTo(x + 14, y - 8); ctx.lineTo(x + 14, y + 8);
+                if (label) {
+                    ctx.fillStyle = brandBlack;
+                    ctx.font = "bold 14px Arial";
+                    ctx.textAlign = "center";
+                    ctx.fillText(label, x + 2, y - 22);
+                }
+            } else {
+                ctx.moveTo(x - 15, y - 10); ctx.lineTo(x + 15, y - 10);
+                ctx.moveTo(x - 8, y - 2); ctx.lineTo(x + 8, y - 2);
+                ctx.moveTo(x - 15, y + 6); ctx.lineTo(x + 15, y + 6);
+                ctx.moveTo(x - 8, y + 14); ctx.lineTo(x + 8, y + 14);
+                if (label) {
+                    ctx.fillStyle = brandBlack;
+                    ctx.font = "bold 14px Arial";
+                    ctx.textAlign = "left";
+                    ctx.fillText(label, x + 20, y + 5);
+                }
+            }
+            ctx.stroke();
+        }
+
+        function drawNode(ctx, x, y, label = '') {
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = brandBlack;
+            ctx.fill();
+            if (label) {
+                ctx.font = "bold 14px Arial";
+                ctx.fillText(label, x - 5, y - 12);
+            }
         }
 
         function generateProblem() {
+            hasCheckedCurrentProblem = false;
+            isCurrentProblemSolved = false;
+            viewedSolution = false;
+            unitErrorMade = false;
+            
+            const feedback = document.getElementById('feedback');
+            const sol = document.getElementById('solutions');
+            const helpBtn = document.getElementById('helpBtn');
+            
+            if (feedback) feedback.innerHTML = "";
+            if (sol) sol.style.display = "none";
+            if (helpBtn) helpBtn.style.display = "none";
+
+            document.getElementById('inputV').value = "";
+            document.getElementById('inputI').value = "";
+            document.getElementById('inputR').value = "";
+            document.getElementById('inputOsc1').value = "";
+            document.getElementById('inputOsc2').value = "";
+            document.getElementById('inputOsc3').value = "";
+            document.getElementById('inputAstable').value = "";
+            document.getElementById('inputAstableT').value = "";
+
+            document.getElementById('inputGroupV').style.display = "none";
+            document.getElementById('inputGroupI').style.display = "none";
+            document.getElementById('inputGroupR').style.display = "none";
+            document.getElementById('inputGroupOsc1').style.display = "none";
+            document.getElementById('inputGroupOsc2').style.display = "none";
+            document.getElementById('inputGroupOsc3').style.display = "none";
+            document.getElementById('inputGroupAstable').style.display = "none";
+
             const canvas = document.getElementById('circuitCanvas');
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2;
-            const inputs = document.getElementById('quizInputs');
-            inputs.innerHTML = "";
 
-            if (currentMode === 'astable') {
-                const RA = [1, 2.2, 4.7, 10, 22, 47][Math.floor(Math.random()*6)];
-                const RB = [1, 2.2, 4.7, 10, 22, 47][Math.floor(Math.random()*6)];
-                const C = [1, 10, 47, 100][Math.floor(Math.random()*4)];
-                const freq = 1.44 / (((RA + 2*RB) * 1000) * (C * 1e-6));
-                currentAnswers = { val: freq.toFixed(1), unit: 'Hz' };
-
-                drawLine(ctx, 100, 60, 500, 60); drawLine(ctx, 100, 360, 500, 360);
-                ctx.strokeRect(120, 150, 120, 130);
-                ctx.font = "bold 22px Arial"; ctx.textAlign = "center"; ctx.fillText("555", 180, 220);
-                
-                drawLine(ctx, 300, 60, 300, 90); drawResistor(ctx, 300, 115);
-                drawLine(ctx, 300, 140, 300, 190); drawResistor(ctx, 300, 215);
-                drawLine(ctx, 300, 165, 240, 165); drawLine(ctx, 300, 280, 240, 280); drawDot(ctx, 300, 280);
-
-                // Capacitor
-                drawLine(ctx, 300, 240, 300, 320);
-                ctx.beginPath(); ctx.moveTo(275, 320); ctx.lineTo(325, 320);
-                ctx.moveTo(275, 328); ctx.lineTo(325, 328); ctx.stroke();
-                drawLine(ctx, 300, 328, 300, 360);
-
-                ctx.textAlign = "left"; ctx.font = "16px Arial"; ctx.fillStyle = brandBlack;
-                ctx.fillText(RA + " kΩ", 335, 120); ctx.fillText(RB + " kΩ", 335, 220); ctx.fillText(C + " μF", 335, 330);
-
-                inputs.innerHTML = 'Frequency: <input type="text" id="ans"> Hz';
-                document.getElementById('solText').innerHTML = `f = 1.44 / ((RA + 2RB) × C) = ${freq.toFixed(1)} Hz`;
-            } else {
-                // Simplified placeholder for other modes to ensure the script runs
-                ctx.font = "20px Arial"; ctx.fillText(currentMode.toUpperCase() + " Mode Active", 300, 200);
-                inputs.innerHTML = 'Value: <input type="text" id="ans">';
+            if (currentMode === 'analysis') {
+                generateAnalysisProblem(ctx);
+            } else if (currentMode === 'divider') {
+                generateDividerProblem(ctx);
+            } else if (currentMode === 'resistance') {
+                generateResistanceProblem(ctx);
+            } else if (currentMode === 'oscilloscope') {
+                generateOscilloscopeProblem(ctx);
+            } else if (currentMode === 'astable') {
+                generateAstableProblem(ctx);
             }
+        }
+
+        function generateAnalysisProblem(ctx) {
+            document.getElementById('inputGroupV').style.display = "inline-block";
+            document.getElementById('inputGroupI').style.display = "inline-block";
+            
+            const vTotal = (Math.floor(Math.random() * 10) + 1) * 2;
+            const r1 = (Math.floor(Math.random() * 5) + 1) * 100;
+            const r2 = (Math.floor(Math.random() * 5) + 1) * 100;
+            
+            const iTotalmA = vTotal / (r1 + r2) * 1000;
+            const v1 = iTotalmA / 1000 * r1;
+            const v2 = iTotalmA / 1000 * r2;
+
+            ctx.strokeStyle = brandBlack;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(150, 80, 300, 200);
+
+            drawBattery(ctx, 150, 180, false, vTotal + "V");
+            drawResistor(ctx, 300, 80, true, "R1", r1 + " \u03a9");
+            drawResistor(ctx, 450, 180, false, "R2", r2 + " \u03a9");
+
+            document.getElementById('labelV').innerHTML = "V across R2 = ";
+            document.getElementById('labelI').innerHTML = "Total Current = ";
+
+            currentAnswers.vValue = v2;
+            currentAnswers.vUnit = "v";
+            currentAnswers.iValue = iTotalmA;
+            currentAnswers.iUnit = "ma";
+
+            document.getElementById('solText').innerHTML = 
+                "1. Find Total Resistance: R_total = R1 + R2 = " + r1 + " + " + r2 + " = " + (r1 + r2) + " \u03a9<br>" +
+                "2. Find Total Current: I = V / R_total = " + vTotal + " / " + (r1 + r2) + " = " + (iTotalmA / 1000).toFixed(4) + " A (" + iTotalmA.toFixed(2) + " mA)<br>" +
+                "3. Find Voltage across R2: V = I * R2 = " + (iTotalmA / 1000).toFixed(4) + " * " + r2 + " = " + v2.toFixed(2) + " V";
+        }
+
+        function generateDividerProblem(ctx, canvas) {
+            const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
+            const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
+            const cleanMathScenarios = [
+                { V: 10, R1: 1, R2: 1 }, { V: 12, R1: 1, R2: 2 }, { V: 12, R1: 2, R2: 1 },
+                { V: 20, R1: 3, R2: 1 }, { V: 9, R1: 1, R2: 2 }, { V: 24, R1: 3, R2: 5 },
+                { V: 5, R1: 2, R2: 3 }, { V: 15, R1: 2, R2: 1 }
+            ];
+            const sc = cleanMathScenarios[Math.floor(Math.random() * cleanMathScenarios.length)];
+            const targetIsR1 = Math.random() < 0.5;
+            const Rtot = sc.R1 + sc.R2;
+            const V1 = (sc.V * sc.R1) / Rtot;
+            const V2 = (sc.V * sc.R2) / Rtot;
+
+            currentAnswers.vNameHTML = targetIsR1 ? 'V<sub>1</sub>' : 'V<sub>2</sub>';
+            currentAnswers.vValue = targetIsR1 ? V1 : V2;
+            currentAnswers.vUnit = vUnit;
+
+            document.getElementById('labelV').innerHTML = "Find <span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.font = "bold 18px Arial";
+            drawLine(ctx, 150, 60, 450, 60); drawLine(ctx, 150, 360, 450, 360);
+            ctx.fillStyle = brandBlack; ctx.fillText("+Vsupply = " + sc.V + " " + vUnit, 230, 45);
+            ctx.fillText("0V (GND)", 260, 390);
+
+            drawLine(ctx, 300, 60, 300, 120); drawResistor(ctx, 300, 145);
+            drawLine(ctx, 300, 170, 300, 230); drawResistor(ctx, 300, 255);
+            drawLine(ctx, 300, 280, 300, 360);
+
+            ctx.font = "16px Arial";
+            ctx.fillText("R\u2081 = " + sc.R1 + " " + rUnitVisual, 325, 145);
+            ctx.fillText("R\u2082 = " + sc.R2 + " " + rUnitVisual, 325, 255);
+            ctx.fillStyle = targetIsR1 ? brandPink : brandBlack; ctx.fillText("V\u2081", 270, 145);
+            ctx.fillStyle = !targetIsR1 ? brandPink : brandBlack; ctx.fillText("V\u2082", 270, 255);
+
+            document.getElementById('solText').innerHTML = 
+                "<strong>" + currentAnswers.vNameHTML.replace('sub', 'u208').replace('</sub>','') + " = " + currentAnswers.vValue + " " + vUnit + "</strong><br>" +
+                "<em>Logic:</em> Vout = (R_target / R_total) * Vsupply<br>" +
+                "Vout = (" + (targetIsR1 ? sc.R1 : sc.R2) + " / " + Rtot + ") * " + sc.V + " " + vUnit;
+        }
+
+        function generateResistanceProblem(ctx, canvas) {
+            const isParallel = Math.random() < 0.5;
+            const r1 = (Math.floor(Math.random() * 10) + 1) * 10;
+            const r2 = (Math.floor(Math.random() * 10) + 1) * 10;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.font = "bold 18px Arial";
+
+            if (isParallel) {
+                currentAnswers.rValue = (r1 * r2) / (r1 + r2);
+                drawLine(ctx, 150, 210, 200, 210); drawLine(ctx, 200, 145, 200, 275);
+                drawLine(ctx, 200, 145, 250, 145); drawLine(ctx, 200, 275, 250, 275);
+                drawResistor(ctx, 300, 145, true); drawResistor(ctx, 300, 275, true);
+                drawLine(ctx, 350, 145, 400, 145); drawLine(ctx, 350, 275, 400, 275);
+                drawLine(ctx, 400, 145, 400, 275); drawLine(ctx, 400, 210, 450, 210);
+                ctx.fillText("R\u2081 = " + r1 + " \u03a9", 260, 110);
+                ctx.fillText("R\u2082 = " + r2 + " \u03a9", 260, 330);
+                document.getElementById('solText').innerHTML = "Parallel: 1/Rt = 1/R1 + 1/R2. Rt = (R1*R2)/(R1+R2) = (" + r1 + "*" + r2 + ")/(" + r1 + "+" + r2 + ") = " + currentAnswers.rValue.toFixed(2) + " \u03a9";
+            } else {
+                currentAnswers.rValue = r1 + r2;
+                drawLine(ctx, 100, 210, 200, 210); drawResistor(ctx, 250, 210, true);
+                drawLine(ctx, 300, 210, 350, 210); drawResistor(ctx, 400, 210, true);
+                drawLine(ctx, 450, 210, 550, 210);
+                ctx.fillText("R\u2081 = " + r1 + " \u03a9", 220, 170);
+                ctx.fillText("R\u2082 = " + r2 + " \u03a9", 370, 170);
+                document.getElementById('solText').innerHTML = "Series: Rt = R1 + R2 = " + r1 + " + " + r2 + " = " + currentAnswers.rValue + " \u03a9";
+            }
+            currentAnswers.rUnit = "ohms";
+        }
+
+        function generateOscilloscopeProblem(ctx, canvas) {
+            const voltsDiv = [1, 2, 5][Math.floor(Math.random() * 3)];
+            const timeDiv = [1, 2, 5, 10][Math.floor(Math.random() * 4)];
+            const peakDivs = Math.floor(Math.random() * 3) + 1;
+            const periodDivs = [2, 4, 8][Math.floor(Math.random() * 3)];
+
+            currentAnswers.osc1Value = peakDivs * voltsDiv; currentAnswers.osc1Unit = "v";
+            currentAnswers.osc2Value = periodDivs * timeDiv; currentAnswers.osc2Unit = "ms";
+            currentAnswers.osc3Value = 1000 / (periodDivs * timeDiv); currentAnswers.osc3Unit = "hz";
+
+            document.getElementById('labelOsc1').innerHTML = "Peak Voltage = ";
+            document.getElementById('labelOsc2').innerHTML = "Time Period = ";
+            document.getElementById('labelOsc3').innerHTML = "Frequency = ";
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#ddd"; ctx.lineWidth = 1;
+            for(let i=0; i<=600; i+=40) { drawLine(ctx, i, 0, i, 420); }
+            for(let j=0; j<=420; j+=40) { drawLine(ctx, 0, j, 600, j); }
+            
+            ctx.strokeStyle = brandPink; ctx.lineWidth = 3; ctx.beginPath();
+            for(let x=0; x<=600; x++) {
+                let y = 210 - (peakDivs * 40) * Math.sin((x / (periodDivs * 40)) * 2 * Math.PI);
+                x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = brandBlack; ctx.font = "bold 16px Arial";
+            ctx.fillText("Volts/Div: " + voltsDiv + " V", 20, 30);
+            ctx.fillText("Time/Div: " + timeDiv + " ms", 20, 55);
+
+            document.getElementById('solText').innerHTML = 
+                "1. Peak = " + peakDivs + " divs * " + voltsDiv + "V = " + currentAnswers.osc1Value + " V<br>" +
+                "2. Period = " + periodDivs + " divs * " + timeDiv + "ms = " + currentAnswers.osc2Value + " ms<br>" +
+                "3. Freq = 1 / Period = 1 / " + (currentAnswers.osc2Value/1000) + "s = " + currentAnswers.osc3Value.toFixed(1) + " Hz";
+        }
+
+        function generateAstableProblem(ctx, canvas) {
+            const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
+            const R2 = (Math.floor(Math.random() * 9) + 1) * 1000;
+            const C_uF = [0.1, 1, 10, 47][Math.floor(Math.random() * 4)];
+            const C_farads = C_uF / 1000000;
+
+            const freq = 1.44 / ((R1 + 2 * R2) * C_farads);
+            const period_ms = (1 / freq) * 1000;
+
+            currentAnswers.astableValue = freq; currentAnswers.astableUnit = "hz";
+            currentAnswers.astableTValue = period_ms; currentAnswers.astableTUnit = "ms";
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2;
+            ctx.strokeRect(225, 120, 150, 180); 
+            ctx.font = "bold 20px Arial"; ctx.fillText("555", 280, 215);
+
+            ctx.font = "14px Arial";
+            ctx.fillText("R1 = " + (R1/1000) + " k\u03a9", 140, 100);
+            ctx.fillText("R2 = " + (R2/1000) + " k\u03a9", 140, 180);
+            ctx.fillText("C = " + C_uF + " \u03bcF", 390, 280);
+
+            document.getElementById('solText').innerHTML = 
+                "f = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = " + freq.toFixed(1) + " Hz<br>" +
+                "T = 1 / f = " + period_ms.toFixed(1) + " ms";
         }
 
         function checkAnswers() {
-            const userVal = document.getElementById('ans').value;
-            problemsAttempted++;
-            if (Math.abs(parseFloat(userVal) - parseFloat(currentAnswers.val)) < (parseFloat(currentAnswers.val) * 0.05)) {
-                document.getElementById('feedback').innerHTML = "<span style='color:green;'>Correct!</span>";
-                problemsCorrect++;
-            } else {
-                document.getElementById('feedback').innerHTML = "<span style='color:red;'>Incorrect.</span>";
+            if (isCurrentProblemSolved) return;
+            
+            const feedback = document.getElementById('feedback');
+            const helpBtn = document.getElementById('helpBtn');
+            let results = [];
+            
+            if (currentMode === 'analysis') {
+                const vIn = parseInput(document.getElementById('inputV').value);
+                const iIn = parseInput(document.getElementById('inputI').value);
+                results.push(validateMatch(vIn, currentAnswers.vValue, currentAnswers.vUnit));
+                results.push(validateMatch(iIn, currentAnswers.iValue, currentAnswers.iUnit));
+            } else if (currentMode === 'divider') {
+                const vIn = parseInput(document.getElementById('inputV').value);
+                results.push(validateMatch(vIn, currentAnswers.vValue, currentAnswers.vUnit));
+            } else if (currentMode === 'resistance') {
+                const rIn = parseInput(document.getElementById('inputR').value);
+                results.push(validateMatch(rIn, currentAnswers.rValue, currentAnswers.rUnit));
+            } else if (currentMode === 'oscilloscope') {
+                const o1 = parseInput(document.getElementById('inputOsc1').value);
+                const o2 = parseInput(document.getElementById('inputOsc2').value);
+                const o3 = parseInput(document.getElementById('inputOsc3').value);
+                results.push(validateMatch(o1, currentAnswers.osc1Value, currentAnswers.osc1Unit));
+                results.push(validateMatch(o2, currentAnswers.osc2Value, currentAnswers.osc2Unit));
+                results.push(validateMatch(o3, currentAnswers.osc3Value, currentAnswers.osc3Unit));
+            } else if (currentMode === 'astable') {
+                const aF = parseInput(document.getElementById('inputAstable').value);
+                const aT = parseInput(document.getElementById('inputAstableT').value);
+                results.push(validateMatch(aF, currentAnswers.astableValue, currentAnswers.astableUnit));
+                results.push(validateMatch(aT, currentAnswers.astableTValue, currentAnswers.astableTUnit));
             }
-            document.getElementById('scoreDisplay').innerHTML = `Score: ${problemsCorrect} / ${problemsAttempted}`;
+
+            if (!hasCheckedCurrentProblem) {
+                problemsAttempted++;
+                hasCheckedCurrentProblem = true;
+            }
+
+            const allCorrect = results.every(r => r === 'correct');
+            if (allCorrect) {
+                feedback.innerHTML = "<span style='color: #198754;'>Excellent! All correct.</span>";
+                if (!viewedSolution && !unitErrorMade) { problemsCorrect++; }
+                isCurrentProblemSolved = true;
+                if (helpBtn) helpBtn.style.display = 'none';
+            } else {
+                if (helpBtn) helpBtn.style.display = 'inline-block';
+                if (results.includes('nounit')) {
+                    unitErrorMade = true;
+                    feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget your units! (Mark lost for this question)</span>";
+                } else if (results.includes('wrongunit')) {
+                    unitErrorMade = true;
+                    feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost for this question)</span>";
+                } else {
+                    feedback.innerHTML = "<span style='color: #dc3545;'>At least one is incorrect. Check your math!</span>";
+                }
+            }
+            updateScoreboard();
         }
 
         function toggleSolutions() {
-            const s = document.getElementById('solutions');
-            s.style.display = (s.style.display === 'none') ? 'block' : 'none';
+            const sol = document.getElementById('solutions');
+            if (!sol) return;
+            if (sol.style.display === 'none' || sol.style.display === '') {
+                sol.style.display = 'block'; viewedSolution = true;
+            } else { sol.style.display = 'none'; }
         }
 
-        function openModal() { document.getElementById('certModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('certModal').style.display = 'none'; }
-
-        function processCertificate() {
-            const name = document.getElementById('studentName').value;
-            if (!name) return alert("Enter Name");
-            const canvas = document.createElement('canvas');
-            canvas.width = 600; canvas.height = 400;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#fff"; ctx.fillRect(0,0,600,400);
-            ctx.strokeStyle = brandPink; ctx.lineWidth = 10; ctx.strokeRect(5,5,590,390);
-            ctx.textAlign = "center"; ctx.fillStyle = brandBlack;
-            ctx.font = "bold 30px Arial"; ctx.fillText("ELECTRONICS CERTIFICATE", 300, 80);
-            ctx.font = "24px Arial"; ctx.fillText(name, 300, 180);
-            ctx.font = "20px Arial"; ctx.fillText("Score: " + problemsCorrect + "/" + problemsAttempted, 300, 250);
-            
-            const link = document.createElement('a');
-            link.download = 'certificate.png';
-            link.href = canvas.toDataURL();
-            link.click();
-            closeModal();
-        }
-
-        window.onload = generateProblem;
+        window.onload = function() { generateProblem(); };
     </script>
 </body>
 </html>
