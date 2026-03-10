@@ -568,14 +568,13 @@
             ];
             
             const sc = cleanMathScenarios[Math.floor(Math.random() * cleanMathScenarios.length)];
-            const targetIsR1 = Math.random() < 0.5; 
-            
             const Rtot = sc.R1 + sc.R2;
-            const V1 = (sc.V * sc.R1) / Rtot;
-            const V2 = (sc.V * sc.R2) / Rtot;
-            
-            currentAnswers.vNameHTML = targetIsR1 ? 'V<sub>1</sub>' : 'V<sub>2</sub>';
-            currentAnswers.vValue = targetIsR1 ? V1 : V2;
+        const V1 = (sc.V * sc.R1) / Rtot;
+        const V2 = (sc.V * sc.R2) / Rtot;
+        
+        // Always ask for Vout (which is across R2)
+        currentAnswers.vNameHTML = 'V<sub>OUT</sub>';
+        currentAnswers.vValue = V2;
             currentAnswers.vUnit = vUnit;
             
             document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
@@ -593,17 +592,43 @@
             ctx.fillText("R\u2081 = " + sc.R1 + " " + rUnitVisual, 330, 150);
             ctx.fillText("R\u2082 = " + sc.R2 + " " + rUnitVisual, 330, 260);
             
-            ctx.fillStyle = brandPink; ctx.font = "bold 16px Arial";
-            ctx.fillText((targetIsR1 ? 'V\u2081' : 'V\u2082') + " = ?", 240, targetIsR1 ? 150 : 260);
+            // 1. Draw the junction dot between R1 and R2
+            ctx.beginPath();
+            ctx.arc(300, 200, 4, 0, Math.PI * 2);
+            ctx.fillStyle = "#000"; 
+            ctx.fill();
+
+            // 2. Draw horizontal branch to the right
+            ctx.beginPath();
+            ctx.moveTo(300, 200);
+            ctx.lineTo(380, 200);
+            ctx.strokeStyle = "#000";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 3. Draw the unfilled small circle (output port)
+            ctx.beginPath();
+            ctx.arc(384, 200, 4, 0, Math.PI * 2);
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.strokeStyle = "#000";
+            ctx.stroke();
+
+            // 4. Draw VOUT with the canvas subscript trick
+            ctx.fillStyle = brandPink;
+            ctx.font = "bold 18px Arial";
+            ctx.fillText("V", 400, 206);
+            ctx.font = "bold 11px Arial";
+            ctx.fillText("OUT", 413, 212);
             
-            const targetR = targetIsR1 ? sc.R1 : sc.R2;
+            // 5. Update the solutions text to always use R2 for VOUT
             const solText = document.getElementById('solText');
             if (solText) {
                 solText.innerHTML = 
                     "<strong>" + currentAnswers.vNameHTML + " = " + currentAnswers.vValue + " " + vUnit + "</strong> <br><br>" +
                     "<em>Step 1:</em> Understand the Equation: <strong>Vout = Vin &times; (R / Rtotal)</strong><br>" +
                     "<em>Step 2:</em> Rtotal = " + sc.R1 + " + " + sc.R2 + " = <strong>" + Rtot + " " + rUnitVisual + "</strong><br>" +
-                    "<em>Step 3:</em> " + currentAnswers.vNameHTML + " = " + sc.V + " " + vUnit + " &times; (" + targetR + " / " + Rtot + ") = <strong>" + currentAnswers.vValue + " " + vUnit + "</strong>";
+                    "<em>Step 3:</em> " + currentAnswers.vNameHTML + " = " + sc.V + " " + vUnit + " &times; (" + sc.R2 + " / " + Rtot + ") = <strong>" + currentAnswers.vValue + " " + vUnit + "</strong>";
             }
         }
 
