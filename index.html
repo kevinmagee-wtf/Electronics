@@ -108,11 +108,7 @@
 
                     <div class="input-group" id="inputGroupR" style="display:none;">
     <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
-    <input type="number" id="inputR" step="0.01" placeholder="e.g. 15.52">
-    <select id="unitR">
-        <option value="ohms">&Omega;</option>
-        <option value="kohms">k&Omega;</option>
-    </select>
+    <input type="text" id="inputR" placeholder="e.g. 52.26 Ohms">
 </div>
 
                     <div class="input-group" id="inputGroupOscAmp" style="display:none;">
@@ -587,7 +583,6 @@ function generateAnalysisProblem(ctx, canvas) {
 function generateGrade9Resistance() {
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas.getContext('2d');
-    // Randomize the unit for the problem
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
     const expectedUnitStr = rUnitVisual === 'k\u03A9' ? 'kohms' : 'ohms';
 
@@ -610,54 +605,56 @@ function generateGrade9Resistance() {
     // --- COMPLETE DRAWING (Fixed Coordinates) ---
     ctx.strokeStyle = brandBlack; ctx.lineWidth = 2;
     
-    // Draw Top and Bottom Supply Rails (To make it look complete)
+    // Draw Rails
     drawLine(ctx, 150, 40, 450, 40); 
     drawLine(ctx, 150, 360, 450, 360);
     ctx.fillStyle = brandBlack; ctx.font = "bold 16px Arial";
     ctx.fillText("+V", 290, 30); ctx.fillText("GND", 285, 385);
 
-    // Main vertical path
-    drawLine(ctx, 300, 40, 300, 80); 
-    drawResistor(ctx, 300, 105); // R1
-    drawLine(ctx, 300, 130, 300, 170);
+    // Main path
+    drawLine(ctx, 300, 40, 300, 75); 
+    drawResistor(ctx, 300, 100); // R1
+    drawLine(ctx, 300, 125, 300, 165);
     
     // Parallel Section
-    drawLine(ctx, 220, 170, 380, 170); // Top branch wire
-    drawLine(ctx, 220, 170, 220, 210); drawResistor(ctx, 220, 235); // R2
-    drawLine(ctx, 380, 170, 380, 210); drawResistor(ctx, 380, 235); // R3
-    drawLine(ctx, 220, 260, 220, 320); 
-    drawLine(ctx, 380, 260, 380, 320);
-    drawLine(ctx, 220, 320, 380, 320); // Bottom branch wire
-    drawLine(ctx, 300, 320, 300, 360); // Final ground wire
+    drawLine(ctx, 220, 165, 380, 165); 
+    drawLine(ctx, 220, 165, 220, 205); drawResistor(ctx, 220, 230); // R2
+    drawLine(ctx, 380, 165, 380, 205); drawResistor(ctx, 380, 230); // R3
+    drawLine(ctx, 220, 255, 220, 315); 
+    drawLine(ctx, 380, 255, 380, 315);
+    drawLine(ctx, 220, 315, 380, 315); 
+    drawLine(ctx, 300, 315, 300, 360); 
 
     // Labels
     ctx.fillStyle = brandBlack; ctx.font = "16px Arial";
-    ctx.fillText("R\u2081 = " + r1 + " " + rUnitVisual, 335, 110);
-    ctx.fillText("R\u2082 = " + r2 + " " + rUnitVisual, 115, 240); 
-    ctx.fillText("R\u2083 = " + r3 + " " + rUnitVisual, 405, 240);
+    ctx.fillText("R\u2081 = " + r1 + " " + rUnitVisual, 335, 105);
+    ctx.fillText("R\u2082 = " + r2 + " " + rUnitVisual, 115, 235); 
+    ctx.fillText("R\u2083 = " + r3 + " " + rUnitVisual, 405, 235);
 
     // --- SOLUTION TEXT ---
     const solText = document.getElementById('solText');
     if (solText) {
-        let logicHTML = "<strong>Solution: R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>";
+        let logicHTML = "<h3 style='color: #d63384;'>Step-by-Step Logic</h3>";
+        logicHTML += "<strong>R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>";
         logicHTML += "<em>Step 1:</em> Find R<sub>p</sub> using <strong>Product &divide; Sum</strong>.<br>";
-        logicHTML += "R<sub>p</sub> = (" + r2 + " &times; " + r3 + ") / (" + r2 + " + " + r3 + ") = <strong>" + rp_rounded + " " + rUnitVisual + "</strong><br><br>";
+        logicHTML += "R<sub>p</sub> = (" + r2 + " &times; " + r3 + ") / (" + r2 + " + " + r3 + ") = " + rp_rounded + " " + rUnitVisual + "<br><br>";
         logicHTML += "<em>Step 2:</em> Add series R\u2081.<br>";
         logicHTML += "R<sub>Total</sub> = " + r1 + " + " + rp_rounded + " = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
         solText.innerHTML = logicHTML;
     }
 
-    // --- UI CONSISTENCY ---
+    // Set internal answer variables
     currentAnswers.rValue = rTotal;
     currentAnswers.rUnit = expectedUnitStr;
     
+    // UI Cleanup
     document.getElementById('inputR').value = '';
     document.getElementById('feedback').innerHTML = '';
     document.getElementById('solutions').style.display = 'none';
     document.getElementById('helpBtn').style.display = 'inline-block';
 }
         
-// Function to draw specific components over the standard resistor
+      // Function to draw specific components over the standard resistor
 function drawComponent(ctx, type, x, y) {
     drawResistor(ctx, x, y); // Always draw the base resistor rectangle first
     
@@ -958,7 +955,7 @@ function generateDividerProblem(ctx, canvas) {
     }
 }
 
-    function generateResistanceProblem(ctx, canvas) {
+function generateResistanceProblem(ctx, canvas) {
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
     const expectedUnitStr = rUnitVisual === 'k\u03A9' ? 'kohms' : 'ohms';
 
@@ -1144,7 +1141,7 @@ function generateProblem() {
 }
         
         
-        function drawRoundRect(ctx, x, y, width, height, radius) {
+function drawRoundRect(ctx, x, y, width, height, radius) {
             ctx.beginPath(); ctx.moveTo(x + radius, y); ctx.lineTo(x + width - radius, y);
             ctx.quadraticCurveTo(x + width, y, x + width, y + radius); ctx.lineTo(x + width, y + height - radius);
             ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height); ctx.lineTo(x + radius, y + height);
@@ -1152,7 +1149,7 @@ function generateProblem() {
             ctx.quadraticCurveTo(x, y, x + radius, y); ctx.closePath(); ctx.fill(); ctx.stroke();
         }
 
-        function generateOscilloscopeProblem(ctx, canvas) {
+function generateOscilloscopeProblem(ctx, canvas) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             ctx.fillStyle = "#e0e5e7"; ctx.strokeStyle = "#888"; ctx.lineWidth = 2; drawRoundRect(ctx, 20, 20, 400, 320, 25);
@@ -1243,7 +1240,7 @@ function generateProblem() {
         if (solText) solText.innerHTML = solTextStr;
         }
 
-       function checkAnswers() {
+function checkAnswers() {
             if (isCurrentProblemSolved) return; 
 
             const feedback = document.getElementById('feedback');
@@ -1286,13 +1283,10 @@ function generateProblem() {
                 let pV = parseInput(document.getElementById('inputV').value);
                 results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
             } else if (currentMode === 'resistance') {
-                // NEW: Gather number and dropdown unit separately
-                let rVal = parseFloat(document.getElementById('inputR').value);
-                let rUnit = document.getElementById('unitR').value;
-                
-                // Package them for the existing validateMatch function
-                let pR = { val: rVal, unit: rUnit };
-                results.push(validateMatch(pR, currentAnswers.rValue, currentAnswers.rUnit));
+    // Uses parseInput to handle text like "52.26 Ohms" or "10.5 kohms"
+    let pR = parseInput(document.getElementById('inputR').value);
+    results.push(validateMatch(pR, currentAnswers.rValue, currentAnswers.rUnit));
+    }
             } else if (currentMode === 'oscilloscope') {
             let pAmp = parseInput(document.getElementById('inputOscAmp').value);
             results.push(validateMatch(pAmp, currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
@@ -1365,7 +1359,7 @@ function generateProblem() {
             } else { sol.style.display = 'none'; }
         }
         
-       function generateAstableProblem(ctx, canvas) {
+function generateAstableProblem(ctx, canvas) {
     document.getElementById('inputGroupAstable').style.display = "inline-block";
     const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
     const R2 = (Math.floor(Math.random() * 9) + 1) * 1000;
