@@ -451,7 +451,7 @@ function generateProblem() {
         if (el) el.style.display = 'none';
     });
 
-    // --- 3. MODE LOGIC (Fixed Braces) ---
+    // --- 3. MODE LOGIC (Fixed structural flow) ---
     if (currentMode === 'analysis') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
         document.getElementById('inputGroupI').style.display = 'inline-block';
@@ -470,6 +470,7 @@ function generateProblem() {
     } else if (currentMode === 'astable') {
         generateAstableProblem(ctx, canvas);
     }
+}
 } // Function finally ends here correctly
 
 function generateAnalysisProblem(ctx, canvas) {
