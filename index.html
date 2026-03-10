@@ -111,14 +111,29 @@
                         <input type="text" id="inputR" placeholder="e.g. 100 Ohms">
                     </div>
 
-                    <div class="input-group" id="inputGroupOsc1" style="display:none;">
-                        <label id="labelOsc1" for="inputOsc1">Amplitude = </label>
-                        <input type="text" id="inputOsc1" placeholder="e.g. 5 V">
+                    <div class="input-group" id="inputGroupOscAmp" style="display:none;">
+                        <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label>
+                        <input type="text" id="inputOscAmp" placeholder="e.g. 5 V">
                     </div>
-
-                    <div class="input-group" id="inputGroupOsc2" style="display:none;">
-                        <label id="labelOsc2" for="inputOsc2">Question = </label>
-                        <input type="text" id="inputOsc2" placeholder="e.g. 20 ms">
+                    <div class="input-group" id="inputGroupOscMark" style="display:none;">
+                        <label id="labelOscMark" for="inputOscMark">Mark Time = </label>
+                        <input type="text" id="inputOscMark" placeholder="e.g. 10 ms">
+                    </div>
+                    <div class="input-group" id="inputGroupOscSpace" style="display:none;">
+                        <label id="labelOscSpace" for="inputOscSpace">Space Time = </label>
+                        <input type="text" id="inputOscSpace" placeholder="e.g. 5 ms">
+                    </div>
+                    <div class="input-group" id="inputGroupOscPeriod" style="display:none;">
+                        <label id="labelOscPeriod" for="inputOscPeriod">Time Period = </label>
+                        <input type="text" id="inputOscPeriod" placeholder="e.g. 15 ms">
+                    </div>
+                    <div class="input-group" id="inputGroupOscFreq" style="display:none;">
+                        <label id="labelOscFreq" for="inputOscFreq">Frequency = </label>
+                        <input type="text" id="inputOscFreq" placeholder="e.g. 66.7 Hz">
+                    </div>
+                    <div class="input-group" id="inputGroupOscRatio" style="display:none;">
+                        <label id="labelOscRatio" for="inputOscRatio">Mark-Space ratio = </label>
+                        <input type="text" id="inputOscRatio" placeholder="e.g. 2">
                     </div>
                     
                    <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
@@ -404,13 +419,13 @@
             if (solutions) solutions.style.display = 'none';
             if (feedback) feedback.innerHTML = '';
 
-            const inputs = ['inputV', 'inputI', 'inputR', 'inputOsc1', 'inputOsc2'];
+            const inputs = ['inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = '';
             });
 
-            const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOsc1', 'inputGroupOsc2', 'inputGroupAstable'];
+            const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupAstable'];
             groups.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'none';
@@ -427,8 +442,6 @@
                 document.getElementById('inputGroupR').style.display = 'inline-block';
                 generateResistanceProblem(ctx, canvas); 
             } else if (currentMode === 'oscilloscope') {
-                document.getElementById('inputGroupOsc1').style.display = 'inline-block';
-                document.getElementById('inputGroupOsc2').style.display = 'inline-block';
                 generateOscilloscopeProblem(ctx, canvas);
             }
             else if (currentMode === 'astable') {
@@ -719,33 +732,40 @@
             }
             ctx.stroke();
 
-            const qTypes = [
-                { text: "Mark Time = ", ans: markDivs * tBase, unit: tBaseUnit, sol: markDivs + " divs &times; " + tBase + " " + tBaseUnit + "/div" },
-                { text: "Space Time = ", ans: spaceDivs * tBase, unit: tBaseUnit, sol: spaceDivs + " divs &times; " + tBase + " " + tBaseUnit + "/div" },
-                { text: "Time Period = ", ans: periodTime, unit: tBaseUnit, sol: "(" + markDivs + " + " + spaceDivs + ") divs &times; " + tBase + " " + tBaseUnit + "/div" },
-                { text: "Frequency = ", ans: frequency, unit: "Hz", sol: (tBaseUnit === 'ms' ? "1 / (" + periodTime + " / 1000) s" : "1 / " + periodTime + " s") },
-                { text: "Mark-Space Ratio = ", ans: markDivs / spaceDivs, unit: "ratio", sol: "Mark takes " + markDivs + " divs, Space takes " + spaceDivs + " divs. Fraction is " + markDivs + "/" + spaceDivs + "." }
-            ];
+            // Setup answers for grading
+        currentAnswers.oscAmpValue = amplitude; currentAnswers.oscAmpUnit = vGainUnit;
+        currentAnswers.oscMarkValue = markDivs * tBase; currentAnswers.oscMarkUnit = tBaseUnit;
+        currentAnswers.oscSpaceValue = spaceDivs * tBase; currentAnswers.oscSpaceUnit = tBaseUnit;
+        currentAnswers.oscPeriodValue = periodTime; currentAnswers.oscPeriodUnit = tBaseUnit;
+        currentAnswers.oscFreqValue = frequency; currentAnswers.oscFreqUnit = 'Hz';
+        currentAnswers.oscRatioValue = markDivs / spaceDivs; currentAnswers.oscRatioUnit = 'ratio';
 
-            const q = qTypes[Math.floor(Math.random() * qTypes.length)];
-            currentAnswers.osc1Value = amplitude; currentAnswers.osc1Unit = vGainUnit;
-            currentAnswers.osc2Value = q.ans; currentAnswers.osc2Unit = q.unit;
+        // Randomly pick a question type (1, 2, or 3)
+        const qType = Math.floor(Math.random() * 3) + 1;
+        currentAnswers.oscQType = qType; // Save it to check later!
 
-            document.getElementById('labelOsc2').innerHTML = q.text;
-            if (q.unit === 'ratio') {
-                document.getElementById('inputOsc2').placeholder = "e.g. 1/2";
-            } else if (q.unit === 'Hz') {
-                document.getElementById('inputOsc2').placeholder = "e.g. 50 Hz";
-            } else {
-                document.getElementById('inputOsc2').placeholder = "e.g. 20 " + q.unit; 
-            }
+        // Always show Amplitude
+        document.getElementById('inputGroupOscAmp').style.display = "inline-block";
+        let solTextStr = "<strong>Amplitude = " + amplitude + " " + vGainUnit + "</strong><br><em>Logic:</em> Wave height is " + ampDivs + " divs. " + ampDivs + " &times; " + vGain + " = " + amplitude + ".<br><br>";
 
-            const solText = document.getElementById('solText');
-            if (solText) solText.innerHTML = 
-                "<strong>Amplitude = " + amplitude + " " + vGainUnit + "</strong><br>" +
-                "<em>Logic:</em> Wave height is " + ampDivs + " divs. " + ampDivs + " &times; " + vGain + " " + vGainUnit + "/div = " + amplitude + " " + vGainUnit + ".<br><br>" +
-                "<strong>" + q.text.replace(" = ", "") + " = " + (q.unit === 'ratio' ? markDivs + "/" + spaceDivs : q.ans + " " + q.unit) + "</strong><br>" + 
-                "<em>Logic:</em> " + q.sol;
+        if (qType === 1) {
+            document.getElementById('inputGroupOscMark').style.display = "inline-block";
+            document.getElementById('inputGroupOscSpace').style.display = "inline-block";
+            solTextStr += "<strong>Mark Time = " + currentAnswers.oscMarkValue + " " + tBaseUnit + "</strong> (" + markDivs + " divs &times; " + tBase + ")<br>";
+            solTextStr += "<strong>Space Time = " + currentAnswers.oscSpaceValue + " " + tBaseUnit + "</strong> (" + spaceDivs + " divs &times; " + tBase + ")";
+        } else if (qType === 2) {
+            document.getElementById('inputGroupOscPeriod').style.display = "inline-block";
+            document.getElementById('inputGroupOscFreq').style.display = "inline-block";
+            solTextStr += "<strong>Time Period = " + periodTime + " " + tBaseUnit + "</strong> (Mark + Space = " + (markDivs+spaceDivs) + " divs &times; " + tBase + ")<br>";
+            solTextStr += "<strong>Frequency = " + frequency + " Hz</strong> (f = 1/T)";
+        } else {
+            document.getElementById('inputGroupOscRatio').style.display = "inline-block";
+            document.getElementById('inputOscRatio').placeholder = "e.g. 1/2 or 0.5";
+            solTextStr += "<strong>Mark-Space ratio = " + markDivs + "/" + spaceDivs + "</strong>";
+        }
+
+        const solText = document.getElementById('solText');
+        if (solText) solText.innerHTML = solTextStr;
         }
 
        function checkAnswers() {
@@ -794,10 +814,23 @@
                 let pR = parseInput(document.getElementById('inputR').value);
                 results.push(validateMatch(pR, currentAnswers.rValue, currentAnswers.rUnit));
             } else if (currentMode === 'oscilloscope') {
-                let pO1 = parseInput(document.getElementById('inputOsc1').value);
-                let pO2 = parseInput(document.getElementById('inputOsc2').value);
-                results.push(validateMatch(pO1, currentAnswers.osc1Value, currentAnswers.osc1Unit));
-                results.push(validateMatch(pO2, currentAnswers.osc2Value, currentAnswers.osc2Unit));
+            let pAmp = parseInput(document.getElementById('inputOscAmp').value);
+            results.push(validateMatch(pAmp, currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
+
+            if (currentAnswers.oscQType === 1) {
+                let pMark = parseInput(document.getElementById('inputOscMark').value);
+                let pSpace = parseInput(document.getElementById('inputOscSpace').value);
+                results.push(validateMatch(pMark, currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
+                results.push(validateMatch(pSpace, currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
+            } else if (currentAnswers.oscQType === 2) {
+                let pPeriod = parseInput(document.getElementById('inputOscPeriod').value);
+                let pFreq = parseInput(document.getElementById('inputOscFreq').value);
+                results.push(validateMatch(pPeriod, currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
+                results.push(validateMatch(pFreq, currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
+            } else {
+                let pRatio = parseInput(document.getElementById('inputOscRatio').value);
+                results.push(validateMatch(pRatio, currentAnswers.oscRatioValue, currentAnswers.oscRatioUnit));
+            }
             }
            else if (currentMode === 'astable') {
         const aF = parseInput(document.getElementById('inputAstable').value);
