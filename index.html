@@ -15,97 +15,166 @@
         .tab.active { background-color: #E64097; color: white; border-color: #E64097; box-shadow: 0 4px 6px rgba(230, 64, 151, 0.2); }
         .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
         .left-panel { flex: 1 1 550px; max-width: 650px; }
-        .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; }
         canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
         .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
         .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
-        .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; }
-        .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; display: none; text-align: left; }
+        .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; margin-bottom: 10px; text-align: center;}
+        .input-group { margin: 10px 0; text-align: center; }
+        input[type="text"] { font-size: 16px; padding: 8px; width: 120px; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
+        .btn-check { background-color: #E64097; width: 100%; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px;}
+        .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; display: none; margin-top: 15px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; border-top: 6px solid #E64097; }
     </style>
 </head>
 <body>
-    <div class="header"><h1><span>Abingdon</span> Electronics</h1><p>Basics</p></div>
+    <div class="header"><h1><span>Abingdon</span> Electronics</h1><p>Basics Knowledge Check</p></div>
+    
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('analysis')">Circuit Analysis</button>
-        <button class="tab" onclick="switchTab('astable')">Astable 555</button>
+        <button id="tab-analysis" class="tab active" onclick="switchTab('analysis')">Circuit Analysis</button>
+        <button id="tab-divider" class="tab" onclick="switchTab('divider')">Potential Divider</button>
+        <button id="tab-resistance" class="tab" onclick="switchTab('resistance')">Total Resistance</button>
+        <button id="tab-oscilloscope" class="tab" onclick="switchTab('oscilloscope')">Oscilloscopes</button>
+        <button id="tab-astable" class="tab" onclick="switchTab('astable')">Astable 555</button>
     </div>
+
     <div class="main-layout">
-        <div class="left-panel"><div class="circuit-container"><canvas id="circuitCanvas" width="600" height="420"></canvas></div></div>
+        <div class="left-panel">
+            <div class="circuit-container"><canvas id="circuitCanvas" width="600" height="420"></canvas></div>
+        </div>
         <div class="right-panel">
             <div class="quiz-section">
                 <div id="scoreDisplay" class="scoreboard">Score: 0 / 0</div>
-                <div id="inputGroupAstable" style="display:none; text-align: center;">
-                    <p>Frequency (Hz) and Period (ms)</p>
-                    <input type="text" id="inputAstable" placeholder="Frequency">
-                    <input type="text" id="inputAstableT" placeholder="Period">
-                </div>
+                <div id="quizInputs" class="input-group"></div>
                 <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
-                <div id="feedback" class="feedback"></div>
+                <button class="btn-check" style="background-color:#000; margin-top:5px;" onclick="generateProblem()">New Question</button>
+                <div id="feedback" style="margin-top:10px; text-align:center; font-weight:bold;"></div>
             </div>
-            <div id="solutions" class="solutions"><h3>Logic</h3><p id="solText"></p></div>
+            <button class="btn-check" style="background-color:#6c757d;" onclick="toggleSolutions()">Show/Hide Logic</button>
+            <div id="solutions" class="solutions"><p id="solText"></p></div>
+            <button id="downloadBtn" class="btn-check" style="background-color:#198754;" onclick="openModal()">Download Certificate</button>
+        </div>
+    </div>
+
+    <div id="certModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Claim Certificate</h3>
+            <input type="text" id="studentName" placeholder="Your Name" style="width:100%; margin-bottom:10px; padding:10px;">
+            <select id="teacherSelect" style="width:100%; padding:10px; margin-bottom:20px;">
+                <option value="">Select Teacher</option>
+                <option value="Mr. Smith">Mr. Smith</option>
+                <option value="Ms. Jones">Ms. Jones</option>
+            </select>
+            <button class="btn-check" onclick="processCertificate()">Download PNG</button>
+            <button class="btn-check" style="background-color:#6c757d;" onclick="closeModal()">Cancel</button>
         </div>
     </div>
 
     <script>
-        const brandPink = "#E64097";
-        const brandBlack = "#000000";
-        let currentMode = 'analysis';
-        let problemsAttempted = 0, problemsCorrect = 0;
-
-        function drawResistor(ctx, x, y) {
-            ctx.beginPath(); ctx.rect(x - 12, y - 25, 24, 50); ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
-        }
-
-        function drawLine(ctx, x1, y1, x2, y2) {
-            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-        }
-
-        function drawDot(ctx, x, y) {
-            ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fillStyle = brandBlack; ctx.fill();
-        }
-
-        function generateAstableProblem() {
-            const canvas = document.getElementById('circuitCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const RA = [1, 2.2, 4.7, 10, 22, 47][Math.floor(Math.random() * 6)];
-            const RB = [1, 2.2, 4.7, 10, 22, 47][Math.floor(Math.random() * 6)];
-            const C = [1, 10, 47, 100][Math.floor(Math.random() * 4)];
-            const frequency = 1.44 / (((RA * 1000) + (2 * RB * 1000)) * (C * 0.000001));
-
-            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2;
-            drawLine(ctx, 100, 60, 500, 60); drawLine(ctx, 100, 360, 500, 360);
-            ctx.strokeRect(120, 150, 120, 130);
-            ctx.font = "bold 22px Arial"; ctx.textAlign = "center"; ctx.fillText("555", 180, 220);
-
-            drawResistor(ctx, 300, 115); 
-            drawResistor(ctx, 300, 215);
-            drawLine(ctx, 300, 60, 300, 90);
-            drawLine(ctx, 300, 140, 300, 190);
-            
-            // Re-positioned Capacitor with original shape
-            drawLine(ctx, 300, 240, 300, 320);
-            ctx.beginPath(); ctx.moveTo(275, 320); ctx.lineTo(325, 320);
-            ctx.moveTo(275, 328); ctx.lineTo(325, 328); ctx.stroke();
-            drawLine(ctx, 300, 328, 300, 360);
-
-            ctx.textAlign = "left"; ctx.font = "16px Arial";
-            ctx.fillText(RA + " kΩ", 335, 120);
-            ctx.fillText(RB + " kΩ", 335, 220);
-            ctx.fillText(C + " μF", 335, 330);
-
-            document.getElementById('solText').innerHTML = `f = 1.44 / ((${RA}k + 2*${RB}k) * ${C}μ) = ${frequency.toFixed(2)} Hz`;
-        }
+        const brandPink = "#E64097", brandBlack = "#000000";
+        let currentMode = 'analysis', problemsAttempted = 0, problemsCorrect = 0, currentAnswers = {};
 
         function switchTab(mode) {
             currentMode = mode;
-            document.getElementById('inputGroupAstable').style.display = (mode === 'astable') ? 'block' : 'none';
-            if (mode === 'astable') generateAstableProblem();
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + mode).classList.add('active');
+            document.getElementById('feedback').innerHTML = "";
+            document.getElementById('solutions').style.display = 'none';
+            generateProblem();
         }
 
-        window.onload = () => generateAstableProblem();
+        function drawLine(ctx, x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+        function drawDot(ctx, x, y) { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fillStyle = brandBlack; ctx.fill(); }
+        function drawResistor(ctx, x, y, horizontal = false) {
+            ctx.beginPath();
+            if (horizontal) ctx.rect(x - 25, y - 12, 50, 24);
+            else ctx.rect(x - 12, y - 25, 24, 50);
+            ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
+        }
+
+        function generateProblem() {
+            const canvas = document.getElementById('circuitCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2;
+            const inputs = document.getElementById('quizInputs');
+            inputs.innerHTML = "";
+
+            if (currentMode === 'astable') {
+                const RA = [1, 2.2, 4.7, 10, 22, 47][Math.floor(Math.random()*6)];
+                const RB = [1, 2.2, 4.7, 10, 22, 47][Math.floor(Math.random()*6)];
+                const C = [1, 10, 47, 100][Math.floor(Math.random()*4)];
+                const freq = 1.44 / (((RA + 2*RB) * 1000) * (C * 1e-6));
+                currentAnswers = { val: freq.toFixed(1), unit: 'Hz' };
+
+                drawLine(ctx, 100, 60, 500, 60); drawLine(ctx, 100, 360, 500, 360);
+                ctx.strokeRect(120, 150, 120, 130);
+                ctx.font = "bold 22px Arial"; ctx.textAlign = "center"; ctx.fillText("555", 180, 220);
+                
+                drawLine(ctx, 300, 60, 300, 90); drawResistor(ctx, 300, 115);
+                drawLine(ctx, 300, 140, 300, 190); drawResistor(ctx, 300, 215);
+                drawLine(ctx, 300, 165, 240, 165); drawLine(ctx, 300, 280, 240, 280); drawDot(ctx, 300, 280);
+
+                // Capacitor
+                drawLine(ctx, 300, 240, 300, 320);
+                ctx.beginPath(); ctx.moveTo(275, 320); ctx.lineTo(325, 320);
+                ctx.moveTo(275, 328); ctx.lineTo(325, 328); ctx.stroke();
+                drawLine(ctx, 300, 328, 300, 360);
+
+                ctx.textAlign = "left"; ctx.font = "16px Arial"; ctx.fillStyle = brandBlack;
+                ctx.fillText(RA + " kΩ", 335, 120); ctx.fillText(RB + " kΩ", 335, 220); ctx.fillText(C + " μF", 335, 330);
+
+                inputs.innerHTML = 'Frequency: <input type="text" id="ans"> Hz';
+                document.getElementById('solText').innerHTML = `f = 1.44 / ((RA + 2RB) × C) = ${freq.toFixed(1)} Hz`;
+            } else {
+                // Simplified placeholder for other modes to ensure the script runs
+                ctx.font = "20px Arial"; ctx.fillText(currentMode.toUpperCase() + " Mode Active", 300, 200);
+                inputs.innerHTML = 'Value: <input type="text" id="ans">';
+            }
+        }
+
+        function checkAnswers() {
+            const userVal = document.getElementById('ans').value;
+            problemsAttempted++;
+            if (Math.abs(parseFloat(userVal) - parseFloat(currentAnswers.val)) < (parseFloat(currentAnswers.val) * 0.05)) {
+                document.getElementById('feedback').innerHTML = "<span style='color:green;'>Correct!</span>";
+                problemsCorrect++;
+            } else {
+                document.getElementById('feedback').innerHTML = "<span style='color:red;'>Incorrect.</span>";
+            }
+            document.getElementById('scoreDisplay').innerHTML = `Score: ${problemsCorrect} / ${problemsAttempted}`;
+        }
+
+        function toggleSolutions() {
+            const s = document.getElementById('solutions');
+            s.style.display = (s.style.display === 'none') ? 'block' : 'none';
+        }
+
+        function openModal() { document.getElementById('certModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('certModal').style.display = 'none'; }
+
+        function processCertificate() {
+            const name = document.getElementById('studentName').value;
+            if (!name) return alert("Enter Name");
+            const canvas = document.createElement('canvas');
+            canvas.width = 600; canvas.height = 400;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#fff"; ctx.fillRect(0,0,600,400);
+            ctx.strokeStyle = brandPink; ctx.lineWidth = 10; ctx.strokeRect(5,5,590,390);
+            ctx.textAlign = "center"; ctx.fillStyle = brandBlack;
+            ctx.font = "bold 30px Arial"; ctx.fillText("ELECTRONICS CERTIFICATE", 300, 80);
+            ctx.font = "24px Arial"; ctx.fillText(name, 300, 180);
+            ctx.font = "20px Arial"; ctx.fillText("Score: " + problemsCorrect + "/" + problemsAttempted, 300, 250);
+            
+            const link = document.createElement('a');
+            link.download = 'certificate.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            closeModal();
+        }
+
+        window.onload = generateProblem;
     </script>
 </body>
 </html>
