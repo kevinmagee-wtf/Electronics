@@ -659,39 +659,22 @@ function drawComponent(ctx, type, x, y) {
         }
             
             ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.font = "bold 18px Arial";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             
             drawLine(ctx, 150, 60, 450, 60); 
             drawLine(ctx, 150, 360, 450, 360); 
             ctx.fillStyle = brandBlack; ctx.fillText("+Vsupply = " + sc.V + " " + vUnit, 230, 45); ctx.fillText("0V (GND)", 260, 390);
 
-                        // Symmetrical Layout Coordinates (Pushed much further apart)
-            drawLine(ctx, 300, 60, 300, 100); 
-            drawComponent(ctx, compTop, 300, 115);    // Top resistor moved UP
-            drawLine(ctx, 300, 140, 300, 280);        // Long middle wire spanning the wide gap
-            drawComponent(ctx, compBottom, 300, 305); // Bottom resistor moved DOWN
-            drawLine(ctx, 300, 330, 300, 360);
+            // Symmetrical Layout Coordinates ("Goldilocks" spacing)
+            drawLine(ctx, 300, 60, 300, 110); 
+            drawComponent(ctx, compTop, 300, 125);    // Top resistor adjusted
+            drawLine(ctx, 300, 140, 300, 280);        // Middle wire
+            drawComponent(ctx, compBottom, 300, 295); // Bottom resistor adjusted
+            drawLine(ctx, 300, 310, 300, 360);
             
             ctx.font = "16px Arial"; ctx.fillStyle = brandBlack; 
             // Labels shifted to perfectly align with the new resistor heights
-            ctx.fillText("R\u2081 = " + sc.R1 + " " + rUnitVisual, 350, 120);
-            ctx.fillText("R\u2082 = " + sc.R2 + " " + rUnitVisual, 350, 310);
+            ctx.fillText("R\u2081 = " + sc.R1 + " " + rUnitVisual, 350, 130);
+            ctx.fillText("R\u2082 = " + sc.R2 + " " + rUnitVisual, 350, 300);
             
             // 1. Draw the junction dot exactly in the middle (Y=210)
             ctx.beginPath();
