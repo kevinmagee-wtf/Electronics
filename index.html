@@ -557,7 +557,6 @@
             }
         }
 
-        // Function to draw specific components over the standard resistor
 // Function to draw specific components over the standard resistor
 function drawComponent(ctx, type, x, y) {
     drawResistor(ctx, x, y); // Always draw the base resistor rectangle first
@@ -571,7 +570,7 @@ function drawComponent(ctx, type, x, y) {
     let cy = y;
 
     if (type === 'variable') {
-        // Extended diagonal line for Variable Resistor (reaches beyond both sides)
+        // Extended diagonal line for Variable Resistor
         ctx.beginPath();
         ctx.moveTo(cx - 25, cy + 25);
         ctx.lineTo(cx + 25, cy - 25);
@@ -588,32 +587,30 @@ function drawComponent(ctx, type, x, y) {
     } else if (type === 'thermistor') {
         // WJEC thermistor line 
         ctx.beginPath();
-        // Start at the bottom right corner
-        ctx.moveTo(cx + 15, cy + 25);
+        // Start further out at the bottom right corner to give more space
+        ctx.moveTo(cx + 22, cy + 30);
         // Go straight up parallel to the side of the resistor
-        ctx.lineTo(cx + 15, cy + 10);
+        ctx.lineTo(cx + 22, cy + 10);
         // Cut diagonally across to the top left corner
-        ctx.lineTo(cx - 15, cy - 25); 
+        ctx.lineTo(cx - 22, cy - 30); 
         ctx.stroke();
         
     } else if (type === 'ldr') {
-        // WJEC LDR: 2 inward arrows, shifted further to the left
-        // Arrow 1 (Top)
+        // WJEC LDR: 2 inward arrows
         ctx.beginPath();
         ctx.moveTo(cx - 40, cy - 15);
-        ctx.lineTo(cx - 24, cy - 5);   // Shaft pointing towards left edge
-        ctx.lineTo(cx - 30, cy - 5);   // Arrowhead horizontal edge
+        ctx.lineTo(cx - 24, cy - 5);
+        ctx.lineTo(cx - 30, cy - 5);
         ctx.moveTo(cx - 24, cy - 5);
-        ctx.lineTo(cx - 24, cy - 11);  // Arrowhead vertical edge
+        ctx.lineTo(cx - 24, cy - 11);
         ctx.stroke();
         
-        // Arrow 2 (Bottom)
         ctx.beginPath();
         ctx.moveTo(cx - 40, cy + 5);
-        ctx.lineTo(cx - 24, cy + 15);  // Shaft pointing towards left edge
-        ctx.lineTo(cx - 30, cy + 15);  // Arrowhead horizontal edge
+        ctx.lineTo(cx - 24, cy + 15);
+        ctx.lineTo(cx - 30, cy + 15);
         ctx.moveTo(cx - 24, cy + 15);
-        ctx.lineTo(cx - 24, cy + 9);   // Arrowhead vertical edge
+        ctx.lineTo(cx - 24, cy + 9);
         ctx.stroke();
     }
 }
