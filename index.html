@@ -1278,8 +1278,149 @@ function generateDividerProblem(ctx, canvas) {
         "f = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = " + freq.toFixed(1) + " Hz<br>" +
         "T = 1 / f = " + period_ms.toFixed(1) + " ms";
 }
+
+    // ============================================================================
+// NEW FUNCTION: Grade 9 Parallel Divider Problem
+// ============================================================================
+function generateGrade9DividerProblem() {
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Update Question Text to reflect the challenge!
+    const qText = document.getElementById('questionText');
+    if (qText) qText.innerHTML = "<strong>🏆 Grade 9 Challenge:</strong> Calculate the output voltage (V<sub>OUT</sub>) for this parallel-series network.";
+
+    // Hide feedback and solutions initially
+    const feedback = document.getElementById('feedback');
+    const solutions = document.getElementById('solutions');
+    if (feedback) feedback.innerHTML = '';
+    if (solutions) solutions.style.display = 'none';
+
+    const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
+    const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
+
+    // 1. GENERATE THE GRADE 9 MATH 
+    // Hand-picked parallel pairs that perfectly resolve into whole numbers
+    const parallelPairs = [
+        {r2: 6, r3: 3, rp: 2},
+        {r2: 12, r3: 4, rp: 3},
+        {r2: 10, r3: 10, rp: 5},
+        {r2: 20, r3: 5, rp: 4},
+        {r2: 8, r3: 8, rp: 4},
+        {r2: 15, r3: 10, rp: 6}
+    ];
+    const pair = parallelPairs[Math.floor(Math.random() * parallelPairs.length)];
+    let R1_val = Math.floor(Math.random() * 8) + 1; // 1 to 8
+    let Rp = pair.rp;
+    let Rtotal = R1_val + Rp;
+
+    let current = Math.floor(Math.random() * 4) + 1; // 1 to 4
+    let Vin_val = Rtotal * current;
+    let Vout_val = Rp * current;
+
+    // Set the correct answer for the Check Answer button
+    currentAnswers.vNameHTML = 'V<sub>OUT</sub>';
+    currentAnswers.vValue = Vout_val;
+    currentAnswers.vUnit = vUnit;
+
+    // Update UI Inputs
+    document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>V<sub>OUT</sub></span> = ";
+    const inputBox = document.getElementById('inputV');
+    if (inputBox) inputBox.placeholder = "e.g. 10 " + vUnit;
+
+    // 2. DRAW THE PARALLEL CIRCUIT
+    ctx.strokeStyle = brandBlack; 
+    ctx.lineWidth = 2;
+
+    // Top and Bottom Rails
+    drawLine(ctx, 150, 60, 450, 60);
+    drawLine(ctx, 150, 360, 450, 360);
+    ctx.fillStyle = brandBlack;
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("0V (GND)", 260, 390);
+
+    // Top Resistor (R1)
+    drawLine(ctx, 300, 60, 300, 100);
+    drawComponent(ctx, 'fixed', 300, 125);
+    drawLine(ctx, 300, 150, 300, 210);
+
+    // Vout Junction (Extended way out to the right to clear the parallel branch)
+    ctx.beginPath(); ctx.arc(300, 210, 4, 0, Math.PI * 2); ctx.fill();
+    drawLine(ctx, 300, 210, 410, 210); 
+    ctx.beginPath(); ctx.arc(414, 210, 4, 0, Math.PI * 2); 
+    ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
     
+    ctx.fillStyle = brandBlack;
+    drawLine(ctx, 300, 210, 300, 240); // Wire down to parallel split
+
+    // Parallel Split Node
+    ctx.beginPath(); ctx.arc(300, 240, 4, 0, Math.PI * 2); ctx.fill();
+
+    // Left Parallel Branch (R2)
+    drawLine(ctx, 300, 240, 220, 240);
+    drawLine(ctx, 220, 240, 220, 270);
+    drawComponent(ctx, 'fixed', 220, 295);
+    drawLine(ctx, 220, 320, 220, 340);
+    drawLine(ctx, 220, 340, 300, 340);
+
+    // Right Parallel Branch (R3)
+    drawLine(ctx, 300, 240, 380, 240);
+    drawLine(ctx, 380, 240, 380, 270);
+    drawComponent(ctx, 'fixed', 380, 295);
+    drawLine(ctx, 380, 320, 380, 340);
+    drawLine(ctx, 380, 340, 300, 340);
+
+    // Parallel Merge Node
+    ctx.beginPath(); ctx.arc(300, 340, 4, 0, Math.PI * 2); ctx.fill();
+    
+    // Final wire to ground
+    drawLine(ctx, 300, 340, 300, 360);
+
+    // 3. TEXT LABELS
+    ctx.font = "16px Arial"; 
+    ctx.fillStyle = brandBlack;
+    
+    ctx.fillText("+Vsupply = " + Vin_val + " " + vUnit, 230, 45); 
+    ctx.fillText("R\u2081 = " + R1_val + " " + rUnitVisual, 340, 130);
+    
+    // R2 (Left Branch Label)
+    ctx.fillText("R\u2082 = " + pair.r2 + " " + rUnitVisual, 130, 300);
+    
+    // R3 (Right Branch Label)
+    ctx.fillText("R\u2083 = " + pair.r3 + " " + rUnitVisual, 420, 300);
+
+    // Vout Target Label (Pink)
+    ctx.fillStyle = brandPink;
+    ctx.font = "bold 18px Arial";
+    ctx.fillText("V", 430, 216);
+    ctx.font = "bold 11px Arial";
+    ctx.fillText("OUT", 443, 222);
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("= ?", 475, 216);
+
+    // 4. STEP-BY-STEP SOLUTION
+    const solText = document.getElementById('solText');
+    if (solText) {
+        let logicHTML = "<strong>🏆 Grade 9 Solution: V<sub>OUT</sub> = " + Vout_val + " " + vUnit + "</strong><br><br>";
+        logicHTML += "<em>Step 1:</em> Find the equivalent resistance of the parallel pair (R<sub>p</sub>).<br>";
+        logicHTML += "1/R<sub>p</sub> = 1/R\u2082 + 1/R\u2083 &nbsp;&rarr;&nbsp; 1/R<sub>p</sub> = 1/" + pair.r2 + " + 1/" + pair.r3 + "<br>";
+        logicHTML += "R<sub>p</sub> = <strong>" + Rp + " " + rUnitVisual + "</strong><br><br>";
+        
+        logicHTML += "<em>Step 2:</em> Find total resistance of the circuit (R<sub>TOTAL</sub>).<br>";
+        logicHTML += "R<sub>TOTAL</sub> = R\u2081 + R<sub>p</sub> = " + R1_val + " + " + Rp + " = <strong>" + Rtotal + " " + rUnitVisual + "</strong><br><br>";
+        
+        logicHTML += "<em>Step 3:</em> Calculate V<sub>OUT</sub> using the potential divider equation.<br>";
+        logicHTML += "V<sub>OUT</sub> = V<sub>supply</sub> &times; (R<sub>p</sub> / R<sub>TOTAL</sub>)<br>";
+        logicHTML += "V<sub>OUT</sub> = " + Vin_val + " &times; (" + Rp + " / " + Rtotal + ") = <strong>" + Vout_val + " " + vUnit + "</strong>";
+        
+        solText.innerHTML = logicHTML;
+    }
+}
+        
     window.onload = function() { generateProblem(); };
+
+        
     </script>
 </body>
 </html>
