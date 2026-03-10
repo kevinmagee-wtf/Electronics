@@ -785,17 +785,31 @@ function generateDividerProblem(ctx, canvas) {
     ctx.strokeStyle = "#000";
     ctx.stroke();
 
+   // =========================================================
     // 3. DRAW THE TEXT LABELS
+    // =========================================================
+    // Determine which label gets the pink highlight
+    const colorVout = (targetVar === 0) ? brandPink : brandBlack;
+    const colorVin  = (targetVar === 1) ? brandPink : brandBlack;
+    const colorR1   = (targetVar === 2) ? brandPink : brandBlack;
+    const colorR2   = (targetVar === 3) ? brandPink : brandBlack;
+
     ctx.font = "16px Arial"; 
-    ctx.fillStyle = brandBlack; 
+    
+    // R1 Label
+    ctx.fillStyle = colorR1; 
     ctx.fillText("R\u2081 = " + labelR1, 350, 130);
+    
+    // R2 Label
+    ctx.fillStyle = colorR2; 
     ctx.fillText("R\u2082 = " + labelR2, 350, 300);
 
     // Draw Supply Voltage (Vin) near the top wire
+    ctx.fillStyle = colorVin; 
     ctx.fillText("+Vsupply = " + labelVin, 230, 45); 
 
     // Draw the Vout Label next to the output port
-    ctx.fillStyle = brandPink; 
+    ctx.fillStyle = colorVout; 
     ctx.font = "bold 18px Arial";
     ctx.fillText("V", 400, 216);
     ctx.font = "bold 11px Arial";
