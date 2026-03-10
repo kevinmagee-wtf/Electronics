@@ -1398,13 +1398,15 @@ function generateGrade9DividerProblem() {
     ctx.font = "bold 16px Arial";
     ctx.fillText("= ?", 475, 216);
 
-    // 4. STEP-BY-STEP SOLUTION (Now updated to show decimals!)
+    // 4. STEP-BY-STEP SOLUTION (Updated to Product-over-Sum for GCSE!)
     const solText = document.getElementById('solText');
     if (solText) {
         let logicHTML = "<strong>🏆 Grade 9 Solution: V<sub>OUT</sub> = " + Vout_val + " " + vUnit + "</strong><br><br>";
-        logicHTML += "<em>Step 1:</em> Find the equivalent resistance of the parallel pair (R<sub>p</sub>).<br>";
-        logicHTML += "1/R<sub>p</sub> = 1/R\u2082 + 1/R\u2083 &nbsp;&rarr;&nbsp; 1/R<sub>p</sub> = 1/" + R2_val + " + 1/" + R3_val + "<br>";
-        logicHTML += "R<sub>p</sub> = <strong>" + Rp_rounded + " " + rUnitVisual + "</strong> <em>(rounded to 2 d.p.)</em><br><br>";
+        
+        logicHTML += "<em>Step 1:</em> Find the equivalent resistance of the parallel pair (R<sub>p</sub>) using Product &divide; Sum.<br>";
+        logicHTML += "R<sub>p</sub> = (R\u2082 &times; R\u2083) / (R\u2082 + R\u2083)<br>";
+        logicHTML += "R<sub>p</sub> = (" + R2_val + " &times; " + R3_val + ") / (" + R2_val + " + " + R3_val + ")<br>";
+        logicHTML += "R<sub>p</sub> = " + (R2_val * R3_val) + " / " + (R2_val + R3_val) + " = <strong>" + Rp_rounded + " " + rUnitVisual + "</strong> <em>(rounded to 2 d.p.)</em><br><br>";
         
         logicHTML += "<em>Step 2:</em> Find total resistance of the circuit (R<sub>TOTAL</sub>).<br>";
         logicHTML += "R<sub>TOTAL</sub> = R\u2081 + R<sub>p</sub> = " + R1_val + " + " + Rp_rounded + " = <strong>" + Rtotal_rounded + " " + rUnitVisual + "</strong><br><br>";
