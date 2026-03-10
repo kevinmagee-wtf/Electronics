@@ -558,6 +558,7 @@
         }
 
         // Function to draw specific components over the standard resistor
+// Function to draw specific components over the standard resistor
 function drawComponent(ctx, type, x, y) {
     drawResistor(ctx, x, y); // Always draw the base resistor rectangle first
     
@@ -576,7 +577,7 @@ function drawComponent(ctx, type, x, y) {
         ctx.lineTo(cx + 25, cy - 25);
         ctx.stroke();
         
-        // Clean, un-filled arrowhead at the top right, adjusted to the new length
+        // Clean, un-filled arrowhead at the top right
         ctx.beginPath();
         ctx.moveTo(cx + 25, cy - 25);
         ctx.lineTo(cx + 15, cy - 25);
@@ -585,13 +586,14 @@ function drawComponent(ctx, type, x, y) {
         ctx.stroke();
         
     } else if (type === 'thermistor') {
-        // Draw WJEC thermistor line 
+        // WJEC thermistor line 
         ctx.beginPath();
-        // The diagonal line through the center
-        ctx.moveTo(cx - 20, cy + 20);
-        ctx.lineTo(cx + 20, cy - 20);
-        // The flat tail, drawn parallel to the vertical resistor, extending UP (away from center)
-        ctx.lineTo(cx + 20, cy - 30); 
+        // Start at the bottom right corner
+        ctx.moveTo(cx + 15, cy + 25);
+        // Go straight up parallel to the side of the resistor
+        ctx.lineTo(cx + 15, cy + 10);
+        // Cut diagonally across to the top left corner
+        ctx.lineTo(cx - 15, cy - 25); 
         ctx.stroke();
         
     } else if (type === 'ldr') {
