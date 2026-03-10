@@ -1140,6 +1140,73 @@ if (currentMode === 'divider') {
     }
 }
         
+function generateGrade9Resistance() {
+    const canvas = document.getElementById('circuitCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    // 1. CLEAR CANVAS
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 2. MATH LOGIC
+    const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
+    const expectedUnitStr = rUnitVisual === 'k\u03A9' ? 'kohms' : 'ohms';
+    let r1 = Math.floor(Math.random() * 40) + 10;
+    let r2 = (Math.random() * 50 + 5).toFixed(1);
+    let r3 = (Math.random() * 50 + 5).toFixed(1);
+    let R2_num = parseFloat(r2);
+    let R3_num = parseFloat(r3);
+    let rp_exact = (R2_num * R3_num) / (R2_num + R3_num);
+    let rp_rounded = parseFloat(rp_exact.toFixed(2));
+    let rTotal = parseFloat((r1 + rp_exact).toFixed(2));
+
+    // 3. DRAWING LOGIC (Using your defined brand colors)
+    ctx.strokeStyle = brandBlack; 
+    ctx.lineWidth = 2;
+    
+    // Draw Rails (Fixes floating look)
+    drawLine(ctx, 150, 40, 450, 40); 
+    drawLine(ctx, 150, 360, 450, 360);
+    ctx.fillStyle = brandBlack; 
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("+V", 290, 30); 
+    ctx.fillText("GND", 285, 385);
+
+    // Main path & R1
+    drawLine(ctx, 300, 40, 300, 75); 
+    drawResistor(ctx, 300, 100); 
+    drawLine(ctx, 300, 125, 300, 165);
+    
+    // Parallel Branch (R2 and R3)
+    drawLine(ctx, 220, 165, 380, 165); 
+    drawLine(ctx, 220, 165, 220, 205); drawResistor(ctx, 220, 230); 
+    drawLine(ctx, 380, 165, 380, 205); drawResistor(ctx, 380, 230); 
+    drawLine(ctx, 220, 255, 220, 315); 
+    drawLine(ctx, 380, 255, 380, 315);
+    drawLine(ctx, 220, 315, 380, 315); 
+    drawLine(ctx, 300, 315, 300, 360); 
+
+    // Labels
+    ctx.fillStyle = brandBlack; 
+    ctx.font = "16px Arial";
+    ctx.fillText("R\u2081 = " + r1 + " " + rUnitVisual, 335, 105);
+    ctx.fillText("R\u2082 = " + r2 + " " + rUnitVisual, 115, 235); 
+    ctx.fillText("R\u2083 = " + r3 + " " + rUnitVisual, 405, 235);
+
+    // 4. SOLUTION TEXT (Pink Header)
+    const solText = document.getElementById('solText');
+    if (solText) {
+        let logicHTML = "<h3 style='color: #E64097; margin-top:0;'>🏆 Grade 9 Step-by-Step Logic</h3>";
+        logicHTML += "<strong>Solution: R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>";
+        logicHTML += "<em>Step 1:</em> Find R<sub>p</sub> = (" + r2 + " &times; " + r3 + ") / (" + r2 + " + " + r3 + ") = <strong>" + rp_rounded + " " + rUnitVisual + "</strong><br>";
+        logicHTML += "<em>Step 2:</em> Total = " + r1 + " + " + rp_rounded + " = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
+        solText.innerHTML = logicHTML;
+    }
+
+    currentAnswers.rValue = rTotal;
+    currentAnswers.rUnit = expectedUnitStr;
+}
+
         
 function drawRoundRect(ctx, x, y, width, height, radius) {
             ctx.beginPath(); ctx.moveTo(x + radius, y); ctx.lineTo(x + width - radius, y);
