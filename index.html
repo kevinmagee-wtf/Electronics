@@ -75,6 +75,7 @@
         <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
         <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
         <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
+        <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
     </div>
 
     <div class="main-layout">
@@ -119,6 +120,20 @@
                         <label id="labelOsc2" for="inputOsc2">Question = </label>
                         <input type="text" id="inputOsc2" placeholder="e.g. 20 ms">
                     </div>
+                    
+                   <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
+                    <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
+                    Formula: <strong>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</strong><br>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label id="labelAstable" for="inputAstable">Frequency = </label>
+                        <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
+                    </div>
+    <div>
+        <label id="labelAstableT" for="inputAstableT">Time Period = </label>
+        <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
+    </div>
+</div>
                     
                     <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
                     <div id="feedback" class="feedback"></div>
