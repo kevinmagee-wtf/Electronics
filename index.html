@@ -870,88 +870,110 @@
     ctx.lineWidth = 2;
     ctx.fillStyle = "#000000";
     
-    // Internal helper functions to guarantee perfect drawing
+    // Helper functions
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     };
     
-    // This draws the professional junction dots you wanted!
     const drawNode = (x, y) => {
         ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
     };
 
-    const drawResistorBox = (x, y, label, val) => {
+    const drawResistorBox = (x, y, val) => {
         ctx.fillStyle = "white";
         ctx.fillRect(x - 12, y - 25, 24, 50);
         ctx.strokeRect(x - 12, y - 25, 24, 50);
         ctx.fillStyle = "#000000";
         ctx.font = "14px Arial"; ctx.textAlign = "right";
-        if(label) ctx.fillText(label, x - 20, y - 5);
-        if(val) ctx.fillText(val, x - 20, y + 15);
+        ctx.fillText(val, x - 20, y + 5);
+    };
+
+    const drawCapacitor = (x, y, val, align="right") => {
+        line(x, y - 20, x, y - 5); // top wire
+        line(x - 15, y - 5, x + 15, y - 5); // top plate
+        line(x - 15, y + 5, x + 15, y + 5); // bottom plate
+        line(x, y + 5, x, y + 25); // bottom wire
+        ctx.font = "14px Arial"; 
+        ctx.textAlign = align;
+        if (align === "right") {
+            ctx.fillText(val, x - 25, y + 5);
+        } else {
+            ctx.fillText(val, x + 25, y + 5);
+        }
     };
 
     // 1. Draw Power Rails
     ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
     line(100, 40, 500, 40); // +Vcc line
-    ctx.fillText("+Vcc (Supply)", 510, 45);
+    ctx.fillText("+Vcc", 510, 45);
     
-    line(100, 380, 500, 380); // 0V line
-    ctx.fillText("0V (GND)", 510, 385);
+    line(100, 360, 500, 360); // 0V line
+    ctx.fillText("0V", 510, 365);
 
     // 2. Draw 555 Chip Box
-    ctx.strokeRect(260, 140, 100, 140); 
+    ctx.strokeRect(280, 100, 100, 200); 
     ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
-    ctx.fillText("555", 310, 215);
+    ctx.fillText("555", 330, 200);
 
-    // 3. Draw Left Branch (R1, R2, C) with Junctions
-    const branchX = 160;
+    // 3. Main Left Branch (R1, R2, C)
+    const bX = 180;
+    line(bX, 40, bX, 70);
+    drawNode(bX, 40); // Junction at Vcc
     
-    line(branchX, 40, branchX, 70);
-    drawNode(branchX, 40); // Junction at Vcc rail
+    drawResistorBox(bX, 95, (R1/1000) + " k\u03a9");
     
-    drawResistorBox(branchX, 95, "R\u2081", (R1/1000) + " k\u03a9");
+    line(bX, 120, bX, 150);
+    drawNode(bX, 150); // Junction for Pin 7
     
-    line(branchX, 120, branchX, 160);
-    drawNode(branchX, 160); // Junction for Pin 7
+    drawResistorBox(bX, 175, (R2/1000) + " k\u03a9");
     
-    drawResistorBox(branchX, 185, "R\u2082", (R2/1000) + " k\u03a9");
+    line(bX, 200, bX, 220);
+    drawNode(bX, 220); // Junction for Pins 6, 2
     
-    line(branchX, 210, branchX, 260);
-    drawNode(branchX, 260); // Junction for Pins 2,6
+    line(bX, 220, bX, 260);
+    drawCapacitor(bX, 280, C_uF + " \u03bcF", "right");
     
-    // Capacitor Symbol
-    line(branchX, 260, branchX, 300);
-    line(branchX - 15, 300, branchX + 15, 300); // Top plate
-    line(branchX - 15, 310, branchX + 15, 310); // Bottom plate
-    ctx.textAlign = "right";
-    ctx.fillText("C", branchX - 25, 305);
-    ctx.fillText(C_uF + " \u03bcF", branchX - 25, 325);
+    line(bX, 305, bX, 360);
+    drawNode(bX, 360); // Junction at 0V
 
-    line(branchX, 310, branchX, 380);
-    drawNode(branchX, 380); // Junction at 0V rail
+    // 4. Pin 5 Branch (10 nF Capacitor)
+    const p5X = 240;
+    line(280, 260, p5X, 260); // Wire out of Pin 5
+    line(p5X, 260, p5X, 280); // Down to cap
+    drawCapacitor(p5X, 300, "10 nF", "left");
+    line(p5X, 325, p5X, 360);
+    drawNode(p5X, 360); // Junction at 0V
 
-    // 4. Draw Connections to the 555 Chip
-    line(branchX, 160, 260, 160); // To Pin 7
-    ctx.textAlign = "left"; ctx.fillText("7", 270, 155);
+    // 5. Connect Pins to Chip
+    ctx.font = "14px Arial";
+    
+    // Pin 7
+    line(bX, 150, 280, 150);
+    ctx.textAlign = "left"; ctx.fillText("7", 285, 145);
 
-    line(branchX, 260, 260, 260); // To Pins 2, 6
-    ctx.fillText("2, 6", 270, 255);
+    // Pins 6, 2
+    line(bX, 220, 280, 220);
+    ctx.fillText("6, 2", 285, 215);
+
+    // Pin 5 label
+    ctx.fillText("5", 285, 255);
 
     // Output Pin 3
-    line(360, 210, 460, 210);
-    ctx.fillText("3", 345, 205);
-    ctx.fillText("Output", 470, 215);
+    line(380, 200, 460, 200);
+    ctx.textAlign = "right"; ctx.fillText("3", 375, 195);
+    ctx.textAlign = "left"; ctx.fillText("Output", 465, 205);
 
-    // Power Pins (8, 4 and 1)
-    line(310, 140, 310, 40); 
-    drawNode(310, 40); // Junction at Vcc
-    ctx.fillText("8, 4", 320, 130);
+    // Power Pins 4, 8 (Top)
+    line(330, 100, 330, 40); 
+    drawNode(330, 40);
+    ctx.textAlign = "center"; ctx.fillText("4, 8", 330, 115);
     
-    line(310, 280, 310, 380);
-    drawNode(310, 380); // Junction at 0V
-    ctx.fillText("1", 320, 370);
+    // Pin 1 (Bottom)
+    line(330, 300, 330, 360);
+    drawNode(330, 360);
+    ctx.fillText("1", 330, 295);
 
-    // 5. Update Solutions Text
+    // 6. Update Solutions Text
     document.getElementById('solText').innerHTML = 
         "f = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = " + freq.toFixed(1) + " Hz<br>" +
         "T = 1 / f = " + period_ms.toFixed(1) + " ms";
