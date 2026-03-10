@@ -393,7 +393,14 @@
                 }
             }
         }
-
+        
+        function drawLine(ctx, x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+        
         function drawBattery(ctx, x, y, horizontal = false, label = '') {
             ctx.beginPath();
             ctx.strokeStyle = brandBlack;
@@ -559,6 +566,7 @@
         }
 
         function generateResistanceProblem(ctx, canvas) {
+            document.getElementById('inputGroupR').style.display = "inline-block";
             const isParallel = Math.random() < 0.5;
             const r1 = (Math.floor(Math.random() * 10) + 1) * 10;
             const r2 = (Math.floor(Math.random() * 10) + 1) * 10;
@@ -589,6 +597,9 @@
         }
 
         function generateOscilloscopeProblem(ctx, canvas) {
+            document.getElementById('inputGroupOsc1').style.display = "inline-block";
+            document.getElementById('inputGroupOsc2').style.display = "inline-block";
+            document.getElementById('inputGroupOsc3').style.display = "inline-block";
             const voltsDiv = [1, 2, 5][Math.floor(Math.random() * 3)];
             const timeDiv = [1, 2, 5, 10][Math.floor(Math.random() * 4)];
             const peakDivs = Math.floor(Math.random() * 3) + 1;
@@ -625,6 +636,7 @@
         }
 
         function generateAstableProblem(ctx, canvas) {
+            document.getElementById('inputGroupAstable').style.display = "inline-block";        
             const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
             const R2 = (Math.floor(Math.random() * 9) + 1) * 1000;
             const C_uF = [0.1, 1, 10, 47][Math.floor(Math.random() * 4)];
