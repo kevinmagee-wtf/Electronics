@@ -767,24 +767,40 @@
 
 
 
+            // Draw Components
+            drawResistor(ctx, 300, 115); // RA
+            drawResistor(ctx, 300, 215); // RB
+            
+            // Re-positioned Capacitor (moved down to y=335)
+            ctx.beginPath();
+            ctx.moveTo(300, 320); ctx.lineTo(300, 335);
+            ctx.moveTo(280, 335); ctx.lineTo(320, 335);
+            ctx.moveTo(280, 340); ctx.lineTo(320, 340);
+            ctx.moveTo(300, 340); ctx.lineTo(300, 360);
+            ctx.stroke();
 
-
-            // Draw Components with values (Labels RA, RB, C removed)
+            // Draw Component Values (Labels RA, RB, C removed)
             ctx.fillStyle = brandBlack;
-            ctx.font = "bold 16px 'Segoe UI', Arial, sans-serif";
+            ctx.font = "16px 'Segoe UI', Arial, sans-serif";
             
-            // RA value only
-            ctx.fillText(RA + " kΩ", 185, 140);
+            // RA value (positioned next to resistor)
+            ctx.fillText(RA + " kΩ", 330, 115);
             
-            // RB value only
-            ctx.fillText(RB + " kΩ", 185, 220);
+            // RB value (positioned next to resistor)
+            ctx.fillText(RB + " kΩ", 330, 215);
             
-            // Capacitor value only
-            ctx.fillText(C + " μF", 405, 305);
+            // Capacitor value (positioned next to re-positioned capacitor)
+            ctx.fillText(C + " μF", 330, 343);
 
-            // 555 Label
+            // 555 IC Label
             ctx.font = "bold 22px 'Segoe UI', Arial, sans-serif";
-            ctx.fillText("555", 300, 215);
+            ctx.fillText("555", 145, 215);
+
+
+
+
+
+            
             // Solution Text
             const solText = document.getElementById('solText');
             if (solText) {
