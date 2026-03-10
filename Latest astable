@@ -107,7 +107,7 @@
                     </div>
 
                     <div class="input-group" id="inputGroupR" style="display:none;">
-                        <label id="labelR" for="inputR">R = </label>
+                        <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
                         <input type="text" id="inputR" placeholder="e.g. 100 Ohms">
                     </div>
 
