@@ -866,59 +866,83 @@
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Draw Power Rails
-    ctx.strokeStyle = brandBlack; ctx.lineWidth = 2;
+    ctx.strokeStyle = "#000000"; 
+    ctx.lineWidth = 2;
+    ctx.fillStyle = "#000000";
+    
+    // Quick line helper so we don't depend on external functions
+    const line = (x1, y1, x2, y2) => {
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+
+    // 1. Draw Power Rails
     ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
-    ctx.fillStyle = brandBlack;
-    drawLine(ctx, 100, 40, 500, 40); // +Vcc line
+    line(100, 40, 500, 40); // +Vcc line
     ctx.fillText("+Vcc (Supply)", 510, 45);
-    drawLine(ctx, 100, 380, 500, 380); // 0V line
+    line(100, 380, 500, 380); // 0V line
     ctx.fillText("0V (GND)", 510, 385);
 
-    // Draw 555 Chip Box
+    // 2. Draw 555 Chip Box
     ctx.strokeRect(250, 140, 100, 140); 
     ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
     ctx.fillText("555", 300, 215);
 
-    // Draw R1 Branch (Vcc to Pin 7)
-    drawLine(ctx, 150, 40, 150, 70);
-    drawResistor(ctx, 150, 95, false, "R1", (R1/1000) + " k\u03a9");
-    drawLine(ctx, 150, 120, 150, 160);
+    // 3. Draw Left Branch (R1, R2, C)
+    line(150, 40, 150, 70); // Wire from Vcc to R1
     
-    // Connect to Pin 7 (Discharge)
-    drawLine(ctx, 150, 160, 250, 160);
-    ctx.font = "14px Arial"; ctx.fillText("7", 265, 155);
+    // R1 Resistor
+    ctx.fillStyle = "white";
+    ctx.fillRect(135, 70, 30, 60);
+    ctx.strokeRect(135, 70, 30, 60);
+    ctx.fillStyle = "#000000";
+    ctx.font = "14px Arial"; ctx.textAlign = "right";
+    ctx.fillText("R\u2081", 125, 95);
+    ctx.fillText((R1/1000) + " k\u03a9", 125, 115);
 
-    // Draw R2 Branch (Pin 7 to Pins 2 & 6)
-    drawLine(ctx, 150, 160, 150, 195);
-    drawResistor(ctx, 150, 220, false, "R2", (R2/1000) + " k\u03a9");
-    drawLine(ctx, 150, 245, 150, 270);
+    line(150, 130, 150, 170); // Wire from R1 to R2
+    
+    // R2 Resistor
+    ctx.fillStyle = "white";
+    ctx.fillRect(135, 170, 30, 60);
+    ctx.strokeRect(135, 170, 30, 60);
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "right";
+    ctx.fillText("R\u2082", 125, 195);
+    ctx.fillText((R2/1000) + " k\u03a9", 125, 215);
 
-    // Connect to Pins 2 & 6 (Trigger & Threshold)
-    drawLine(ctx, 150, 270, 250, 270);
-    ctx.fillText("2, 6", 270, 265);
+    line(150, 230, 150, 280); // Wire from R2 to Capacitor
+    
+    // Capacitor
+    line(120, 280, 180, 280); // Top plate
+    line(120, 290, 180, 290); // Bottom plate
+    ctx.textAlign = "right";
+    ctx.fillText("C", 110, 285);
+    ctx.fillText(C_uF + " \u03bcF", 110, 305);
 
-    // Draw Capacitor Branch (Pins 2 & 6 to GND)
-    drawLine(ctx, 150, 270, 150, 310);
-    // Capacitor symbol
-    drawLine(ctx, 120, 310, 180, 310);
-    drawLine(ctx, 120, 320, 180, 320);
-    drawLine(ctx, 150, 320, 150, 380);
-    ctx.font = "14px Arial"; ctx.textAlign = "left";
-    ctx.fillText("C", 100, 320);
-    ctx.fillText(C_uF + " \u03bcF", 195, 320);
+    line(150, 290, 150, 380); // Wire from Capacitor to GND
+
+    // 4. Draw Connections to the 555 Chip
+    // R1/R2 Junction -> Pin 7
+    line(150, 150, 250, 150);
+    ctx.textAlign = "left"; ctx.fillText("7", 260, 145);
+
+    // R2/C Junction -> Pins 2,6
+    line(150, 250, 250, 250);
+    ctx.fillText("2, 6", 260, 245);
 
     // Output Pin 3
-    drawLine(ctx, 350, 210, 450, 210);
-    ctx.fillText("3", 340, 205);
+    line(350, 210, 450, 210);
+    ctx.fillText("3", 360, 205);
     ctx.fillText("Output", 460, 215);
 
-    // Power Pins (8, 4 to Vcc and 1 to GND)
-    drawLine(ctx, 300, 140, 300, 40);
-    ctx.fillText("8, 4", 315, 155);
-    drawLine(ctx, 300, 280, 300, 380);
-    ctx.fillText("1", 315, 275);
+    // Power Pins
+    line(300, 140, 300, 40); // Pins 4, 8 to Vcc
+    ctx.fillText("8, 4", 310, 130);
+    
+    line(300, 280, 300, 380); // Pin 1 to GND
+    ctx.fillText("1", 310, 370);
 
+    // 5. Update Solutions Text
     document.getElementById('solText').innerHTML = 
         "f = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = " + freq.toFixed(1) + " Hz<br>" +
         "T = 1 / f = " + period_ms.toFixed(1) + " ms";
