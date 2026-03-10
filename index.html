@@ -473,7 +473,7 @@
             currentAnswers.iUnit = iUnit;
 
             document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
-            document.getElementById('labelI').innerHTML = "Find <span style='color:" + brandPink + "'>" + currentAnswers.iNameHTML + "</span> = ";
+            document.getElementById('labelI').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.iNameHTML + "</span> = ";
 
             const vLabels = voltages.map(function(v, index) { return index === unknownVIndex ? v.display + " = ?" : v.display + " = " + v.val + " " + vUnit; });
             const iLabels = currents.map(function(c, index) { return index === unknownIIndex ? c.display + " = ?" : c.display + " = " + c.val + " " + iUnit; });
