@@ -151,11 +151,12 @@
     <button class="tab" onclick="openModule('diodes')">8. Diodes</button>
 </div>
 
-    <div id="menuBasics" class="tabs" style="display:none;">
+<div id="menuBasics" class="tabs" style="display:none;">
     <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
     <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
     <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
-        <button class="tab" style="background:#6c757d; color:white; border-color:#5a6268;" onclick="goHome()">🏠 Home</button>
+    <button class="tab" id="tab-colorcode" onclick="switchTab('colorcode')">Colour Codes</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
 </div>
 
 <div id="menuTiming" class="tabs" style="display:none;">
@@ -168,33 +169,28 @@
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
 </div>
 
-
-        
-    <div id="contentArea" style="display:none;">
+<div id="contentArea" style="display:none;">
         <div class="main-layout">
         <div class="left-panel">
         <div class="circuit-container">
         <canvas id="circuitCanvas" width="600" height="420"></canvas>
+    </div>  
     </div>
-
-   
-</div>
-
             <div class="right-panel">
-                <div class="quiz-section">
-                    <div class="quiz-header">
-                        <h3>Enter Your Answer</h3>
-                        <div class="score-container">
-                            <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
-                            <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
-                        </div>
-                    </div>
+            <div class="quiz-section">
+            <div class="quiz-header">
+                    <h3>Enter Your Answer</h3>
+                <div class="score-container">
+                <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
+                    <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
+    </div>
+    </div>
                     
-                    <div class="input-area">
-                        <div class="input-group" id="inputGroupV">
-                            <label id="labelV" for="inputV">V = </label>
-                            <input type="text" id="inputV" placeholder="e.g. 10 mV">
-                        </div>
+            <div class="input-area">
+            <div class="input-group" id="inputGroupV">
+            <label id="labelV" for="inputV">V = </label>
+            <input type="text" id="inputV" placeholder="e.g. 10 mV">
+    </div>
                         
                         <div class="input-group" id="inputGroupI">
                             <label id="labelI" for="inputI">I = </label>
@@ -255,7 +251,27 @@
                             </div>
                             <div style="font-size: 14px; color: #666;">(Give answer as a simplified fraction)</div>
                         </div>
-                        
+                        <div class="input-group" id="inputGroupColorVal" style="display:none;">
+    <div style="margin-bottom: 10px;">
+        <label for="inputResValue">Resistance: </label>
+        <input type="text" id="inputResValue" placeholder="e.g. 4.7 kohms">
+    </div>
+    <div>
+        <label for="inputResTol">Tolerance: ±</label>
+        <input type="text" id="inputResTol" placeholder="e.g. 5" style="width: 60px;"> %
+    </div>
+</div>
+
+<div class="input-group" id="inputGroupColorNames" style="display:none; text-align: center;">
+    <div style="margin-bottom: 10px;">
+        Band 1: <input type="text" id="inputBand1" placeholder="Color" style="width: 100px;">
+        Band 2: <input type="text" id="inputBand2" placeholder="Color" style="width: 100px;">
+    </div>
+    <div>
+        Band 3: <input type="text" id="inputBand3" placeholder="Color" style="width: 100px;">
+        Tol: <input type="text" id="inputBandTol" placeholder="Gold/Silver" style="width: 100px;">
+    </div>
+</div>
                         <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
                         <div id="feedback" class="feedback"></div>
                     </div>
@@ -347,7 +363,8 @@ function switchTab(mode) {
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
-        'inputGroupAstable', 'inputGroupMarkSpace'
+        'inputGroupAstable', 'inputGroupMarkSpace',
+        'inputGroupColorVal', 'inputGroupColorNames' // These two are the new additions
     ];
     groups.forEach(id => {
         const el = document.getElementById(id);
@@ -579,6 +596,11 @@ function generateProblem() {
     const canvas = document.getElementById('circuitCanvas');
     if (!canvas) return; 
     const ctx = canvas.getContext('2d');
+
+    if (currentMode === 'colorcode') {
+        generateColorCodeProblem(ctx, canvas);
+        return; 
+    }
     
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
@@ -1517,6 +1539,29 @@ function generateProblem() {
             feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. Check your math!</span>";
         }
     }
+
+
+if (currentMode === 'colorcode') {
+        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
+            const userRes = parseInput(document.getElementById('inputResValue').value);
+            const userTol = parseFloat(document.getElementById('inputResTol').value);
+            // Check if resistance is correct (within 1 ohm) and tolerance matches
+            if (userRes && Math.abs(userRes.val - currentAnswers.resVal) < 1 && userTol === currentAnswers.resTol) {
+                isCorrect = true;
+            }
+        } else {
+            // Check if all four color names match
+            const b1 = document.getElementById('inputBand1').value.toLowerCase().trim();
+            const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
+            const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
+            const tol = document.getElementById('inputBandTol').value.toLowerCase().trim();
+            if (b1 === currentAnswers.b1 && b2 === currentAnswers.b2 && 
+                b3 === currentAnswers.b3 && tol === currentAnswers.tol) {
+                isCorrect = true;
+            }
+        }
+    }
+           
     updateScoreboard();
 }
 
@@ -1806,6 +1851,70 @@ function closeDataSheet() {
     goHome(); // This ensures the 8 module buttons are shown first
 };   
 
+
+function generateColorCodeProblem(ctx, canvas) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    document.getElementById('grade9Btn').style.display = 'none';
+    document.getElementById('grade9ResistanceBtn').style.display = 'none';
+
+    const qType = Math.floor(Math.random() * 2);
+    const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
+    const tolColors = { 'gold': 5, 'silver': 10 };
+
+    const b1 = Math.floor(Math.random() * 9) + 1; 
+    const b2 = Math.floor(Math.random() * 10);    
+    const b3 = Math.floor(Math.random() * 7);     
+    const tolKey = Math.random() > 0.5 ? 'gold' : 'silver';
+    
+    const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
+    const toleranceValue = tolColors[tolKey];
+
+    // Draw Resistor
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#000';
+    ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke();
+    ctx.fillStyle = '#f4d3a6'; 
+    ctx.fillRect(200, 170, 200, 80);
+    ctx.strokeRect(200, 170, 200, 80);
+
+    const drawBand = (x, color) => {
+        ctx.fillStyle = color === 'white' ? '#fff' : (color === 'gold' ? '#FFD700' : (color === 'silver' ? '#C0C0C0' : color));
+        ctx.fillRect(x, 170, 20, 80);
+        ctx.strokeRect(x, 170, 20, 80);
+    };
+
+    drawBand(220, resColors[b1]);
+    drawBand(250, resColors[b2]);
+    drawBand(280, resColors[b3]);
+    drawBand(360, tolKey); 
+
+    if (qType === 0) {
+        document.getElementById('inputGroupColorVal').style.display = 'block';
+        document.getElementById('feedback').innerHTML = "Identify the Resistance and Tolerance %.";
+        currentAnswers.resVal = resistanceValue;
+        currentAnswers.resTol = toleranceValue;
+    } else {
+        document.getElementById('inputGroupColorNames').style.display = 'block';
+        document.getElementById('feedback').innerHTML = `Identify the colors for: <b>${formatResistance(resistanceValue)} ±${toleranceValue}%</b>`;
+        currentAnswers.b1 = resColors[b1];
+        currentAnswers.b2 = resColors[b2];
+        currentAnswers.b3 = resColors[b3];
+        currentAnswers.tol = tolKey;
+    }
+}
+
+function formatResistance(val) {
+    if (val >= 1000000) return (val / 1000000) + "MΩ";
+    if (val >= 1000) return (val / 1000) + "kΩ";
+    return val + "Ω";
+}
+
+
+
+
+
+
+        
 </script>
 
    <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
