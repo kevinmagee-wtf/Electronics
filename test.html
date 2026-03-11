@@ -1448,7 +1448,14 @@ function generateProblem() {
     if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
     else if (currentMode === 'divider') activeInputs = ['inputV'];
     else if (currentMode === 'resistance') activeInputs = ['inputR'];
-    else if (currentMode === 'oscilloscope') activeInputs = ['inputOscAmp']; // Updated to match your generator logic
+    else if (currentMode === 'oscilloscope') activeInputs = ['inputOscAmp'];
+    else if (currentMode === 'colorcode') {
+        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
+            activeInputs = ['inputResValue', 'inputResTol'];
+        } else {
+            activeInputs = ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
+        }
+    }
     else if (currentMode === 'astable') {
         if (currentAnswers.astableQType === 0) activeInputs = ['inputAstable', 'inputAstableT'];
         else activeInputs = ['inputMarkSpace'];
@@ -1475,7 +1482,31 @@ function generateProblem() {
 
     // 3. Parse inputs against expected answers
     let results = [];
-    if (currentMode === 'analysis') {
+    
+    // NEW COLOR CODE LOGIC
+    if (currentMode === 'colorcode') {
+        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
+            const userRes = parseInput(document.getElementById('inputResValue').value);
+            const userTol = parseFloat(document.getElementById('inputResTol').value);
+            // Grade Resistance (Check value and unit)
+            results.push(validateMatch(userRes, currentAnswers.resVal, "")); 
+            // Grade Tolerance
+            if (userTol === currentAnswers.resTol) results.push('correct');
+            else results.push('wrong');
+        } else {
+            const b1 = document.getElementById('inputBand1').value.toLowerCase().trim();
+            const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
+            const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
+            const tol = document.getElementById('inputBandTol').value.toLowerCase().trim();
+            if (b1 === currentAnswers.b1 && b2 === currentAnswers.b2 && b3 === currentAnswers.b3 && tol === currentAnswers.tol) {
+                results.push('correct');
+            } else {
+                results.push('wrong');
+            }
+        }
+    } 
+    // YOUR ORIGINAL LOGIC CONTINUES...
+    else if (currentMode === 'analysis') {
         let pV = parseInput(document.getElementById('inputV').value);
         let pI = parseInput(document.getElementById('inputI').value);
         results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
@@ -1489,7 +1520,6 @@ function generateProblem() {
     } else if (currentMode === 'oscilloscope') {
         let pAmp = parseInput(document.getElementById('inputOscAmp').value);
         results.push(validateMatch(pAmp, currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
-
         if (currentAnswers.oscQType === 1) {
             let pMark = parseInput(document.getElementById('inputOscMark').value);
             let pSpace = parseInput(document.getElementById('inputOscSpace').value);
@@ -1512,15 +1542,11 @@ function generateProblem() {
             results.push(validateMatch(aT, currentAnswers.astableTValue, currentAnswers.astableTUnit));
         } else {
             const userRatio = document.getElementById('inputMarkSpace').value.trim();
-            if (userRatio === currentAnswers.astableRatio) {
-                results.push('correct');
-            } else {
-                results.push('wrong');
-            }
+            results.push(userRatio === currentAnswers.astableRatio ? 'correct' : 'wrong');
         }
     }
 
-    // 4. Grade the results
+    // 4. Grade the results using your scoring rules
     if (results.every(r => r === 'correct')) {
         isCurrentProblemSolved = true;
         if (!viewedSolution && !unitErrorMade) {
@@ -1547,48 +1573,7 @@ function generateProblem() {
         }
     }
 
-
-if (currentMode === 'colorcode') {
-        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
-            const userRes = parseInput(document.getElementById('inputResValue').value);
-            const userTol = parseFloat(document.getElementById('inputResTol').value);
-            // Check if resistance is correct (within 1 ohm) and tolerance matches
-            if (userRes && Math.abs(userRes.val - currentAnswers.resVal) < 1 && userTol === currentAnswers.resTol) {
-                isCorrect = true;
-            }
-        } else {
-            // Check if all four color names match
-            const b1 = document.getElementById('inputBand1').value.toLowerCase().trim();
-            const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
-            const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
-            const tol = document.getElementById('inputBandTol').value.toLowerCase().trim();
-            if (b1 === currentAnswers.b1 && b2 === currentAnswers.b2 && 
-                b3 === currentAnswers.b3 && tol === currentAnswers.tol) {
-                isCorrect = true;
-            }
-        }
-    }
-     if (currentMode === 'colorcode') {
-        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
-            const userRes = parseInput(document.getElementById('inputResValue').value);
-            const userTol = parseFloat(document.getElementById('inputResTol').value);
-            if (userRes && Math.abs(userRes.val - currentAnswers.resVal) < 1 && userTol === currentAnswers.resTol) {
-                isCorrect = true;
-            }
-        } else {
-            const b1 = document.getElementById('inputBand1').value.toLowerCase().trim();
-            const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
-            const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
-            const tol = document.getElementById('inputBandTol').value.toLowerCase().trim();
-            if (b1 === currentAnswers.b1 && b2 === currentAnswers.b2 && b3 === currentAnswers.b3 && (tol === currentAnswers.tol)) {
-                isCorrect = true;
-            }
-        }
-    }      
-    
-           
-           
-           updateScoreboard();
+    updateScoreboard();
 }
 
         function toggleSolutions() {
@@ -1998,7 +1983,55 @@ function formatResistance(val) {
 }
 
 
+function generateColorCodeProblem(ctx, canvas) {
+    // 1. Clear the canvas so the old circuit disappears
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 2. Setup the colors
+    const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
+    const tolColors = { 'gold': 5, 'silver': 10 };
 
+    const b1 = Math.floor(Math.random() * 9) + 1; 
+    const b2 = Math.floor(Math.random() * 10);    
+    const b3 = Math.floor(Math.random() * 7);     
+    const tolKey = Math.random() > 0.5 ? 'gold' : 'silver';
+    const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
+    const toleranceValue = tolColors[tolKey];
+
+    // 3. Draw the Resistor Visual
+    ctx.lineWidth = 4; ctx.strokeStyle = '#000';
+    // Leads
+    ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke();
+    // Body
+    ctx.fillStyle = '#f4d3a6'; ctx.fillRect(200, 170, 200, 80); ctx.strokeRect(200, 170, 200, 80);
+
+    const drawBand = (x, color) => {
+        ctx.fillStyle = color === 'white' ? '#fff' : (color === 'gold' ? '#FFD700' : (color === 'silver' ? '#C0C0C0' : color));
+        ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
+    };
+    drawBand(220, resColors[b1]); drawBand(250, resColors[b2]); drawBand(280, resColors[b3]); drawBand(360, tolKey); 
+
+    // 4. Save answers for checking
+    const qType = Math.floor(Math.random() * 2);
+    currentAnswers = { ...currentAnswers, resVal: resistanceValue, resTol: toleranceValue, b1: resColors[b1], b2: resColors[b2], b3: resColors[b3], tol: tolKey };
+
+    // 5. Show the correct input boxes
+    if (qType === 0) {
+        document.getElementById('inputGroupColorVal').style.display = 'block';
+        document.getElementById('inputGroupColorNames').style.display = 'none';
+        document.getElementById('feedback').innerHTML = "Identify the Resistance and Tolerance %.";
+    } else {
+        document.getElementById('inputGroupColorVal').style.display = 'none';
+        document.getElementById('inputGroupColorNames').style.display = 'block';
+        document.getElementById('feedback').innerHTML = `Identify the colors for: <b>${formatResValue(resistanceValue)} ±${toleranceValue}%</b>`;
+    }
+}
+
+function formatResValue(val) {
+    if (val >= 1000000) return (val / 1000000) + " MΩ";
+    if (val >= 1000) return (val / 1000) + " kΩ";
+    return val + " Ω";
+}
         
 </script>
 
