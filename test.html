@@ -1265,128 +1265,116 @@ function generateProblem() {
         }
 
        function checkAnswers() {
-            if (isCurrentProblemSolved) return; 
+    if (isCurrentProblemSolved) return; 
 
-            const feedback = document.getElementById('feedback');
-            const helpBtn = document.getElementById('helpBtn');
+    const feedback = document.getElementById('feedback');
+    const helpBtn = document.getElementById('helpBtn');
 
-            // 1. Check if the relevant active boxes are genuinely blank first
-            let activeInputs = [];
-            if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
-            else if (currentMode === 'divider') activeInputs = ['inputV'];
-            else if (currentMode === 'resistance') activeInputs = ['inputR'];
-            else if (currentMode === 'oscilloscope') activeInputs = ['inputOsc1', 'inputOsc2'];
+    // 1. Check if the relevant active boxes are genuinely blank first
+    let activeInputs = [];
+    if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
+    else if (currentMode === 'divider') activeInputs = ['inputV'];
+    else if (currentMode === 'resistance') activeInputs = ['inputR'];
+    else if (currentMode === 'oscilloscope') activeInputs = ['inputOscAmp']; // Updated to match your generator logic
+    else if (currentMode === 'astable') {
+        if (currentAnswers.astableQType === 0) activeInputs = ['inputAstable', 'inputAstableT'];
+        else activeInputs = ['inputMarkSpace'];
+    }
 
-            let hasEmptyBox = false;
-            activeInputs.forEach(id => {
-                if (document.getElementById(id).value.trim() === '') {
-                    hasEmptyBox = true;
-                }
-            });
+    let hasEmptyBox = false;
+    activeInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value.trim() === '') {
+            hasEmptyBox = true;
+        }
+    });
 
-            // If a box is empty, warn them and stop without counting as an attempt
-            if (hasEmptyBox) {
-                feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
-                return; 
-            }
-            
-            // 2. Mark the problem as attempted
-            if (!hasCheckedCurrentProblem) { 
-                problemsAttempted++; 
-                hasCheckedCurrentProblem = true; 
-            }
+    if (hasEmptyBox) {
+        feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
+        return; 
+    }
+    
+    // 2. Mark the problem as attempted
+    if (!hasCheckedCurrentProblem) { 
+        problemsAttempted++; 
+        hasCheckedCurrentProblem = true; 
+    }
 
-            // 3. Parse inputs against expected answers
-            let results = [];
-            if (currentMode === 'analysis') {
-                let pV = parseInput(document.getElementById('inputV').value);
-                let pI = parseInput(document.getElementById('inputI').value);
-                results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
-                results.push(validateMatch(pI, currentAnswers.iValue, currentAnswers.iUnit));
-            } else if (currentMode === 'divider') {
-                let pV = parseInput(document.getElementById('inputV').value);
-                results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
-            } else if (currentMode === 'resistance') {
-    // This now looks at the text box and figures out both the number and the unit
-    let pR = parseInput(document.getElementById('inputR').value);
-    results.push(validateMatch(pR, currentAnswers.rValue, currentAnswers.rUnit));
-}
-            
-            else if (currentMode === 'oscilloscope') {
-            let pAmp = parseInput(document.getElementById('inputOscAmp').value);
-            results.push(validateMatch(pAmp, currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
+    // 3. Parse inputs against expected answers
+    let results = [];
+    if (currentMode === 'analysis') {
+        let pV = parseInput(document.getElementById('inputV').value);
+        let pI = parseInput(document.getElementById('inputI').value);
+        results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
+        results.push(validateMatch(pI, currentAnswers.iValue, currentAnswers.iUnit));
+    } else if (currentMode === 'divider') {
+        let pV = parseInput(document.getElementById('inputV').value);
+        results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
+    } else if (currentMode === 'resistance') {
+        let pR = parseInput(document.getElementById('inputR').value);
+        results.push(validateMatch(pR, currentAnswers.rValue, currentAnswers.rUnit));
+    } else if (currentMode === 'oscilloscope') {
+        let pAmp = parseInput(document.getElementById('inputOscAmp').value);
+        results.push(validateMatch(pAmp, currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
 
-            if (currentAnswers.oscQType === 1) {
-                let pMark = parseInput(document.getElementById('inputOscMark').value);
-                let pSpace = parseInput(document.getElementById('inputOscSpace').value);
-                results.push(validateMatch(pMark, currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
-                results.push(validateMatch(pSpace, currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
-            } else if (currentAnswers.oscQType === 2) {
-                let pPeriod = parseInput(document.getElementById('inputOscPeriod').value);
-                let pFreq = parseInput(document.getElementById('inputOscFreq').value);
-                results.push(validateMatch(pPeriod, currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
-                results.push(validateMatch(pFreq, currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
-            } else {
-                let pRatio = parseInput(document.getElementById('inputOscRatio').value);
-                results.push(validateMatch(pRatio, currentAnswers.oscRatioValue, currentAnswers.oscRatioUnit));
-            }
-            }
-           } else if (currentMode === 'astable') {
-    if (currentAnswers.astableQType === 0) {
-        // This handles the Frequency and Period check
-        const aF = parseInput(document.getElementById('inputAstable').value);
-        const aT = parseInput(document.getElementById('inputAstableT').value);
-        results.push(validateMatch(aF, currentAnswers.astableValue, currentAnswers.astableUnit));
-        results.push(validateMatch(aT, currentAnswers.astableTValue, currentAnswers.astableTUnit));
-    } else {
-        // This handles the new Ton / Toff Ratio check
-        const userRatio = document.getElementById('inputMarkSpace').value.trim();
-        // We compare the string directly (e.g., "2/1" matches "2/1")
-        if (userRatio === currentAnswers.astableRatio) {
-            results.push('correct');
+        if (currentAnswers.oscQType === 1) {
+            let pMark = parseInput(document.getElementById('inputOscMark').value);
+            let pSpace = parseInput(document.getElementById('inputOscSpace').value);
+            results.push(validateMatch(pMark, currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
+            results.push(validateMatch(pSpace, currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
+        } else if (currentAnswers.oscQType === 2) {
+            let pPeriod = parseInput(document.getElementById('inputOscPeriod').value);
+            let pFreq = parseInput(document.getElementById('inputOscFreq').value);
+            results.push(validateMatch(pPeriod, currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
+            results.push(validateMatch(pFreq, currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
         } else {
-            results.push('wrong');
+            let pRatio = parseInput(document.getElementById('inputOscRatio').value);
+            results.push(validateMatch(pRatio, currentAnswers.oscRatioValue, currentAnswers.oscRatioUnit));
+        }
+    } else if (currentMode === 'astable') {
+        if (currentAnswers.astableQType === 0) {
+            const aF = parseInput(document.getElementById('inputAstable').value);
+            const aT = parseInput(document.getElementById('inputAstableT').value);
+            results.push(validateMatch(aF, currentAnswers.astableValue, currentAnswers.astableUnit));
+            results.push(validateMatch(aT, currentAnswers.astableTValue, currentAnswers.astableTUnit));
+        } else {
+            const userRatio = document.getElementById('inputMarkSpace').value.trim();
+            if (userRatio === currentAnswers.astableRatio) {
+                results.push('correct');
+            } else {
+                results.push('wrong');
+            }
         }
     }
-}
 
-            // 4. Grade the results
-            if (results.every(r => r === 'correct')) {
-                isCurrentProblemSolved = true;
-                
-                if (!viewedSolution && !unitErrorMade) {
-                    problemsCorrect++;
-                    feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
-                } else if (unitErrorMade) {
-                    feedback.innerHTML = "<span style='color: #fd7e14;'>Correct! (No point awarded due to earlier unit error).</span>";
-                } else {
-                    feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed).</span>";
-                }
-                
-                if (helpBtn) helpBtn.style.display = 'none';
-            } else {
-                if (helpBtn) helpBtn.style.display = 'block';
-                
-                if (results.includes('nounit')) {
-                    unitErrorMade = true;
-                    feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget your units! (Mark lost for this question)</span>";
-                } else if (results.includes('wrongunit')) {
-                    unitErrorMade = true;
-                    if (currentMode === 'oscilloscope' && currentAnswers.osc2Unit === 'ratio') {
-                        feedback.innerHTML = "<span style='color: #fd7e14;'>Almost! The Mark/Space ratio must be written as a fraction (e.g. 1/2).</span>";
-                    } else {
-                        feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost for this question)</span>";
-                    }
-                } else if (results.some(r => r === 'correct')) {
-                    feedback.innerHTML = "<span style='color: #dc3545;'>One is right, one is wrong. Check logic!</span>";
-                } else {
-                    // This now handles math errors AND weird/incorrect units correctly
-                    feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. Check your math!</span>";
-                }
-            }
-            
-            updateScoreboard();
+    // 4. Grade the results
+    if (results.every(r => r === 'correct')) {
+        isCurrentProblemSolved = true;
+        if (!viewedSolution && !unitErrorMade) {
+            problemsCorrect++;
+            feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
+        } else if (unitErrorMade) {
+            feedback.innerHTML = "<span style='color: #fd7e14;'>Correct! (No point awarded due to earlier unit error).</span>";
+        } else {
+            feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed).</span>";
         }
+        if (helpBtn) helpBtn.style.display = 'none';
+    } else {
+        if (helpBtn) helpBtn.style.display = 'block';
+        if (results.includes('nounit')) {
+            unitErrorMade = true;
+            feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget your units! (Mark lost for this question)</span>";
+        } else if (results.includes('wrongunit')) {
+            unitErrorMade = true;
+            feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost for this question)</span>";
+        } else if (results.some(r => r === 'correct')) {
+            feedback.innerHTML = "<span style='color: #dc3545;'>One is right, one is wrong. Check logic!</span>";
+        } else {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. Check your math!</span>";
+        }
+    }
+    updateScoreboard();
+}
 
         function toggleSolutions() {
             const sol = document.getElementById('solutions');
