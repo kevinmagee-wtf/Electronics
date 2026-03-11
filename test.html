@@ -589,26 +589,16 @@ function drawLine(ctx, x1, y1, x2, y2) {
         }
 
 function generateProblem() {
-    // This ensures the data sheet closes when you switch modes/tabs
-    const modal = document.getElementById('dataSheetModal');
-    if (modal) modal.style.display = 'none';
-    
     const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return; 
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-
-if (currentMode === 'colorcode') {
-        generateColorCodeProblem(ctx, canvas);
-        return; 
-    }
-
-
-    
+    // This is the ONLY part that should be here for Colour Codes
     if (currentMode === 'colorcode') {
         generateColorCodeProblem(ctx, canvas);
         return; 
     }
+
     
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
