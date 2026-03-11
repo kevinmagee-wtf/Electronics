@@ -597,6 +597,14 @@ function generateProblem() {
     if (!canvas) return; 
     const ctx = canvas.getContext('2d');
 
+
+if (currentMode === 'colorcode') {
+        generateColorCodeProblem(ctx, canvas);
+        return; 
+    }
+
+
+    
     if (currentMode === 'colorcode') {
         generateColorCodeProblem(ctx, canvas);
         return; 
