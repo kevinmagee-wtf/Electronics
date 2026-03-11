@@ -419,23 +419,25 @@ function generateProblem() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    // Reset internal state
+    // 1. Reset Internal State
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
     viewedSolution = false; 
     unitErrorMade = false; 
 
+    // 2. Define UI Elements
     const helpBtn = document.getElementById('helpBtn');
     const solutions = document.getElementById('solutions');
     const feedback = document.getElementById('feedback');
     const grade9Btn = document.getElementById('grade9Btn');
     const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
 
+    // 3. Reset UI Display
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
 
-    // Button Visibility Logic 
+    // 4. Button Visibility Logic (Grade 9 Challenges)
     if (currentMode === 'divider') {
         if (grade9Btn) grade9Btn.style.display = 'inline-block';
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
@@ -447,40 +449,57 @@ function generateProblem() {
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
     }
 
-    // Reset Inputs [cite: 534, 535]
-    const inputs = ['inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 'inputAstable', 'inputAstableT'];
+    // 5. Clear All Inputs
+    const inputs = [
+        'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
+        'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
+        'inputAstable', 'inputAstableT'
+    ];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
 
-    // Hide all input groups [cite: 536]
-    const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupAstable'];
+    // 6. Hide All Input Groups
+    const groups = [
+        'inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 
+        'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 
+        'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupAstable'
+    ];
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
-    // Execute Mode Logic 
+    // 7. Execute Mode Drawing Logic
     if (currentMode === 'analysis') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        document.getElementById('inputGroupI').style.display = 'inline-block';
+        if (document.getElementById('inputGroupV')) document.getElementById('inputGroupV').style.display = 'inline-block';
+        if (document.getElementById('inputGroupI')) document.getElementById('inputGroupI').style.display = 'inline-block';
         generateAnalysisProblem(ctx, canvas);
+
     } else if (currentMode === 'divider') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
+        if (document.getElementById('inputGroupV')) document.getElementById('inputGroupV').style.display = 'inline-block';
         generateDividerProblem(ctx, canvas);
+
     } else if (currentMode === 'resistance') {
-        document.getElementById('inputGroupR').style.display = 'inline-block';
-        // Delay ensures canvas is ready in the DOM [cite: 10]
-        setTimeout(() => { generateGrade9Resistance(); }, 20);
+        if (document.getElementById('inputGroupR')) document.getElementById('inputGroupR').style.display = 'inline-block';
+        // Delay ensures the canvas is fully rendered before drawing complex resistors
+        setTimeout(() => { 
+            if (typeof generateGrade9Resistance === "function") {
+                generateGrade9Resistance(); 
+            }
+        }, 20);
+
     } else if (currentMode === 'oscilloscope') {
         generateOscilloscopeProblem(ctx, canvas);
+
     } else if (currentMode === 'astable') {
-        document.getElementById('inputGroupAstable').style.display = 'block';
+        if (document.getElementById('inputGroupAstable')) {
+            document.getElementById('inputGroupAstable').style.display = 'block';
+        }
         generateAstableProblem(ctx, canvas);
     }
 }
-// Function finally ends here correctly
 
 function generateAnalysisProblem(ctx, canvas) {
             const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
