@@ -256,20 +256,19 @@ function validateMatch(parsedInput, expectedVal, expectedUnit) {
             return 'wrongval';
         }
 
-if (currentMode === mode) return;
+function switchTab(mode) {
+    if (currentMode === mode) return;
     currentMode = mode;
-
     const tabs = ['analysis', 'divider', 'resistance', 'oscilloscope', 'astable'];
     tabs.forEach(t => {
         const el = document.getElementById('tab-' + t);
         if (el) el.classList.remove('active');
     });
-
     const activeTab = document.getElementById('tab-' + mode);
     if (activeTab) activeTab.classList.add('active');
     
     generateProblem();
-        }
+}
 
 function updateScoreboard() {
             const scoreDisplay = document.getElementById('scoreDisplay');
