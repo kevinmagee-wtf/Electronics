@@ -1091,31 +1091,26 @@ function generateProblem() {
     const helpBtn = document.getElementById('helpBtn');
     const solutions = document.getElementById('solutions');
     const feedback = document.getElementById('feedback');
-    
-    // --- 1. DEFINE BOTH GRADE 9 BUTTONS ---
     const grade9Btn = document.getElementById('grade9Btn'); 
-    const grade9ResBtn = document.getElementById('grade9ResistanceBtn'); // NEW
+    const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
     
-    // --- 2. UPDATE VISIBILITY LOGIC ---
-    // This part ensures only the correct button shows for the current tab
-
-
-if (currentMode === 'divider') {
+    // --- 1. GRADE 9 BUTTON VISIBILITY ---
+    if (currentMode === 'divider') {
         if (grade9Btn) grade9Btn.style.display = 'inline-block';
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
     } else if (currentMode === 'resistance') {
         if (grade9Btn) grade9Btn.style.display = 'none';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block'; // This fixes the hidden button
+        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
     } else {
         if (grade9Btn) grade9Btn.style.display = 'none';
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
     }
 
-
+    // --- 2. RESET ALL INPUTS ---
     const inputs = ['inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio'];
     inputs.forEach(id => {
         const el = document.getElementById(id);
@@ -1128,6 +1123,7 @@ if (currentMode === 'divider') {
         if (el) el.style.display = 'none';
     });
 
+    // --- 3. EXECUTION LOGIC (Fixed Timing) ---
     if (currentMode === 'analysis') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
         document.getElementById('inputGroupI').style.display = 'inline-block';
@@ -1137,14 +1133,14 @@ if (currentMode === 'divider') {
         generateDividerProblem(ctx, canvas);
     } else if (currentMode === 'resistance') {
         document.getElementById('inputGroupR').style.display = 'inline-block';
-        generateGrade9Resistance(); 
+        // We use a 10ms delay to ensure the canvas is ready to be drawn on
+        setTimeout(() => { generateGrade9Resistance(); }, 10);
     } else if (currentMode === 'oscilloscope') {
         generateOscilloscopeProblem(ctx, canvas);
     } else if (currentMode === 'astable') {
         generateAstableProblem(ctx, canvas);
     }
-}
-        
+}     
 function generateGrade9Resistance() {
     const canvas = document.getElementById('circuitCanvas');
     if (!canvas) return;
