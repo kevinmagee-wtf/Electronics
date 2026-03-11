@@ -593,13 +593,13 @@ function generateProblem() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // This is the ONLY part that should be here for Colour Codes
+    // 1. If we are in Colour Code mode, jump straight to that logic and stop
     if (currentMode === 'colorcode') {
         generateColorCodeProblem(ctx, canvas);
         return; 
     }
 
-    
+    // 2. Reset Quiz State for other modules
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
     viewedSolution = false; 
@@ -615,7 +615,7 @@ function generateProblem() {
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
     
-    // Grade 9 Button Visibility Logic
+    // 3. Grade 9 Button Visibility Logic
     if (currentMode === 'divider') {
         if (grade9Btn) grade9Btn.style.display = 'inline-block';
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
@@ -627,21 +627,32 @@ function generateProblem() {
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
     }
 
-    // Reset all possible inputs (Added inputMarkSpace here)
-    const inputs = ['inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 'inputAstable', 'inputAstableT', 'inputMarkSpace'];
+    // 4. Reset all text inputs
+    const inputs = [
+        'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
+        'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
+        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
+        'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'
+    ];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
 
-    // Hide all input groups (Added inputGroupMarkSpace here)
-    const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupAstable', 'inputGroupMarkSpace'];
+    // 5. Hide all input groups
+    const groups = [
+        'inputGroupV', 'inputGroupI', 'inputGroupR', 
+        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
+        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
+        'inputGroupAstable', 'inputGroupMarkSpace', 
+        'inputGroupColorVal', 'inputGroupColorNames'
+    ];
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
-    // Mode Logic - This connects the tabs to the drawing functions
+    // 6. Mode Logic - Call the specific "Artist" functions
     if (currentMode === 'analysis') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
         document.getElementById('inputGroupI').style.display = 'inline-block';
@@ -655,8 +666,6 @@ function generateProblem() {
     } else if (currentMode === 'oscilloscope') {
         generateOscilloscopeProblem(ctx, canvas);
     } else if (currentMode === 'astable') {
-        // We don't turn on the groups here because generateAstableProblem 
-        // will decide whether to show the Freq group or the Ratio group.
         generateAstableProblem(ctx, canvas);
     }
 }
