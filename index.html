@@ -75,7 +75,6 @@
     </style>
 </head>
 <body>
-
     <div class="header">
         <h1><span>Abingdon</span> Electronics</h1>
         <p>Basics</p>
@@ -113,63 +112,65 @@
                     </div>
                     
                     <div class="input-group" id="inputGroupI">
-                        <label id="labelI" for="inputI">I = </label>
-                        <input type="text" id="inputI" placeholder="e.g. 5 mA">
-                    </div>
+    <label id="labelI" for="inputI">I = </label>
+    <input type="text" id="inputI" placeholder="e.g. 5 mA">
+</div>
 
 <div class="input-group" id="inputGroupR" style="display:none;">
     <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
     <input type="text" id="inputR" placeholder="e.g. 15.52 kohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
 </div>
 
+<div class="input-group" id="inputGroupOscAmp" style="display:none;">
+    <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label>
+    <input type="text" id="inputOscAmp" placeholder="e.g. 5 V">
+</div>
+<div class="input-group" id="inputGroupOscMark" style="display:none;">
+    <label id="labelOscMark" for="inputOscMark">Mark Time = </label>
+    <input type="text" id="inputOscMark" placeholder="e.g. 10 ms">
+</div>
+<div class="input-group" id="inputGroupOscSpace" style="display:none;">
+    <label id="labelOscSpace" for="inputOscSpace">Space Time = </label>
+    <input type="text" id="inputOscSpace" placeholder="e.g. 5 ms">
+</div>
+<div class="input-group" id="inputGroupOscPeriod" style="display:none;">
+    <label id="labelOscPeriod" for="inputOscPeriod">Time Period = </label>
+    <input type="text" id="inputOscPeriod" placeholder="e.g. 15 ms">
+</div>
+<div class="input-group" id="inputGroupOscFreq" style="display:none;">
+    <label id="labelOscFreq" for="inputOscFreq">Frequency = </label>
+    <input type="text" id="inputOscFreq" placeholder="e.g. 66.7 Hz">
+</div>
+<div class="input-group" id="inputGroupOscRatio" style="display:none;">
+    <label id="labelOscRatio" for="inputOscRatio">Mark-Space ratio = </label>
+    <input type="text" id="inputOscRatio" placeholder="e.g. 2">
+</div>
 
-
-
-
-
-
-
-
-
-                    
-                    <div class="input-group" id="inputGroupOscAmp" style="display:none;">
-                        <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label>
-                        <input type="text" id="inputOscAmp" placeholder="e.g. 5 V">
-                    </div>
-                    <div class="input-group" id="inputGroupOscMark" style="display:none;">
-                        <label id="labelOscMark" for="inputOscMark">Mark Time = </label>
-                        <input type="text" id="inputOscMark" placeholder="e.g. 10 ms">
-                    </div>
-                    <div class="input-group" id="inputGroupOscSpace" style="display:none;">
-                        <label id="labelOscSpace" for="inputOscSpace">Space Time = </label>
-                        <input type="text" id="inputOscSpace" placeholder="e.g. 5 ms">
-                    </div>
-                    <div class="input-group" id="inputGroupOscPeriod" style="display:none;">
-                        <label id="labelOscPeriod" for="inputOscPeriod">Time Period = </label>
-                        <input type="text" id="inputOscPeriod" placeholder="e.g. 15 ms">
-                    </div>
-                    <div class="input-group" id="inputGroupOscFreq" style="display:none;">
-                        <label id="labelOscFreq" for="inputOscFreq">Frequency = </label>
-                        <input type="text" id="inputOscFreq" placeholder="e.g. 66.7 Hz">
-                    </div>
-                    <div class="input-group" id="inputGroupOscRatio" style="display:none;">
-                        <label id="labelOscRatio" for="inputOscRatio">Mark-Space ratio = </label>
-                        <input type="text" id="inputOscRatio" placeholder="e.g. 2">
-                    </div>
-                    
-                   <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
-                    <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
-                    Formula: <strong>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</strong><br>
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <label id="labelAstable" for="inputAstable">Frequency = </label>
-                        <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
-                    </div>
+<div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
+    <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
+        Formula: <strong>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</strong>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <label id="labelAstable" for="inputAstable">Frequency = </label>
+        <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
+    </div>
     <div>
         <label id="labelAstableT" for="inputAstableT">Time Period = </label>
         <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
     </div>
 </div>
+
+<div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%;">
+    <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
+        Formula: <strong>T<sub>ON</sub> / T<sub>OFF</sub> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub></strong>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <label for="inputMarkSpace" style="font-weight: bold;">Mark-Space Ratio = </label>
+        <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;">
+    </div>
+    <div style="font-size: 14px; color: #666;">(Give answer as a simplified fraction)</div>
+</div>
+                    
                     
                     <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
                     <div id="feedback" class="feedback"></div>
@@ -180,10 +181,10 @@
     <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
     
     <button id="grade9Btn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
-    
     <button id="grade9ResistanceBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
-    
     <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
+    <button id="dataSheetBtn" class="btn-check" style="background-color: #6c757d; color: white;" onclick="openDataSheet()">📖 Data Sheet</button>
+    
     </div>
 
             <div id="solutions" class="solutions">
@@ -429,6 +430,10 @@ function drawLine(ctx, x1, y1, x2, y2) {
         }
 
 function generateProblem() {
+    // This ensures the data sheet closes when you switch modes/tabs
+    const modal = document.getElementById('dataSheetModal');
+    if (modal) modal.style.display = 'none';
+    
     const canvas = document.getElementById('circuitCanvas');
     if (!canvas) return; 
     const ctx = canvas.getContext('2d');
@@ -496,25 +501,7 @@ function generateProblem() {
         generateAstableProblem(ctx, canvas);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        
+           
 function generateAnalysisProblem(ctx, canvas) {
             const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
             const iUnit = Math.random() < 0.5 ? 'A' : 'mA';
@@ -1283,116 +1270,116 @@ function generateProblem() {
         }
 
        function checkAnswers() {
-            if (isCurrentProblemSolved) return; 
+    if (isCurrentProblemSolved) return; 
 
-            const feedback = document.getElementById('feedback');
-            const helpBtn = document.getElementById('helpBtn');
+    const feedback = document.getElementById('feedback');
+    const helpBtn = document.getElementById('helpBtn');
 
-            // 1. Check if the relevant active boxes are genuinely blank first
-            let activeInputs = [];
-            if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
-            else if (currentMode === 'divider') activeInputs = ['inputV'];
-            else if (currentMode === 'resistance') activeInputs = ['inputR'];
-            else if (currentMode === 'oscilloscope') activeInputs = ['inputOsc1', 'inputOsc2'];
+    // 1. Check if the relevant active boxes are genuinely blank first
+    let activeInputs = [];
+    if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
+    else if (currentMode === 'divider') activeInputs = ['inputV'];
+    else if (currentMode === 'resistance') activeInputs = ['inputR'];
+    else if (currentMode === 'oscilloscope') activeInputs = ['inputOscAmp']; // Updated to match your generator logic
+    else if (currentMode === 'astable') {
+        if (currentAnswers.astableQType === 0) activeInputs = ['inputAstable', 'inputAstableT'];
+        else activeInputs = ['inputMarkSpace'];
+    }
 
-            let hasEmptyBox = false;
-            activeInputs.forEach(id => {
-                if (document.getElementById(id).value.trim() === '') {
-                    hasEmptyBox = true;
-                }
-            });
+    let hasEmptyBox = false;
+    activeInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value.trim() === '') {
+            hasEmptyBox = true;
+        }
+    });
 
-            // If a box is empty, warn them and stop without counting as an attempt
-            if (hasEmptyBox) {
-                feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
-                return; 
+    if (hasEmptyBox) {
+        feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
+        return; 
+    }
+    
+    // 2. Mark the problem as attempted
+    if (!hasCheckedCurrentProblem) { 
+        problemsAttempted++; 
+        hasCheckedCurrentProblem = true; 
+    }
+
+    // 3. Parse inputs against expected answers
+    let results = [];
+    if (currentMode === 'analysis') {
+        let pV = parseInput(document.getElementById('inputV').value);
+        let pI = parseInput(document.getElementById('inputI').value);
+        results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
+        results.push(validateMatch(pI, currentAnswers.iValue, currentAnswers.iUnit));
+    } else if (currentMode === 'divider') {
+        let pV = parseInput(document.getElementById('inputV').value);
+        results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
+    } else if (currentMode === 'resistance') {
+        let pR = parseInput(document.getElementById('inputR').value);
+        results.push(validateMatch(pR, currentAnswers.rValue, currentAnswers.rUnit));
+    } else if (currentMode === 'oscilloscope') {
+        let pAmp = parseInput(document.getElementById('inputOscAmp').value);
+        results.push(validateMatch(pAmp, currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
+
+        if (currentAnswers.oscQType === 1) {
+            let pMark = parseInput(document.getElementById('inputOscMark').value);
+            let pSpace = parseInput(document.getElementById('inputOscSpace').value);
+            results.push(validateMatch(pMark, currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
+            results.push(validateMatch(pSpace, currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
+        } else if (currentAnswers.oscQType === 2) {
+            let pPeriod = parseInput(document.getElementById('inputOscPeriod').value);
+            let pFreq = parseInput(document.getElementById('inputOscFreq').value);
+            results.push(validateMatch(pPeriod, currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
+            results.push(validateMatch(pFreq, currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
+        } else {
+            let pRatio = parseInput(document.getElementById('inputOscRatio').value);
+            results.push(validateMatch(pRatio, currentAnswers.oscRatioValue, currentAnswers.oscRatioUnit));
+        }
+    } else if (currentMode === 'astable') {
+        if (currentAnswers.astableQType === 0) {
+            const aF = parseInput(document.getElementById('inputAstable').value);
+            const aT = parseInput(document.getElementById('inputAstableT').value);
+            results.push(validateMatch(aF, currentAnswers.astableValue, currentAnswers.astableUnit));
+            results.push(validateMatch(aT, currentAnswers.astableTValue, currentAnswers.astableTUnit));
+        } else {
+            const userRatio = document.getElementById('inputMarkSpace').value.trim();
+            if (userRatio === currentAnswers.astableRatio) {
+                results.push('correct');
+            } else {
+                results.push('wrong');
             }
-            
-            // 2. Mark the problem as attempted
-            if (!hasCheckedCurrentProblem) { 
-                problemsAttempted++; 
-                hasCheckedCurrentProblem = true; 
-            }
+        }
+    }
 
-            // 3. Parse inputs against expected answers
-            let results = [];
-            if (currentMode === 'analysis') {
-                let pV = parseInput(document.getElementById('inputV').value);
-                let pI = parseInput(document.getElementById('inputI').value);
-                results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
-                results.push(validateMatch(pI, currentAnswers.iValue, currentAnswers.iUnit));
-            } else if (currentMode === 'divider') {
-                let pV = parseInput(document.getElementById('inputV').value);
-                results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
-            } else if (currentMode === 'resistance') {
-    // This now looks at the text box and figures out both the number and the unit
-    let pR = parseInput(document.getElementById('inputR').value);
-    results.push(validateMatch(pR, currentAnswers.rValue, currentAnswers.rUnit));
+    // 4. Grade the results
+    if (results.every(r => r === 'correct')) {
+        isCurrentProblemSolved = true;
+        if (!viewedSolution && !unitErrorMade) {
+            problemsCorrect++;
+            feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
+        } else if (unitErrorMade) {
+            feedback.innerHTML = "<span style='color: #fd7e14;'>Correct! (No point awarded due to earlier unit error).</span>";
+        } else {
+            feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed).</span>";
+        }
+        if (helpBtn) helpBtn.style.display = 'none';
+    } else {
+        if (helpBtn) helpBtn.style.display = 'block';
+        if (results.includes('nounit')) {
+            unitErrorMade = true;
+            feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget your units! (Mark lost for this question)</span>";
+        } else if (results.includes('wrongunit')) {
+            unitErrorMade = true;
+            feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost for this question)</span>";
+        } else if (results.some(r => r === 'correct')) {
+            feedback.innerHTML = "<span style='color: #dc3545;'>One is right, one is wrong. Check logic!</span>";
+        } else {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. Check your math!</span>";
+        }
+    }
+    updateScoreboard();
 }
-            
-            else if (currentMode === 'oscilloscope') {
-            let pAmp = parseInput(document.getElementById('inputOscAmp').value);
-            results.push(validateMatch(pAmp, currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
-
-            if (currentAnswers.oscQType === 1) {
-                let pMark = parseInput(document.getElementById('inputOscMark').value);
-                let pSpace = parseInput(document.getElementById('inputOscSpace').value);
-                results.push(validateMatch(pMark, currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
-                results.push(validateMatch(pSpace, currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
-            } else if (currentAnswers.oscQType === 2) {
-                let pPeriod = parseInput(document.getElementById('inputOscPeriod').value);
-                let pFreq = parseInput(document.getElementById('inputOscFreq').value);
-                results.push(validateMatch(pPeriod, currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
-                results.push(validateMatch(pFreq, currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
-            } else {
-                let pRatio = parseInput(document.getElementById('inputOscRatio').value);
-                results.push(validateMatch(pRatio, currentAnswers.oscRatioValue, currentAnswers.oscRatioUnit));
-            }
-            }
-           else if (currentMode === 'astable') {
-        const aF = parseInput(document.getElementById('inputAstable').value);
-        const aT = parseInput(document.getElementById('inputAstableT').value);
-        results.push(validateMatch(aF, currentAnswers.astableValue, currentAnswers.astableUnit));
-        results.push(validateMatch(aT, currentAnswers.astableTValue, currentAnswers.astableTUnit));
-        }
-
-            // 4. Grade the results
-            if (results.every(r => r === 'correct')) {
-                isCurrentProblemSolved = true;
-                
-                if (!viewedSolution && !unitErrorMade) {
-                    problemsCorrect++;
-                    feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
-                } else if (unitErrorMade) {
-                    feedback.innerHTML = "<span style='color: #fd7e14;'>Correct! (No point awarded due to earlier unit error).</span>";
-                } else {
-                    feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed).</span>";
-                }
-                
-                if (helpBtn) helpBtn.style.display = 'none';
-            } else {
-                if (helpBtn) helpBtn.style.display = 'block';
-                
-                if (results.includes('nounit')) {
-                    unitErrorMade = true;
-                    feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget your units! (Mark lost for this question)</span>";
-                } else if (results.includes('wrongunit')) {
-                    unitErrorMade = true;
-                    if (currentMode === 'oscilloscope' && currentAnswers.osc2Unit === 'ratio') {
-                        feedback.innerHTML = "<span style='color: #fd7e14;'>Almost! The Mark/Space ratio must be written as a fraction (e.g. 1/2).</span>";
-                    } else {
-                        feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost for this question)</span>";
-                    }
-                } else if (results.some(r => r === 'correct')) {
-                    feedback.innerHTML = "<span style='color: #dc3545;'>One is right, one is wrong. Check logic!</span>";
-                } else {
-                    // This now handles math errors AND weird/incorrect units correctly
-                    feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. Check your math!</span>";
-                }
-            }
-            
-            updateScoreboard();
-        }
 
         function toggleSolutions() {
             const sol = document.getElementById('solutions');
@@ -1402,26 +1389,53 @@ function generateProblem() {
             } else { sol.style.display = 'none'; }
         }
         
-       function generateAstableProblem(ctx, canvas) {
-    document.getElementById('inputGroupAstable').style.display = "inline-block";
+function generateAstableProblem(ctx, canvas) {
+    // 1. Helper for simplifying the Ratio fraction
+    const gcd = (a, b) => b ? gcd(b, a % b) : a;
+
+    // 2. Setup Variables
     const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
     const R2 = (Math.floor(Math.random() * 9) + 1) * 1000;
     const C_uF = [0.1, 1, 10, 47][Math.floor(Math.random() * 4)];
     const C_farads = C_uF / 1000000;
 
+    // 3. Calculate all possible answers
     const freq = 1.44 / ((R1 + 2 * R2) * C_farads);
     const period_ms = (1 / freq) * 1000;
-
-    currentAnswers.astableValue = freq; currentAnswers.astableUnit = "hz";
-    currentAnswers.astableTValue = period_ms; currentAnswers.astableTUnit = "ms";
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // Calculate Ratio: (R1 + R2) / R2 simplified
+    const num = R1 + R2;
+    const den = R2;
+    const common = gcd(num, den);
+    const ratioString = (num / common) + "/" + (den / common);
+
+    // 4. Choose Question Type (Randomly)
+    // 0 = Freq/Period, 1 = Ratio
+    const qType = Math.floor(Math.random() * 2);
+    currentAnswers.astableQType = qType;
+
+    // Toggle Input Boxes
+    if (qType === 0) {
+        document.getElementById('inputGroupAstable').style.display = "inline-block";
+        if (document.getElementById('inputGroupMarkSpace')) {
+            document.getElementById('inputGroupMarkSpace').style.display = "none";
+        }
+        currentAnswers.astableValue = freq; currentAnswers.astableUnit = "hz";
+        currentAnswers.astableTValue = period_ms; currentAnswers.astableTUnit = "ms";
+    } else {
+        document.getElementById('inputGroupAstable').style.display = "none";
+        if (document.getElementById('inputGroupMarkSpace')) {
+            document.getElementById('inputGroupMarkSpace').style.display = "inline-block";
+        }
+        currentAnswers.astableRatio = ratioString;
+    }
+
+    // 5. Drawing Logic
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#000000"; 
     ctx.lineWidth = 2;
     ctx.fillStyle = "#000000";
     
-    // Helper functions
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     };
@@ -1440,8 +1454,8 @@ function generateProblem() {
     };
 
     const drawCapacitor = (x, y, val, align="right") => {
-        line(x - 15, y - 5, x + 15, y - 5); // top plate
-        line(x - 15, y + 5, x + 15, y + 5); // bottom plate
+        line(x - 15, y - 5, x + 15, y - 5);
+        line(x - 15, y + 5, x + 15, y + 5);
         ctx.font = "14px Arial"; 
         ctx.textAlign = align;
         if (align === "right") {
@@ -1451,87 +1465,52 @@ function generateProblem() {
         }
     };
 
-    // 1. Draw Power Rails
+    // Drawing the circuit
     ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
-    line(100, 40, 500, 40); // +Vcc line
+    line(100, 40, 500, 40); // +Vcc
     ctx.fillText("+Vcc", 510, 45);
-    
-    line(100, 360, 500, 360); // 0V line
+    line(100, 360, 500, 360); // 0V
     ctx.fillText("0V", 510, 365);
-
-    // 2. Draw 555 Square Chip Box
-    ctx.strokeRect(260, 120, 140, 140); 
+    ctx.strokeRect(260, 120, 140, 140); // 555 Chip
     ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
     ctx.fillText("555", 330, 195);
 
-    // 3. Main Left Branch
     const bX = 160;
-    line(bX, 40, bX, 60);
-    drawNode(bX, 40); // Junction at Vcc
-    
+    line(bX, 40, bX, 60); drawNode(bX, 40);
     drawResistorBox(bX, 85, (R1/1000) + " k\u03a9");
-    
-    line(bX, 110, bX, 155);
-    drawNode(bX, 140); // Junction for Pin 7
-    
+    line(bX, 110, bX, 155); drawNode(bX, 140);
     drawResistorBox(bX, 180, (R2/1000) + " k\u03a9");
-    
-    line(bX, 205, bX, 285);
-    drawNode(bX, 225); // Junction for Pins 6 & 2
-    
+    line(bX, 205, bX, 285); drawNode(bX, 225);
     drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
-    
-    line(bX, 295, bX, 360);
-    drawNode(bX, 360); // Junction at 0V
+    line(bX, 295, bX, 360); drawNode(bX, 360);
 
-    // 4. Pin 7 Connection
-    line(bX, 140, 260, 140);
-    ctx.font = "14px Arial"; ctx.textAlign = "left"; 
-    ctx.fillText("7", 265, 145);
+    line(bX, 140, 260, 140); // Pin 7
+    ctx.font = "14px Arial"; ctx.textAlign = "left"; ctx.fillText("7", 265, 145);
+    line(bX, 225, 220, 225); drawNode(220, 225); line(220, 180, 220, 240);
+    line(220, 180, 260, 180); ctx.fillText("6", 265, 185); // Pin 6
+    line(220, 240, 260, 240); ctx.fillText("2", 265, 245); // Pin 2
 
-    // 5. Pins 6 & 2 Connections (Split)
-    line(bX, 225, 220, 225); // Wire to split node
-    drawNode(220, 225);      // Split node
-    line(220, 180, 220, 240); // Vertical split line
-    
-    line(220, 180, 260, 180); // To Pin 6
-    ctx.fillText("6", 265, 185);
-    
-    line(220, 240, 260, 240); // To Pin 2
-    ctx.fillText("2", 265, 245);
-
-    // 6. Pins 4 & 8 Connections (Split at top)
-    line(330, 40, 330, 80); // Wire from Vcc down to split node
-    drawNode(330, 80);      // Split node
-    line(300, 80, 360, 80); // Horizontal split line
-    
-    line(300, 80, 300, 120); // To Pin 4
-    ctx.textAlign = "center"; ctx.fillText("4", 300, 135);
-    
-    line(360, 80, 360, 120); // To Pin 8
-    ctx.fillText("8", 360, 135);
-
-    // 7. Pin 1 (Bottom Left)
-    line(300, 260, 300, 360);
-    drawNode(300, 360);
-    ctx.fillText("1", 300, 255);
-
-    // 8. Pin 5 (Bottom Right with 10 nF Cap)
-    line(360, 260, 360, 305);
-    ctx.fillText("5", 360, 255);
+    line(330, 40, 330, 80); drawNode(330, 80); line(300, 80, 360, 80);
+    line(300, 80, 300, 120); ctx.textAlign = "center"; ctx.fillText("4", 300, 135);
+    line(360, 80, 360, 120); ctx.fillText("8", 360, 135);
+    line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
+    line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
     drawCapacitor(360, 310, "10 nF", "left");
-    line(360, 315, 360, 360);
-    drawNode(360, 360);
-
-    // 9. Output Pin 3
-    line(400, 190, 460, 190);
-    ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
+    line(360, 315, 360, 360); drawNode(360, 360);
+    line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
-    // 10. Update Solutions Text
-    document.getElementById('solText').innerHTML = 
-        "f = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = " + freq.toFixed(1) + " Hz<br>" +
-        "T = 1 / f = " + period_ms.toFixed(1) + " ms";
+    // 6. Update Solutions Text
+    let solHTML = "";
+    if (qType === 0) {
+        solHTML = "f = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = <strong>" + freq.toFixed(1) + " Hz</strong><br>" +
+                  "T = 1 / f = <strong>" + period_ms.toFixed(1) + " ms</strong>";
+    } else {
+        solHTML = "T<sub>ON</sub> / T<sub>OFF</sub> = (R1 + R2) / R2<br>" +
+                  "T<sub>ON</sub> / T<sub>OFF</sub> = (" + R1 + " + " + R2 + ") / " + R2 + "<br>" +
+                  "T<sub>ON</sub> / T<sub>OFF</sub> = " + num + " / " + den + " = <strong>" + ratioString + "</strong>";
+    }
+    document.getElementById('solText').innerHTML = solHTML;
 }
 
 // ============================================================================
@@ -1673,10 +1652,57 @@ function generateGrade9DividerProblem() {
         solText.innerHTML = logicHTML;
     }
 }
-        
-    window.onload = function() { generateProblem(); };
+     function openDataSheet() {
+    const modal = document.getElementById('dataSheetModal');
+    if (modal) modal.style.display = 'block';
+}
+
+function closeDataSheet() {
+    const modal = document.getElementById('dataSheetModal');
+    if (modal) modal.style.display = 'none';
+}
 
         
-    </script>
+    window.onload = function() { generateProblem(); };    
+
+</script>
+
+   <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
+    <div style="background-color: white; padding: 20px; border-radius: 15px; max-width: 600px; width: 90%; position: relative; margin: 10% auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <span onclick="closeDataSheet()" style="position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #E64097; font-weight: bold;">&times;</span>
+        
+        <h2 style="color: #E64097; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;">Electronics Data Sheet</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; color: #333; font-family: sans-serif;">
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Basic Laws</h4>
+                <p>V = I &times; R</p>
+                <p>P = I &times; V</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Resistance</h4>
+                <p>Series: R<sub>T</sub> = R<sub>1</sub> + R<sub>2</sub></p>
+                <p>Parallel: R<sub>p</sub> = (R<sub>1</sub> &times; R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>)</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Potential Dividers</h4>
+                <p>V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))</p>
+            </div>
+            <div>
+    <h4 style="margin-bottom: 5px; color: #000;">555 Astable</h4>
+    <p>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</p>
+    <p>T = 0.693 &times; (R<sub>1</sub> + 2R<sub>2</sub>) &times; C</p>
+    <p style="margin-top: 10px; font-weight: bold;">
+        <span>T<sub>ON</sub></span> / <span>T<sub>OFF</sub></span> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub>
+    </p>
+</div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn-check" onclick="closeDataSheet()">Close Sheet</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
