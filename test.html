@@ -13,14 +13,20 @@
         
         .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
         /* Specific layout for the 8-button Home Page */
+
+/* Home Page Grid - Spread out more vertically and horizontally */
 #mainMenu {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Creates two equal columns */
-    gap: 15px;
-    max-width: 800px;
-    margin: 0 auto 25px auto;
+    grid-template-columns: 1fr 1fr; 
+    column-gap: 50px; /* Spreads buttons further apart horizontally */
+    row-gap: 30px;    /* Spreads buttons further apart vertically */
+    max-width: 900px; /* Widens the overall menu */
+    margin: 40px auto; /* Increased top margin to move it down from the header */
 }
 
+
+
+        
 /* Ensure the sub-menus stay as a single row */
 #menuBasics, #menuTiming, #menuPlaceholder {
     display: none; /* Hidden by default */
@@ -28,9 +34,37 @@
     gap: 15px;
     margin-bottom: 25px;
 }
-        .tab { padding: 10px 25px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #eaeaea; border: 2px solid #ccc; border-radius: 8px; color: #555; transition: all 0.2s; }
-        .tab.active { background-color: #E64097; color: white; border-color: #E64097; box-shadow: 0 4px 6px rgba(230, 64, 151, 0.2); }
-        .tab:hover:not(.active) { background-color: #d4d4d4; }
+        /* General Tab Styling - Updated for Pink branding and more height */
+.tab { 
+    padding: 20px 30px; /* Increased padding for more internal space */
+    font-size: 18px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    background-color: #E64097; /* Abingdon Pink */
+    border: 2px solid #c5307d; 
+    border-radius: 12px; 
+    color: white; /* White text looks best on pink */
+    transition: all 0.2s;
+    min-height: 80px; /* Forces buttons to be taller */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.tab:hover {
+    background-color: #cf3584;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.tab.active {
+    background-color: #000000;
+    color: white;
+    border-color: #000;
+}
+
+
 
         .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
         
@@ -114,7 +148,7 @@
     <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
     <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
     <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
-    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+        <button class="tab" style="background:#6c757d; color:white; border-color:#5a6268;" onclick="goHome()">🏠 Home</button>
 </div>
 
 <div id="menuTiming" class="tabs" style="display:none;">
