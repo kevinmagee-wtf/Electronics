@@ -406,27 +406,26 @@ function drawLine(ctx, x1, y1, x2, y2) {
 
 function generateProblem() {
     const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return; 
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
+    // Reset internal state
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
     viewedSolution = false; 
     unitErrorMade = false; 
-    
+
     const helpBtn = document.getElementById('helpBtn');
     const solutions = document.getElementById('solutions');
     const feedback = document.getElementById('feedback');
-    
-    // --- 1. DEFINE BOTH GRADE 9 BUTTONS ---
-    const grade9Btn = document.getElementById('grade9Btn'); 
+    const grade9Btn = document.getElementById('grade9Btn');
     const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
-    
-    // --- 2. UPDATE VISIBILITY LOGIC ---
+
+    // Button Visibility Logic 
     if (currentMode === 'divider') {
         if (grade9Btn) grade9Btn.style.display = 'inline-block';
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
@@ -438,19 +437,21 @@ function generateProblem() {
         if (grade9ResBtn) grade9ResBtn.style.display = 'none';
     }
 
-    const inputs = ['inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio'];
+    // Reset Inputs [cite: 534, 535]
+    const inputs = ['inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 'inputAstable', 'inputAstableT'];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
 
+    // Hide all input groups [cite: 536]
     const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupAstable'];
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
-    // --- 3. MODE LOGIC (Fixed structural flow) ---
+    // Execute Mode Logic 
     if (currentMode === 'analysis') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
         document.getElementById('inputGroupI').style.display = 'inline-block';
@@ -460,13 +461,12 @@ function generateProblem() {
         generateDividerProblem(ctx, canvas);
     } else if (currentMode === 'resistance') {
         document.getElementById('inputGroupR').style.display = 'inline-block';
-        // Delay ensures canvas is ready in the DOM before drawing
-        setTimeout(() => {
-            generateGrade9Resistance();
-        }, 10);
+        // Delay ensures canvas is ready in the DOM [cite: 10]
+        setTimeout(() => { generateGrade9Resistance(); }, 20);
     } else if (currentMode === 'oscilloscope') {
         generateOscilloscopeProblem(ctx, canvas);
     } else if (currentMode === 'astable') {
+        document.getElementById('inputGroupAstable').style.display = 'block';
         generateAstableProblem(ctx, canvas);
     }
 }
@@ -1817,9 +1817,13 @@ function generateGrade9DividerProblem() {
                     </div>
 
                     <div class="input-group" id="inputGroupR" style="display:none;">
-                        <label id="labelR" for="inputR">R? = </label>
-                        <input type="number" id="inputR" placeholder="..."> Ohms
-                    </div>
+    <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
+    <input type="number" id="inputR" step="0.01" placeholder="e.g. 15.52">
+    <select id="unitR">
+        <option value="ohms">&Omega;</option>
+        <option value="kohms">k&Omega;</option>
+    </select>
+</div>
                     
                     <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
                     <div id="feedback" class="feedback"></div>
