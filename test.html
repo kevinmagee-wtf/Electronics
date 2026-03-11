@@ -107,11 +107,15 @@
 
     <div id="contentArea" style="display:none;">
         <div class="main-layout">
-            <div class="left-panel">
-                <div class="circuit-container">
-                    <canvas id="circuitCanvas" width="600" height="420"></canvas>
-                </div>
-            </div>
+        <div class="left-panel">
+        <div class="circuit-container">
+        <canvas id="circuitCanvas" width="600" height="420"></canvas>
+    </div>
+
+   <div id="menuPlaceholder" class="tabs" style="display:none;">
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Click to Go Home</button>
+</div> 
+</div>
 
             <div class="right-panel">
                 <div class="quiz-section">
@@ -237,21 +241,24 @@
     <script>
 
         function openModule(module) {
-    // Hide the 8 main buttons so they don't block the screen
+    // Hide everything first
     document.getElementById('mainMenu').style.display = 'none';
-    
-    // Hide all sub-menus
     document.getElementById('menuBasics').style.display = 'none';
     document.getElementById('menuTiming').style.display = 'none';
+    document.getElementById('menuPlaceholder').style.display = 'none';
     document.getElementById('contentArea').style.display = 'none';
 
-    // Show the correct sub-menu
+    // Show the specific menu or the placeholder
     if (module === 'basics') {
         document.getElementById('menuBasics').style.display = 'flex';
         document.getElementById('moduleSubtitle').innerText = 'Circuit Basics';
     } else if (module === 'timing') {
         document.getElementById('menuTiming').style.display = 'flex';
         document.getElementById('moduleSubtitle').innerText = 'Timing Circuits';
+    } else {
+        // For any other button (Logic, Transistors, etc.)
+        document.getElementById('menuPlaceholder').style.display = 'flex';
+        document.getElementById('moduleSubtitle').innerText = 'Coming Soon';
     }
 }
 
@@ -259,8 +266,12 @@ function goHome() {
     document.getElementById('mainMenu').style.display = 'flex';
     document.getElementById('menuBasics').style.display = 'none';
     document.getElementById('menuTiming').style.display = 'none';
+    document.getElementById('menuPlaceholder').style.display = 'none'; // Clear placeholder
     document.getElementById('contentArea').style.display = 'none';
     document.getElementById('moduleSubtitle').innerText = 'Mastering the GCSE Course';
+    
+    // Reset active button highlights
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
 }
 
 function switchTab(mode) {
