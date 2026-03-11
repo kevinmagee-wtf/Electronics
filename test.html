@@ -12,6 +12,22 @@
         .header span { color: #E64097; font-weight: bold; }
         
         .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        /* Specific layout for the 8-button Home Page */
+#mainMenu {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Creates two equal columns */
+    gap: 15px;
+    max-width: 800px;
+    margin: 0 auto 25px auto;
+}
+
+/* Ensure the sub-menus stay as a single row */
+#menuBasics, #menuTiming, #menuPlaceholder {
+    display: none; /* Hidden by default */
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
         .tab { padding: 10px 25px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #eaeaea; border: 2px solid #ccc; border-radius: 8px; color: #555; transition: all 0.2s; }
         .tab.active { background-color: #E64097; color: white; border-color: #E64097; box-shadow: 0 4px 6px rgba(230, 64, 151, 0.2); }
         .tab:hover:not(.active) { background-color: #d4d4d4; }
@@ -81,33 +97,35 @@
     </div>
 
     <div id="mainMenu" class="tabs">
-        <button class="tab" onclick="openModule('basics')">1. Circuit Basics</button>
-        <button class="tab" onclick="openModule('logic')">2. Logic Gates</button>
-        <button class="tab" onclick="openModule('timing')">3. Timing Circuits</button>
-        <button class="tab" onclick="openModule('flipflops')">4. Flip Flops & Counters</button>
-        <button class="tab" onclick="openModule('transistors')">5. Transistors</button>
-        <button class="tab" onclick="openModule('opamps')">6. Op Amps</button>
-        <button class="tab" onclick="openModule('systems')">7. Systems</button>
-        <button class="tab" onclick="openModule('diodes')">8. Diodes</button>
-    </div>
+    <button class="tab" onclick="openModule('basics')">1. Circuit Basics</button>
+    <button class="tab" onclick="openModule('transistors')">5. Transistors</button>
+    
+    <button class="tab" onclick="openModule('logic')">2. Logic Gates</button>
+    <button class="tab" onclick="openModule('opamps')">6. Op Amps</button>
+    
+    <button class="tab" onclick="openModule('timing')">3. Timing Circuits</button>
+    <button class="tab" onclick="openModule('systems')">7. Systems</button>
+    
+    <button class="tab" onclick="openModule('flipflops')">4. Flip Flops & Counters</button>
+    <button class="tab" onclick="openModule('diodes')">8. Diodes</button>
+</div>
 
     <div id="menuBasics" class="tabs" style="display:none;">
-        <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
-        <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
-        <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
-        <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
-    </div>
+    <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
+    <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
+    <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+</div>
 
-    <div id="menuTiming" class="tabs" style="display:none;">
-        <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
-        <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
-        <button class="tab" onclick="alert('Monostable content coming soon!')">Monostable</button>
-        <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
-    </div>
+<div id="menuTiming" class="tabs" style="display:none;">
+    <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
+    <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+</div>
 
-    <div id="menuPlaceholder" class="tabs" style="display:none;">
-        <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Click to return Home</button>
-    </div>
+<div id="menuPlaceholder" class="tabs" style="display:none;">
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
+</div>
 
 
         
@@ -244,38 +262,32 @@
 
     <script>
 
-        function openModule(module) {
-    // Hide everything first
+ function openModule(module) {
     document.getElementById('mainMenu').style.display = 'none';
     document.getElementById('menuBasics').style.display = 'none';
     document.getElementById('menuTiming').style.display = 'none';
     document.getElementById('menuPlaceholder').style.display = 'none';
     document.getElementById('contentArea').style.display = 'none';
 
-    // Show the correct sub-menu based on selection
     if (module === 'basics') {
         document.getElementById('menuBasics').style.display = 'flex';
-        document.getElementById('moduleSubtitle').innerText = 'Circuit Basics';
+        document.getElementById('moduleSubtitle').innerText = '1. Circuit Basics';
     } else if (module === 'timing') {
         document.getElementById('menuTiming').style.display = 'flex';
-        document.getElementById('moduleSubtitle').innerText = 'Timing Circuits';
+        document.getElementById('moduleSubtitle').innerText = '3. Timing Circuits';
     } else {
-        // This handles Logic, Flip Flops, Transistors, etc.
         document.getElementById('menuPlaceholder').style.display = 'flex';
         document.getElementById('moduleSubtitle').innerText = 'Coming Soon';
     }
 }
 
 function goHome() {
-    document.getElementById('mainMenu').style.display = 'flex';
+    document.getElementById('mainMenu').style.display = 'grid'; // Returns to the 2-column grid
     document.getElementById('menuBasics').style.display = 'none';
     document.getElementById('menuTiming').style.display = 'none';
     document.getElementById('menuPlaceholder').style.display = 'none';
     document.getElementById('contentArea').style.display = 'none';
     document.getElementById('moduleSubtitle').innerText = 'Mastering the GCSE Course';
-    
-    // Clear highlights from sub-tabs
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
 }
 
 function switchTab(mode) {
