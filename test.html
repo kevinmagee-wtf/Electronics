@@ -1984,38 +1984,54 @@ function formatResistance(val) {
 
 
 function generateColorCodeProblem(ctx, canvas) {
-    // 1. Clear the canvas so the old circuit disappears
+    // 1. Clear the canvas to remove old circuit diagrams
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 2. Setup the colors
+    // 2. Define the color pool
     const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
     const tolColors = { 'gold': 5, 'silver': 10 };
 
-    const b1 = Math.floor(Math.random() * 9) + 1; 
-    const b2 = Math.floor(Math.random() * 10);    
-    const b3 = Math.floor(Math.random() * 7);     
+    // 3. Randomize the resistor values
+    const b1 = Math.floor(Math.random() * 9) + 1; // 1st Digit
+    const b2 = Math.floor(Math.random() * 10);    // 2nd Digit
+    const b3 = Math.floor(Math.random() * 7);     // Multiplier
     const tolKey = Math.random() > 0.5 ? 'gold' : 'silver';
+    
     const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
     const toleranceValue = tolColors[tolKey];
 
-    // 3. Draw the Resistor Visual
-    ctx.lineWidth = 4; ctx.strokeStyle = '#000';
-    // Leads
+    // 4. Draw the Resistor Visual
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#000';
+    // Draw leads
     ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke();
-    // Body
-    ctx.fillStyle = '#f4d3a6'; ctx.fillRect(200, 170, 200, 80); ctx.strokeRect(200, 170, 200, 80);
+    // Draw body
+    ctx.fillStyle = '#f4d3a6'; 
+    ctx.fillRect(200, 170, 200, 80);
+    ctx.strokeRect(200, 170, 200, 80);
 
     const drawBand = (x, color) => {
         ctx.fillStyle = color === 'white' ? '#fff' : (color === 'gold' ? '#FFD700' : (color === 'silver' ? '#C0C0C0' : color));
-        ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
+        ctx.fillRect(x, 170, 20, 80);
+        ctx.strokeRect(x, 170, 20, 80);
     };
-    drawBand(220, resColors[b1]); drawBand(250, resColors[b2]); drawBand(280, resColors[b3]); drawBand(360, tolKey); 
 
-    // 4. Save answers for checking
+    // Draw the 4 bands
+    drawBand(220, resColors[b1]);
+    drawBand(250, resColors[b2]);
+    drawBand(280, resColors[b3]);
+    drawBand(360, tolKey); 
+
+    // 5. Store the answers for the checker to use
     const qType = Math.floor(Math.random() * 2);
-    currentAnswers = { ...currentAnswers, resVal: resistanceValue, resTol: toleranceValue, b1: resColors[b1], b2: resColors[b2], b3: resColors[b3], tol: tolKey };
+    currentAnswers.resVal = resistanceValue;
+    currentAnswers.resTol = toleranceValue;
+    currentAnswers.b1 = resColors[b1];
+    currentAnswers.b2 = resColors[b2];
+    currentAnswers.b3 = resColors[b3];
+    currentAnswers.tol = tolKey;
 
-    // 5. Show the correct input boxes
+    // 6. Toggle the correct input boxes
     if (qType === 0) {
         document.getElementById('inputGroupColorVal').style.display = 'block';
         document.getElementById('inputGroupColorNames').style.display = 'none';
@@ -2027,6 +2043,7 @@ function generateColorCodeProblem(ctx, canvas) {
     }
 }
 
+// This helper function makes the resistance values look pretty (e.g. 4.7 kΩ)
 function formatResValue(val) {
     if (val >= 1000000) return (val / 1000000) + " MΩ";
     if (val >= 1000) return (val / 1000) + " kΩ";
