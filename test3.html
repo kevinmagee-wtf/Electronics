@@ -376,8 +376,8 @@ async function processSubmission() {
             } catch (error) {
                 console.error('Error submitting score!', error.message);
                 alert("Certificate downloaded! (Note: Could not connect to Google Sheets to send score to teacher.)");
-            } finally {
-                // 4. Reset Everything
+      } finally {
+            // 4. Reset Everything
             downloadBtn.innerHTML = originalText;
             downloadBtn.disabled = false;
             problemsAttempted = 0;
@@ -385,17 +385,16 @@ async function processSubmission() {
             updateScoreboard();
             generateProblem();
             alert("Certificate downloaded successfully! Your score has been reset.");
-        } catch (error) {
-            console.error('Error!', error);
-            downloadBtn.innerHTML = originalText;
+        } 
+    } catch (error) {
+        console.error('Error!', error);
+        const downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn) {
+            downloadBtn.innerHTML = "Download";
             downloadBtn.disabled = false;
         }
     }
-
-
-
-
-
+}
         
 function drawResistor(ctx, x, y) {
             ctx.beginPath();
