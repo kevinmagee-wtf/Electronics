@@ -1673,10 +1673,50 @@ function generateGrade9DividerProblem() {
         solText.innerHTML = logicHTML;
     }
 }
-        
+     function openDataSheet() {
+    document.getElementById('dataSheetModal').style.display = 'block';
+}
+
+function closeDataSheet() {
+    document.getElementById('dataSheetModal').style.display = 'none';
+}   
     window.onload = function() { generateProblem(); };
 
         
     </script>
+
+    <div id="dataSheetModal" class="modal">
+        <div class="modal-content" style="max-width: 600px; text-align: left;">
+            <span class="close" onclick="closeDataSheet()">&times;</span>
+            <h2 style="color: #E64097; text-align: center; border-bottom: 2px solid #ccc; padding-bottom: 10px;">Electronics Data Sheet</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px;">
+                <div>
+                    <h4 style="margin-bottom: 5px;">Basic Laws</h4>
+                    <p>V = I &times; R</p>
+                    <p>P = I &times; V</p>
+                    <p>P = I<sup>2</sup> &times; R</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 5px;">Resistance</h4>
+                    <p>Series: R<sub>T</sub> = R<sub>1</sub> + R<sub>2</sub></p>
+                    <p>Parallel: R<sub>p</sub> = (R<sub>1</sub> &times; R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>)</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 5px;">Potential Dividers</h4>
+                    <p>V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 5px;">555 Astable</h4>
+                    <p>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</p>
+                    <p>T = 0.693 &times; (R<sub>1</sub> + 2R<sub>2</sub>) &times; C</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-check" onclick="closeDataSheet()">Close Sheet</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
