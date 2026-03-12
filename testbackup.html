@@ -151,11 +151,12 @@
     <button class="tab" onclick="openModule('diodes')">8. Diodes</button>
 </div>
 
-    <div id="menuBasics" class="tabs" style="display:none;">
+<div id="menuBasics" class="tabs" style="display:none;">
     <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
     <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
     <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
-        <button class="tab" style="background:#6c757d; color:white; border-color:#5a6268;" onclick="goHome()">🏠 Home</button>
+    <button class="tab" id="tab-colorcode" onclick="switchTab('colorcode')">Colour Codes</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
 </div>
 
 <div id="menuTiming" class="tabs" style="display:none;">
@@ -168,33 +169,28 @@
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
 </div>
 
-
-        
-    <div id="contentArea" style="display:none;">
+<div id="contentArea" style="display:none;">
         <div class="main-layout">
         <div class="left-panel">
         <div class="circuit-container">
         <canvas id="circuitCanvas" width="600" height="420"></canvas>
+    </div>  
     </div>
-
-   
-</div>
-
             <div class="right-panel">
-                <div class="quiz-section">
-                    <div class="quiz-header">
-                        <h3>Enter Your Answer</h3>
-                        <div class="score-container">
-                            <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
-                            <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
-                        </div>
-                    </div>
+            <div class="quiz-section">
+            <div class="quiz-header">
+                    <h3>Enter Your Answer</h3>
+                <div class="score-container">
+                <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
+                    <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
+    </div>
+    </div>
                     
-                    <div class="input-area">
-                        <div class="input-group" id="inputGroupV">
-                            <label id="labelV" for="inputV">V = </label>
-                            <input type="text" id="inputV" placeholder="e.g. 10 mV">
-                        </div>
+            <div class="input-area">
+            <div class="input-group" id="inputGroupV">
+            <label id="labelV" for="inputV">V = </label>
+            <input type="text" id="inputV" placeholder="e.g. 10 mV">
+    </div>
                         
                         <div class="input-group" id="inputGroupI">
                             <label id="labelI" for="inputI">I = </label>
@@ -255,7 +251,43 @@
                             </div>
                             <div style="font-size: 14px; color: #666;">(Give answer as a simplified fraction)</div>
                         </div>
-                        
+
+
+
+
+<div id="inputGroupColorVal" class="input-group" style="display:none;">
+    <div style="margin-bottom: 10px;">
+        <label>Resistance (Ω): </label>
+        <input type="text" id="inputResValue" placeholder="e.g. 1.2 kΩ" style="width: 140px;">
+    </div>
+    <div>
+        <label>Band 4 Tolerance (%): </label>
+        <input type="text" id="inputResTol" placeholder="e.g. 5" style="width: 140px;">
+    </div>
+</div>
+
+<div id="inputGroupColorNames" class="input-group" style="display:none;">
+    <label>Band 1: </label><input type="text" id="inputBand1" placeholder="e.g. red" style="width: 100px;">
+    <label>Band 2: </label><input type="text" id="inputBand2" placeholder="e.g. grey" style="width: 100px;">
+    <label>Band 3: </label><input type="text" id="inputBand3" placeholder="e.g. blue" style="width: 100px;">
+    <label>Band 4: </label><input type="text" id="inputBandTol" placeholder="e.g. gold" style="width: 100px;">
+</div>
+
+
+                
+<div class="input-group" id="inputGroupColorNames" style="display:none; text-align: center;">
+    <div style="margin-bottom: 10px;">
+        Band 1: <input type="text" id="inputBand1" placeholder="Colour" style="width: 100px;">
+        Band 2: <input type="text" id="inputBand2" placeholder="Colour" style="width: 100px;">
+        Band 3: <input type="text" id="inputBand3" placeholder="Colour" style="width: 100px;">
+        Band 4: <input type="text" id="inputBandTol" placeholder="Colour" style="width: 100px;">
+    </div>
+</div>
+
+
+
+
+                
                         <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
                         <div id="feedback" class="feedback"></div>
                     </div>
@@ -347,7 +379,8 @@ function switchTab(mode) {
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
-        'inputGroupAstable', 'inputGroupMarkSpace'
+        'inputGroupAstable', 'inputGroupMarkSpace',
+        'inputGroupColorVal', 'inputGroupColorNames' // These two are the new additions
     ];
     groups.forEach(id => {
         const el = document.getElementById(id);
@@ -409,9 +442,16 @@ function parseInput(str) {
         return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio', isRatioString: true };
     }
     
-    const match = cleanStr.match(/^(-?[\d\.]+)([a-z]+)$/);
+    const match = cleanStr.match(/^(-?[\d\.]+)([a-z\u03a9]+)$/);
     if (match) {
-        return { val: parseFloat(match[1]), unit: match[2] };
+        let val = parseFloat(match[1]);
+        let unit = match[2];
+        
+        // Resistor specific conversion logic
+        if (unit.startsWith('k')) val *= 1000;
+        if (unit.startsWith('m') && !unit.startsWith('ma')) val *= 1000000; // M but not mA
+        
+        return { val: val, unit: unit };
     }
     return { val: parseFloat(cleanStr), unit: '' }; 
 }
@@ -571,75 +611,7 @@ function drawLine(ctx, x1, y1, x2, y2) {
             ctx.closePath();
         }
 
-function generateProblem() {
-    // This ensures the data sheet closes when you switch modes/tabs
-    const modal = document.getElementById('dataSheetModal');
-    if (modal) modal.style.display = 'none';
-    
-    const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return; 
-    const ctx = canvas.getContext('2d');
-    
-    hasCheckedCurrentProblem = false;
-    isCurrentProblemSolved = false;
-    viewedSolution = false; 
-    unitErrorMade = false; 
-    
-    const helpBtn = document.getElementById('helpBtn');
-    const solutions = document.getElementById('solutions');
-    const feedback = document.getElementById('feedback');
-    const grade9Btn = document.getElementById('grade9Btn'); 
-    const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
 
-    if (helpBtn) helpBtn.style.display = 'none';
-    if (solutions) solutions.style.display = 'none';
-    if (feedback) feedback.innerHTML = '';
-    
-    // Grade 9 Button Visibility Logic
-    if (currentMode === 'divider') {
-        if (grade9Btn) grade9Btn.style.display = 'inline-block';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'none';
-    } else if (currentMode === 'resistance') {
-        if (grade9Btn) grade9Btn.style.display = 'none';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
-    } else {
-        if (grade9Btn) grade9Btn.style.display = 'none';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'none';
-    }
-
-    // Reset all possible inputs (Added inputMarkSpace here)
-    const inputs = ['inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 'inputAstable', 'inputAstableT', 'inputMarkSpace'];
-    inputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-    });
-
-    // Hide all input groups (Added inputGroupMarkSpace here)
-    const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupAstable', 'inputGroupMarkSpace'];
-    groups.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-
-    // Mode Logic - This connects the tabs to the drawing functions
-    if (currentMode === 'analysis') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        document.getElementById('inputGroupI').style.display = 'inline-block';
-        generateAnalysisProblem(ctx, canvas);
-    } else if (currentMode === 'divider') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        generateDividerProblem(ctx, canvas);
-    } else if (currentMode === 'resistance') {
-        document.getElementById('inputGroupR').style.display = 'inline-block';
-        setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
-    } else if (currentMode === 'oscilloscope') {
-        generateOscilloscopeProblem(ctx, canvas);
-    } else if (currentMode === 'astable') {
-        // We don't turn on the groups here because generateAstableProblem 
-        // will decide whether to show the Freq group or the Ratio group.
-        generateAstableProblem(ctx, canvas);
-    }
-}
            
 function generateAnalysisProblem(ctx, canvas) {
             const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
@@ -1245,9 +1217,16 @@ function generateDividerProblem(ctx, canvas) {
 
 function generateProblem() {
     const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return; 
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    
+
+    // --- FIX FOR CANVAS SCALING ---
+    // This forces the canvas internal resolution to match your CSS box size
+    canvas.width = 600;
+    canvas.height = 400;
+    // ------------------------------
+
+    // 1. Reset Quiz State for ALL modules
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
     viewedSolution = false; 
@@ -1256,55 +1235,62 @@ function generateProblem() {
     const helpBtn = document.getElementById('helpBtn');
     const solutions = document.getElementById('solutions');
     const feedback = document.getElementById('feedback');
-    
-    // --- 1. DEFINE BOTH GRADE 9 BUTTONS ---
     const grade9Btn = document.getElementById('grade9Btn'); 
-    const grade9ResBtn = document.getElementById('grade9ResistanceBtn'); // NEW
+    const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
     
-    // --- 2. UPDATE VISIBILITY LOGIC ---
-    // This part ensures only the correct button shows for the current tab
-    if (currentMode === 'divider') {
-        if (grade9Btn) grade9Btn.style.display = 'inline-block';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'none';
-    } else if (currentMode === 'resistance') {
-        if (grade9Btn) grade9Btn.style.display = 'none';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
-    } else {
-        // Hide both for oscilloscope, astable, etc.
-        if (grade9Btn) grade9Btn.style.display = 'none';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'none';
-    }
+    // 2. Hide Grade 9 Buttons
+    if (grade9Btn) grade9Btn.style.display = 'none';
+    if (grade9ResBtn) grade9ResBtn.style.display = 'none';
 
-    const inputs = ['inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio'];
+    // 3. Reset all text inputs (This clears old answers)
+    const inputs = [
+        'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
+        'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
+        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
+        'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'
+    ];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
 
-    const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupAstable'];
+    // 4. Hide ALL input groups first (This wipes the "previous page" buttons)
+    const groups = [
+        'inputGroupV', 'inputGroupI', 'inputGroupR', 
+        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
+        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
+        'inputGroupAstable', 'inputGroupMarkSpace', 
+        'inputGroupColorVal', 'inputGroupColorNames'
+    ];
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
+    // 5. NOW call the specific module logic
     if (currentMode === 'analysis') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
         document.getElementById('inputGroupI').style.display = 'inline-block';
         generateAnalysisProblem(ctx, canvas);
     } else if (currentMode === 'divider') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
+        if (grade9Btn) grade9Btn.style.display = 'inline-block';
         generateDividerProblem(ctx, canvas);
     } else if (currentMode === 'resistance') {
         document.getElementById('inputGroupR').style.display = 'inline-block';
-        generateResistanceProblem(ctx, canvas); 
+        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
+        // Small delay ensures canvas resizing is processed before complex resistance drawing
+        setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
     } else if (currentMode === 'oscilloscope') {
         generateOscilloscopeProblem(ctx, canvas);
     } else if (currentMode === 'astable') {
         generateAstableProblem(ctx, canvas);
+    } else if (currentMode === 'colorcode') {
+        generateColorCodeProblem(ctx, canvas);
     }
 }
         
@@ -1408,29 +1394,40 @@ function generateProblem() {
         if (solText) solText.innerHTML = solTextStr;
         }
 
-       function checkAnswers() {
+function checkAnswers() {
     if (isCurrentProblemSolved) return; 
 
     const feedback = document.getElementById('feedback');
     const helpBtn = document.getElementById('helpBtn');
 
-    // 1. Check if the relevant active boxes are genuinely blank first
+    // 1. Identify which inputs are currently active to check for blanks
     let activeInputs = [];
     if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
     else if (currentMode === 'divider') activeInputs = ['inputV'];
     else if (currentMode === 'resistance') activeInputs = ['inputR'];
-    else if (currentMode === 'oscilloscope') activeInputs = ['inputOscAmp']; // Updated to match your generator logic
+    else if (currentMode === 'oscilloscope') {
+        activeInputs = ['inputOscAmp'];
+        if (currentAnswers.oscQType === 1) activeInputs.push('inputOscMark', 'inputOscSpace');
+        else if (currentAnswers.oscQType === 2) activeInputs.push('inputOscPeriod', 'inputOscFreq');
+        else activeInputs.push('inputOscRatio');
+    }
+    else if (currentMode === 'colorcode') {
+        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
+            activeInputs = ['inputResValue', 'inputResTol'];
+        } else {
+            activeInputs = ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
+        }
+    }
     else if (currentMode === 'astable') {
         if (currentAnswers.astableQType === 0) activeInputs = ['inputAstable', 'inputAstableT'];
         else activeInputs = ['inputMarkSpace'];
     }
 
+    // Check for empty boxes
     let hasEmptyBox = false;
     activeInputs.forEach(id => {
         const el = document.getElementById(id);
-        if (el && el.value.trim() === '') {
-            hasEmptyBox = true;
-        }
+        if (el && el.value.trim() === '') hasEmptyBox = true;
     });
 
     if (hasEmptyBox) {
@@ -1444,54 +1441,73 @@ function generateProblem() {
         hasCheckedCurrentProblem = true; 
     }
 
-    // 3. Parse inputs against expected answers
+    // 3. Grade the inputs
     let results = [];
-    if (currentMode === 'analysis') {
-        let pV = parseInput(document.getElementById('inputV').value);
-        let pI = parseInput(document.getElementById('inputI').value);
-        results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
-        results.push(validateMatch(pI, currentAnswers.iValue, currentAnswers.iUnit));
-    } else if (currentMode === 'divider') {
-        let pV = parseInput(document.getElementById('inputV').value);
-        results.push(validateMatch(pV, currentAnswers.vValue, currentAnswers.vUnit));
-    } else if (currentMode === 'resistance') {
-        let pR = parseInput(document.getElementById('inputR').value);
-        results.push(validateMatch(pR, currentAnswers.rValue, currentAnswers.rUnit));
-    } else if (currentMode === 'oscilloscope') {
-        let pAmp = parseInput(document.getElementById('inputOscAmp').value);
-        results.push(validateMatch(pAmp, currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
+    
+    if (currentMode === 'colorcode') {
+        const valGroup = document.getElementById('inputGroupColorVal');
+        if (valGroup.style.display !== 'none') {
+            // CHALLENGE A: Student provides Numbers
+            const userRes = parseInput(document.getElementById('inputResValue').value);
+            const userTol = parseFloat(document.getElementById('inputResTol').value);
+            
+            // Check resistance value (within 1% tolerance for decimal handling)
+            if (userRes && Math.abs(userRes.val - currentAnswers.resVal) < (currentAnswers.resVal * 0.01)) {
+                results.push('correct');
+            } else {
+                results.push('wrong');
+            }
+            
+            // Check tolerance number (e.g., 5 or 10)
+            if (userTol === currentAnswers.resTol) {
+                results.push('correct');
+            } else {
+                results.push('wrong');
+            }
+        } else {
+            // CHALLENGE B: Student provides Colour Names
+            const b1 = document.getElementById('inputBand1').value.toLowerCase().trim();
+            const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
+            const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
+            const b4 = document.getElementById('inputBandTol').value.toLowerCase().trim();
 
-        if (currentAnswers.oscQType === 1) {
-            let pMark = parseInput(document.getElementById('inputOscMark').value);
-            let pSpace = parseInput(document.getElementById('inputOscSpace').value);
-            results.push(validateMatch(pMark, currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
-            results.push(validateMatch(pSpace, currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
-        } else if (currentAnswers.oscQType === 2) {
-            let pPeriod = parseInput(document.getElementById('inputOscPeriod').value);
-            let pFreq = parseInput(document.getElementById('inputOscFreq').value);
-            results.push(validateMatch(pPeriod, currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
-            results.push(validateMatch(pFreq, currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
-        } else {
-            let pRatio = parseInput(document.getElementById('inputOscRatio').value);
-            results.push(validateMatch(pRatio, currentAnswers.oscRatioValue, currentAnswers.oscRatioUnit));
-        }
-    } else if (currentMode === 'astable') {
-        if (currentAnswers.astableQType === 0) {
-            const aF = parseInput(document.getElementById('inputAstable').value);
-            const aT = parseInput(document.getElementById('inputAstableT').value);
-            results.push(validateMatch(aF, currentAnswers.astableValue, currentAnswers.astableUnit));
-            results.push(validateMatch(aT, currentAnswers.astableTValue, currentAnswers.astableTUnit));
-        } else {
-            const userRatio = document.getElementById('inputMarkSpace').value.trim();
-            if (userRatio === currentAnswers.astableRatio) {
+            if (b1 === currentAnswers.b1 && b2 === currentAnswers.b2 && 
+                b3 === currentAnswers.b3 && b4 === currentAnswers.tol) {
                 results.push('correct');
             } else {
                 results.push('wrong');
             }
         }
+    } 
+    else if (currentMode === 'analysis') {
+        results.push(validateMatch(parseInput(document.getElementById('inputV').value), currentAnswers.vValue, currentAnswers.vUnit));
+        results.push(validateMatch(parseInput(document.getElementById('inputI').value), currentAnswers.iValue, currentAnswers.iUnit));
+    } else if (currentMode === 'divider') {
+        results.push(validateMatch(parseInput(document.getElementById('inputV').value), currentAnswers.vValue, currentAnswers.vUnit));
+    } else if (currentMode === 'resistance') {
+        results.push(validateMatch(parseInput(document.getElementById('inputR').value), currentAnswers.rValue, currentAnswers.rUnit));
+    } else if (currentMode === 'oscilloscope') {
+        results.push(validateMatch(parseInput(document.getElementById('inputOscAmp').value), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
+        if (currentAnswers.oscQType === 1) {
+            results.push(validateMatch(parseInput(document.getElementById('inputOscMark').value), currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
+            results.push(validateMatch(parseInput(document.getElementById('inputOscSpace').value), currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
+        } else if (currentAnswers.oscQType === 2) {
+            results.push(validateMatch(parseInput(document.getElementById('inputOscPeriod').value), currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
+            results.push(validateMatch(parseInput(document.getElementById('inputOscFreq').value), currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
+        } else {
+            results.push(validateMatch(parseInput(document.getElementById('inputOscRatio').value), currentAnswers.oscRatioValue, currentAnswers.oscRatioUnit));
+        }
+    } else if (currentMode === 'astable') {
+        if (currentAnswers.astableQType === 0) {
+            results.push(validateMatch(parseInput(document.getElementById('inputAstable').value), currentAnswers.astableValue, currentAnswers.astableUnit));
+            results.push(validateMatch(parseInput(document.getElementById('inputAstableT').value), currentAnswers.astableTValue, currentAnswers.astableTUnit));
+        } else {
+            const userRatio = document.getElementById('inputMarkSpace').value.trim();
+            results.push(userRatio === currentAnswers.astableRatio ? 'correct' : 'wrong');
+        }
     }
 
-    // 4. Grade the results
+    // 4. Final Scoring and Feedback Display
     if (results.every(r => r === 'correct')) {
         isCurrentProblemSolved = true;
         if (!viewedSolution && !unitErrorMade) {
@@ -1517,10 +1533,62 @@ function generateProblem() {
             feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. Check your math!</span>";
         }
     }
+
     updateScoreboard();
+
+
+function provideHint() {
+    if (isCurrentProblemSolved) return;
+    viewedSolution = true;
+    const feedback = document.getElementById('feedback');
+
+    if (currentMode === 'colorcode') {
+        let helpText = "";
+        // If they are looking at colors and need the number value
+        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
+            helpText = `
+                <div style="text-align:left; background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px;">
+                    <b>Resistor Guide:</b><br>
+                    • Band 1 (${currentAnswers.b1.toUpperCase()}): 1st Digit<br>
+                    • Band 2 (${currentAnswers.b2.toUpperCase()}): 2nd Digit<br>
+                    • Band 3 (${currentAnswers.b3.toUpperCase()}): Multiplier (number of zeros)<br>
+                    • Band 4 (${currentAnswers.tol.toUpperCase()}): Tolerance (Gold=5%, Silver=10%)
+                </div>`;
+        } 
+        // If they are looking at a number and need to name the colors
+        else {
+            helpText = `
+                <div style="text-align:left; background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px;">
+                    <b>Colour Guide for ${formatResValue(currentAnswers.resVal)}:</b><br>
+                    • 1st & 2nd Digit: Match the numbers to colours.<br>
+                    • 3rd Digit (Multiplier): How many zeros follow the first two numbers?<br>
+                    • 4th Digit: Gold is 5%, Silver is 10%.<br>
+                    <small>(0:Blk, 1:Brn, 2:Red, 3:Org, 4:Yel, 5:Grn, 6:Blu, 7:Pur, 8:Gry, 9:Whi)</small>
+                </div>`;
+        }
+        feedback.innerHTML = helpText;
+    } 
+    else if (currentMode === 'oscilloscope') {
+        feedback.innerHTML = "<b>Hint:</b> Amplitude is vertical height from center. Period is horizontal width of one cycle. Use f = 1 / T.";
+    } 
+    else if (currentMode === 'astable') {
+        feedback.innerHTML = "<b>Hint:</b> f = 1.44 / ((R1 + 2R2)C). Mark/Space ratio is (R1+R2) : R2.";
+    } else {
+        feedback.innerHTML = "<b>Hint:</b> Check your Ohm's Law (V=IR) or Potential Divider formula.";
+    }
+
+    // Hide the help button after it's clicked
+    const helpBtn = document.getElementById('helpBtn');
+    if (helpBtn) helpBtn.style.display = 'none';
 }
 
-        function toggleSolutions() {
+
+
+
+    
+}
+
+function toggleSolutions() {
             const sol = document.getElementById('solutions');
             if (!sol) return;
             if (sol.style.display === 'none' || sol.style.display === '') {
@@ -1806,6 +1874,113 @@ function closeDataSheet() {
     goHome(); // This ensures the 8 module buttons are shown first
 };   
 
+
+
+function generateColorCodeProblem(ctx, canvas) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
+    const tolColors = { 'gold': 5, 'silver': 10 };
+
+    const b1 = Math.floor(Math.random() * 9) + 1; 
+    const b2 = Math.floor(Math.random() * 10);    
+    const b3 = Math.floor(Math.random() * 7);     
+    const tolKey = Math.random() > 0.5 ? 'gold' : 'silver';
+    const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
+    const toleranceValue = tolColors[tolKey];
+
+    // Store answers for grading
+    currentAnswers.resVal = resistanceValue;
+    currentAnswers.resTol = toleranceValue;
+    currentAnswers.b1 = resColors[b1];
+    currentAnswers.b2 = resColors[b2];
+    currentAnswers.b3 = resColors[b3];
+    currentAnswers.tol = tolKey;
+
+    // Draw Resistor Body
+    ctx.lineWidth = 4; ctx.strokeStyle = '#000';
+    ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke(); 
+    ctx.fillStyle = '#f4d3a6'; ctx.fillRect(200, 170, 200, 80); ctx.strokeRect(200, 170, 200, 80); 
+
+    const qType = Math.floor(Math.random() * 2);
+    let solTextStr = "";
+
+    if (qType === 0) {
+        // TYPE 0: Visual Resistor -> Student enters Resistance and Tolerance NUMBER
+        const drawBand = (x, color) => {
+            ctx.fillStyle = (color === 'gold') ? '#FFD700' : (color === 'silver') ? '#C0C0C0' : color;
+            ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
+        };
+        drawBand(220, resColors[b1]);
+        drawBand(250, resColors[b2]);
+        drawBand(280, resColors[b3]);
+        drawBand(360, tolKey);
+
+        document.getElementById('inputGroupColorVal').style.display = 'block';
+        document.getElementById('feedback').innerHTML = "Identify the Resistance (Ω) and Tolerance (%):";
+
+        // Generate Solution Logic for Help Button
+        solTextStr = "<strong>Solution: " + formatResValue(resistanceValue) + " &plusmn; " + toleranceValue + "%</strong><br><br>";
+        solTextStr += "<em>Logic:</em><br>";
+        solTextStr += "Band 1 (" + resColors[b1].toUpperCase() + ") = " + b1 + "<br>";
+        solTextStr += "Band 2 (" + resColors[b2].toUpperCase() + ") = " + b2 + "<br>";
+        solTextStr += "Band 3 (" + resColors[b3].toUpperCase() + ") = Multiplier 10<sup>" + b3 + "</sup><br>";
+        solTextStr += "Band 4 (" + tolKey.toUpperCase() + ") = &plusmn;" + toleranceValue + "%";
+    } else {
+        // TYPE 1: B&W Resistor -> Student enters Colour NAMES
+        const drawHiddenBand = (x, num) => {
+            ctx.fillStyle = '#ccc'; 
+            ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 22px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(num, x + 10, 160);
+        };
+        drawHiddenBand(220, "1");
+        drawHiddenBand(250, "2");
+        drawHiddenBand(280, "3");
+        drawHiddenBand(360, "4");
+
+        const formatted = formatResValue(resistanceValue);
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 28px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${formatted} ± ${toleranceValue}%`, 300, 310);
+
+        document.getElementById('inputGroupColorNames').style.display = 'block';
+        document.getElementById('feedback').innerHTML = "Enter the colour name for each band:";
+
+        // Generate Solution Logic for Help Button
+        solTextStr = "<strong>Required Colours:</strong><br><br>";
+        solTextStr += "1. " + resColors[b1].toUpperCase() + " (for digit " + b1 + ")<br>";
+        solTextStr += "2. " + resColors[b2].toUpperCase() + " (for digit " + b2 + ")<br>";
+        solTextStr += "3. " + resColors[b3].toUpperCase() + " (for multiplier 10<sup>" + b3 + "</sup>)<br>";
+        solTextStr += "4. " + tolKey.toUpperCase() + " (for &plusmn;" + toleranceValue + "%)";
+    }
+
+    // Push the solution text to the hidden div
+    const solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = solTextStr;
+}
+
+        
+//  helper function:
+function formatResValue(val) {
+    if (val >= 1000000) return (val / 1000000) + " MΩ";
+    if (val >= 1000) return (val / 1000) + " kΩ";
+    return val + " Ω";
+}
+
+
+function toggleSolutions() {
+    const solutions = document.getElementById('solutions');
+    if (solutions.style.display === 'none' || solutions.style.display === '') {
+        solutions.style.display = 'block';
+        viewedSolution = true; // This ensures they don't get a point after seeing the answer
+    } else {
+        solutions.style.display = 'none';
+    }
+}
 </script>
 
    <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
