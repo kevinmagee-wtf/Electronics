@@ -1924,7 +1924,47 @@ function generateMonostableProblem(ctx, canvas) {
     drawDot(ctx, netX, topRailY); 
     
     if (typeof drawResistor === 'function') drawResistor(ctx, netX, 135);
-    ctx.fillText(currentAnswers.monoQType === 2 ? "R = ?" : formatResValue(rVal
+    ctx.fillText(currentAnswers.monoQType === 2 ? "R = ?" : formatResValue(rVal), netX - 85, 140);
+    
+    drawLine(ctx, netX, 160, netX, 200); 
+    drawDot(ctx, netX, 200); 
+    
+    // Connect to Pin 7 and Pin 6 
+    drawLine(ctx, netX, 200, cx - 45, cy - 20); 
+    drawLine(ctx, netX, 200, netX, 220);          
+    drawLine(ctx, netX, 220, cx - 45, cy + 20); 
+    drawDot(ctx, netX, 220);
+
+    drawLine(ctx, netX, 220, netX, 245);
+    if (typeof drawCapacitor === 'function') drawCapacitor(ctx, netX, 270);
+    ctx.fillText(currentAnswers.monoQType === 1 ? "C = ?" : formatCapValue(cVal), netX - 85, 275);
+    
+    drawLine(ctx, netX, 295, netX, botRailY); 
+    drawDot(ctx, netX, botRailY);
+
+    // Supply Pins
+    drawLine(ctx, cx - 30, cy - 60, cx - 30, topRailY); // Pin 8 (VCC)
+    drawLine(ctx, cx + 30, cy - 60, cx + 30, topRailY); // Pin 4 (Reset)
+    drawLine(ctx, cx - 30, cy + 60, cx - 30, botRailY); // Pin 1 (GND)
+    drawDot(ctx, cx - 30, topRailY); 
+    drawDot(ctx, cx + 30, topRailY); 
+    drawDot(ctx, cx - 30, botRailY);
+
+    // Trigger & Output 
+    drawLine(ctx, cx - 45, cy, cx - 100, cy); 
+    ctx.font = "bold 14px Arial";
+    ctx.fillText("Trigger", cx - 155, cy);
+    
+    drawLine(ctx, cx + 45, cy, cx + 120, cy);
+    ctx.beginPath(); 
+    ctx.arc(cx + 125, cy, 5, 0, Math.PI * 2); 
+    ctx.stroke();
+    
+    ctx.font = "bold 16px Arial"; 
+    ctx.fillText("V", cx + 135, cy);
+    ctx.font = "bold 10px Arial"; 
+    ctx.fillText("OUT", cx + 148, cy + 5);
+}
         
      function openDataSheet() {
     const modal = document.getElementById('dataSheetModal');
