@@ -588,79 +588,7 @@ function drawLine(ctx, x1, y1, x2, y2) {
             ctx.closePath();
         }
 
-function generateProblem() {
-    const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
 
-    // 1. Reset Quiz State for ALL modules
-    hasCheckedCurrentProblem = false;
-    isCurrentProblemSolved = false;
-    viewedSolution = false; 
-    unitErrorMade = false; 
-    
-    const helpBtn = document.getElementById('helpBtn');
-    const solutions = document.getElementById('solutions');
-    const feedback = document.getElementById('feedback');
-    const grade9Btn = document.getElementById('grade9Btn'); 
-    const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
-
-    if (helpBtn) helpBtn.style.display = 'none';
-    if (solutions) solutions.style.display = 'none';
-    if (feedback) feedback.innerHTML = '';
-    
-    // 2. Hide Grade 9 Buttons
-    if (grade9Btn) grade9Btn.style.display = 'none';
-    if (grade9ResBtn) grade9ResBtn.style.display = 'none';
-
-    // 3. Reset all text inputs (This clears old answers)
-    const inputs = [
-        'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
-        'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
-        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
-        'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'
-    ];
-    inputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-    });
-
-    // 4. Hide ALL input groups first (This wipes the "previous page" buttons)
-    const groups = [
-        'inputGroupV', 'inputGroupI', 'inputGroupR', 
-        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
-        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
-        'inputGroupAstable', 'inputGroupMarkSpace', 
-        'inputGroupColorVal', 'inputGroupColorNames'
-    ];
-    groups.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-
-    // 5. NOW call the specific module logic
-    if (currentMode === 'analysis') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        document.getElementById('inputGroupI').style.display = 'inline-block';
-        generateAnalysisProblem(ctx, canvas);
-    } else if (currentMode === 'divider') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        if (grade9Btn) grade9Btn.style.display = 'inline-block';
-        generateDividerProblem(ctx, canvas);
-    } else if (currentMode === 'resistance') {
-        document.getElementById('inputGroupR').style.display = 'inline-block';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
-        setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
-    } else if (currentMode === 'oscilloscope') {
-        generateOscilloscopeProblem(ctx, canvas);
-    } else if (currentMode === 'astable') {
-        generateAstableProblem(ctx, canvas);
-    } else if (currentMode === 'colorcode') {
-        // By calling it here, the "ghosts" of the previous page are hidden 
-        // by Step 4 before the resistor is drawn.
-        generateColorCodeProblem(ctx, canvas);
-    }
-}
            
 function generateAnalysisProblem(ctx, canvas) {
             const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
@@ -1266,9 +1194,10 @@ function generateDividerProblem(ctx, canvas) {
 
 function generateProblem() {
     const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return; 
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    
+
+    // 1. Reset Quiz State for ALL modules
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
     viewedSolution = false; 
@@ -1277,55 +1206,61 @@ function generateProblem() {
     const helpBtn = document.getElementById('helpBtn');
     const solutions = document.getElementById('solutions');
     const feedback = document.getElementById('feedback');
-    
-    // --- 1. DEFINE BOTH GRADE 9 BUTTONS ---
     const grade9Btn = document.getElementById('grade9Btn'); 
-    const grade9ResBtn = document.getElementById('grade9ResistanceBtn'); // NEW
+    const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
     
-    // --- 2. UPDATE VISIBILITY LOGIC ---
-    // This part ensures only the correct button shows for the current tab
-    if (currentMode === 'divider') {
-        if (grade9Btn) grade9Btn.style.display = 'inline-block';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'none';
-    } else if (currentMode === 'resistance') {
-        if (grade9Btn) grade9Btn.style.display = 'none';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
-    } else {
-        // Hide both for oscilloscope, astable, etc.
-        if (grade9Btn) grade9Btn.style.display = 'none';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'none';
-    }
+    // 2. Hide Grade 9 Buttons
+    if (grade9Btn) grade9Btn.style.display = 'none';
+    if (grade9ResBtn) grade9ResBtn.style.display = 'none';
 
-    const inputs = ['inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio'];
+    // 3. Reset all text inputs (This clears old answers)
+    const inputs = [
+        'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
+        'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
+        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
+        'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'
+    ];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
 
-    const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupAstable'];
+    // 4. Hide ALL input groups first (This wipes the "previous page" buttons)
+    const groups = [
+        'inputGroupV', 'inputGroupI', 'inputGroupR', 
+        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
+        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
+        'inputGroupAstable', 'inputGroupMarkSpace', 
+        'inputGroupColorVal', 'inputGroupColorNames'
+    ];
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
+    // 5. NOW call the specific module logic
     if (currentMode === 'analysis') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
         document.getElementById('inputGroupI').style.display = 'inline-block';
         generateAnalysisProblem(ctx, canvas);
     } else if (currentMode === 'divider') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
+        if (grade9Btn) grade9Btn.style.display = 'inline-block';
         generateDividerProblem(ctx, canvas);
     } else if (currentMode === 'resistance') {
         document.getElementById('inputGroupR').style.display = 'inline-block';
-        generateResistanceProblem(ctx, canvas); 
+        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
+        setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
     } else if (currentMode === 'oscilloscope') {
         generateOscilloscopeProblem(ctx, canvas);
     } else if (currentMode === 'astable') {
         generateAstableProblem(ctx, canvas);
+    } else if (currentMode === 'colorcode') {
+        generateColorCodeProblem(ctx, canvas);
     }
 }
         
