@@ -258,7 +258,7 @@
 <div id="inputGroupColorVal" class="input-group" style="display:none;">
     <div style="margin-bottom: 10px;">
         <label>Resistance (Ω): </label>
-        <input type="text" id="inputResValue" placeholder="e.g. 16">
+        <input type="text" id="inputResValue" placeholder="e.g. 16 kΩ">
     </div>
     <div>
         <label>Tolerance (%): </label>
@@ -266,7 +266,12 @@
     </div>
 </div>
 
-
+<div id="inputGroupColorNames" class="input-group" style="display:none;">
+    <label>Band 1 Colour: </label><input type="text" id="inputBand1" placeholder="e.g. red" style="width: 100px;">
+    <label>Band 2 Colour: </label><input type="text" id="inputBand2" placeholder="e.g. violet" style="width: 100px;">
+    <label>Band 3 Colour: </label><input type="text" id="inputBand3" placeholder="e.g. orange" style="width: 100px;">
+    <label>Band 4 Colour: </label><input type="text" id="inputBandTol" placeholder="e.g. gold" style="width: 100px;">
+</div>
 
 
                 
@@ -1801,6 +1806,7 @@ function closeDataSheet() {
 };   
 
 
+
 function generateColorCodeProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -1829,7 +1835,7 @@ function generateColorCodeProblem(ctx, canvas) {
     const qType = Math.floor(Math.random() * 2);
 
     if (qType === 0) {
-        // TYPE 0: Visual Resistor -> Student identifies Value
+        // TYPE 0: Visual Resistor -> Student enters Resistance and Tolerance NUMBER
         const drawBand = (x, color) => {
             ctx.fillStyle = (color === 'gold') ? '#FFD700' : (color === 'silver') ? '#C0C0C0' : color;
             ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
@@ -1840,9 +1846,9 @@ function generateColorCodeProblem(ctx, canvas) {
         drawBand(360, tolKey);
 
         document.getElementById('inputGroupColorVal').style.display = 'block';
-        document.getElementById('feedback').innerHTML = "Identify the Resistance (Ω) and Tolerance (%).";
+        document.getElementById('feedback').innerHTML = "Identify the Resistance (Ω) and Band 4 Tolerance (%):";
     } else {
-        // TYPE 1: B&W Numbered Resistor -> Student identifies Colours
+        // TYPE 1: B&W Resistor -> Student enters Colour NAMES
         const drawHiddenBand = (x, num) => {
             ctx.fillStyle = '#ccc'; 
             ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
@@ -1856,18 +1862,19 @@ function generateColorCodeProblem(ctx, canvas) {
         drawHiddenBand(280, "3");
         drawHiddenBand(360, "4");
 
-        // Canvas Prompt with specific spacing: ± 5% or ± 10%
         const formatted = formatResValue(resistanceValue);
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 24px Arial';
+        ctx.font = 'bold 28px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(`Identify colours for: ${formatted} ± ${toleranceValue}%`, 300, 310);
+        ctx.fillText(`${formatted} ± ${toleranceValue}%`, 300, 310);
 
         document.getElementById('inputGroupColorNames').style.display = 'block';
-        document.getElementById('feedback').innerHTML = "Enter the colour name for each band.";
+        document.getElementById('feedback').innerHTML = "Enter the colour name for each band:";
     }
 }
 
+
+        
 //  helper function:
 function formatResValue(val) {
     if (val >= 1000000) return (val / 1000000) + " MΩ";
