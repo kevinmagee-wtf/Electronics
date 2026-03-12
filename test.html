@@ -1906,20 +1906,20 @@ function generateGrade9DividerProblem() {
 function generateMonostableProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 1. Logic & Math (T = 1.1 * R * C)
+    // 1. Math Logic & Randomization (T = 1.1 * R * C)
     const rVal = (Math.floor(Math.random() * 90) + 10) * 1000; 
     const cVal = [1, 2.2, 4.7, 10, 22, 47, 100][Math.floor(Math.random() * 7)] * 1e-6; 
     const delay = 1.1 * rVal * cVal;
 
-    // Save answers for the checker
+    // Save answers for the checkAnswer() function
     currentAnswers.monoR = rVal;
     currentAnswers.monoC = cVal;
     currentAnswers.monoT = delay;
     currentAnswers.monoQType = Math.floor(Math.random() * 3); // 0: Find T, 1: Find C, 2: Find R
 
-    // 2. Update the UI Text
-    const label = document.getElementById('labelMono');
+    // 2. Setup UI Feedback and Input Labels
     const feedback = document.getElementById('feedback');
+    const label = document.getElementById('labelMono');
     
     if (currentAnswers.monoQType === 0) {
         label.innerText = "Time Delay (T) = ";
@@ -1932,46 +1932,84 @@ function generateMonostableProblem(ctx, canvas) {
         feedback.innerHTML = `Calculate <b>R</b> for a delay of <b>${delay.toFixed(2)}s</b>:`;
     }
 
-    // 3. Drawing the Circuit
+    // 3. Build Step-by-Step Solution (Hidden until Help is clicked)
+    let solHTML = `
+        <div style="text-align:left; padding:15px; background:#f4f4f4; border-left:5px solid #E64097; border-radius:4px;">
+            <h4 style="margin:0 0 10px 0; color:#E64097;">Monostable Solution</h4>
+            <p>Standard Formula: <b>T = 1.1 &times; R &times; C</b></p>
+            <p>Values: R = ${formatResValue(rVal)}, C = ${formatCapValue(cVal)}</p>
+            <hr style="border:0; border-top:1px solid #ccc;">
+    `;
+
+    if (currentAnswers.monoQType === 0) {
+        solHTML += `<p>T = 1.1 &times; ${rVal} &times; ${cVal.toExponential()}</p>
+                    <p><strong>T = ${delay.toFixed(3)} seconds</strong></p>`;
+    } else if (currentAnswers.monoQType === 1) {
+        solHTML += `<p>Rearranged: C = T / (1.1 &times; R)</p>
+                    <p>C = ${delay.toFixed(2)} / (1.1 &times; ${rVal})</p>
+                    <p><strong>C = ${formatCapValue(cVal)}</strong></p>`;
+    } else {
+        solHTML += `<p>Rearranged: R = T / (1.1 &times; C)</p>
+                    <p>R = ${delay.toFixed(2)} / (1.1 &times; ${cVal.toExponential()})</p>
+                    <p><strong>R = ${formatResValue(rVal)}</strong></p>`;
+    }
+    solHTML += `</div>`;
+    document.getElementById('solText').innerHTML = solHTML;
+
+    // 4. Drawing Logic (Matches Astable style)
     const cx = 300, cy = 200;
-    
-    // Draw the 555 chip (reuse your existing IC drawing function if you have one, or use this)
-    ctx.strokeStyle = "#000"; ctx.lineWidth = 2;
-    ctx.strokeRect(cx - 50, cy - 60, 100, 120);
-    ctx.font = "bold 16px Arial"; ctx.fillText("555", cx - 15, cy + 5);
-    
-    // Pins
-    ctx.font = "12px Arial";
-    ctx.fillText("8", cx + 35, cy - 45); // VCC
-    ctx.fillText("1", cx - 45, cy + 50); // GND
-    ctx.fillText("3", cx + 35, cy + 5);  // OUT
-    ctx.fillText("7", cx - 45, cy - 45); // DIS
-    ctx.fillText("6", cx - 45, cy - 15); // THR
-    ctx.fillText("2", cx - 45, cy + 20); // TRIG
+    const rLabel = (currentAnswers.monoQType === 2) ? "R = ?" : "R = " + formatResValue(rVal);
+    const cLabel = (currentAnswers.monoQType === 1) ? "C = ?" : "C = " + formatCapValue(cVal);
 
+    draw555IC(ctx, cx, cy); // Draws the rounded IC chip
+
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.fillStyle = '#000';
+    
     // Rails
-    drawLine(ctx, 150, 50, 450, 50); ctx.fillText("VCC", 460, 55);
-    drawLine(ctx, 150, 350, 450, 350); ctx.fillText("0V", 460, 355);
+    drawLine(ctx, 100, 60, 500, 60); // VCC Top
+    drawLine(ctx, 100, 340, 500, 340); // 0V Bottom
+    ctx.font = "bold 14px Arial";
+    ctx.fillText("VCC", 510, 65);
+    ctx.fillText("0V", 510, 345);
 
-    // Monostable Wiring: R and C
-    // Resistor from VCC to Pin 7/6
-    drawLine(ctx, 200, 50, 200, 80);
-    drawResistor(ctx, 200, 105); 
-    ctx.fillText(currentAnswers.monoQType === 2 ? "R = ?" : formatResValue(rVal), 115, 110);
-    drawLine(ctx, 200, 130, 200, 170);
-    
-    // Join 6 and 7
-    drawLine(ctx, 200, 155, cx - 50, cy - 45); // To Pin 7
-    drawLine(ctx, 200, 185, cx - 50, cy - 15); // To Pin 6
+    // IC Rail Connections
+    drawLine(ctx, cx - 30, cy - 60, cx - 30, 60); // Pin 8
+    drawLine(ctx, cx + 30, cy - 60, cx + 30, 60); // Pin 4
+    drawLine(ctx, cx - 30, cy + 60, cx - 30, 340); // Pin 1
+    drawDot(ctx, cx - 30, 60); drawDot(ctx, cx + 30, 60); drawDot(ctx, cx - 30, 340);
 
-    // Capacitor from Pin 6 to GND
-    drawCapacitor(ctx, 200, 220);
-    ctx.fillText(currentAnswers.monoQType === 1 ? "C = ?" : formatCapValue(cVal), 115, 225);
-    drawLine(ctx, 200, 250, 200, 350);
+    // Timing Network (GCSE Specification: Pin 6/7 joined)
+    const netX = 180;
+    drawLine(ctx, netX, 60, netX, 110); drawDot(ctx, netX, 60);
+    drawResistor(ctx, netX, 135);
+    ctx.fillText(rLabel, netX - 75, 140);
     
-    // Output
-    drawLine(ctx, cx + 50, cy, cx + 120, cy);
-    ctx.fillText("Vout", cx + 125, cy + 5);
+    drawLine(ctx, netX, 160, netX, 240);
+    
+    // Junction for Pins 6 & 7
+    drawDot(ctx, netX, 200); 
+    drawLine(ctx, netX, 200, cx - 45, cy - 20); // Link to Pin 7
+    drawLine(ctx, netX, 220, cx - 45, cy + 20); // Link to Pin 6
+    drawLine(ctx, netX, 200, netX, 220); // Connect vertical junction
+    drawDot(ctx, netX, 220);
+
+    drawCapacitor(ctx, netX, 270);
+    ctx.fillText(cLabel, netX - 75, 275);
+    drawLine(ctx, netX, 300, netX, 340); drawDot(ctx, netX, 340);
+
+    // Trigger (Pin 2)
+    drawLine(ctx, cx - 45, cy, cx - 100, cy);
+    ctx.fillText("Trigger", cx - 155, cy + 5);
+
+    // Output (Pin 3) with Circle and Vout Subscript
+    drawLine(ctx, cx + 45, cy, cx + 120, cy);
+    ctx.beginPath();
+    ctx.arc(cx + 125, cy, 5, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("V", cx + 135, cy + 5);
+    ctx.font = "bold 10px Arial";
+    ctx.fillText("OUT", cx + 148, cy + 10);
 }
         
      function openDataSheet() {
