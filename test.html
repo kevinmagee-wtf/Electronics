@@ -197,8 +197,13 @@
                             
                         <div class="input-group" id="inputGroupMonostable" style="display:none;">
                         <label id="labelMono" for="inputMono">Value = </label>
-                        <input type="text" id="inputMono" placeholder="Enter value with units">
+                        <input type="text" id="inputMono" placeholder="e.g. 1.1s">
                         </div>
+
+
+
+
+                            
                             <div style="margin-bottom: 10px;">
                                 <label id="labelAstable" for="inputAstable">Frequency = </label>
                                 <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
@@ -381,6 +386,12 @@ function switchTab(mode) {
     // 6. DRAW THE CIRCUIT
     generateProblem();
 }
+
+
+
+
+
+        
 
 // --- GLOBAL VARIABLES ---
 const brandPink = "#E64097";
@@ -583,7 +594,19 @@ function drawLine(ctx, x1, y1, x2, y2) {
             ctx.closePath();
         }
 
+        function drawDot(ctx, x, y) {
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#000';
+    ctx.fill();
+}
 
+function drawNode(x, y) {
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "#000";
+    ctx.fill();
+}
            
 function generateAnalysisProblem(ctx, canvas) {
             const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
