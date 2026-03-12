@@ -1232,9 +1232,9 @@ function generateProblem() {
     const ctx = canvas.getContext('2d');
 
     // --- FIX FOR CANVAS SCALING ---
+    // Forces internal resolution to match CSS box size for sharp drawings
     canvas.width = 600;
     canvas.height = 400;
-    // ------------------------------
 
     // 1. Reset Quiz State for ALL modules
     hasCheckedCurrentProblem = false;
@@ -1262,14 +1262,14 @@ function generateProblem() {
         'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
         'inputAstable', 'inputAstableT', 'inputMarkSpace', 
         'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol',
-        'inputMono' // Reset the new monostable input
+        'inputMono' // Reset the monostable answer box
     ];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) { el.value = ''; el.style.backgroundColor = 'white'; }
     });
 
-    // 4. Hide ALL input groups first (Added inputGroupMonostable here)
+    // 4. Hide ALL input groups first
     const groups = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -1301,7 +1301,8 @@ function generateProblem() {
     } else if (currentMode === 'astable') {
         generateAstableProblem(ctx, canvas);
     } else if (currentMode === 'monostable') {
-        // Trigger the logic for the new Monostable module
+        // --- ADDED THIS LINE TO SHOW INPUTS ---
+        document.getElementById('inputGroupMonostable').style.display = 'inline-block';
         generateMonostableProblem(ctx, canvas);
     } else if (currentMode === 'colorcode') {
         generateColorCodeProblem(ctx, canvas);
@@ -1885,80 +1886,63 @@ function generateGrade9DividerProblem() {
 function generateMonostableProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 1. Randomize Components
-    const rVal = (Math.floor(Math.random() * 90) + 10) * 1000; // 10k to 100k
-    const cVal = [10, 22, 47, 100][Math.floor(Math.random() * 4)] * 1e-6; // 10uF to 100uF
+    // 1. Randomize Math (T = 1.1 * R * C)
+    const rVal = (Math.floor(Math.random() * 90) + 10) * 1000; 
+    const cVal = [1, 2.2, 4.7, 10, 22, 47, 100][Math.floor(Math.random() * 7)] * 1e-6; 
     const delay = 1.1 * rVal * cVal;
 
     currentAnswers.monoR = rVal;
     currentAnswers.monoC = cVal;
     currentAnswers.monoT = delay;
-    currentAnswers.monoQType = Math.floor(Math.random() * 3); // 0: Calc T, 1: Calc C, 2: Calc R
+    currentAnswers.monoQType = Math.floor(Math.random() * 3); // 0: Find T, 1: Find C, 2: Find R
 
-    // 2. Setup Inputs and Labels based on Question Type
-    const g1 = document.getElementById('inputGroupMonostable');
-    const l1 = document.getElementById('labelMono1');
-    const l2 = document.getElementById('labelMono2');
-    const i1 = document.getElementById('inputMono1');
-    const i2 = document.getElementById('inputMono2');
-
-    g1.style.display = 'inline-block';
-
-    let solTextStr = "<strong>Monostable Solution:</strong><br><br>";
-
+    // 2. Set Labels
+    const label = document.getElementById('labelMono');
     if (currentAnswers.monoQType === 0) {
-        l1.innerText = "Time Delay (s):"; l2.style.display = "none"; i2.style.display = "none";
+        label.innerText = "Time Delay (T) = ";
         document.getElementById('feedback').innerHTML = "Calculate the Time Delay (T) for this circuit:";
-        solTextStr += `T = 1.1 &times; R &times; C<br>T = 1.1 &times; ${formatResValue(rVal)} &times; ${formatCapValue(cVal)}<br><strong>T = ${delay.toFixed(2)}s</strong>`;
     } else if (currentAnswers.monoQType === 1) {
-        l1.innerText = "Capacitance (F):"; l2.style.display = "none"; i2.style.display = "none";
-        document.getElementById('feedback').innerHTML = `Calculate the Capacitor (C) required for a ${delay.toFixed(2)}s delay:`;
-        solTextStr += `C = T / (1.1 &times; R)<br>C = ${delay.toFixed(2)} / (1.1 &times; ${formatResValue(rVal)})<br><strong>C = ${formatCapValue(cVal)}</strong>`;
+        label.innerText = "Capacitance (C) = ";
+        document.getElementById('feedback').innerHTML = `Calculate C for a ${delay.toFixed(2)}s delay:`;
     } else {
-        l1.innerText = "Resistance (Ω):"; l2.style.display = "none"; i2.style.display = "none";
-        document.getElementById('feedback').innerHTML = `Calculate the Resistor (R) required for a ${delay.toFixed(2)}s delay:`;
-        solTextStr += `R = T / (1.1 &times; C)<br>R = ${delay.toFixed(2)} / (1.1 &times; ${formatCapValue(cVal)})<br><strong>R = ${formatResValue(rVal)}</strong>`;
+        label.innerText = "Resistance (R) = ";
+        document.getElementById('feedback').innerHTML = `Calculate R for a ${delay.toFixed(2)}s delay:`;
     }
-    document.getElementById('solText').innerHTML = solTextStr;
 
-    // 3. Drawing the 555 Monostable Circuit
-    const cx = 300, cy = 200; // Center of IC
-    draw555IC(ctx, cx, cy); // Assuming your existing draw555IC function
+    // 3. Solution Text
+    document.getElementById('solText').innerHTML = `
+        <strong>Solution Logic:</strong><br>
+        T = 1.1 × R × C<br>
+        T = 1.1 × ${formatResValue(rVal)} × ${formatCapValue(cVal)}<br>
+        <strong>Result: ${delay.toFixed(3)} seconds</strong>`;
 
-    // Connections
-    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
+    // 4. Drawing the Monostable Circuit
+    const cx = 300, cy = 200;
+    draw555IC(ctx, cx, cy); 
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.font = "bold 14px Arial";
 
-    // VCC and R
-    drawLine(ctx, cx-30, cy-60, cx-30, cy-120); // Pin 8 to VCC rail
-    drawLine(ctx, cx+30, cy-60, cx+30, cy-120); // Pin 4 to VCC rail
-    drawLine(ctx, cx-30, cy-120, 200, 120); 
-    drawResistor(ctx, 200, 150, true); // R1
-    ctx.fillText("R = " + formatResValue(rVal), 130, 155);
-    drawLine(ctx, 200, 180, 200, 240); // Connection to Pin 7/6
-    drawDot(ctx, 200, 210);
-    drawLine(ctx, 200, 210, cx-45, cy-20); // Pin 7
-    drawLine(ctx, 200, 240, cx-45, cy+20); // Pin 6
+    // Power Rails
+    drawLine(ctx, 150, 80, 450, 80); ctx.fillText("VCC", 460, 85);
+    drawLine(ctx, 150, 350, 450, 350); // GND
 
-    // Capacitor C1
-    drawCapacitor(ctx, 200, 270); 
-    ctx.fillText("C = " + formatCapValue(cVal), 130, 275);
-    drawLine(ctx, 200, 300, 200, 340); // Ground rail
+    // R and C placement
+    drawLine(ctx, 200, 80, 200, 110);
+    drawResistor(ctx, 200, 135); 
+    ctx.fillText(currentAnswers.monoQType === 2 ? "R = ?" : formatResValue(rVal), 110, 140);
+    
+    drawLine(ctx, 200, 160, 200, 240);
+    drawLine(ctx, 200, 210, cx - 45, cy - 20); // to Pin 7
+    drawLine(ctx, 200, 240, cx - 45, cy + 20); // to Pin 6
 
-    // Output Pin 3
-    drawLine(ctx, cx+45, cy, cx+100, cy);
-    ctx.beginPath(); ctx.arc(cx+105, cy, 5, 0, Math.PI*2); ctx.stroke();
-    ctx.fillText("VOUT", cx+115, cy+5);
-    ctx.font = "10px Arial"; ctx.fillText("OUT", cx+145, cy+10); // Subscript
+    drawCapacitor(ctx, 200, 270);
+    ctx.fillText(currentAnswers.monoQType === 1 ? "C = ?" : formatCapValue(cVal), 110, 275);
+    drawLine(ctx, 200, 300, 200, 350);
 
-    // Trigger Pin 2
-    drawLine(ctx, cx-45, cy, cx-80, cy);
-    ctx.fillText("Trigger", cx-125, cy+5);
+    // Pin 3 Output
+    drawLine(ctx, cx + 45, cy, cx + 120, cy);
+    ctx.font = "bold 16px Arial"; ctx.fillText("V", cx + 130, cy + 5);
+    ctx.font = "bold 10px Arial"; ctx.fillText("OUT", cx + 142, cy + 10);
 }
-
-
-
-
-
         
      function openDataSheet() {
     const modal = document.getElementById('dataSheetModal');
@@ -1974,8 +1958,6 @@ function closeDataSheet() {
     window.onload = function() {
     goHome(); // This ensures the 8 module buttons are shown first
 };   
-
-
 
 function generateColorCodeProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
