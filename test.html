@@ -2103,6 +2103,18 @@ function drawDot(ctx, x, y) {
     ctx.fillStyle = '#000';
     ctx.fill();
 }
+
+        function formatResValue(val) {
+    if (val >= 1000000) return (val / 1000000).toFixed(1) + "MΩ";
+    if (val >= 1000) return (val / 1000).toFixed(1) + "kΩ";
+    return val + "Ω";
+}
+
+function formatCapValue(val) {
+    if (val < 1e-6) return (val * 1e9).toFixed(1) + "nF";
+    if (val < 1) return (val * 1e6).toFixed(1) + "µF";
+    return val + "F";
+}
         
 </script>
 
