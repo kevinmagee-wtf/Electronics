@@ -223,6 +223,7 @@
                             <label id="labelOscFreq" for="inputOscFreq">Frequency = </label>
                             <input type="text" id="inputOscFreq" placeholder="e.g. 66.7 Hz">
                         </div>
+                
                         <div class="input-group" id="inputGroupOscRatio" style="display:none;">
                             <label id="labelOscRatio" for="inputOscRatio">Mark-Space ratio = </label>
                             <input type="text" id="inputOscRatio" placeholder="e.g. 2">
@@ -232,6 +233,11 @@
                             <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
                                 Formula: <strong>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</strong>
                             </div>
+                            
+                        <div class="input-group" id="inputGroupMonostable" style="display:none;">
+                        <label id="labelMono" for="inputMono">Value = </label>
+                        <input type="text" id="inputMono" placeholder="Enter value with units">
+                        </div>
                             <div style="margin-bottom: 10px;">
                                 <label id="labelAstable" for="inputAstable">Frequency = </label>
                                 <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
@@ -242,6 +248,7 @@
                             </div>
                         </div>
 
+                
                         <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%;">
                             <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
                                 Formula: <strong>T<sub>ON</sub> / T<sub>OFF</sub> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub></strong>
