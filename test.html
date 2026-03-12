@@ -1673,8 +1673,6 @@ function generateAstableProblem(ctx, canvas) {
     ctx.font = "14px Arial"; ctx.textAlign = "left"; ctx.fillText("7", 265, 145);
     line(220, 180, 260, 180); ctx.fillText("6", 265, 185); // Pin 6
     line(220, 240, 260, 240); ctx.fillText("2", 265, 245); // Pin 2
-
-    line(330, 40, 330, 80); drawDot(330, 80); line(300, 80, 360, 80);
     line(300, 80, 300, 120); ctx.textAlign = "center"; ctx.fillText("4", 300, 135);
     line(360, 80, 360, 120); ctx.fillText("8", 360, 135);
     line(300, 260, 300, 360); drawDot(300, 360); ctx.fillText("1", 300, 255);
@@ -1858,7 +1856,7 @@ function generateMonostableProblem(ctx, canvas) {
 
     // 3. UI SETUP 
     const feedback = document.getElementById('feedback');
-    const label = document.getElementById('labelMono');
+    const label = document.getElementById('labelMono') || { innerText: "" };
     const qTypes = [
         { lab: "Time Delay (T) = ", feed: "Calculate the <b>Time Delay (T)</b>:" },
         { lab: "Capacitance (C) = ", feed: `Calculate <b>C</b> for a delay of <b>${delay.toFixed(2)}s</b>:` },
@@ -2046,13 +2044,22 @@ function formatCapValue(val) {
 }
 
 // 3. Ensure drawDot exists (used in your generateMonostable function)
-function drawDot(ctx, x, y) {
+function drawDot(arg1, arg2, arg3) {
+    let ctx, x, y;
+    // If the first thing is the 'ctx' object, use the 3-arg style
+    if (typeof arg1 === 'object') {
+        ctx = arg1; x = arg2; y = arg3;
+    } else { 
+        // If not, find the context ourselves and use the 2-arg style (x, y)
+        const canvas = document.getElementById('circuitCanvas');
+        ctx = canvas.getContext('2d');
+        x = arg1; y = arg2;
+    }
     ctx.beginPath();
     ctx.arc(x, y, 4, 0, Math.PI * 2);
     ctx.fillStyle = '#000';
     ctx.fill();
 }
-
     function drawLine(ctx, x1, y1, x2, y2) {
             ctx.beginPath();
             ctx.moveTo(x1, y1);
