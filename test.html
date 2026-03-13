@@ -393,6 +393,93 @@ let currentAnswers = {
     astableRatio: '' // Added for 555 logic
 };
 
+// ==================================================================================================================
+// FUNCTION 6: SMALL UTILITIES (HELPERS)   
+// ==================================================================================================================
+    
+ }
+    function formatResValue(val) {
+    if (val >= 1000000) return (val / 1000000) + " MΩ";
+    if (val >= 1000) return (val / 1000) + " kΩ";
+    return val + " Ω";
+}   
+    
+    function provideHint() {
+    if (isCurrentProblemSolved) return;
+    viewedSolution = true;
+    const feedback = document.getElementById('feedback');
+
+    if (currentMode === 'colorcode') {
+        let helpText = "";
+        // If they are looking at colors and need the number value
+        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
+            helpText = `
+                <div style="text-align:left; background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px;">
+                    <b>Resistor Guide:</b><br>
+                    • Band 1 (${currentAnswers.b1.toUpperCase()}): 1st Digit<br>
+                    • Band 2 (${currentAnswers.b2.toUpperCase()}): 2nd Digit<br>
+                    • Band 3 (${currentAnswers.b3.toUpperCase()}): Multiplier (number of zeros)<br>
+                    • Band 4 (${currentAnswers.tol.toUpperCase()}): Tolerance (Gold=5%, Silver=10%)
+                </div>`;
+        } 
+        // If they are looking at a number and need to name the colors
+        else {
+            helpText = `
+                <div style="text-align:left; background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px;">
+                    <b>Colour Guide for ${formatResValue(currentAnswers.resVal)}:</b><br>
+                    • 1st & 2nd Digit: Match the numbers to colours.<br>
+                    • 3rd Digit (Multiplier): How many zeros follow the first two numbers?<br>
+                    • 4th Digit: Gold is 5%, Silver is 10%.<br>
+                    <small>(0:Blk, 1:Brn, 2:Red, 3:Org, 4:Yel, 5:Grn, 6:Blu, 7:Pur, 8:Gry, 9:Whi)</small>
+                </div>`;
+        }
+        feedback.innerHTML = helpText;
+    } 
+    else if (currentMode === 'oscilloscope') {
+        feedback.innerHTML = "<b>Hint:</b> Amplitude is vertical height from center. Period is horizontal width of one cycle. Use f = 1 / T.";
+    } 
+    else if (currentMode === 'astable') {
+        feedback.innerHTML = "<b>Hint:</b> f = 1.44 / ((R1 + 2R2)C). Mark/Space ratio is (R1+R2) : R2.";
+    } else {
+        feedback.innerHTML = "<b>Hint:</b> Check your Ohm's Law (V=IR) or Potential Divider formula.";
+    }
+
+    // Hide the help button after it's clicked
+    const helpBtn = document.getElementById('helpBtn');
+    if (helpBtn) helpBtn.style.display = 'none';
+}
+
+function toggleSolutions() {
+            const sol = document.getElementById('solutions');
+            if (!sol) return;
+            if (sol.style.display === 'none' || sol.style.display === '') {
+                sol.style.display = 'block'; viewedSolution = true;
+            } else { sol.style.display = 'none'; }
+
+function parseInput(str) {
+    if (!str) return null;
+    let cleanStr = str.toLowerCase().replace(/\s+/g, '');
+    cleanStr = cleanStr.replace(/\u03a9/g, 'ohms'); 
+    
+    let strippedStr = cleanStr.replace(/[a-z]+$/, '');
+    if (/^\d+\/\d+$/.test(strippedStr)) {
+        let parts = strippedStr.split('/');
+        return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio', isRatioString: true };
+    }
+    
+    const match = cleanStr.match(/^(-?[\d\.]+)([a-z\u03a9]+)$/);
+    if (match) {
+        let val = parseFloat(match[1]);
+        let unit = match[2];
+        
+        // Resistor specific conversion logic
+        if (unit.startsWith('k')) val *= 1000;
+        if (unit.startsWith('m') && !unit.startsWith('ma')) val *= 1000000; // M but not mA
+        
+        return { val: val, unit: unit };
+    }
+    return { val: parseFloat(cleanStr), unit: '' }; 
+}
 // =======================================================================================================
 // FUNCTION 1: DRAWING UTILITIES 
 // =======================================================================================================
@@ -480,11 +567,7 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
             ctx.quadraticCurveTo(x, y, x + radius, y); ctx.closePath(); ctx.fill(); ctx.stroke();
         }
 
-function formatResValue(val) {
-    if (val >= 1000000) return (val / 1000000) + " MΩ";
-    if (val >= 1000) return (val / 1000) + " kΩ";
-    return val + " Ω";
-}            
+  
 // =========================================================================================================      
 // FUNCTION 2. PROBLEM GENERATORS (THE CONTENT CREATORS) 
 // =========================================================================================================     
@@ -1837,30 +1920,7 @@ async function processSubmission() {
             }
         }
   
-function parseInput(str) {
-    if (!str) return null;
-    let cleanStr = str.toLowerCase().replace(/\s+/g, '');
-    cleanStr = cleanStr.replace(/\u03a9/g, 'ohms'); 
-    
-    let strippedStr = cleanStr.replace(/[a-z]+$/, '');
-    if (/^\d+\/\d+$/.test(strippedStr)) {
-        let parts = strippedStr.split('/');
-        return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio', isRatioString: true };
-    }
-    
-    const match = cleanStr.match(/^(-?[\d\.]+)([a-z\u03a9]+)$/);
-    if (match) {
-        let val = parseFloat(match[1]);
-        let unit = match[2];
-        
-        // Resistor specific conversion logic
-        if (unit.startsWith('k')) val *= 1000;
-        if (unit.startsWith('m') && !unit.startsWith('ma')) val *= 1000000; // M but not mA
-        
-        return { val: val, unit: unit };
-    }
-    return { val: parseFloat(cleanStr), unit: '' }; 
-}
+
 
 function validateMatch(parsedInput, expectedVal, expectedUnit) {
             if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
@@ -1888,64 +1948,7 @@ function updateScoreboard() {
   
 
 
-// ==================================================================================================================
-// FUNCTION 6: SMALL UTILITIES (HELPERS)   
-// ==================================================================================================================
-    
 
-    
-    function provideHint() {
-    if (isCurrentProblemSolved) return;
-    viewedSolution = true;
-    const feedback = document.getElementById('feedback');
-
-    if (currentMode === 'colorcode') {
-        let helpText = "";
-        // If they are looking at colors and need the number value
-        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
-            helpText = `
-                <div style="text-align:left; background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px;">
-                    <b>Resistor Guide:</b><br>
-                    • Band 1 (${currentAnswers.b1.toUpperCase()}): 1st Digit<br>
-                    • Band 2 (${currentAnswers.b2.toUpperCase()}): 2nd Digit<br>
-                    • Band 3 (${currentAnswers.b3.toUpperCase()}): Multiplier (number of zeros)<br>
-                    • Band 4 (${currentAnswers.tol.toUpperCase()}): Tolerance (Gold=5%, Silver=10%)
-                </div>`;
-        } 
-        // If they are looking at a number and need to name the colors
-        else {
-            helpText = `
-                <div style="text-align:left; background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px;">
-                    <b>Colour Guide for ${formatResValue(currentAnswers.resVal)}:</b><br>
-                    • 1st & 2nd Digit: Match the numbers to colours.<br>
-                    • 3rd Digit (Multiplier): How many zeros follow the first two numbers?<br>
-                    • 4th Digit: Gold is 5%, Silver is 10%.<br>
-                    <small>(0:Blk, 1:Brn, 2:Red, 3:Org, 4:Yel, 5:Grn, 6:Blu, 7:Pur, 8:Gry, 9:Whi)</small>
-                </div>`;
-        }
-        feedback.innerHTML = helpText;
-    } 
-    else if (currentMode === 'oscilloscope') {
-        feedback.innerHTML = "<b>Hint:</b> Amplitude is vertical height from center. Period is horizontal width of one cycle. Use f = 1 / T.";
-    } 
-    else if (currentMode === 'astable') {
-        feedback.innerHTML = "<b>Hint:</b> f = 1.44 / ((R1 + 2R2)C). Mark/Space ratio is (R1+R2) : R2.";
-    } else {
-        feedback.innerHTML = "<b>Hint:</b> Check your Ohm's Law (V=IR) or Potential Divider formula.";
-    }
-
-    // Hide the help button after it's clicked
-    const helpBtn = document.getElementById('helpBtn');
-    if (helpBtn) helpBtn.style.display = 'none';
-}
-
-function toggleSolutions() {
-            const sol = document.getElementById('solutions');
-            if (!sol) return;
-            if (sol.style.display === 'none' || sol.style.display === '') {
-                sol.style.display = 'block'; viewedSolution = true;
-            } else { sol.style.display = 'none'; }
-        }
 
         
     window.onload = function() {
