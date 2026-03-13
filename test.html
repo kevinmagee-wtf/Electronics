@@ -724,21 +724,22 @@ function generateDividerProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Set the correct answer for your validation/checking logic
+    // UPDATED: Now rounding all possible answers to 1 d.p.
     if (targetVar === 0) {
         currentAnswers.vNameHTML = 'V<sub>OUT</sub>';
-        currentAnswers.vValue = Vout_val;
+        currentAnswers.vValue = parseFloat(Vout_val.toFixed(1));
         currentAnswers.vUnit = vUnit;
     } else if (targetVar === 1) {
         currentAnswers.vNameHTML = 'V<sub>supply</sub>';
-        currentAnswers.vValue = Vin_val;
+        currentAnswers.vValue = parseFloat(Vin_val.toFixed(1));
         currentAnswers.vUnit = vUnit;
     } else if (targetVar === 2) {
         currentAnswers.vNameHTML = 'R<sub>1</sub>';
-        currentAnswers.vValue = R1_val;
+        currentAnswers.vValue = parseFloat(R1_val.toFixed(1));
         currentAnswers.vUnit = expectedRUnit; 
     } else if (targetVar === 3) {
         currentAnswers.vNameHTML = 'R<sub>2</sub>';
-        currentAnswers.vValue = R2_val;
+        currentAnswers.vValue = parseFloat(R2_val.toFixed(1));
         currentAnswers.vUnit = expectedRUnit; 
     }
 
@@ -749,7 +750,17 @@ function generateDividerProblem(ctx, canvas) {
     let labelR1   = (targetVar === 2) ? "?" : R1_val + " " + rUnitVisual;
     let labelR2   = (targetVar === 3) ? "?" : R2_val + " " + rUnitVisual;
     let labelVin  = (targetVar === 1) ? "?" : Vin_val + " " + vUnit;
-    let labelVout = (targetVar === 0) ? "?" : Vout_val + " " + vUnit;
+    let labelVout = (targetVar === 0) ? "?" : Vout_val.toFixed(1) + " " + vUnit;
+
+    // UPDATED: Adding the 1 d.p. placeholder prompt
+    const inputBox = document.getElementById('inputV');
+    if (inputBox) {
+        if (targetVar === 0 || targetVar === 1) {
+            inputBox.placeholder = "Voltage (1 d.p.)"; 
+        } else {
+            inputBox.placeholder = "Resistance (1 d.p.)"; 
+        }
+    }
 
     // Random Component Selector Logic
     let compTop, compBottom;
@@ -777,81 +788,33 @@ function generateDividerProblem(ctx, canvas) {
     ctx.fillStyle = brandBlack;
     ctx.fillText("0V (GND)", 260, 390);
 
-    // Wires mathematically calculated to stop exactly at resistor edges (±25px)
-    drawLine(ctx, 300, 60, 300, 100);         // Stops at top edge of R1
-    drawComponent(ctx, compTop, 300, 125);    // Top resistor (R1)
-    drawLine(ctx, 300, 150, 300, 270);        // Spans bottom of R1 to top of R2
-    drawComponent(ctx, compBottom, 300, 295); // Bottom resistor (R2)
-    drawLine(ctx, 300, 320, 300, 360);        // Starts at bottom edge of R2
+    // Wires and Components
+    drawLine(ctx, 300, 60, 300, 100);
+    drawComponent(ctx, compTop, 300, 125);
+    drawLine(ctx, 300, 150, 300, 270);
+    drawComponent(ctx, compBottom, 300, 295);
+    drawLine(ctx, 300, 320, 300, 360);
 
-    // Draw the junction dot exactly in the middle (Y=210)
-    ctx.beginPath();
-    ctx.arc(300, 210, 4, 0, Math.PI * 2);
-    ctx.fillStyle = "#000"; 
-    ctx.fill();
+    // Junction dot and output port
+    ctx.beginPath(); ctx.arc(300, 210, 4, 0, Math.PI * 2); ctx.fillStyle = "#000"; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(300, 210); ctx.lineTo(380, 210); ctx.stroke();
+    ctx.beginPath(); ctx.arc(384, 210, 4, 0, Math.PI * 2); ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
 
-    // Draw horizontal branch to the right at Y=210
-    ctx.beginPath();
-    ctx.moveTo(300, 210);
-    ctx.lineTo(380, 210);
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Draw the unfilled small circle (output port)
-    ctx.beginPath();
-    ctx.arc(384, 210, 4, 0, Math.PI * 2);
-    ctx.fillStyle = "white";
-    ctx.fill();
-    ctx.strokeStyle = "#000";
-    ctx.stroke();
-
-   // ==========================
     // 3. DRAW THE TEXT LABELS
-    // ==========================
-    // Determine which label gets the pink highlight
     const colorVout = (targetVar === 0) ? brandPink : brandBlack;
     const colorVin  = (targetVar === 1) ? brandPink : brandBlack;
     const colorR1   = (targetVar === 2) ? brandPink : brandBlack;
     const colorR2   = (targetVar === 3) ? brandPink : brandBlack;
 
     ctx.font = "16px Arial"; 
-    
-    // R1 Label
-    ctx.fillStyle = colorR1; 
-    ctx.fillText("R\u2081 = " + labelR1, 350, 130);
-    
-    // R2 Label
-    ctx.fillStyle = colorR2; 
-    ctx.fillText("R\u2082 = " + labelR2, 350, 300);
+    ctx.fillStyle = colorR1; ctx.fillText("R\u2081 = " + labelR1, 350, 130);
+    ctx.fillStyle = colorR2; ctx.fillText("R\u2082 = " + labelR2, 350, 300);
+    ctx.fillStyle = colorVin; ctx.fillText("+Vsupply = " + labelVin, 230, 45); 
 
-    // Draw Supply Voltage (Vin) near the top wire
-    ctx.fillStyle = colorVin; 
-    ctx.fillText("+Vsupply = " + labelVin, 230, 45); 
+    ctx.fillStyle = colorVout; ctx.font = "bold 18px Arial"; ctx.fillText("V", 400, 216);
+    ctx.font = "bold 11px Arial"; ctx.fillText("OUT", 413, 222);
+    ctx.font = "bold 16px Arial"; ctx.fillText("= " + labelVout, 445, 216);
 
-    // Draw the Vout Label next to the output port
-    ctx.fillStyle = colorVout; 
-    ctx.font = "bold 18px Arial";
-    ctx.fillText("V", 400, 216);
-    ctx.font = "bold 11px Arial";
-    ctx.fillText("OUT", 413, 222);
-
-    // Add the Vout numerical value or "?" right next to V_OUT
-    ctx.font = "bold 16px Arial";
-    ctx.fillText("= " + labelVout, 445, 216);
-
-    // Dynamically update the placeholder text in the input box!
-    const inputBox = document.getElementById('inputV');
-    if (inputBox) {
-        if (targetVar === 0 || targetVar === 1) {
-            // Asking for Voltage
-            inputBox.placeholder = "e.g. 10 " + vUnit; 
-        } else {
-            // Asking for Resistance
-            inputBox.placeholder = "e.g. 10 " + expectedRUnit; 
-        }
-    }
-    
     // 4. Update the Step-by-Step Logic Panel
     const solText = document.getElementById('solText');
     if (solText) {
@@ -860,18 +823,18 @@ function generateDividerProblem(ctx, canvas) {
         
         if (targetVar === 0) {
             logicHTML += "<em>Step 1:</em> Find R<sub>TOTAL</sub> = " + R1_val + " + " + R2_val + " = " + (R1_val+R2_val) + "<br>";
-            logicHTML += "<em>Step 2:</em> V<sub>OUT</sub> = " + Vin_val + " &times; (" + R2_val + " / " + (R1_val+R2_val) + ") = <strong>" + Vout_val + " " + vUnit + "</strong>";
+            logicHTML += "<em>Step 2:</em> V<sub>OUT</sub> = " + Vin_val + " &times; (" + R2_val + " / " + (R1_val+R2_val) + ") = <strong>" + Vout_val.toFixed(1) + " " + vUnit + "</strong>";
         } else if (targetVar === 1) {
             logicHTML += "<em>Step 1:</em> Rearrange for V<sub>supply</sub> = V<sub>OUT</sub> / (R\u2082 / R<sub>TOTAL</sub>)<br>";
-            logicHTML += "<em>Step 2:</em> V<sub>supply</sub> = " + Vout_val + " / (" + R2_val + " / " + (R1_val+R2_val) + ") = <strong>" + Vin_val + " " + vUnit + "</strong>";
+            logicHTML += "<em>Step 2:</em> V<sub>supply</sub> = " + Vout_val.toFixed(1) + " / (" + R2_val + " / " + (R1_val+R2_val) + ") = <strong>" + Vin_val.toFixed(1) + " " + vUnit + "</strong>";
         } else if (targetVar === 2) {
-            logicHTML += "<em>Step 1:</em> If V<sub>OUT</sub> is " + Vout_val + "V, the voltage across R\u2081 is (" + Vin_val + " - " + Vout_val + ") = " + (Vin_val-Vout_val) + "V.<br>";
+            logicHTML += "<em>Step 1:</em> If V<sub>OUT</sub> is " + Vout_val.toFixed(1) + "V, the voltage across R\u2081 is (" + Vin_val + " - " + Vout_val.toFixed(1) + ") = " + (Vin_val-Vout_val).toFixed(1) + "V.<br>";
             logicHTML += "<em>Step 2:</em> Since voltage shares in ratio to resistance: R\u2081 = R\u2082 &times; (V\u2081 / V\u2082)<br>";
-            logicHTML += "<em>Step 3:</em> R\u2081 = " + R2_val + " &times; (" + (Vin_val-Vout_val) + " / " + Vout_val + ") = <strong>" + R1_val + " " + rUnitVisual + "</strong>";
+            logicHTML += "<em>Step 3:</em> R\u2081 = " + R2_val + " &times; (" + (Vin_val-Vout_val).toFixed(1) + " / " + Vout_val.toFixed(1) + ") = <strong>" + R1_val.toFixed(1) + " " + rUnitVisual + "</strong>";
         } else if (targetVar === 3) {
-            logicHTML += "<em>Step 1:</em> If V<sub>OUT</sub> (across R\u2082) is " + Vout_val + "V, the voltage across R\u2081 is (" + Vin_val + " - " + Vout_val + ") = " + (Vin_val-Vout_val) + "V.<br>";
+            logicHTML += "<em>Step 1:</em> If V<sub>OUT</sub> (across R\u2082) is " + Vout_val.toFixed(1) + "V, the voltage across R\u2081 is (" + Vin_val + " - " + Vout_val.toFixed(1) + ") = " + (Vin_val-Vout_val).toFixed(1) + "V.<br>";
             logicHTML += "<em>Step 2:</em> Since voltage shares in ratio to resistance: R\u2082 = R\u2081 &times; (V\u2082 / V\u2081)<br>";
-            logicHTML += "<em>Step 3:</em> R\u2082 = " + R1_val + " &times; (" + Vout_val + " / " + (Vin_val-Vout_val) + ") = <strong>" + R2_val + " " + rUnitVisual + "</strong>";
+            logicHTML += "<em>Step 3:</em> R\u2082 = " + R1_val + " &times; (" + Vout_val.toFixed(1) + " / " + (Vin_val-Vout_val).toFixed(1) + ") = <strong>" + R2_val.toFixed(1) + " " + rUnitVisual + "</strong>";
         }
         solText.innerHTML = logicHTML;
     }
@@ -1055,6 +1018,9 @@ function generateAnalysisProblem(ctx, canvas) {
             document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
             document.getElementById('labelI').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.iNameHTML + "</span> = ";
 
+            document.getElementById('inputV').placeholder = "Value to 1 d.p.";
+            document.getElementById('inputI').placeholder = "Value to 1 d.p.";
+    
             const vLabels = voltages.map(function(v, index) { return index === unknownVIndex ? v.display + " = ?" : v.display + " = " + v.val + " " + vUnit; });
             const iLabels = currents.map(function(c, index) { return index === unknownIIndex ? c.display + " = ?" : c.display + " = " + c.val + " " + iUnit; });
             let topRailText = unknownVIndex === 3 ? "+Vsupply = ?" : "+Vsupply = " + vTotal + " " + vUnit;
@@ -1245,10 +1211,7 @@ function generateAstableProblem(ctx, canvas) {
         // --- ADD THE NEW CODE HERE ---
         document.getElementById('inputAstable').placeholder = "Freq to 1 d.p. (e.g. 10.5 Hz)";
         document.getElementById('inputAstableT').placeholder = "Period to 1 d.p. (e.g. 20.2 ms)";
-        // ------------------------------
-        
-        
-        
+        // ------------------------------ 
         
         if (document.getElementById('inputGroupMarkSpace')) {
             document.getElementById('inputGroupMarkSpace').style.display = "none";
