@@ -1342,47 +1342,79 @@ function drawMonostable(ctx, R, C, rUnit, cUnit) {
     ctx.clearRect(0, 0, 600, 420);
     ctx.strokeStyle = brandBlack;
     ctx.lineWidth = 2;
-    
-    // 1. Draw the 555 Chip
-    ctx.strokeRect(250, 150, 100, 120);
-    ctx.font = "bold 18px Arial";
+    ctx.font = "bold 16px Arial";
     ctx.fillStyle = brandBlack;
-    ctx.fillText("555", 282, 215);
 
-    // 2. Monostable wiring: Join Pins 6 & 7 to the R-C junction
+    // 1. Draw the 555 Chip (Centered)
+    const chipX = 250, chipY = 150, w = 120, h = 160;
+    ctx.strokeRect(chipX, chipY, w, h);
+    ctx.fillText("555", chipX + 45, chipY + 85);
+
+    // 2. Pin Labels (Standard Monostable Layout)
+    ctx.font = "12px Arial";
+    ctx.fillText("8", chipX + 30, chipY + 15); // VCC
+    ctx.fillText("4", chipX + 80, chipY + 15); // Reset
+    ctx.fillText("1", chipX + 55, chipY + h - 5); // GND
+    ctx.fillText("3", chipX + w - 15, chipY + 85); // OUT
+    ctx.fillText("2", chipX + 5, chipY + 130); // TRIG
+    ctx.fillText("7", chipX + 5, chipY + 40); // DIS
+    ctx.fillText("6", chipX + 5, chipY + 70); // THR
+
+    // 3. Power Rails
+    // Top Rail (VCC)
     ctx.beginPath();
-    ctx.moveTo(250, 175); // Pin 7
-    ctx.lineTo(200, 175);
-    ctx.moveTo(250, 225); // Pin 6
-    ctx.lineTo(200, 225);
-    ctx.lineTo(200, 175); 
+    ctx.moveTo(chipX + 35, chipY); ctx.lineTo(chipX + 35, chipY - 50); // Pin 8 up
+    ctx.moveTo(chipX + 85, chipY); ctx.lineTo(chipX + 85, chipY - 50); // Pin 4 up
+    ctx.moveTo(150, chipY - 50); ctx.lineTo(400, chipY - 50); // Horizontal Rail
+    ctx.stroke();
+    ctx.fillText("+Vcc", 410, chipY - 45);
+
+    // Bottom Rail (GND)
+    ctx.beginPath();
+    ctx.moveTo(chipX + 60, chipY + h); ctx.lineTo(chipX + 60, chipY + h + 40); // Pin 1 down
+    ctx.moveTo(150, chipY + h + 40); ctx.lineTo(400, chipY + h + 40); // Horizontal Rail
+    ctx.stroke();
+    ctx.fillText("0V", 410, chipY + h + 45);
+
+    // 4. External Components (R and C)
+    // Resistor R1 from VCC to Pin 7
+    drawResistor(ctx, 200, chipY - 20); 
+    ctx.beginPath();
+    ctx.moveTo(200, chipY - 50); ctx.lineTo(200, chipY - 40); // To Rail
+    ctx.moveTo(200, chipY + 10); ctx.lineTo(200, chipY + 40); // To Pin 7 line
+    ctx.lineTo(chipX, chipY + 40); // Into Pin 7
+    ctx.stroke();
+    ctx.font = "bold 14px Arial";
+    ctx.fillText("R = " + R + rUnit, 110, chipY - 5);
+
+    // Join Pin 6 to Pin 7 (Threshold to Discharge)
+    ctx.beginPath();
+    ctx.moveTo(chipX, chipY + 70); ctx.lineTo(200, chipY + 70); ctx.lineTo(200, chipY + 40);
     ctx.stroke();
 
-    // 3. Draw Resistor (using your existing helper)
-    drawResistor(ctx, 200, 120); 
-    ctx.fillText("R = " + R + rUnit, 120, 125);
-
-    // 4. Draw Capacitor using drawLine logic
+    // Capacitor C1 from Pin 6 junction to GND
     ctx.beginPath();
-    // Line from junction to top plate
-    ctx.moveTo(200, 225); ctx.lineTo(200, 250); 
-    // Top Plate
-    ctx.moveTo(185, 250); ctx.lineTo(215, 250); 
-    // Bottom Plate
-    ctx.moveTo(185, 258); ctx.lineTo(215, 258); 
-    // Line from bottom plate to ground rail
-    ctx.moveTo(200, 258); ctx.lineTo(200, 320); 
+    ctx.moveTo(200, chipY + 70); ctx.lineTo(200, chipY + 100); // Wire down
+    // Capacitor Plates
+    ctx.moveTo(185, 100 + chipY); ctx.lineTo(215, 100 + chipY);
+    ctx.moveTo(185, 108 + chipY); ctx.lineTo(215, 108 + chipY);
+    // To Ground
+    ctx.moveTo(200, 108 + chipY); ctx.lineTo(200, chipY + h + 40);
     ctx.stroke();
-    
-    ctx.fillText("C = " + C + cUnit, 120, 270);
+    ctx.fillText("C = " + C + cUnit, 110, chipY + 110);
 
-    // 5. Output Pin
+    // 5. Trigger Input (Pin 2)
     ctx.beginPath();
-    ctx.moveTo(350, 210); ctx.lineTo(400, 210);
+    ctx.moveTo(chipX, chipY + 130); ctx.lineTo(chipX - 40, chipY + 130);
     ctx.stroke();
-    ctx.fillText("Vout", 410, 215);
+    ctx.fillText("Trigger", chipX - 90, chipY + 135);
+
+    // 6. Output (Pin 3)
+    ctx.beginPath();
+    ctx.moveTo(chipX + w, chipY + 80); ctx.lineTo(chipX + w + 40, chipY + 80);
+    ctx.stroke();
+    ctx.fillText("Vout", chipX + w + 45, chipY + 85);
 }
-
 function generateMonostableProblem() {
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas.getContext('2d');
