@@ -479,87 +479,6 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
             ctx.quadraticCurveTo(x, y + height, x, y + height - radius); ctx.lineTo(x, y + radius);
             ctx.quadraticCurveTo(x, y, x + radius, y); ctx.closePath(); ctx.fill(); ctx.stroke();
         }
- // ===============================================================================================================      
-// FUNCTION 4. MAIN ROUTER
-// ===============================================================================================================      
-    
-function generateProblem() {
-    const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    // --- FIX FOR CANVAS SCALING ---
-    // This forces the canvas internal resolution to match your CSS box size
-    canvas.width = 600;
-    canvas.height = 400;
-    // ------------------------------
-
-    // 1. Reset Quiz State for ALL modules
-    hasCheckedCurrentProblem = false;
-    isCurrentProblemSolved = false;
-    viewedSolution = false; 
-    unitErrorMade = false; 
-    
-    const helpBtn = document.getElementById('helpBtn');
-    const feedback = document.getElementById('feedback');
-    const grade9DividerBtn = document.getElementById('grade9DividerBtn'); 
-    const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
-
-    if (helpBtn) helpBtn.style.display = 'none';
-    if (solutions) solutions.style.display = 'none';
-    if (feedback) feedback.innerHTML = '';
-    
-    // 2. Hide Grade 9 Buttons
-    if (grade9DividerBtn) grade9DividerBtn.style.display = 'none';
-    if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'none';
-
-    // 3. Reset all text inputs (This clears old answers)
-    const inputs = [
-        'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
-        'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
-        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
-        'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'
-    ];
-    inputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-    });
-
-    // 4. Hide ALL input groups first (This wipes the "previous page" buttons)
-    const groups = [
-        'inputGroupV', 'inputGroupI', 'inputGroupR', 
-        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
-        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
-        'inputGroupAstable', 'inputGroupMarkSpace', 
-        'inputGroupColorVal', 'inputGroupColorNames'
-    ];
-    groups.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-
-    // 5. NOW call the specific module logic
-    if (currentMode === 'analysis') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        document.getElementById('inputGroupI').style.display = 'inline-block';
-        generateAnalysisProblem(ctx, canvas);
-    } else if (currentMode === 'divider') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        if (grade9DividerBtn) grade9DividerBtn.style.display = 'inline-block';
-        generateDividerProblem(ctx, canvas);
-    } else if (currentMode === 'resistance') {
-        document.getElementById('inputGroupR').style.display = 'inline-block';
-        if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'inline-block';
-        // Small delay ensures canvas resizing is processed before complex resistance drawing
-        setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
-    } else if (currentMode === 'oscilloscope') {
-        generateOscilloscopeProblem(ctx, canvas);
-    } else if (currentMode === 'astable') {
-        generateAstableProblem(ctx, canvas);
-    } else if (currentMode === 'colorcode') {
-        generateColorCodeProblem(ctx, canvas);
-    }
-}   
 
             
 // =========================================================================================================      
@@ -1589,6 +1508,87 @@ function closeModal() {
             document.getElementById('submissionModal').style.display = 'none';
         }
 
+// ===============================================================================================================      
+// FUNCTION 4. MAIN ROUTER
+// ===============================================================================================================      
+    
+function generateProblem() {
+    const canvas = document.getElementById('circuitCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // --- FIX FOR CANVAS SCALING ---
+    // This forces the canvas internal resolution to match your CSS box size
+    canvas.width = 600;
+    canvas.height = 400;
+    // ------------------------------
+
+    // 1. Reset Quiz State for ALL modules
+    hasCheckedCurrentProblem = false;
+    isCurrentProblemSolved = false;
+    viewedSolution = false; 
+    unitErrorMade = false; 
+    
+    const helpBtn = document.getElementById('helpBtn');
+    const feedback = document.getElementById('feedback');
+    const grade9DividerBtn = document.getElementById('grade9DividerBtn'); 
+    const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
+
+    if (helpBtn) helpBtn.style.display = 'none';
+    if (solutions) solutions.style.display = 'none';
+    if (feedback) feedback.innerHTML = '';
+    
+    // 2. Hide Grade 9 Buttons
+    if (grade9DividerBtn) grade9DividerBtn.style.display = 'none';
+    if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'none';
+
+    // 3. Reset all text inputs (This clears old answers)
+    const inputs = [
+        'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
+        'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
+        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
+        'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'
+    ];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    // 4. Hide ALL input groups first (This wipes the "previous page" buttons)
+    const groups = [
+        'inputGroupV', 'inputGroupI', 'inputGroupR', 
+        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
+        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
+        'inputGroupAstable', 'inputGroupMarkSpace', 
+        'inputGroupColorVal', 'inputGroupColorNames'
+    ];
+    groups.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
+    // 5. NOW call the specific module logic
+    if (currentMode === 'analysis') {
+        document.getElementById('inputGroupV').style.display = 'inline-block';
+        document.getElementById('inputGroupI').style.display = 'inline-block';
+        generateAnalysisProblem(ctx, canvas);
+    } else if (currentMode === 'divider') {
+        document.getElementById('inputGroupV').style.display = 'inline-block';
+        if (grade9DividerBtn) grade9DividerBtn.style.display = 'inline-block';
+        generateDividerProblem(ctx, canvas);
+    } else if (currentMode === 'resistance') {
+        document.getElementById('inputGroupR').style.display = 'inline-block';
+        if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'inline-block';
+        // Small delay ensures canvas resizing is processed before complex resistance drawing
+        setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
+    } else if (currentMode === 'oscilloscope') {
+        generateOscilloscopeProblem(ctx, canvas);
+    } else if (currentMode === 'astable') {
+        generateAstableProblem(ctx, canvas);
+    } else if (currentMode === 'colorcode') {
+        generateColorCodeProblem(ctx, canvas);
+    }
+}   
 
 
 // =======================================================================================================      
