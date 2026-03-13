@@ -283,10 +283,6 @@
         Band 4: <input type="text" id="inputBandTol" placeholder="Colour" style="width: 100px;">
     </div>
 </div>
-
-
-
-
                 
                         <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
                         <div id="feedback" class="feedback"></div>
@@ -295,8 +291,8 @@
 
                 <div class="controls">
                     <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
-                    <button id="grade9Btn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
-                    <button id="grade9ResistanceBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
+                    <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
+                    <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
                     <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
                     <button id="dataSheetBtn" class="btn-check" style="background-color: #6c757d; color: white;" onclick="openDataSheet()">📖 Data Sheet</button>
                 </div>
@@ -333,9 +329,73 @@
         </div>
     </div>
 
-    <script>
 
- function openModule(module) {
+           <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
+    <div style="background-color: white; padding: 20px; border-radius: 15px; max-width: 600px; width: 90%; position: relative; margin: 10% auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <span onclick="closeDataSheet()" style="position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #E64097; font-weight: bold;">&times;</span>
+        
+        <h2 style="color: #E64097; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;">Electronics Data Sheet</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; color: #333; font-family: sans-serif;">
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Basic Laws</h4>
+                <p>V = I &times; R</p>
+                <p>P = I &times; V</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Resistance</h4>
+                <p>Series: R<sub>T</sub> = R<sub>1</sub> + R<sub>2</sub></p>
+                <p>Parallel: R<sub>p</sub> = (R<sub>1</sub> &times; R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>)</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Potential Dividers</h4>
+                <p>V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))</p>
+            </div>
+            <div>
+    <h4 style="margin-bottom: 5px; color: #000;">555 Astable</h4>
+    <p>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</p>
+    <p>T = 0.693 &times; (R<sub>1</sub> + 2R<sub>2</sub>) &times; C</p>
+    <p style="margin-top: 10px; font-weight: bold;">
+        <span>T<sub>ON</sub></span> / <span>T<sub>OFF</sub></span> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub>
+    </p>
+</div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn-check" onclick="closeDataSheet()">Close Sheet</button>
+        </div>
+    </div>
+</div>
+
+
+// ============================================================================      
+// SCRIPT STARTS NOW
+<script>
+
+// --- GLOBAL VARIABLES ---
+const brandPink = "#E64097";
+const brandBlack = "#000000";
+
+let currentMode = 'analysis'; 
+let problemsAttempted = 0;
+let problemsCorrect = 0;
+let hasCheckedCurrentProblem = false; 
+let isCurrentProblemSolved = false;
+let viewedSolution = false; 
+let unitErrorMade = false; 
+
+let currentAnswers = { 
+    vNameHTML: '', vValue: 0, vUnit: '', 
+    iNameHTML: '', iValue: 0, iUnit: '', 
+    rValue: 0, rUnit: '', 
+    osc1Value: 0, osc1Unit: '', 
+    osc2Value: 0, osc2Unit: '',
+    astableRatio: '' // Added for 555 logic
+};
+
+// ============================================================================      
+// FUNCTIONS START NOW
+function openModule(module) {
     document.getElementById('mainMenu').style.display = 'none';
     document.getElementById('menuBasics').style.display = 'none';
     document.getElementById('menuTiming').style.display = 'none';
@@ -344,10 +404,10 @@
 
     if (module === 'basics') {
         document.getElementById('menuBasics').style.display = 'flex';
-        document.getElementById('moduleSubtitle').innerText = '1. Circuit Basics';
+        switchTab('analysis'); 
     } else if (module === 'timing') {
         document.getElementById('menuTiming').style.display = 'flex';
-        document.getElementById('moduleSubtitle').innerText = '3. Timing Circuits';
+        switchTab('oscilloscope');
     } else {
         document.getElementById('menuPlaceholder').style.display = 'flex';
         document.getElementById('moduleSubtitle').innerText = 'Coming Soon';
@@ -365,71 +425,48 @@ function goHome() {
 
 function switchTab(mode) {
     currentMode = mode;
-    
-    // 1. Show the main layout (canvas, questions, etc.)
+    // Show the main layout (canvas, questions, etc.)
     document.getElementById('contentArea').style.display = 'block';
     
-    // 2. Clear previous highlights and highlight the clicked button
+    // Highlight active tab
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     const activeTab = document.getElementById('tab-' + mode);
     if (activeTab) activeTab.classList.add('active');
 
-    // 3. Hide ALL input groups so we can turn on only the ones we need
+    // Hide ALL input groups (including the new monostable one)
     const groups = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
-        'inputGroupAstable', 'inputGroupMarkSpace',
-        'inputGroupColorVal', 'inputGroupColorNames' // These two are the new additions
+        'inputGroupAstable', 'inputGroupMonostable', 'inputGroupMarkSpace',
+        'inputGroupColorVal', 'inputGroupColorNames'
     ];
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
-    // 4. Update the subtitle based on the module
+    // Update subtitles properly
     const subtitle = document.getElementById('moduleSubtitle');
-    if (['analysis', 'divider', 'resistance'].includes(mode)) {
-        subtitle.innerText = "Circuit Basics";
-    } else if (['oscilloscope', 'astable'].includes(mode)) {
-        subtitle.innerText = "Timing Circuits";
+    if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
+        subtitle.innerText = "1. Circuit Basics";
+    } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
+        subtitle.innerText = "3. Timing Circuits";
     }
 
-    // 5. Reset the quiz state for the new problem
+    // Reset quiz state
     isCurrentProblemSolved = false;
     hasCheckedCurrentProblem = false;
     viewedSolution = false;
     unitErrorMade = false;
     document.getElementById('feedback').innerHTML = '';
     document.getElementById('solutions').style.display = 'none';
-    
-    const helpBtn = document.getElementById('helpBtn');
-    if (helpBtn) helpBtn.style.display = 'none';
+    if (document.getElementById('helpBtn')) document.getElementById('helpBtn').style.display = 'none';
 
-    // 6. DRAW THE CIRCUIT - Note: changed from generateNewProblem to generateProblem
     generateProblem();
 }
+       
 
-// --- GLOBAL VARIABLES ---
-const brandPink = "#E64097";
-const brandBlack = "#000000";
-
-let currentMode = 'analysis'; 
-let currentAnswers = { 
-    vNameHTML: '', vValue: 0, vUnit: '', 
-    iNameHTML: '', iValue: 0, iUnit: '', 
-    rValue: 0, rUnit: '', 
-    osc1Value: 0, osc1Unit: '', 
-    osc2Value: 0, osc2Unit: '',
-    astableRatio: '' // Added for 555 logic
-};
-
-let problemsAttempted = 0;
-let problemsCorrect = 0;
-let hasCheckedCurrentProblem = false; 
-let isCurrentProblemSolved = false;
-let viewedSolution = false; 
-let unitErrorMade = false; 
 
 function parseInput(str) {
     if (!str) return null;
@@ -794,68 +831,12 @@ function generateGrade9Resistance() {
     document.getElementById('helpBtn').style.display = 'inline-block';
 }
         
-// Function to draw specific components over the standard resistor
-function drawComponent(ctx, type, x, y) {
-    drawResistor(ctx, x, y); // Always draw the base resistor rectangle first
-    
-    ctx.strokeStyle = "#000";
-    ctx.fillStyle = "#000";
-    ctx.lineWidth = 2;
-    
-    // Exact center of the resistor
-    let cx = x; 
-    let cy = y;
 
-    if (type === 'variable') {
-        // Extended diagonal line for Variable Resistor
-        ctx.beginPath();
-        ctx.moveTo(cx - 25, cy + 25);
-        ctx.lineTo(cx + 25, cy - 25);
-        ctx.stroke();
-        
-        // Clean, un-filled arrowhead at the top right
-        ctx.beginPath();
-        ctx.moveTo(cx + 25, cy - 25);
-        ctx.lineTo(cx + 15, cy - 25);
-        ctx.moveTo(cx + 25, cy - 25);
-        ctx.lineTo(cx + 25, cy - 15);
-        ctx.stroke();
-        
-    } else if (type === 'thermistor') {
-        // WJEC thermistor line 
-        ctx.beginPath();
-        // Start further out at the bottom right corner to give more space
-        ctx.moveTo(cx + 22, cy + 30);
-        // Go straight up parallel to the side of the resistor
-        ctx.lineTo(cx + 22, cy + 10);
-        // Cut diagonally across to the top left corner
-        ctx.lineTo(cx - 22, cy - 30); 
-        ctx.stroke();
-        
-    } else if (type === 'ldr') {
-        // WJEC LDR: 2 inward arrows
-        ctx.beginPath();
-        ctx.moveTo(cx - 40, cy - 15);
-        ctx.lineTo(cx - 24, cy - 5);
-        ctx.lineTo(cx - 30, cy - 5);
-        ctx.moveTo(cx - 24, cy - 5);
-        ctx.lineTo(cx - 24, cy - 11);
-        ctx.stroke();
-        
-        ctx.beginPath();
-        ctx.moveTo(cx - 40, cy + 5);
-        ctx.lineTo(cx - 24, cy + 15);
-        ctx.lineTo(cx - 30, cy + 15);
-        ctx.moveTo(cx - 24, cy + 15);
-        ctx.lineTo(cx - 24, cy + 9);
-        ctx.stroke();
-    }
-}
 
 
         
-        // ============================================================================
-// NEW FUNCTION: Draws dynamic components over the standard resistor box
+// ============================================================================
+// FUNCTION: Draws specific components over the standard resistor box
 // (Make sure this is pasted ABOVE generateDividerProblem)
 // ============================================================================
 function drawComponent(ctx, type, x, y) {
@@ -916,7 +897,7 @@ function drawComponent(ctx, type, x, y) {
 }
 
 // ============================================================================
-// UPDATED FUNCTION: Generates the Potential Divider Problem (4-Variables)
+//  Generates the Potential Divider Problem (4-Variables)
 // ============================================================================
 function generateDividerProblem(ctx, canvas) {
     // Determine units visually
@@ -1235,16 +1216,16 @@ function generateProblem() {
     const helpBtn = document.getElementById('helpBtn');
     const solutions = document.getElementById('solutions');
     const feedback = document.getElementById('feedback');
-    const grade9Btn = document.getElementById('grade9Btn'); 
-    const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
+    const grade9DividerBtn = document.getElementById('grade9DividerBtn'); 
+    const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
     
     // 2. Hide Grade 9 Buttons
-    if (grade9Btn) grade9Btn.style.display = 'none';
-    if (grade9ResBtn) grade9ResBtn.style.display = 'none';
+    if (grade9DividerBtn) grade9DividerBtn.style.display = 'none';
+    if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'none';
 
     // 3. Reset all text inputs (This clears old answers)
     const inputs = [
@@ -1278,11 +1259,11 @@ function generateProblem() {
         generateAnalysisProblem(ctx, canvas);
     } else if (currentMode === 'divider') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
-        if (grade9Btn) grade9Btn.style.display = 'inline-block';
+        if (grade9DividerBtn) grade9DividerBtn.style.display = 'inline-block';
         generateDividerProblem(ctx, canvas);
     } else if (currentMode === 'resistance') {
         document.getElementById('inputGroupR').style.display = 'inline-block';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
+        if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'inline-block';
         // Small delay ensures canvas resizing is processed before complex resistance drawing
         setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
     } else if (currentMode === 'oscilloscope') {
@@ -1595,7 +1576,28 @@ function toggleSolutions() {
                 sol.style.display = 'block'; viewedSolution = true;
             } else { sol.style.display = 'none'; }
         }
-        
+
+
+function toggleSolutions() {
+    const solutions = document.getElementById('solutions');
+    if (solutions.style.display === 'none' || solutions.style.display === '') {
+        solutions.style.display = 'block';
+        viewedSolution = true; // This ensures they don't get a point after seeing the answer
+    } else {
+        solutions.style.display = 'none';
+    }
+}
+
+
+
+
+
+
+
+
+
+
+    
 function generateAstableProblem(ctx, canvas) {
     // 1. Helper for simplifying the Ratio fraction
     const gcd = (a, b) => b ? gcd(b, a % b) : a;
@@ -1721,7 +1723,7 @@ function generateAstableProblem(ctx, canvas) {
 }
 
 // ============================================================================
-// NEW FUNCTION: Grade 9 Parallel Divider Problem (Calculator Required)
+// Grade 9 Parallel Divider Problem (Calculator Required)
 // ============================================================================
 function generateGrade9DividerProblem() {
     const canvas = document.getElementById('circuitCanvas');
@@ -1972,53 +1974,7 @@ function formatResValue(val) {
 }
 
 
-function toggleSolutions() {
-    const solutions = document.getElementById('solutions');
-    if (solutions.style.display === 'none' || solutions.style.display === '') {
-        solutions.style.display = 'block';
-        viewedSolution = true; // This ensures they don't get a point after seeing the answer
-    } else {
-        solutions.style.display = 'none';
-    }
-}
+
 </script>
-
-   <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
-    <div style="background-color: white; padding: 20px; border-radius: 15px; max-width: 600px; width: 90%; position: relative; margin: 10% auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-        <span onclick="closeDataSheet()" style="position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #E64097; font-weight: bold;">&times;</span>
-        
-        <h2 style="color: #E64097; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;">Electronics Data Sheet</h2>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; color: #333; font-family: sans-serif;">
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Basic Laws</h4>
-                <p>V = I &times; R</p>
-                <p>P = I &times; V</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Resistance</h4>
-                <p>Series: R<sub>T</sub> = R<sub>1</sub> + R<sub>2</sub></p>
-                <p>Parallel: R<sub>p</sub> = (R<sub>1</sub> &times; R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>)</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Potential Dividers</h4>
-                <p>V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))</p>
-            </div>
-            <div>
-    <h4 style="margin-bottom: 5px; color: #000;">555 Astable</h4>
-    <p>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</p>
-    <p>T = 0.693 &times; (R<sub>1</sub> + 2R<sub>2</sub>) &times; C</p>
-    <p style="margin-top: 10px; font-weight: bold;">
-        <span>T<sub>ON</sub></span> / <span>T<sub>OFF</sub></span> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub>
-    </p>
-</div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="btn-check" onclick="closeDataSheet()">Close Sheet</button>
-        </div>
-    </div>
-</div>
-
 </body>
 </html>
