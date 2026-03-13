@@ -371,8 +371,31 @@
     </div>
 </div>
 
+
+        
 // SCRIPT STARTS NOW
 <script>
+
+// --- GLOBAL VARIABLES ---
+const brandPink = "#E64097";
+const brandBlack = "#000000";
+
+let currentMode = 'analysis'; 
+let currentAnswers = { 
+    vNameHTML: '', vValue: 0, vUnit: '', 
+    iNameHTML: '', iValue: 0, iUnit: '', 
+    rValue: 0, rUnit: '', 
+    osc1Value: 0, osc1Unit: '', 
+    osc2Value: 0, osc2Unit: '',
+    astableRatio: '' // Added for 555 logic
+};
+
+let problemsAttempted = 0;
+let problemsCorrect = 0;
+let hasCheckedCurrentProblem = false; 
+let isCurrentProblemSolved = false;
+let viewedSolution = false; 
+let unitErrorMade = false; 
 
 function openModule(module) {
     document.getElementById('mainMenu').style.display = 'none';
@@ -446,26 +469,7 @@ function switchTab(mode) {
     generateProblem();
 }
        
-// --- GLOBAL VARIABLES ---
-const brandPink = "#E64097";
-const brandBlack = "#000000";
 
-let currentMode = 'analysis'; 
-let currentAnswers = { 
-    vNameHTML: '', vValue: 0, vUnit: '', 
-    iNameHTML: '', iValue: 0, iUnit: '', 
-    rValue: 0, rUnit: '', 
-    osc1Value: 0, osc1Unit: '', 
-    osc2Value: 0, osc2Unit: '',
-    astableRatio: '' // Added for 555 logic
-};
-
-let problemsAttempted = 0;
-let problemsCorrect = 0;
-let hasCheckedCurrentProblem = false; 
-let isCurrentProblemSolved = false;
-let viewedSolution = false; 
-let unitErrorMade = false; 
 
 function parseInput(str) {
     if (!str) return null;
