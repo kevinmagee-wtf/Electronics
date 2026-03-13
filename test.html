@@ -1748,7 +1748,7 @@ function checkAnswers() {
         }
     }
 
-    updateScoreboard();
+updateScoreboard();
 
     
 async function processSubmission() {
@@ -1844,8 +1844,9 @@ async function processSubmission() {
                 updateScoreboard();
                 generateProblem();
             }
-        }
- function parseInput(str) {
+}
+ 
+function parseInput(str) {
     if (!str) return null;
     let cleanStr = str.toLowerCase().replace(/\s+/g, '');
     cleanStr = cleanStr.replace(/\u03a9/g, 'ohms'); 
@@ -1888,18 +1889,14 @@ function validateMatch(parsedInput, expectedVal, expectedUnit) {
             if (valMatch && unitMatch) return 'correct';
             if (valMatch && !unitMatch) return 'wrongunit';
             return 'wrongval';
-        }
+}
 
 function updateScoreboard() {
             const scoreDisplay = document.getElementById('scoreDisplay');
             if (scoreDisplay) scoreDisplay.innerText = "Score: " + problemsCorrect + " / " + problemsAttempted;
-        }
+}
 
-
-
-
-    
-    function provideHint() {
+function provideHint() {
     if (isCurrentProblemSolved) return;
     viewedSolution = true;
     const feedback = document.getElementById('feedback');
