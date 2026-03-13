@@ -1579,15 +1579,7 @@ function provideHint() {
 
     
 }
- function toggleSolutions() {
-    const solutions = document.getElementById('solutions');
-    if (solutions.style.display === 'none' || solutions.style.display === '') {
-        solutions.style.display = 'block';
-        viewedSolution = true; // This ensures they don't get a point after seeing the answer
-    } else {
-        solutions.style.display = 'none';
-    }
-}       
+       
 function generateAstableProblem(ctx, canvas) {
     // 1. Helper for simplifying the Ratio fraction
     const gcd = (a, b) => b ? gcd(b, a % b) : a;
@@ -2015,7 +2007,15 @@ function generateColorCodeProblem(ctx, canvas) {
     if (solText) solText.innerHTML = solTextStr;
 }
 
-
+function toggleSolutions() {
+    const solutions = document.getElementById('solutions');
+    if (solutions.style.display === 'none' || solutions.style.display === '') {
+        solutions.style.display = 'block';
+        viewedSolution = true; // This ensures they don't get a point after seeing the answer
+    } else {
+        solutions.style.display = 'none';
+    }
+} 
 
 
 //  helper functions:
