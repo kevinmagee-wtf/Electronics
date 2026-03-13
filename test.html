@@ -159,12 +159,14 @@
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
 </div>
 
+
 <div id="menuTiming" class="tabs" style="display:none;">
     <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
     <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
+    <button class="tab" id="tab-monostable" onclick="switchTab('monostable')">Monostable 555</button>
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
 </div>
-
+        
 <div id="menuPlaceholder" class="tabs" style="display:none;">
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
 </div>
@@ -397,7 +399,7 @@ let currentAnswers = {
 };
 
 // ==================================================================================================================
-// FUNCTION 6: SMALL UTILITIES (HELPERS)   
+// FUNCTION 0: SMALL UTILITIES (HELPERS)   
 // ==================================================================================================================
     
     function formatResValue(val) {
@@ -1336,6 +1338,92 @@ function generateAstableProblem(ctx, canvas) {
     document.getElementById('solText').innerHTML = solHTML;
 }
 
+function drawMonostable(ctx, R, C, rUnit, cUnit) {
+    ctx.clearRect(0, 0, 600, 420);
+    ctx.strokeStyle = brandBlack;
+    ctx.lineWidth = 2;
+    
+    // 1. Draw the 555 Chip
+    ctx.strokeRect(250, 150, 100, 120);
+    ctx.font = "bold 18px Arial";
+    ctx.fillStyle = brandBlack;
+    ctx.fillText("555", 282, 215);
+
+    // 2. Monostable wiring: Join Pins 6 & 7 to the R-C junction
+    ctx.beginPath();
+    ctx.moveTo(250, 175); // Pin 7
+    ctx.lineTo(200, 175);
+    ctx.moveTo(250, 225); // Pin 6
+    ctx.lineTo(200, 225);
+    ctx.lineTo(200, 175); 
+    ctx.stroke();
+
+    // 3. Draw Resistor (using your existing helper)
+    drawResistor(ctx, 200, 120); 
+    ctx.fillText("R = " + R + rUnit, 120, 125);
+
+    // 4. Draw Capacitor using drawLine logic
+    ctx.beginPath();
+    // Line from junction to top plate
+    ctx.moveTo(200, 225); ctx.lineTo(200, 250); 
+    // Top Plate
+    ctx.moveTo(185, 250); ctx.lineTo(215, 250); 
+    // Bottom Plate
+    ctx.moveTo(185, 258); ctx.lineTo(215, 258); 
+    // Line from bottom plate to ground rail
+    ctx.moveTo(200, 258); ctx.lineTo(200, 320); 
+    ctx.stroke();
+    
+    ctx.fillText("C = " + C + cUnit, 120, 270);
+
+    // 5. Output Pin
+    ctx.beginPath();
+    ctx.moveTo(350, 210); ctx.lineTo(400, 210);
+    ctx.stroke();
+    ctx.fillText("Vout", 410, 215);
+}
+
+function generateMonostableProblem() {
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas.getContext('2d');
+    currentMode = 'monostable';
+
+    // UI Cleanup
+    const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 
+                    'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 
+                    'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupColorVal', 
+                    'inputGroupColorNames', 'inputGroupMarkSpace'];
+    groups.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
+    // Show the timing input group
+    document.getElementById('inputGroupAstable').style.display = 'block';
+    // Update the formula display specifically for Monostable
+    document.getElementById('inputGroupAstable').querySelector('div').innerHTML = 
+        "Formula: <strong>T = 1.1 &times; R &times; C</strong>";
+
+    // Data generation
+    let R = [10, 22, 47, 100][Math.floor(Math.random() * 4)];
+    let C = [10, 47, 100][Math.floor(Math.random() * 3)];
+    
+    // T = 1.1 * R * C
+    let T = 1.1 * (R * 1000) * (C * 0.000001);
+    
+    currentAnswers = {
+        resVal: R * 1000,
+        capVal: C * 0.000001,
+        expectedT: T
+    };
+
+    drawMonostable(ctx, R, C, " kΩ", " μF");
+
+    document.getElementById('labelAstable').innerHTML = "Time Delay (T) = ";
+    // Hide the second box (Astable uses two boxes, Monostable only needs one for T)
+    document.getElementById('labelAstableT').style.display = 'none';
+    document.getElementById('inputAstableT').style.display = 'none';
+}    
 function generateColorCodeProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -1610,6 +1698,10 @@ function generateProblem() {
 // FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
 // =======================================================================================================   
     
+// =======================================================================================================  
+// FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
+// =======================================================================================================   
+    
 function checkAnswers() {
     if (isCurrentProblemSolved) return; 
 
@@ -1638,6 +1730,10 @@ function checkAnswers() {
         if (currentAnswers.astableQType === 0) activeInputs = ['inputAstable', 'inputAstableT'];
         else activeInputs = ['inputMarkSpace'];
     }
+    // ADDED FOR MONOSTABLE
+    else if (currentMode === 'monostable') {
+        activeInputs = ['inputAstable'];
+    }
 
     // Check for empty boxes
     let hasEmptyBox = false;
@@ -1663,25 +1759,19 @@ function checkAnswers() {
     if (currentMode === 'colorcode') {
         const valGroup = document.getElementById('inputGroupColorVal');
         if (valGroup.style.display !== 'none') {
-            // CHALLENGE A: Student provides Numbers
             const userRes = parseInput(document.getElementById('inputResValue').value);
             const userTol = parseFloat(document.getElementById('inputResTol').value);
-            
-            // Check resistance value (within 1% tolerance for decimal handling)
             if (userRes && Math.abs(userRes.val - currentAnswers.resVal) < (currentAnswers.resVal * 0.01)) {
                 results.push('correct');
             } else {
                 results.push('wrong');
             }
-            
-            // Check tolerance number (e.g., 5 or 10)
             if (userTol === currentAnswers.resTol) {
                 results.push('correct');
             } else {
                 results.push('wrong');
             }
         } else {
-            // CHALLENGE B: Student provides Colour Names
             const b1 = document.getElementById('inputBand1').value.toLowerCase().trim();
             const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
             const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
@@ -1721,6 +1811,11 @@ function checkAnswers() {
             const userRatio = document.getElementById('inputMarkSpace').value.trim();
             results.push(userRatio === currentAnswers.astableRatio ? 'correct' : 'wrong');
         }
+    } 
+    // NEW MONOSTABLE CODE ADDED HERE
+    else if (currentMode === 'monostable') {
+        const userT = parseInput(document.getElementById('inputAstable').value);
+        results.push(validateMatch(userT, currentAnswers.expectedT, 's'));
     }
 
     // 4. Final Scoring and Feedback Display
@@ -1749,8 +1844,10 @@ function checkAnswers() {
             feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. Check your math!</span>";
         }
     }
-}
-updateScoreboard();
+
+    updateScoreboard();
+} 
+
 
     
 async function processSubmission() {
