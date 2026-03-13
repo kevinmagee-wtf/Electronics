@@ -1415,47 +1415,107 @@ function drawMonostable(ctx, R, C, rUnit, cUnit) {
     ctx.stroke();
     ctx.fillText("Vout", chipX + w + 45, chipY + 85);
 }
-function generateMonostableProblem() {
-    const canvas = document.getElementById('circuitCanvas');
-    const ctx = canvas.getContext('2d');
-    currentMode = 'monostable';
+function generateMonostableProblem(ctx, canvas) {
+    // 1. Setup Variables (Using same style as Astable)
+    const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
+    const C_uF = [1, 10, 47, 100][Math.floor(Math.random() * 4)];
+    const C_farads = C_uF / 1000000;
 
-    // UI Cleanup
-    const groups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 
-                    'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 
-                    'inputGroupOscFreq', 'inputGroupOscRatio', 'inputGroupColorVal', 
-                    'inputGroupColorNames', 'inputGroupMarkSpace'];
-    groups.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-
-    // Show the timing input group
-    document.getElementById('inputGroupAstable').style.display = 'block';
-    // Update the formula display specifically for Monostable
-    document.getElementById('inputGroupAstable').querySelector('div').innerHTML = 
-        "Formula: <strong>T = 1.1 &times; R &times; C</strong>";
-
-    // Data generation
-    let R = [10, 22, 47, 100][Math.floor(Math.random() * 4)];
-    let C = [10, 47, 100][Math.floor(Math.random() * 3)];
+    // 2. Calculate Answer: T = 1.1 * R * C
+    const timeDelay_s = 1.1 * R1 * C_farads;
     
-    // T = 1.1 * R * C
-    let T = 1.1 * (R * 1000) * (C * 0.000001);
-    
-    currentAnswers = {
-        resVal: R * 1000,
-        capVal: C * 0.000001,
-        expectedT: T
+    // Store for checking
+    currentAnswers.expectedT = timeDelay_s;
+
+    // 3. UI Setup
+    document.getElementById('inputGroupAstable').style.display = "inline-block";
+    document.getElementById('labelAstable').innerHTML = "Time Delay (T) = ";
+    // Hide the frequency box used in Astable
+    document.getElementById('inputAstableT').style.display = "none";
+    document.getElementById('labelAstableT').style.display = "none";
+
+    // 4. Drawing Helpers (Local to maintain Astable "Gold Standard" style)
+    const line = (x1, y1, x2, y2) => {
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const drawNode = (x, y) => {
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+    };
+    const drawResistorBox = (x, y, val) => {
+        ctx.fillStyle = "white";
+        ctx.fillRect(x - 12, y - 25, 24, 50);
+        ctx.strokeRect(x - 12, y - 25, 24, 50);
+        ctx.fillStyle = "#000000";
+        ctx.font = "14px Arial"; ctx.textAlign = "right";
+        ctx.fillText(val, x - 20, y + 5);
+    };
+    const drawCapacitor = (x, y, val, align="right") => {
+        line(x - 15, y - 5, x + 15, y - 5);
+        line(x - 15, y + 5, x + 15, y + 5);
+        ctx.font = "14px Arial"; ctx.textAlign = align;
+        if (align === "right") ctx.fillText(val, x - 25, y + 5);
+        else ctx.fillText(val, x + 25, y + 5);
     };
 
-    drawMonostable(ctx, R, C, " kΩ", " μF");
+    // 5. Drawing the Circuit
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#000000"; ctx.lineWidth = 2; ctx.fillStyle = "#000000";
 
-    document.getElementById('labelAstable').innerHTML = "Time Delay (T) = ";
-    // Hide the second box (Astable uses two boxes, Monostable only needs one for T)
-    document.getElementById('labelAstableT').style.display = 'none';
-    document.getElementById('inputAstableT').style.display = 'none';
-}    
+    // Rails
+    ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
+    line(100, 40, 500, 40); // +Vcc
+    ctx.fillText("+Vcc", 510, 45);
+    line(100, 360, 500, 360); // 0V
+    ctx.fillText("0V", 510, 365);
+
+    // 555 Chip Box
+    ctx.strokeRect(260, 120, 140, 140);
+    ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
+    ctx.fillText("555", 330, 195);
+
+    // Left Side Timing Network (Monostable: One R, One C)
+    const bX = 160;
+    line(bX, 40, bX, 85); drawNode(bX, 40); // Top to R
+    drawResistorBox(bX, 110, (R1/1000) + " k\u03a9");
+    line(bX, 135, bX, 285); drawNode(bX, 180); // R to Node to C
+    drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
+    line(bX, 295, bX, 360); drawNode(bX, 360); // C to Ground
+
+    // Monostable Connections (Pin 6 and 7 joined)
+    line(bX, 180, 220, 180); drawNode(220, 180); // Main tap from R-C junction
+    line(220, 140, 220, 210); // Vertical bridge
+    line(220, 140, 260, 140); // Into Pin 7
+    line(220, 210, 260, 210); // Into Pin 6
+    
+    ctx.font = "14px Arial"; ctx.textAlign = "left";
+    ctx.fillText("7", 265, 145);
+    ctx.fillText("6", 265, 215);
+
+    // Trigger Input (Pin 2)
+    line(100, 240, 260, 240);
+    ctx.fillText("2", 265, 245);
+    ctx.textAlign = "center"; ctx.fillText("Trigger", 130, 235);
+
+    // Standard Power Connections (Pins 4, 8, 1, 5)
+    line(330, 40, 330, 80); drawNode(330, 80); line(300, 80, 360, 80);
+    line(300, 80, 300, 120); ctx.fillText("4", 300, 135);
+    line(360, 80, 360, 120); ctx.fillText("8", 360, 135);
+    line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
+    line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
+    drawCapacitor(360, 310, "10 nF", "left");
+    line(360, 315, 360, 360); drawNode(360, 360);
+
+    // Output (Pin 3)
+    line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
+    ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
+
+    // 6. Solution Text
+    document.getElementById('solText').innerHTML = 
+        "T = 1.1 &times; R &times; C<br>" +
+        "T = 1.1 &times; " + R1 + " &times; " + C_farads.toExponential(2) + "<br>" +
+        "T = <strong>" + timeDelay_s.toFixed(3) + " s</strong>";
+}
+    
 function generateColorCodeProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
