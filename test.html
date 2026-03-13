@@ -1797,8 +1797,9 @@ function updateScoreboard() {
 // FUNCTION 5: DRAWING UTILITIES 
 //    Draws specific components over the standard resistor box
 // (Make sure this is pasted ABOVE generateDividerProblem)
-// ============================================================================
-function drawResistor(ctx, x, y) {
+// =======================================================================================================
+
+    function drawResistor(ctx, x, y) {
             ctx.beginPath();
             ctx.rect(x - 12, y - 25, 24, 50); 
             ctx.fillStyle = "white";
@@ -1880,9 +1881,9 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
             ctx.quadraticCurveTo(x, y, x + radius, y); ctx.closePath(); ctx.fill(); ctx.stroke();
         }
 
-   // =======================================================================================================
+// ==================================================================================================================
 // FUNCTION 6: SMALL UTILITIES (HELPERS)   
-
+// ==================================================================================================================
     
 function provideHint() {
     if (isCurrentProblemSolved) return;
@@ -1928,10 +1929,6 @@ function provideHint() {
     const helpBtn = document.getElementById('helpBtn');
     if (helpBtn) helpBtn.style.display = 'none';
 }
-
-
-
-
     
 }
 
@@ -1943,25 +1940,10 @@ function toggleSolutions() {
             } else { sol.style.display = 'none'; }
         }
 
-
-    
-
-
-
-     
-
         
     window.onload = function() {
     goHome(); // This ensures the 8 module buttons are shown first
 };   
-
-
-
-
-
-        
-
-
 
 </script>
 </body>
