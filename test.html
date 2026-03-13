@@ -234,8 +234,8 @@
 
                 <div class="controls">
                     <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
-                    <button id="grade9Btn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
-                    <button id="grade9ResistanceBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
+                    <button id="grade9dividerBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
+                    <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
                     <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
                     <button id="dataSheetBtn" class="btn-check" style="background-color: #6c757d; color: white;" onclick="openDataSheet()">📖 Data Sheet</
 
@@ -1011,16 +1011,16 @@ function generateProblem() {
     const helpBtn = document.getElementById('helpBtn');
     const solutions = document.getElementById('solutions');
     const feedback = document.getElementById('feedback');
-    const grade9Btn = document.getElementById('grade9Btn'); 
-    const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
+    const grade9dividerBtn = document.getElementById('grade9dividerBtn'); 
+    const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
     
     // 2. Hide Grade 9 Buttons
-    if (grade9Btn) grade9Btn.style.display = 'none';
-    if (grade9ResBtn) grade9ResBtn.style.display = 'none';
+    if (grade9dividerBtn) grade9dividerBtn.style.display = 'none';
+    if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'none';
 
     // 3. Reset all text inputs
     const inputs = [
@@ -1056,11 +1056,11 @@ function generateProblem() {
         generateAnalysisProblem(ctx, canvas);
     } else if (currentMode === 'divider') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
-        if (grade9Btn) grade9Btn.style.display = 'inline-block';
+        if (grade9dividerBtn) grade9dividerBtn.style.display = 'inline-block';
         generateDividerProblem(ctx, canvas);
     } else if (currentMode === 'resistance') {
         document.getElementById('inputGroupR').style.display = 'inline-block';
-        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
+        if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'inline-block';
         // Clean call: No timeout, correct name
         generateResistanceProblem(ctx, canvas); 
     } else if (currentMode === 'oscilloscope') {
@@ -1095,7 +1095,7 @@ function generateResistanceProblem(ctx, canvas) {
 
     // --- DIFFICULTY CHECK ---
     // This checks if the user clicked the "Grade 9" toggle button
-    const isGrade9 = (document.getElementById('grade9ResistanceBtn').style.display === 'inline-block');
+    const isGrade9 = (document.getElementById('grade9ResistorBtn').style.display === 'inline-block');
 
     if (isGrade9) {
         // --- NEW GRADE 9 LOGIC (Series-Parallel with Decimals) ---
@@ -1975,14 +1975,6 @@ function drawDot(arg1, arg2, arg3) {
             ctx.stroke();
             ctx.closePath();
         }
-
-
-// --- TEMPORARY STUBS TO PREVENT CRASHES ---
-function generateDividerProblem() { console.log("Divider module coming soon"); }
-function generateOscilloscopeProblem() { console.log("Oscilloscope module coming soon"); }
-function generateAstableProblem() { console.log("Astable module coming soon"); }
-function generateMonostableProblem() { console.log("Monostable module coming soon"); }
-function generateColorCodeProblem() { console.log("Color Code module coming soon"); }
 
 
     
