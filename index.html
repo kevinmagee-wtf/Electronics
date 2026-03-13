@@ -159,12 +159,14 @@
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
 </div>
 
+
 <div id="menuTiming" class="tabs" style="display:none;">
     <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
     <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
+    <button class="tab" id="tab-monostable" onclick="switchTab('monostable')">Monostable 555</button>
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
 </div>
-
+        
 <div id="menuPlaceholder" class="tabs" style="display:none;">
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
 </div>
@@ -397,7 +399,7 @@ let currentAnswers = {
 };
 
 // ==================================================================================================================
-// FUNCTION 6: SMALL UTILITIES (HELPERS)   
+// FUNCTION 0: SMALL UTILITIES (HELPERS)   
 // ==================================================================================================================
     
     function formatResValue(val) {
@@ -1313,7 +1315,7 @@ function generateAstableProblem(ctx, canvas) {
     line(220, 180, 260, 180); ctx.fillText("6", 265, 185); // Pin 6
     line(220, 240, 260, 240); ctx.fillText("2", 265, 245); // Pin 2
 
-    line(330, 40, 330, 80); drawNode(330, 80); line(300, 80, 360, 80);
+    line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
     line(300, 80, 300, 120); ctx.textAlign = "center"; ctx.fillText("4", 300, 135);
     line(360, 80, 360, 120); ctx.fillText("8", 360, 135);
     line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
@@ -1336,6 +1338,184 @@ function generateAstableProblem(ctx, canvas) {
     document.getElementById('solText').innerHTML = solHTML;
 }
 
+function drawMonostable(ctx, R, C, rUnit, cUnit) {
+    ctx.clearRect(0, 0, 600, 420);
+    ctx.strokeStyle = brandBlack;
+    ctx.lineWidth = 2;
+    ctx.font = "bold 16px Arial";
+    ctx.fillStyle = brandBlack;
+
+    // 1. Draw the 555 Chip (Centered)
+    const chipX = 250, chipY = 150, w = 120, h = 160;
+    ctx.strokeRect(chipX, chipY, w, h);
+    ctx.fillText("555", chipX + 45, chipY + 85);
+
+    // 2. Pin Labels (Standard Monostable Layout)
+    ctx.font = "12px Arial";
+    ctx.fillText("8", chipX + 30, chipY + 15); // VCC
+    ctx.fillText("4", chipX + 80, chipY + 15); // Reset
+    ctx.fillText("1", chipX + 55, chipY + h - 5); // GND
+    ctx.fillText("3", chipX + w - 15, chipY + 85); // OUT
+    ctx.fillText("2", chipX + 5, chipY + 130); // TRIG
+    ctx.fillText("7", chipX + 5, chipY + 40); // DIS
+    ctx.fillText("6", chipX + 5, chipY + 70); // THR
+
+    // 3. Power Rails
+    // Top Rail (VCC)
+    ctx.beginPath();
+    ctx.moveTo(chipX + 35, chipY); ctx.lineTo(chipX + 35, chipY - 50); // Pin 8 up
+    ctx.moveTo(chipX + 85, chipY); ctx.lineTo(chipX + 85, chipY - 50); // Pin 4 up
+    ctx.moveTo(150, chipY - 50); ctx.lineTo(400, chipY - 50); // Horizontal Rail
+    ctx.stroke();
+    ctx.fillText("+Vcc", 410, chipY - 45);
+
+    // Bottom Rail (GND)
+    ctx.beginPath();
+    ctx.moveTo(chipX + 60, chipY + h); ctx.lineTo(chipX + 60, chipY + h + 40); // Pin 1 down
+    ctx.moveTo(150, chipY + h + 40); ctx.lineTo(400, chipY + h + 40); // Horizontal Rail
+    ctx.stroke();
+    ctx.fillText("0V", 410, chipY + h + 45);
+
+    // 4. External Components (R and C)
+    // Resistor R1 from VCC to Pin 7
+    drawResistor(ctx, 200, chipY - 20); 
+    ctx.beginPath();
+    ctx.moveTo(200, chipY - 50); ctx.lineTo(200, chipY - 40); // To Rail
+    ctx.moveTo(200, chipY + 10); ctx.lineTo(200, chipY + 40); // To Pin 7 line
+    ctx.lineTo(chipX, chipY + 40); // Into Pin 7
+    ctx.stroke();
+    ctx.font = "bold 14px Arial";
+    ctx.fillText("R = " + R + rUnit, 110, chipY - 5);
+
+    // Join Pin 6 to Pin 7 (Threshold to Discharge)
+    ctx.beginPath();
+    ctx.moveTo(chipX, chipY + 70); ctx.lineTo(200, chipY + 70); ctx.lineTo(200, chipY + 40);
+    ctx.stroke();
+
+    // Capacitor C1 from Pin 6 junction to GND
+    ctx.beginPath();
+    ctx.moveTo(200, chipY + 70); ctx.lineTo(200, chipY + 100); // Wire down
+    // Capacitor Plates
+    ctx.moveTo(185, 100 + chipY); ctx.lineTo(215, 100 + chipY);
+    ctx.moveTo(185, 108 + chipY); ctx.lineTo(215, 108 + chipY);
+    // To Ground
+    ctx.moveTo(200, 108 + chipY); ctx.lineTo(200, chipY + h + 40);
+    ctx.stroke();
+    ctx.fillText("C = " + C + cUnit, 110, chipY + 110);
+
+    // 5. Trigger Input (Pin 2)
+    ctx.beginPath();
+    ctx.moveTo(chipX, chipY + 130); ctx.lineTo(chipX - 40, chipY + 130);
+    ctx.stroke();
+    ctx.fillText("Trigger", chipX - 90, chipY + 135);
+
+    // 6. Output (Pin 3)
+    ctx.beginPath();
+    ctx.moveTo(chipX + w, chipY + 80); ctx.lineTo(chipX + w + 40, chipY + 80);
+    ctx.stroke();
+    ctx.fillText("Vout", chipX + w + 45, chipY + 85);
+}
+function generateMonostableProblem(ctx, canvas) {
+    // 1. Setup Variables (Using same style as Astable)
+    const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
+    const C_uF = [1, 10, 47, 100][Math.floor(Math.random() * 4)];
+    const C_farads = C_uF / 1000000;
+
+    // 2. Calculate Answer: T = 1.1 * R * C
+    const timeDelay_s = 1.1 * R1 * C_farads;
+    
+    // Store for checking
+    currentAnswers.expectedT = timeDelay_s;
+
+    // 3. UI Setup
+    document.getElementById('inputGroupAstable').style.display = "inline-block";
+    document.getElementById('labelAstable').innerHTML = "Time Delay (T) = ";
+    // Hide the frequency box used in Astable
+    document.getElementById('inputAstableT').style.display = "none";
+    document.getElementById('labelAstableT').style.display = "none";
+
+    // 4. Drawing Helpers (Local to maintain Astable "Gold Standard" style)
+    const line = (x1, y1, x2, y2) => {
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+    const drawNode = (x, y) => {
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+    };
+    const drawResistorBox = (x, y, val) => {
+        ctx.fillStyle = "white";
+        ctx.fillRect(x - 12, y - 25, 24, 50);
+        ctx.strokeRect(x - 12, y - 25, 24, 50);
+        ctx.fillStyle = "#000000";
+        ctx.font = "14px Arial"; ctx.textAlign = "right";
+        ctx.fillText(val, x - 20, y + 5);
+    };
+    const drawCapacitor = (x, y, val, align="right") => {
+        line(x - 15, y - 5, x + 15, y - 5);
+        line(x - 15, y + 5, x + 15, y + 5);
+        ctx.font = "14px Arial"; ctx.textAlign = align;
+        if (align === "right") ctx.fillText(val, x - 25, y + 5);
+        else ctx.fillText(val, x + 25, y + 5);
+    };
+
+    // 5. Drawing the Circuit
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#000000"; ctx.lineWidth = 2; ctx.fillStyle = "#000000";
+
+    // Rails
+    ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
+    line(100, 40, 500, 40); // +Vcc
+    ctx.fillText("+Vcc", 510, 45);
+    line(100, 360, 500, 360); // 0V
+    ctx.fillText("0V", 510, 365);
+
+    // 555 Chip Box
+    ctx.strokeRect(260, 120, 140, 140);
+    ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
+    ctx.fillText("555", 330, 195);
+
+    // Left Side Timing Network (Monostable: One R, One C)
+    const bX = 160;
+    line(bX, 40, bX, 85); drawNode(bX, 40); // Top to R
+    drawResistorBox(bX, 110, (R1/1000) + " k\u03a9");
+    line(bX, 135, bX, 285); drawNode(bX, 180); // R to Node to C
+    drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
+    line(bX, 295, bX, 360); drawNode(bX, 360); // C to Ground
+
+    // Monostable Connections (Pin 6 and 7 joined)
+    line(bX, 180, 220, 180); drawNode(220, 180); // Main tap from R-C junction
+    line(220, 140, 220, 210); // Vertical bridge
+    line(220, 140, 260, 140); // Into Pin 7
+    line(220, 210, 260, 210); // Into Pin 6
+    
+    ctx.font = "14px Arial"; ctx.textAlign = "left";
+    ctx.fillText("7", 265, 145);
+    ctx.fillText("6", 265, 215);
+
+    // Trigger Input (Pin 2)
+    line(100, 240, 260, 240);
+    ctx.fillText("2", 265, 245);
+    ctx.textAlign = "center"; ctx.fillText("Trigger", 130, 235);
+
+    // Standard Power Connections (Pins 4, 8, 1, 5)
+    line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
+    line(300, 80, 300, 120); ctx.fillText("4", 300, 135);
+    line(360, 80, 360, 120); ctx.fillText("8", 360, 135);
+    line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
+    line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
+    drawCapacitor(360, 310, "10 nF", "left");
+    line(360, 315, 360, 360); drawNode(360, 360);
+
+    // Output (Pin 3)
+    line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
+    ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
+
+    // 6. Solution Text
+    document.getElementById('solText').innerHTML = 
+        "T = 1.1 &times; R &times; C<br>" +
+        "T = 1.1 &times; " + R1 + " &times; " + C_farads.toExponential(2) + "<br>" +
+        "T = <strong>" + timeDelay_s.toFixed(3) + " s</strong>";
+}
+    
 function generateColorCodeProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -1454,6 +1634,8 @@ function openModule(module) {
     }
 }
 
+
+    
 function switchTab(mode) {
     currentMode = mode;
     // Show the main layout (canvas, questions, etc.)
@@ -1603,10 +1785,19 @@ function generateProblem() {
     } else if (currentMode === 'colorcode') {
         generateColorCodeProblem(ctx, canvas);
     }
+    else if (currentMode === 'monostable') {
+        // Show the timing input group (reusing the Astable group)
+        document.getElementById('inputGroupAstable').style.display = 'block';
+        generateMonostableProblem(ctx, canvas);
+    }
 }   
 
 
 // =======================================================================================================      
+// FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
+// =======================================================================================================   
+    
+// =======================================================================================================  
 // FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
 // =======================================================================================================   
     
@@ -1638,6 +1829,10 @@ function checkAnswers() {
         if (currentAnswers.astableQType === 0) activeInputs = ['inputAstable', 'inputAstableT'];
         else activeInputs = ['inputMarkSpace'];
     }
+    // ADDED FOR MONOSTABLE
+    else if (currentMode === 'monostable') {
+        activeInputs = ['inputAstable'];
+    }
 
     // Check for empty boxes
     let hasEmptyBox = false;
@@ -1663,25 +1858,19 @@ function checkAnswers() {
     if (currentMode === 'colorcode') {
         const valGroup = document.getElementById('inputGroupColorVal');
         if (valGroup.style.display !== 'none') {
-            // CHALLENGE A: Student provides Numbers
             const userRes = parseInput(document.getElementById('inputResValue').value);
             const userTol = parseFloat(document.getElementById('inputResTol').value);
-            
-            // Check resistance value (within 1% tolerance for decimal handling)
             if (userRes && Math.abs(userRes.val - currentAnswers.resVal) < (currentAnswers.resVal * 0.01)) {
                 results.push('correct');
             } else {
                 results.push('wrong');
             }
-            
-            // Check tolerance number (e.g., 5 or 10)
             if (userTol === currentAnswers.resTol) {
                 results.push('correct');
             } else {
                 results.push('wrong');
             }
         } else {
-            // CHALLENGE B: Student provides Colour Names
             const b1 = document.getElementById('inputBand1').value.toLowerCase().trim();
             const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
             const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
@@ -1721,6 +1910,11 @@ function checkAnswers() {
             const userRatio = document.getElementById('inputMarkSpace').value.trim();
             results.push(userRatio === currentAnswers.astableRatio ? 'correct' : 'wrong');
         }
+    } 
+    // NEW MONOSTABLE CODE ADDED HERE
+    else if (currentMode === 'monostable') {
+        const userT = parseInput(document.getElementById('inputAstable').value);
+        results.push(validateMatch(userT, currentAnswers.expectedT, 's'));
     }
 
     // 4. Final Scoring and Feedback Display
@@ -1749,8 +1943,10 @@ function checkAnswers() {
             feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. Check your math!</span>";
         }
     }
-}
-updateScoreboard();
+
+    updateScoreboard();
+} 
+
 
     
 async function processSubmission() {
