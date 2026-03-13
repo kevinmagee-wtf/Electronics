@@ -1926,9 +1926,7 @@ function closeDataSheet() {
 }
 
         
-    window.onload = function() {
-    goHome(); // This ensures the 8 module buttons are shown first
-};   
+   
 
 function generateColorCodeProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -2044,6 +2042,7 @@ function formatCapValue(val) {
 }
 
 // 3. Ensure drawDot exists (used in your generateMonostable function)
+
 function drawDot(arg1, arg2, arg3) {
     let ctx, x, y;
     // If the first thing is the 'ctx' object, use the 3-arg style
@@ -2067,6 +2066,10 @@ function drawDot(arg1, arg2, arg3) {
             ctx.stroke();
             ctx.closePath();
         }
+
+   window.onload = function() {
+    goHome(); // This ensures the 8 module buttons are shown first
+}; 
 </script>
 
    <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
