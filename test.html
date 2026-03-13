@@ -480,7 +480,11 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
             ctx.quadraticCurveTo(x, y, x + radius, y); ctx.closePath(); ctx.fill(); ctx.stroke();
         }
 
-            
+function formatResValue(val) {
+    if (val >= 1000000) return (val / 1000000) + " MΩ";
+    if (val >= 1000) return (val / 1000) + " kΩ";
+    return val + " Ω";
+}            
 // =========================================================================================================      
 // FUNCTION 2. PROBLEM GENERATORS (THE CONTENT CREATORS) 
 // =========================================================================================================     
@@ -1888,11 +1892,7 @@ function updateScoreboard() {
 // FUNCTION 6: SMALL UTILITIES (HELPERS)   
 // ==================================================================================================================
     
-function formatResValue(val) {
-    if (val >= 1000000) return (val / 1000000) + " MΩ";
-    if (val >= 1000) return (val / 1000) + " kΩ";
-    return val + " Ω";
-}
+
     
     function provideHint() {
     if (isCurrentProblemSolved) return;
