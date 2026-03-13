@@ -4,112 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abingdon School - Circuit Quiz</title>
-<style>
-    /* 1. CORE PAGE LAYOUT */
-    body { 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        max-width: 1100px; 
-        margin: 0 auto; 
-        padding: 10px 20px; 
-        line-height: 1.6; 
-        color: #000; 
-        background-color: #fafafa; 
-    }
-    .header { text-align: center; margin-bottom: 15px; }
-    .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
-    .header p { margin-top: 5px; font-size: 18px; color: #555; }
-    .header span { color: #E64097; font-weight: bold; }
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1100px; margin: 0 auto; padding: 10px 20px; line-height: 1.6; color: #000; background-color: #fafafa; }
+        .header { text-align: center; margin-bottom: 15px; }
+        .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
+        .header p { margin-top: 5px; font-size: 18px; color: #555; }
+        .header span { color: #E64097; font-weight: bold; }
+        
+        .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        /* Specific layout for the 8-button Home Page */
 
-    /* 2. MENU & TAB SYSTEM */
-    .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-    #mainMenu { display: grid; grid-template-columns: 1fr 1fr; justify-items: center; column-gap: 40px; row-gap: 30px; max-width: 900px; margin: 60px auto; }
-    #menuBasics, #menuTiming { display: none; justify-content: center; gap: 15px; margin-bottom: 25px; }
-    
-    .tab { 
-        padding: 10px 25px; 
-        font-size: 16px; 
-        font-weight: bold; 
-        cursor: pointer; 
-        background-color: #E64097; 
-        border: 2px solid #c5307d; 
-        border-radius: 8px; 
-        color: white; 
-        transition: all 0.2s; 
-        min-width: 120px; 
-    }
-    #mainMenu .tab { width: 320px; min-height: 90px; font-size: 19px; border-radius: 12px; display: flex; align-items: center; justify-content: center; text-align: center; }
-    .tab:hover { background-color: #cf3584; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-    .tab.active { background-color: #000000; color: white; border-color: #000; }
+/* Home Page Grid */
+#mainMenu {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    justify-items: center; 
+    column-gap: 40px; 
+    row-gap: 30px;    
+    max-width: 900px; 
+    margin: 60px auto; 
+}
+        
+/* Ensure the sub-menus stay as a single row */
+#menuBasics, #menuTiming, #menuPlaceholder {
+    display: none; /* Hidden by default */
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+        /* General Tab Styling - Updated for Pink branding and more height */
+/* 1. Updated Tab Styling: Fixed width to make them shorter */
+.tab { 
+    padding: 10px 25px; 
+    font-size: 16px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    background-color: #E64097; /* Keeping them pink */
+    border: 2px solid #c5307d; 
+    border-radius: 8px; 
+    color: white; 
+    transition: all 0.2s;
+    min-width: 120px;
+    height: auto;
+}
 
-    /* 3. QUIZ PANELS (Side-by-Side) */
-    .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
-    .left-panel { flex: 1 1 550px; max-width: 650px; }
-    .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
-    
-    .circuit-container { 
-        border: 2px solid #eaeaea; 
-        padding: 15px; 
-        text-align: center; 
-        background-color: #fff; 
-        border-radius: 8px; 
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-    }
-    canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; border: 1px solid #ddd; }
+        #mainMenu .tab {
+    width: 320px;      /* Big width for Home Page only */
+    min-height: 90px;  /* Big height for Home Page only */
+    font-size: 19px;   /* Larger text for Home Page only */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
 
-    .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
-    .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
-    .quiz-header h3 { margin: 0; font-size: 1.2rem; }
+.tab:hover {
+    background-color: #cf3584;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
 
-    /* 4. SCORING & DOWNLOAD */
-    .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-    .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
-    .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
-    .btn-download:hover { background-color: #157347; }
-    .btn-download:disabled { background-color: #6c757d; cursor: wait; }
+.tab.active {
+    background-color: #000000;
+    color: white;
+    border-color: #000;
+}
 
-    /* 5. INPUT FIELDS & FEEDBACK */
-    .input-area { text-align: center; padding: 10px; border-radius: 8px; }
-    .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
-    input[type="text"] { 
-        font-size: 18px; 
-        padding: 10px; 
-        height: 45px; 
-        width: 140px; 
-        text-align: center; 
-        margin: 0 5px;
-        border: 2px solid #ccc; 
-        border-radius: 6px; 
-        outline-color: #E64097;
-        box-sizing: border-box;
-    }
-    .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold; }
 
-    /* 6. BUTTONS & CONTROLS */
-    .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
-    button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s; }
-    button:active { transform: scale(0.98); }
-    .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; }
-    .btn-check:hover { background-color: #cc2b81; }
-    .btn-black { background-color: #000000; }
-    .btn-black:hover { background-color: #333333; }
-    .btn-secondary { background-color: #6c757d; }
-    .btn-secondary:hover { background-color: #5c636a; }
 
-    /* 7. SOLUTIONS PANEL */
-    .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
-    .solutions p { margin-bottom: 0; font-size: 0.95rem; }
+        .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+        
+        .left-panel { flex: 1 1 550px; max-width: 650px; }
+        .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
+        
+        .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
+        .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+        .quiz-header h3 { margin: 0; font-size: 1.2rem; }
+        
+        .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+        .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
+        .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
+        .btn-download:hover { background-color: #157347; }
+        .btn-download:disabled { background-color: #6c757d; cursor: wait; }
+        
+        .input-area { text-align: center; }
+        .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
+        input[type="text"] { 
+    font-size: 18px; /* Slightly larger text */
+    padding: 10px;  /* More 'breathing room' inside the box */
+    height: 45px;   /* Consistent height */
+    width: 140px;   /* Slightly wider for unit strings */
+    text-align: center;
+    margin: 0 5px; 
+    border: 2px solid #ccc; /* Thicker border to match brand style */
+    border-radius: 6px; 
+    outline-color: #E64097;
+    box-sizing: border-box; /* Ensures padding doesn't break the width */
+}
+        .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
+        
+        .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
+        button:active { transform: scale(0.98); }
+        .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; }
+        .btn-check:hover { background-color: #cc2b81; }
+        .btn-black { background-color: #000000; }
+        .btn-black:hover { background-color: #333333; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5c636a; }
+        
+        .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
+        .solutions p { margin-bottom: 0; font-size: 0.95rem; }
 
-    /* 8. MODAL WINDOWS (Data Sheet & Submission) */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-top: 6px solid #E64097; }
-    .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px; }
-    .form-group { margin-bottom: 15px; text-align: left; }
-    .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
-    .form-group input, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; font-size: 16px; outline-color: #E64097; }
-    .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
-    .modal-actions button { flex: 1; margin: 0; }
-</style>
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-top: 6px solid #E64097; }
+        .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px;}
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; font-size: 16px; outline-color: #E64097; }
+        .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
+        .modal-actions button { flex: 1; margin: 0; }
+    </style>
 </head>
     <body>
     <div class="header">
@@ -118,59 +138,60 @@
     </div>
 
     <div id="mainMenu" class="tabs">
-        <button class="tab" onclick="openModule('basics')">1. Circuit Basics</button>
-        <button class="tab" onclick="openModule('transistors')">5. Transistors</button>
-        <button class="tab" onclick="openModule('logic')">2. Logic Gates</button>
-        <button class="tab" onclick="openModule('opamps')">6. Op Amps</button>
-        <button class="tab" onclick="openModule('timing')">3. Timing Circuits</button>
-        <button class="tab" onclick="openModule('systems')">7. Systems</button>
-        <button class="tab" onclick="openModule('flipflops')">4. Flip Flops & Counters</button>
-        <button class="tab" onclick="openModule('diodes')">8. Diodes</button>
-    </div>
+    <button class="tab" onclick="openModule('basics')">1. Circuit Basics</button>
+    <button class="tab" onclick="openModule('transistors')">5. Transistors</button>
+    
+    <button class="tab" onclick="openModule('logic')">2. Logic Gates</button>
+    <button class="tab" onclick="openModule('opamps')">6. Op Amps</button>
+    
+    <button class="tab" onclick="openModule('timing')">3. Timing Circuits</button>
+    <button class="tab" onclick="openModule('systems')">7. Systems</button>
+    
+    <button class="tab" onclick="openModule('flipflops')">4. Flip Flops & Counters</button>
+    <button class="tab" onclick="openModule('diodes')">8. Diodes</button>
+</div>
 
-    <div id="menuBasics" class="tabs" style="display:none;">
-        <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
-        <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
-        <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
-        <button class="tab" id="tab-colorcode" onclick="switchTab('colorcode')">Colour Codes</button>
-        <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
-    </div>
+<div id="menuBasics" class="tabs" style="display:none;">
+    <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
+    <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
+    <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
+    <button class="tab" id="tab-colorcode" onclick="switchTab('colorcode')">Colour Codes</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+</div>
 
-    <div id="menuTiming" class="tabs" style="display:none;">
-        <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
-        <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
-        <button class="tab" id="tab-monostable" onclick="switchTab('monostable')">Monostable 555</button>
-        <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
-    </div>
+<div id="menuTiming" class="tabs" style="display:none;">
+    <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
+    <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+</div>
 
-    <div id="menuPlaceholder" class="tabs" style="display:none;">
-        <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
-    </div>
+<div id="menuPlaceholder" class="tabs" style="display:none;">
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
+</div>
 
-    <div id="contentArea" style="display:none;">
+<div id="contentArea" style="display:none;">
         <div class="main-layout">
-            
-            <div class="left-panel">
-                <div class="circuit-container">
-                    <canvas id="circuitCanvas" width="600" height="420"></canvas>
-                </div>  
-            </div>
-
+        <div class="left-panel">
+        <div class="circuit-container">
+        <canvas id="circuitCanvas" width="600" height="420"></canvas>
+    </div>  
+    </div>
             <div class="right-panel">
-                <div class="quiz-section">
-                    <div class="quiz-header">
-                        <h3>Enter Your Answer</h3>
-                        <div class="score-container">
-                            <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
-                            <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
-                        </div>
-                    </div>
+            <div class="quiz-section">
+            <div class="quiz-header">
+                    <h3>Enter Your Answer</h3>
+                <div class="score-container">
+                <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
+                    <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
+    </div>
+    </div>
                     
-                    <div class="input-area">
-                        <div class="input-group" id="inputGroupV">
-                            <label id="labelV" for="inputV">V = </label>
-                            <input type="text" id="inputV" placeholder="e.g. 10 mV">
-                        </div>
+            <div class="input-area">
+            <div class="input-group" id="inputGroupV">
+            <label id="labelV" for="inputV">V = </label>
+            <input type="text" id="inputV" placeholder="e.g. 10 mV">
+    </div>
+                        
                         <div class="input-group" id="inputGroupI">
                             <label id="labelI" for="inputI">I = </label>
                             <input type="text" id="inputI" placeholder="e.g. 5 mA">
@@ -178,55 +199,95 @@
 
                         <div class="input-group" id="inputGroupR" style="display:none;">
                             <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
-                            <input type="text" id="inputR" placeholder="e.g. 15.52 kohms">
+                            <input type="text" id="inputR" placeholder="e.g. 15.52 kohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
                         </div>
 
-                        <div class="input-group" id="inputGroupOsc" style="display:none;">
-                            <div class="input-group" id="inputGroupOscAmp"><label>Amplitude = </label><input type="text" id="inputOscAmp"></div>
-                            <div class="input-group" id="inputGroupOscMark"><label>Mark Time = </label><input type="text" id="inputOscMark"></div>
-                            <div class="input-group" id="inputGroupOscSpace"><label>Space Time = </label><input type="text" id="inputOscSpace"></div>
-                            <div class="input-group" id="inputGroupOscPeriod"><label>Time Period = </label><input type="text" id="inputOscPeriod"></div>
-                            <div class="input-group" id="inputGroupOscFreq"><label>Frequency = </label><input type="text" id="inputOscFreq"></div>
-                            <div class="input-group" id="inputGroupOscRatio"><label>Ratio = </label><input type="text" id="inputOscRatio"></div>
+                        <div class="input-group" id="inputGroupOscAmp" style="display:none;">
+                            <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label>
+                            <input type="text" id="inputOscAmp" placeholder="e.g. 5 V">
+                        </div>
+                        <div class="input-group" id="inputGroupOscMark" style="display:none;">
+                            <label id="labelOscMark" for="inputOscMark">Mark Time = </label>
+                            <input type="text" id="inputOscMark" placeholder="e.g. 10 ms">
+                        </div>
+                        <div class="input-group" id="inputGroupOscSpace" style="display:none;">
+                            <label id="labelOscSpace" for="inputOscSpace">Space Time = </label>
+                            <input type="text" id="inputOscSpace" placeholder="e.g. 5 ms">
+                        </div>
+                        <div class="input-group" id="inputGroupOscPeriod" style="display:none;">
+                            <label id="labelOscPeriod" for="inputOscPeriod">Time Period = </label>
+                            <input type="text" id="inputOscPeriod" placeholder="e.g. 15 ms">
+                        </div>
+                        <div class="input-group" id="inputGroupOscFreq" style="display:none;">
+                            <label id="labelOscFreq" for="inputOscFreq">Frequency = </label>
+                            <input type="text" id="inputOscFreq" placeholder="e.g. 66.7 Hz">
+                        </div>
+                        <div class="input-group" id="inputGroupOscRatio" style="display:none;">
+                            <label id="labelOscRatio" for="inputOscRatio">Mark-Space ratio = </label>
+                            <input type="text" id="inputOscRatio" placeholder="e.g. 2">
                         </div>
 
                         <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
                             <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
                                 Formula: <strong>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</strong>
                             </div>
-                            <label>Frequency = </label><input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
-                            <label>Time Period = </label><input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
-                        </div>
-
-                        <div class="input-group" id="inputGroupMonostable" style="display:none;">
-                            <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
-                                Formula: <strong>T = 1.1 &times; R &times; C</strong>
+                            <div style="margin-bottom: 10px;">
+                                <label id="labelAstable" for="inputAstable">Frequency = </label>
+                                <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
                             </div>
-                            <label id="labelMono" for="inputMono">Time (T) = </label>
-                            <input type="text" id="inputMono" placeholder="e.g. 1.1s">
+                            <div>
+                                <label id="labelAstableT" for="inputAstableT">Time Period = </label>
+                                <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
+                            </div>
                         </div>
 
                         <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%;">
                             <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
                                 Formula: <strong>T<sub>ON</sub> / T<sub>OFF</sub> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub></strong>
                             </div>
-                            <label>Mark-Space Ratio = </label>
-                            <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1">
-                            <div style="font-size: 14px; color: #666; margin-top:5px;">(Simplified fraction)</div>
+                            <div style="margin-bottom: 10px;">
+                                <label for="inputMarkSpace" style="font-weight: bold;">Mark-Space Ratio = </label>
+                                <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;">
+                            </div>
+                            <div style="font-size: 14px; color: #666;">(Give answer as a simplified fraction)</div>
                         </div>
 
-                        <div id="inputGroupColorVal" class="input-group" style="display:none;">
-                            <label>Resistance (Ω): </label><input type="text" id="inputResValue" placeholder="e.g. 1.2 kΩ">
-                            <label>Tolerance (%): </label><input type="text" id="inputResTol" placeholder="e.g. 5">
-                        </div>
 
-                        <div id="inputGroupColorNames" class="input-group" style="display:none;">
-                            <label>Band 1: </label><input type="text" id="inputBand1" placeholder="Colour">
-                            <label>Band 2: </label><input type="text" id="inputBand2" placeholder="Colour">
-                            <label>Band 3: </label><input type="text" id="inputBand3" placeholder="Colour">
-                            <label>Band 4: </label><input type="text" id="inputBandTol" placeholder="Colour">
-                        </div>
 
+
+<div id="inputGroupColorVal" class="input-group" style="display:none;">
+    <div style="margin-bottom: 10px;">
+        <label>Resistance (Ω): </label>
+        <input type="text" id="inputResValue" placeholder="e.g. 1.2 kΩ" style="width: 140px;">
+    </div>
+    <div>
+        <label>Band 4 Tolerance (%): </label>
+        <input type="text" id="inputResTol" placeholder="e.g. 5" style="width: 140px;">
+    </div>
+</div>
+
+<div id="inputGroupColorNames" class="input-group" style="display:none;">
+    <label>Band 1: </label><input type="text" id="inputBand1" placeholder="e.g. red" style="width: 100px;">
+    <label>Band 2: </label><input type="text" id="inputBand2" placeholder="e.g. grey" style="width: 100px;">
+    <label>Band 3: </label><input type="text" id="inputBand3" placeholder="e.g. blue" style="width: 100px;">
+    <label>Band 4: </label><input type="text" id="inputBandTol" placeholder="e.g. gold" style="width: 100px;">
+</div>
+
+
+                
+<div class="input-group" id="inputGroupColorNames" style="display:none; text-align: center;">
+    <div style="margin-bottom: 10px;">
+        Band 1: <input type="text" id="inputBand1" placeholder="Colour" style="width: 100px;">
+        Band 2: <input type="text" id="inputBand2" placeholder="Colour" style="width: 100px;">
+        Band 3: <input type="text" id="inputBand3" placeholder="Colour" style="width: 100px;">
+        Band 4: <input type="text" id="inputBandTol" placeholder="Colour" style="width: 100px;">
+    </div>
+</div>
+
+
+
+
+                
                         <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
                         <div id="feedback" class="feedback"></div>
                     </div>
@@ -234,35 +295,46 @@
 
                 <div class="controls">
                     <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
-                    <button id="grade9dividerBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
-                    <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
+                    <button id="grade9Btn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
+                    <button id="grade9ResistanceBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
                     <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
                     <button id="dataSheetBtn" class="btn-check" style="background-color: #6c757d; color: white;" onclick="openDataSheet()">📖 Data Sheet</button>
+                </div>
 
-<script>
-// 1. --- GLOBAL VARIABLES --- 
-    const brandPink = "#E64097";
-    const brandBlack = "#000000";
+                <div id="solutions" class="solutions">
+                    <h3>Step-by-Step Logic</h3>
+                    <p id="solText"></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    let currentMode = 'analysis'; 
-    let currentAnswers = { 
-        vNameHTML: '', vValue: 0, vUnit: '', 
-        iNameHTML: '', iValue: 0, iUnit: '', 
-        rValue: 0, rUnit: '', 
-        osc1Value: 0, osc1Unit: '', 
-        osc2Value: 0, osc2Unit: '',
-        astableRatio: '' 
-    };
+    <div id="submissionModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Submit Your Score</h3>
+            <div class="form-group">
+                <label for="studentNameInput">Your Name:</label>
+                <input type="text" id="studentNameInput" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="teacherSelect">Your Teacher:</label>
+                <select id="teacherSelect">
+                    <option value="">-- Select Your Teacher --</option>
+                    <option value="Mr. Magee">Mr. Magee</option>
+                    <option value="Mr. Brooks">Mr. Brooks</option>
+                    <option value="Mr. Mason">Mr. Mason</option>
+                    <option value="Mr. Willoughby">Mr. Willoughby</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-check" id="confirmSubmitBtn" onclick="processSubmission()">Submit Score</button>
+            </div>
+        </div>
+    </div>
 
-    let problemsAttempted = 0;
-    let problemsCorrect = 0;
-    let hasCheckedCurrentProblem = false; 
-    let isCurrentProblemSolved = false;
-    let viewedSolution = false; 
-    let unitErrorMade = false; 
+    <script>
 
-    
-    // 2. --- NAVIGATION FUNCTIONS --- (The ones that make the buttons work)
 function openModule(module) {
     document.getElementById('mainMenu').style.display = 'none';
     document.getElementById('menuBasics').style.display = 'none';
@@ -281,7 +353,8 @@ function openModule(module) {
         document.getElementById('moduleSubtitle').innerText = 'Coming Soon';
     }
 }
-      
+
+        
 function goHome() {
     document.getElementById('mainMenu').style.display = 'grid'; // Returns to the 2-column grid
     document.getElementById('menuBasics').style.display = 'none';
@@ -296,7 +369,7 @@ function switchTab(mode) {
     // Show the main layout (canvas, questions, etc.)
     document.getElementById('contentArea').style.display = 'block';
     
-    // Highlight active tab Clear previous highlights and highlight the clicked button
+    // Highlight active tab
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     const activeTab = document.getElementById('tab-' + mode);
     if (activeTab) activeTab.classList.add('active');
@@ -314,7 +387,7 @@ function switchTab(mode) {
         if (el) el.style.display = 'none';
     });
 
-    // Update subtitles properly based on the module
+    // Update subtitles properly
     const subtitle = document.getElementById('moduleSubtitle');
     if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
         subtitle.innerText = "1. Circuit Basics";
@@ -331,11 +404,29 @@ function switchTab(mode) {
     document.getElementById('solutions').style.display = 'none';
     if (document.getElementById('helpBtn')) document.getElementById('helpBtn').style.display = 'none';
 
-    // DRAW THE CIRCUIT
     generateProblem();
 }
+       
+// --- GLOBAL VARIABLES ---
+const brandPink = "#E64097";
+const brandBlack = "#000000";
 
+let currentMode = 'analysis'; 
+let currentAnswers = { 
+    vNameHTML: '', vValue: 0, vUnit: '', 
+    iNameHTML: '', iValue: 0, iUnit: '', 
+    rValue: 0, rUnit: '', 
+    osc1Value: 0, osc1Unit: '', 
+    osc2Value: 0, osc2Unit: '',
+    astableRatio: '' // Added for 555 logic
+};
 
+let problemsAttempted = 0;
+let problemsCorrect = 0;
+let hasCheckedCurrentProblem = false; 
+let isCurrentProblemSolved = false;
+let viewedSolution = false; 
+let unitErrorMade = false; 
 
 function parseInput(str) {
     if (!str) return null;
@@ -508,6 +599,15 @@ function drawResistor(ctx, x, y) {
             ctx.stroke();
             ctx.closePath();
         }
+
+function drawLine(ctx, x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
 
            
 function generateAnalysisProblem(ctx, canvas) {
@@ -992,90 +1092,7 @@ function generateDividerProblem(ctx, canvas) {
     }
 }
 
-    
-function generateProblem() {
-    const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    // --- FIX FOR CANVAS SCALING ---
-    canvas.width = 600;
-    canvas.height = 400;
-
-    // 1. Reset Quiz State
-    hasCheckedCurrentProblem = false;
-    isCurrentProblemSolved = false;
-    viewedSolution = false; 
-    unitErrorMade = false; 
-    
-    const helpBtn = document.getElementById('helpBtn');
-    const solutions = document.getElementById('solutions');
-    const feedback = document.getElementById('feedback');
-    const grade9dividerBtn = document.getElementById('grade9dividerBtn'); 
-    const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
-
-    if (helpBtn) helpBtn.style.display = 'none';
-    if (solutions) solutions.style.display = 'none';
-    if (feedback) feedback.innerHTML = '';
-    
-    // 2. Hide Grade 9 Buttons
-    if (grade9dividerBtn) grade9dividerBtn.style.display = 'none';
-    if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'none';
-
-    // 3. Reset all text inputs
-    const inputs = [
-        'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
-        'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
-        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
-        'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol',
-        'inputMono'
-    ];
-    inputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.value = ''; el.style.backgroundColor = 'white'; }
-    });
-
-    // 4. Hide ALL input groups
-    const groups = [
-        'inputGroupV', 'inputGroupI', 'inputGroupR', 
-        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
-        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
-        'inputGroupAstable', 'inputGroupMarkSpace', 
-        'inputGroupColorVal', 'inputGroupColorNames',
-        'inputGroupMonostable'
-    ];
-    groups.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-
-    // 5. ROUTING LOGIC (Fixed Name and Removed Timeout)
-    if (currentMode === 'analysis') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        document.getElementById('inputGroupI').style.display = 'inline-block';
-        generateAnalysisProblem(ctx, canvas);
-    } else if (currentMode === 'divider') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        if (grade9dividerBtn) grade9dividerBtn.style.display = 'inline-block';
-        generateDividerProblem(ctx, canvas);
-    } else if (currentMode === 'resistance') {
-        document.getElementById('inputGroupR').style.display = 'inline-block';
-        if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'inline-block';
-        // Clean call: No timeout, correct name
-        generateResistanceProblem(ctx, canvas); 
-    } else if (currentMode === 'oscilloscope') {
-        generateOscilloscopeProblem(ctx, canvas);
-    } else if (currentMode === 'astable') {
-        generateAstableProblem(ctx, canvas);
-    } else if (currentMode === 'monostable') {
-        document.getElementById('inputGroupMonostable').style.display = 'inline-block';
-        generateMonostableProblem(ctx, canvas);
-    } else if (currentMode === 'colorcode') {
-        generateColorCodeProblem(ctx, canvas);
-    }
-}
-  
-function generateResistanceProblem(ctx, canvas) {
+    function generateResistanceProblem(ctx, canvas) {
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
     const expectedUnitStr = rUnitVisual === 'k\u03A9' ? 'kohms' : 'ohms';
 
@@ -1091,22 +1108,74 @@ function generateResistanceProblem(ctx, canvas) {
     ctx.fillText("+Vsupply", 260, 45); 
     ctx.fillText("0V (GND)", 260, 390);
 
+    const scenario = Math.floor(Math.random() * 3);
     let rTotal, logicHTML;
 
-    // --- DIFFICULTY CHECK ---
-    // This checks if the user clicked the "Grade 9" toggle button
-    const isGrade9 = (document.getElementById('grade9ResistorBtn').style.display === 'inline-block');
-
-    if (isGrade9) {
-        // --- NEW GRADE 9 LOGIC (Series-Parallel with Decimals) ---
-        let r1 = Math.floor(Math.random() * 40) + 10;
-        let r2 = (Math.random() * 50 + 5).toFixed(1);
-        let r3 = (Math.random() * 50 + 5).toFixed(1);
+    if (scenario === 0) {
+        // --- SCENARIO 0: SERIES ---
+        const r1 = (Math.floor(Math.random() * 10) + 1) * 10; 
+        const r2 = (Math.floor(Math.random() * 10) + 1) * 10;
+        rTotal = r1 + r2;
         
-        let R2_num = parseFloat(r2);
-        let R3_num = parseFloat(r3);
-        let rp_exact = (R2_num * R3_num) / (R2_num + R3_num);
-        rTotal = parseFloat((r1 + rp_exact).toFixed(2));
+        logicHTML = "<strong>Solution: R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>";
+        logicHTML += "<em>Step 1:</em> For resistors in series, simply add the values together.<br>";
+        logicHTML += "R<sub>Total</sub> = R\u2081 + R\u2082<br>";
+        logicHTML += "R<sub>Total</sub> = " + r1 + " + " + r2 + " = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
+
+        drawLine(ctx, 300, 60, 300, 120); 
+        drawResistor(ctx, 300, 145); 
+        drawLine(ctx, 300, 170, 300, 230);
+        drawResistor(ctx, 300, 255); 
+        drawLine(ctx, 300, 280, 300, 360);
+        
+        ctx.fillStyle = brandBlack; ctx.font = "16px Arial";
+        ctx.fillText("R\u2081 = " + r1 + " " + rUnitVisual, 330, 150); 
+        ctx.fillText("R\u2082 = " + r2 + " " + rUnitVisual, 330, 260);
+
+    } else if (scenario === 1) {
+        // --- SCENARIO 1: PARALLEL (Centered) ---
+        const pairs = [
+            {r1: 10, r2: 10, req: 5}, {r1: 30, r2: 60, req: 20}, 
+            {r1: 12, r2: 24, req: 8}, {r1: 40, r2: 40, req: 20},
+            {r1: 20, r2: 5, req: 4}, {r1: 15, r2: 30, req: 10}
+        ];
+        const pair = pairs[Math.floor(Math.random() * pairs.length)];
+        rTotal = pair.req;
+
+        const midY = 210; 
+        const topRailY = 110;
+        const bottomRailY = 310;
+
+        drawLine(ctx, 300, 60, 300, topRailY);
+        drawLine(ctx, 220, topRailY, 380, topRailY);
+        drawLine(ctx, 220, topRailY, 220, midY - 25);
+        drawLine(ctx, 380, topRailY, 380, midY - 25);
+        drawResistor(ctx, 220, midY);
+        drawResistor(ctx, 380, midY);
+        drawLine(ctx, 220, midY + 25, 220, bottomRailY);
+        drawLine(ctx, 380, midY + 25, 380, bottomRailY);
+        drawLine(ctx, 220, bottomRailY, 380, bottomRailY);
+        drawLine(ctx, 300, bottomRailY, 300, 360);
+
+        ctx.fillStyle = brandBlack; ctx.font = "16px Arial";
+        ctx.fillText("R\u2081 = " + pair.r1 + " " + rUnitVisual, 120, midY + 5); 
+        ctx.fillText("R\u2082 = " + pair.r2 + " " + rUnitVisual, 405, midY + 5);
+
+        logicHTML = "<strong>Solution: R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>";
+        logicHTML += "<em>Step 1:</em> Find the total resistance using <strong>Product &divide; Sum</strong>.<br>";
+        logicHTML += "R<sub>Total</sub> = (R\u2081 &times; R\u2082) / (R\u2081 + R\u2082)<br>";
+        logicHTML += "R<sub>Total</sub> = (" + pair.r1 + " &times; " + pair.r2 + ") / (" + pair.r1 + " + " + pair.r2 + ")<br>";
+        logicHTML += "R<sub>Total</sub> = " + (pair.r1 * pair.r2) + " / " + (pair.r1 + pair.r2) + " = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
+
+    } else {
+        // --- SCENARIO 2: SERIES-PARALLEL COMBINATION ---
+        const sp = [
+            {r1: 10, r2: 20, r3: 20, rp: 10, req: 20}, 
+            {r1: 15, r2: 30, r3: 60, rp: 20, req: 35}, 
+            {r1: 5, r2: 12, r3: 24, rp: 8, req: 13}
+        ];
+        const s = sp[Math.floor(Math.random() * sp.length)];
+        rTotal = s.req;
 
         drawLine(ctx, 300, 60, 300, 90); 
         drawResistor(ctx, 300, 115); 
@@ -1122,83 +1191,116 @@ function generateResistanceProblem(ctx, canvas) {
         drawLine(ctx, 300, 320, 300, 360);
 
         ctx.fillStyle = brandBlack; ctx.font = "16px Arial";
-        ctx.fillText("R\u2081 = " + r1 + " " + rUnitVisual, 335, 120);
-        ctx.fillText("R\u2082 = " + r2 + " " + rUnitVisual, 115, 250); 
-        ctx.fillText("R\u2083 = " + r3 + " " + rUnitVisual, 405, 250);
+        ctx.fillText("R\u2081 = " + s.r1 + " " + rUnitVisual, 335, 120);
+        ctx.fillText("R\u2082 = " + s.r2 + " " + rUnitVisual, 120, 250); 
+        ctx.fillText("R\u2083 = " + s.r3 + " " + rUnitVisual, 405, 250);
 
-        logicHTML = "<strong>Grade 9 Solution: R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>";
-        logicHTML += "<em>Step 1:</em> Parallel R<sub>p</sub> = (" + r2 + " &times; " + r3 + ") / (" + r2 + " + " + r3 + ") = " + rp_exact.toFixed(2) + "<br>";
-        logicHTML += "<em>Step 2:</em> Total = " + r1 + " + " + rp_exact.toFixed(2) + " = <strong>" + rTotal + "</strong>";
-
-    } else {
-        // --- YOUR ORIGINAL SCENARIOS 0, 1, AND 2 ---
-        const scenario = Math.floor(Math.random() * 3);
-
-        if (scenario === 0) {
-            const r1 = (Math.floor(Math.random() * 10) + 1) * 10; 
-            const r2 = (Math.floor(Math.random() * 10) + 1) * 10;
-            rTotal = r1 + r2;
-            logicHTML = "<strong>Solution: R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>R<sub>Total</sub> = R\u2081 + R\u2082 = " + r1 + " + " + r2 + " = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
-            drawLine(ctx, 300, 60, 300, 120); 
-            drawResistor(ctx, 300, 145); 
-            drawLine(ctx, 300, 170, 300, 230);
-            drawResistor(ctx, 300, 255); 
-            drawLine(ctx, 300, 280, 300, 360);
-            ctx.fillStyle = brandBlack; ctx.font = "16px Arial";
-            ctx.fillText("R\u2081 = " + r1 + " " + rUnitVisual, 330, 150); 
-            ctx.fillText("R\u2082 = " + r2 + " " + rUnitVisual, 330, 260);
-
-        } else if (scenario === 1) {
-            const pairs = [{r1: 10, r2: 10, req: 5}, {r1: 30, r2: 60, req: 20}, {r1: 12, r2: 24, req: 8}, {r1: 40, r2: 40, req: 20}, {r1: 20, r2: 5, req: 4}, {r1: 15, r2: 30, req: 10}];
-            const pair = pairs[Math.floor(Math.random() * pairs.length)];
-            rTotal = pair.req;
-            const midY = 210, topRailY = 110, bottomRailY = 310;
-            drawLine(ctx, 300, 60, 300, topRailY);
-            drawLine(ctx, 220, topRailY, 380, topRailY);
-            drawLine(ctx, 220, topRailY, 220, midY - 25);
-            drawLine(ctx, 380, topRailY, 380, midY - 25);
-            drawResistor(ctx, 220, midY); drawResistor(ctx, 380, midY);
-            drawLine(ctx, 220, midY + 25, 220, bottomRailY);
-            drawLine(ctx, 380, midY + 25, 380, bottomRailY);
-            drawLine(ctx, 220, bottomRailY, 380, bottomRailY);
-            drawLine(ctx, 300, bottomRailY, 300, 360);
-            ctx.fillStyle = brandBlack; ctx.font = "16px Arial";
-            ctx.fillText("R\u2081 = " + pair.r1 + " " + rUnitVisual, 120, midY + 5); 
-            ctx.fillText("R\u2082 = " + pair.r2 + " " + rUnitVisual, 405, midY + 5);
-            logicHTML = "<strong>Solution: R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>Using Product &divide; Sum: (" + pair.r1 + "&times;" + pair.r2 + ")/(" + pair.r1 + "+" + pair.r2 + ") = <strong>" + rTotal + "</strong>";
-
-        } else {
-            const sp = [{r1: 10, r2: 20, r3: 20, rp: 10, req: 20}, {r1: 15, r2: 30, r3: 60, rp: 20, req: 35}, {r1: 5, r2: 12, r3: 24, rp: 8, req: 13}];
-            const s = sp[Math.floor(Math.random() * sp.length)];
-            rTotal = s.req;
-            drawLine(ctx, 300, 60, 300, 90); 
-            drawResistor(ctx, 300, 115); 
-            drawLine(ctx, 300, 140, 300, 180);
-            drawLine(ctx, 220, 180, 380, 180); 
-            drawLine(ctx, 220, 180, 220, 220); 
-            drawResistor(ctx, 220, 245); 
-            drawLine(ctx, 220, 270, 220, 320);
-            drawLine(ctx, 380, 180, 380, 220); 
-            drawResistor(ctx, 380, 245); 
-            drawLine(ctx, 380, 270, 380, 320);
-            drawLine(ctx, 220, 320, 380, 320); 
-            drawLine(ctx, 300, 320, 300, 360);
-            ctx.fillStyle = brandBlack; ctx.font = "16px Arial";
-            ctx.fillText("R\u2081 = " + s.r1 + " " + rUnitVisual, 335, 120);
-            ctx.fillText("R\u2082 = " + s.r2 + " " + rUnitVisual, 120, 250); 
-            ctx.fillText("R\u2083 = " + s.r3 + " " + rUnitVisual, 405, 250);
-            logicHTML = "<strong>Solution: R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>R<sub>p</sub> = " + s.rp + ". R<sub>Total</sub> = " + s.r1 + " + " + s.rp + " = <strong>" + s.req + "</strong>";
-        }
+        logicHTML = "<strong>Solution: R<sub>Total</sub> = " + rTotal + " " + rUnitVisual + "</strong><br><br>";
+        logicHTML += "<em>Step 1:</em> Find the parallel part (R<sub>p</sub>) using <strong>Product &divide; Sum</strong>.<br>";
+        logicHTML += "R<sub>p</sub> = (R\u2082 &times; R\u2083) / (R\u2082 + R\u2083)<br>";
+        logicHTML += "R<sub>p</sub> = (" + s.r2 + " &times; " + s.r3 + ") / (" + s.r2 + " + " + s.r3 + ") = " + s.rp + " " + rUnitVisual + "<br><br>";
+        logicHTML += "<em>Step 2:</em> Add the series resistor (R\u2081) to the parallel result.<br>";
+        logicHTML += "R<sub>Total</sub> = R\u2081 + R<sub>p</sub> = " + s.r1 + " + " + s.rp + " = <strong>" + s.req + " " + rUnitVisual + "</strong>";
     }
 
     currentAnswers.rValue = rTotal;
     currentAnswers.rUnit = expectedUnitStr; 
 
     const solText = document.getElementById('solText');
-    if (solText) solText.innerHTML = logicHTML;
+    if (solText) {
+        solText.innerHTML = logicHTML;
+    }
+}
+
+function generateProblem() {
+    const canvas = document.getElementById('circuitCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // --- FIX FOR CANVAS SCALING ---
+    // This forces the canvas internal resolution to match your CSS box size
+    canvas.width = 600;
+    canvas.height = 400;
+    // ------------------------------
+
+    // 1. Reset Quiz State for ALL modules
+    hasCheckedCurrentProblem = false;
+    isCurrentProblemSolved = false;
+    viewedSolution = false; 
+    unitErrorMade = false; 
+    
+    const helpBtn = document.getElementById('helpBtn');
+    const solutions = document.getElementById('solutions');
+    const feedback = document.getElementById('feedback');
+    const grade9Btn = document.getElementById('grade9Btn'); 
+    const grade9ResBtn = document.getElementById('grade9ResistanceBtn');
+
+    if (helpBtn) helpBtn.style.display = 'none';
+    if (solutions) solutions.style.display = 'none';
+    if (feedback) feedback.innerHTML = '';
+    
+    // 2. Hide Grade 9 Buttons
+    if (grade9Btn) grade9Btn.style.display = 'none';
+    if (grade9ResBtn) grade9ResBtn.style.display = 'none';
+
+    // 3. Reset all text inputs (This clears old answers)
+    const inputs = [
+        'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
+        'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
+        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
+        'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'
+    ];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    // 4. Hide ALL input groups first (This wipes the "previous page" buttons)
+    const groups = [
+        'inputGroupV', 'inputGroupI', 'inputGroupR', 
+        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
+        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
+        'inputGroupAstable', 'inputGroupMarkSpace', 
+        'inputGroupColorVal', 'inputGroupColorNames'
+    ];
+    groups.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
+    // 5. NOW call the specific module logic
+    if (currentMode === 'analysis') {
+        document.getElementById('inputGroupV').style.display = 'inline-block';
+        document.getElementById('inputGroupI').style.display = 'inline-block';
+        generateAnalysisProblem(ctx, canvas);
+    } else if (currentMode === 'divider') {
+        document.getElementById('inputGroupV').style.display = 'inline-block';
+        if (grade9Btn) grade9Btn.style.display = 'inline-block';
+        generateDividerProblem(ctx, canvas);
+    } else if (currentMode === 'resistance') {
+        document.getElementById('inputGroupR').style.display = 'inline-block';
+        if (grade9ResBtn) grade9ResBtn.style.display = 'inline-block';
+        // Small delay ensures canvas resizing is processed before complex resistance drawing
+        setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
+    } else if (currentMode === 'oscilloscope') {
+        generateOscilloscopeProblem(ctx, canvas);
+    } else if (currentMode === 'astable') {
+        generateAstableProblem(ctx, canvas);
+    } else if (currentMode === 'colorcode') {
+        generateColorCodeProblem(ctx, canvas);
+    }
 }
         
-    function generateOscilloscopeProblem(ctx, canvas) {
+        
+        function drawRoundRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath(); ctx.moveTo(x + radius, y); ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius); ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height); ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius); ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y); ctx.closePath(); ctx.fill(); ctx.stroke();
+        }
+
+        function generateOscilloscopeProblem(ctx, canvas) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             ctx.fillStyle = "#e0e5e7"; ctx.strokeStyle = "#888"; ctx.lineWidth = 2; drawRoundRect(ctx, 20, 20, 400, 320, 25);
@@ -1317,21 +1419,7 @@ function checkAnswers() {
         if (currentAnswers.astableQType === 0) activeInputs = ['inputAstable', 'inputAstableT'];
         else activeInputs = ['inputMarkSpace'];
     }
-else if (currentMode === 'monostable') {
-    // Get the value from the single input box used in the Monostable UI
-    const userVal = parseInput(document.getElementById('inputMono').value);
-    
-    if (currentAnswers.monoQType === 0) {
-        // Question: Calculate Time Delay (T)
-        results.push(validateMatch(userVal, currentAnswers.monoT, 's', 0.05));
-    } else if (currentAnswers.monoQType === 1) {
-        // Question: Calculate Capacitance (C)
-        results.push(validateMatch(userVal, currentAnswers.monoC, 'F', 0.05));
-    } else {
-        // Question: Calculate Resistance (R)
-        results.push(validateMatch(userVal, currentAnswers.monoR, 'Ω', 0.05));
-    }
-}
+
     // Check for empty boxes
     let hasEmptyBox = false;
     activeInputs.forEach(id => {
@@ -1496,7 +1584,15 @@ function provideHint() {
 
     
 }
-       
+
+function toggleSolutions() {
+            const sol = document.getElementById('solutions');
+            if (!sol) return;
+            if (sol.style.display === 'none' || sol.style.display === '') {
+                sol.style.display = 'block'; viewedSolution = true;
+            } else { sol.style.display = 'none'; }
+        }
+        
 function generateAstableProblem(ctx, canvas) {
     // 1. Helper for simplifying the Ratio fraction
     const gcd = (a, b) => b ? gcd(b, a % b) : a;
@@ -1547,6 +1643,10 @@ function generateAstableProblem(ctx, canvas) {
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     };
+    
+    const drawNode = (x, y) => {
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+    };
 
     const drawResistorBox = (x, y, val) => {
         ctx.fillStyle = "white";
@@ -1578,16 +1678,29 @@ function generateAstableProblem(ctx, canvas) {
     ctx.strokeRect(260, 120, 140, 140); // 555 Chip
     ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
     ctx.fillText("555", 330, 195);
-    
+
+    const bX = 160;
+    line(bX, 40, bX, 60); drawNode(bX, 40);
+    drawResistorBox(bX, 85, (R1/1000) + " k\u03a9");
+    line(bX, 110, bX, 155); drawNode(bX, 140);
+    drawResistorBox(bX, 180, (R2/1000) + " k\u03a9");
+    line(bX, 205, bX, 285); drawNode(bX, 225);
+    drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
+    line(bX, 295, bX, 360); drawNode(bX, 360);
+
+    line(bX, 140, 260, 140); // Pin 7
     ctx.font = "14px Arial"; ctx.textAlign = "left"; ctx.fillText("7", 265, 145);
+    line(bX, 225, 220, 225); drawNode(220, 225); line(220, 180, 220, 240);
     line(220, 180, 260, 180); ctx.fillText("6", 265, 185); // Pin 6
     line(220, 240, 260, 240); ctx.fillText("2", 265, 245); // Pin 2
+
+    line(330, 40, 330, 80); drawNode(330, 80); line(300, 80, 360, 80);
     line(300, 80, 300, 120); ctx.textAlign = "center"; ctx.fillText("4", 300, 135);
     line(360, 80, 360, 120); ctx.fillText("8", 360, 135);
-    line(300, 260, 300, 360); drawDot(300, 360); ctx.fillText("1", 300, 255);
+    line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
     line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
     drawCapacitor(360, 310, "10 nF", "left");
-    line(360, 315, 360, 360); drawDot(360, 360);
+    line(360, 315, 360, 360); drawNode(360, 360);
     line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
@@ -1743,87 +1856,6 @@ function generateGrade9DividerProblem() {
         solText.innerHTML = logicHTML;
     }
 }
-
-function generateMonostableProblem(ctx, canvas) {
-    // 1. CLEAR AND SETUP
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = '#000';
-    ctx.fillStyle = '#000';
-    ctx.lineWidth = 2;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-
-    // 2. MATH LOGIC (T = 1.1 * R * C)
-    const rVal = (Math.floor(Math.random() * 90) + 10) * 1000; 
-    const cVal = [1, 2.2, 4.7, 10, 22, 47, 100][Math.floor(Math.random() * 7)] * 1e-6; 
-    const delay = 1.1 * rVal * cVal;
-
-    currentAnswers.monoR = rVal;
-    currentAnswers.monoC = cVal;
-    currentAnswers.monoT = delay;
-    currentAnswers.monoQType = Math.floor(Math.random() * 3);
-
-    // 3. UI SETUP 
-    const feedback = document.getElementById('feedback');
-    const label = document.getElementById('labelMono') || { innerText: "" };
-    const qTypes = [
-        { lab: "Time Delay (T) = ", feed: "Calculate the <b>Time Delay (T)</b>:" },
-        { lab: "Capacitance (C) = ", feed: `Calculate <b>C</b> for a delay of <b>${delay.toFixed(2)}s</b>:` },
-        { lab: "Resistance (R) = ", feed: `Calculate <b>R</b> for a delay of <b>${delay.toFixed(2)}s</b>:` }
-    ];
-    label.innerText = qTypes[currentAnswers.monoQType].lab;
-    feedback.innerHTML = qTypes[currentAnswers.monoQType].feed;
-
-    // 4. SOLUTION BUILDER
-    let solHTML = `<div style="text-align:left; padding:15px; background:#f4f4f4; border-left:5px solid #E64097; border-radius:4px;">
-        <h4 style="margin:0 0 10px 0; color:#E64097;">Monostable Solution</h4>
-        <p>Formula: <b>T = 1.1 &times; R &times; C</b></p><hr style="border:0; border-top:1px solid #ccc;">`;
-    
-    if (currentAnswers.monoQType === 0) solHTML += `<p>T = 1.1 &times; ${rVal} &times; ${cVal.toExponential()}<br><b>T = ${delay.toFixed(3)}s</b></p>`;
-    else if (currentAnswers.monoQType === 1) solHTML += `<p>C = T / (1.1 &times; R) = ${delay.toFixed(2)} / (1.1 &times; ${rVal})<br><b>C = ${formatCapValue(cVal)}</b></p>`;
-    else solHTML += `<p>R = T / (1.1 &times; C) = ${delay.toFixed(2)} / (1.1 &times; ${cVal.toExponential()})<br><b>R = ${formatResValue(rVal)}</b></p>`;
-    
-    solHTML += `</div>`;
-    document.getElementById('solText').innerHTML = solHTML;
-
-    // 5. INTERNAL DRAWING HELPERS (Saves space and prevents naming errors)
-    const mLine = (x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
-    const mDot = (x, y) => { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fillStyle = '#000'; ctx.fill(); };
-
-    // 6. DRAWING THE CIRCUIT
-    const cx = 300, cy = 200, netX = 180, topY = 60, botY = 340;
-    
-    if (typeof draw555IC === 'function') draw555IC(ctx, cx, cy);
-    else { ctx.strokeRect(cx - 45, cy - 60, 90, 120); ctx.fillText("555", cx - 15, cy + 5); }
-
-    mLine(100, topY, 500, topY); mLine(100, botY, 500, botY);
-    ctx.fillText("VCC", 510, topY); ctx.fillText("0V", 510, botY);
-
-    // Network
-    mLine(netX, topY, netX, 110); mDot(netX, topY);
-    if (typeof drawResistor === 'function') drawResistor(ctx, netX, 135);
-    ctx.fillText(currentAnswers.monoQType === 2 ? "R = ?" : formatResValue(rVal), netX - 85, 140);
-    
-    mLine(netX, 160, netX, 200); mDot(netX, 200);
-    mLine(netX, 200, cx - 45, cy - 20); mLine(netX, 200, netX, 220); 
-    mLine(netX, 220, cx - 45, cy + 20); mDot(netX, 220);
-
-    mLine(netX, 220, netX, 245);
-    if (typeof drawCapacitor === 'function') drawCapacitor(ctx, netX, 270);
-    ctx.fillText(currentAnswers.monoQType === 1 ? "C = ?" : formatCapValue(cVal), netX - 85, 275);
-    mLine(netX, 295, netX, botY); mDot(netX, botY);
-
-    // Pins
-    mLine(cx - 30, cy - 60, cx - 30, topY); mLine(cx + 30, cy - 60, cx + 30, topY);
-    mLine(cx - 30, cy + 60, cx - 30, botY); mDot(cx - 30, topY); mDot(cx + 30, topY); mDot(cx - 30, botY);
-
-    // I/O
-    mLine(cx - 45, cy, cx - 100, cy); ctx.fillText("Trigger", cx - 155, cy);
-    mLine(cx + 45, cy, cx + 120, cy);
-    ctx.beginPath(); ctx.arc(cx + 125, cy, 5, 0, Math.PI * 2); ctx.stroke();
-    ctx.fillText("V OUT", cx + 135, cy);
-}
-        
      function openDataSheet() {
     const modal = document.getElementById('dataSheetModal');
     if (modal) modal.style.display = 'block';
@@ -1835,7 +1867,11 @@ function closeDataSheet() {
 }
 
         
-   
+    window.onload = function() {
+    goHome(); // This ensures the 8 module buttons are shown first
+};   
+
+
 
 function generateColorCodeProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1924,6 +1960,15 @@ function generateColorCodeProblem(ctx, canvas) {
     if (solText) solText.innerHTML = solTextStr;
 }
 
+        
+//  helper function:
+function formatResValue(val) {
+    if (val >= 1000000) return (val / 1000000) + " MΩ";
+    if (val >= 1000) return (val / 1000) + " kΩ";
+    return val + " Ω";
+}
+
+
 function toggleSolutions() {
     const solutions = document.getElementById('solutions');
     if (solutions.style.display === 'none' || solutions.style.display === '') {
@@ -1932,66 +1977,45 @@ function toggleSolutions() {
     } else {
         solutions.style.display = 'none';
     }
-} 
-
-
-//  helper functions:
-function formatResValue(val) {
-    if (val >= 1000000) return (val / 1000000) + " MΩ";
-    if (val >= 1000) return (val / 1000) + " kΩ";
-    return val + " Ω";
 }
-
-
-// 2. Fixes the "formatCapValue is not defined" error
-function formatCapValue(val) {
-    if (val < 1e-6) return (val * 1e9).toFixed(1) + "nF";
-    if (val < 1) return (val * 1e6).toFixed(1) + "µF";
-    return val + "F";
-}
-
-// 3. Ensure drawDot exists (used in your generateMonostable function)
-
-function drawDot(arg1, arg2, arg3) {
-    let ctx, x, y;
-    // If the first thing is the 'ctx' object, use the 3-arg style
-    if (typeof arg1 === 'object') {
-        ctx = arg1; x = arg2; y = arg3;
-    } else { 
-        // If not, find the context ourselves and use the 2-arg style (x, y)
-        const canvas = document.getElementById('circuitCanvas');
-        ctx = canvas.getContext('2d');
-        x = arg1; y = arg2;
-    }
-    ctx.beginPath();
-    ctx.arc(x, y, 4, 0, Math.PI * 2);
-    ctx.fillStyle = '#000';
-    ctx.fill();
-}
-    function drawLine(ctx, x1, y1, x2, y2) {
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-            ctx.closePath();
-        }
-
-
-    
-  window.onload = function() {
-    // 1. Show the menu
-    goHome(); 
-    
-    // 2. Pre-verify the canvas exists
-    const canvas = document.getElementById('circuitCanvas');
-    if (canvas) {
-        console.log("System Ready: Canvas detected.");
-    } else {
-        console.error("System Error: Canvas 'circuitCanvas' not found in HTML.");
-    }
-};
 </script>
 
-  
+   <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
+    <div style="background-color: white; padding: 20px; border-radius: 15px; max-width: 600px; width: 90%; position: relative; margin: 10% auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <span onclick="closeDataSheet()" style="position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #E64097; font-weight: bold;">&times;</span>
+        
+        <h2 style="color: #E64097; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;">Electronics Data Sheet</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; color: #333; font-family: sans-serif;">
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Basic Laws</h4>
+                <p>V = I &times; R</p>
+                <p>P = I &times; V</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Resistance</h4>
+                <p>Series: R<sub>T</sub> = R<sub>1</sub> + R<sub>2</sub></p>
+                <p>Parallel: R<sub>p</sub> = (R<sub>1</sub> &times; R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>)</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Potential Dividers</h4>
+                <p>V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))</p>
+            </div>
+            <div>
+    <h4 style="margin-bottom: 5px; color: #000;">555 Astable</h4>
+    <p>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</p>
+    <p>T = 0.693 &times; (R<sub>1</sub> + 2R<sub>2</sub>) &times; C</p>
+    <p style="margin-top: 10px; font-weight: bold;">
+        <span>T<sub>ON</sub></span> / <span>T<sub>OFF</sub></span> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub>
+    </p>
+</div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn-check" onclick="closeDataSheet()">Close Sheet</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
