@@ -1542,6 +1542,8 @@ function openModule(module) {
     }
 }
 
+
+    
 function switchTab(mode) {
     currentMode = mode;
     // Show the main layout (canvas, questions, etc.)
@@ -1690,6 +1692,11 @@ function generateProblem() {
         generateAstableProblem(ctx, canvas);
     } else if (currentMode === 'colorcode') {
         generateColorCodeProblem(ctx, canvas);
+    }
+    else if (currentMode === 'monostable') {
+        // Show the timing input group (reusing the Astable group)
+        document.getElementById('inputGroupAstable').style.display = 'block';
+        generateMonostableProblem(ctx, canvas);
     }
 }   
 
