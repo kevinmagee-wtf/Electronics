@@ -5,92 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abingdon School - Circuit Quiz</title>
 <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1100px; margin: 0 auto; padding: 10px 20px; line-height: 1.6; color: #000; background-color: #fafafa; }
+    /* 1. CORE PAGE LAYOUT */
+    body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        max-width: 1100px; 
+        margin: 0 auto; 
+        padding: 10px 20px; 
+        line-height: 1.6; 
+        color: #000; 
+        background-color: #fafafa; 
+    }
     .header { text-align: center; margin-bottom: 15px; }
     .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
     .header p { margin-top: 5px; font-size: 18px; color: #555; }
     .header span { color: #E64097; font-weight: bold; }
+
+    /* 2. MENU & TAB SYSTEM */
     .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-    
-    /* This makes your front page buttons look right */
     #mainMenu { display: grid; grid-template-columns: 1fr 1fr; justify-items: center; column-gap: 40px; row-gap: 30px; max-width: 900px; margin: 60px auto; }
     #menuBasics, #menuTiming { display: none; justify-content: center; gap: 15px; margin-bottom: 25px; }
     
-    .tab { padding: 10px 25px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #E64097; border: 2px solid #c5307d; border-radius: 8px; color: white; transition: all 0.2s; min-width: 120px; }
+    .tab { 
+        padding: 10px 25px; 
+        font-size: 16px; 
+        font-weight: bold; 
+        cursor: pointer; 
+        background-color: #E64097; 
+        border: 2px solid #c5307d; 
+        border-radius: 8px; 
+        color: white; 
+        transition: all 0.2s; 
+        min-width: 120px; 
+    }
     #mainMenu .tab { width: 320px; min-height: 90px; font-size: 19px; border-radius: 12px; display: flex; align-items: center; justify-content: center; text-align: center; }
     .tab:hover { background-color: #cf3584; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
     .tab.active { background-color: #000000; color: white; border-color: #000; }
-    
+
+    /* 3. QUIZ PANELS (Side-by-Side) */
     .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
     .left-panel { flex: 1 1 550px; max-width: 650px; }
-    .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; }
-    canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; border: 1px solid #ddd; }
+    .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
     
-    .input-area { text-align: center; padding: 20px; background: #eee; border-radius: 8px; margin-top: 10px; }
-    .input-group { margin: 10px 10px; font-size: 18px; font-weight: bold; }
-    input[type="text"] { font-size: 18px; padding: 10px; height: 45px; width: 140px; text-align: center; border: 2px solid #ccc; border-radius: 6px; }
-    .btn-check { background-color: #E64097; color: white; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; max-width: 400px; }
+    .circuit-container { 
+        border: 2px solid #eaeaea; 
+        padding: 15px; 
+        text-align: center; 
+        background-color: #fff; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    }
+    canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; border: 1px solid #ddd; }
+
+    .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+    .quiz-header h3 { margin: 0; font-size: 1.2rem; }
+
+    /* 4. SCORING & DOWNLOAD */
+    .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+    .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
+    .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
+    .btn-download:hover { background-color: #157347; }
+    .btn-download:disabled { background-color: #6c757d; cursor: wait; }
+
+    /* 5. INPUT FIELDS & FEEDBACK */
+    .input-area { text-align: center; padding: 10px; border-radius: 8px; }
+    .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
+    input[type="text"] { 
+        font-size: 18px; 
+        padding: 10px; 
+        height: 45px; 
+        width: 140px; 
+        text-align: center; 
+        margin: 0 5px;
+        border: 2px solid #ccc; 
+        border-radius: 6px; 
+        outline-color: #E64097;
+        box-sizing: border-box;
+    }
+    .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold; }
+
+    /* 6. BUTTONS & CONTROLS */
+    .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s; }
+    button:active { transform: scale(0.98); }
+    .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; }
+    .btn-check:hover { background-color: #cc2b81; }
+    .btn-black { background-color: #000000; }
+    .btn-black:hover { background-color: #333333; }
+    .btn-secondary { background-color: #6c757d; }
+    .btn-secondary:hover { background-color: #5c636a; }
+
+    /* 7. SOLUTIONS PANEL */
+    .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
+    .solutions p { margin-bottom: 0; font-size: 0.95rem; }
+
+    /* 8. MODAL WINDOWS (Data Sheet & Submission) */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-top: 6px solid #E64097; }
+    .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; text-align: left; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; font-size: 16px; outline-color: #E64097; }
+    .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
+    .modal-actions button { flex: 1; margin: 0; }
 </style>
-
-
-
-        .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
-        
-        .left-panel { flex: 1 1 550px; max-width: 650px; }
-        .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
-        
-        .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
-        .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
-        .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
-        .quiz-header h3 { margin: 0; font-size: 1.2rem; }
-        
-        .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-        .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
-        .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
-        .btn-download:hover { background-color: #157347; }
-        .btn-download:disabled { background-color: #6c757d; cursor: wait; }
-        
-        .input-area { text-align: center; }
-        .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
-        input[type="text"] { 
-    font-size: 18px; /* Slightly larger text */
-    padding: 10px;  /* More 'breathing room' inside the box */
-    height: 45px;   /* Consistent height */
-    width: 140px;   /* Slightly wider for unit strings */
-    text-align: center;
-    margin: 0 5px; 
-    border: 2px solid #ccc; /* Thicker border to match brand style */
-    border-radius: 6px; 
-    outline-color: #E64097;
-    box-sizing: border-box; /* Ensures padding doesn't break the width */
-}
-        .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
-        
-        .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
-        button:active { transform: scale(0.98); }
-        .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; }
-        .btn-check:hover { background-color: #cc2b81; }
-        .btn-black { background-color: #000000; }
-        .btn-black:hover { background-color: #333333; }
-        .btn-secondary { background-color: #6c757d; }
-        .btn-secondary:hover { background-color: #5c636a; }
-        
-        .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
-        .solutions p { margin-bottom: 0; font-size: 0.95rem; }
-
-        /* Modal Styles */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-top: 6px solid #E64097; }
-        .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px;}
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; font-size: 16px; outline-color: #E64097; }
-        .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
-        .modal-actions button { flex: 1; margin: 0; }
-    </style>
 </head>
     <body>
     <div class="header">
@@ -258,13 +277,9 @@
     </div>
 </div>
 
-
-
-
-                
-                        <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
-                        <div id="feedback" class="feedback"></div>
-                    </div>
+        <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
+        <div id="feedback" class="feedback"></div>
+        </div>
                 </div>
 
                 <div class="controls">
@@ -2064,42 +2079,6 @@ function drawDot(arg1, arg2, arg3) {
 }; 
 </script>
 
-   <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
-    <div style="background-color: white; padding: 20px; border-radius: 15px; max-width: 600px; width: 90%; position: relative; margin: 10% auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-        <span onclick="closeDataSheet()" style="position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #E64097; font-weight: bold;">&times;</span>
-        
-        <h2 style="color: #E64097; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;">Electronics Data Sheet</h2>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; color: #333; font-family: sans-serif;">
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Basic Laws</h4>
-                <p>V = I &times; R</p>
-                <p>P = I &times; V</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Resistance</h4>
-                <p>Series: R<sub>T</sub> = R<sub>1</sub> + R<sub>2</sub></p>
-                <p>Parallel: R<sub>p</sub> = (R<sub>1</sub> &times; R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>)</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Potential Dividers</h4>
-                <p>V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))</p>
-            </div>
-            <div>
-    <h4 style="margin-bottom: 5px; color: #000;">555 Astable</h4>
-    <p>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</p>
-    <p>T = 0.693 &times; (R<sub>1</sub> + 2R<sub>2</sub>) &times; C</p>
-    <p style="margin-top: 10px; font-weight: bold;">
-        <span>T<sub>ON</sub></span> / <span>T<sub>OFF</sub></span> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub>
-    </p>
-</div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="btn-check" onclick="closeDataSheet()">Close Sheet</button>
-        </div>
-    </div>
-</div>
-
+  
 </body>
 </html>
