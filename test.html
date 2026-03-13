@@ -480,106 +480,6 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
             ctx.quadraticCurveTo(x, y, x + radius, y); ctx.closePath(); ctx.fill(); ctx.stroke();
         }
     
-// ===========================================================================================================================      
-// FUNCTION 1. NAVIGATION and UI (Traffic Control) 
-// ===========================================================================================================================      
-function goHome() {
-    document.getElementById('mainMenu').style.display = 'grid'; // Returns to the 2-column grid
-    document.getElementById('menuBasics').style.display = 'none';
-    document.getElementById('menuTiming').style.display = 'none';
-    document.getElementById('menuPlaceholder').style.display = 'none';
-    document.getElementById('contentArea').style.display = 'none';
-    document.getElementById('moduleSubtitle').innerText = 'Mastering the GCSE Course';
-}
-      
-function openModule(module) {
-    document.getElementById('mainMenu').style.display = 'none';
-    document.getElementById('menuBasics').style.display = 'none';
-    document.getElementById('menuTiming').style.display = 'none';
-    document.getElementById('menuPlaceholder').style.display = 'none';
-    document.getElementById('contentArea').style.display = 'none';
-
-    if (module === 'basics') {
-        document.getElementById('menuBasics').style.display = 'flex';
-        switchTab('analysis'); 
-    } else if (module === 'timing') {
-        document.getElementById('menuTiming').style.display = 'flex';
-        switchTab('oscilloscope');
-    } else {
-        document.getElementById('menuPlaceholder').style.display = 'flex';
-        document.getElementById('moduleSubtitle').innerText = 'Coming Soon';
-    }
-}
-
-function switchTab(mode) {
-    currentMode = mode;
-    // Show the main layout (canvas, questions, etc.)
-    document.getElementById('contentArea').style.display = 'block';
-    
-    // Highlight active tab
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    const activeTab = document.getElementById('tab-' + mode);
-    if (activeTab) activeTab.classList.add('active');
-
-    // Hide ALL input groups (including the new monostable one)
-    const groups = [
-        'inputGroupV', 'inputGroupI', 'inputGroupR', 
-        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
-        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
-        'inputGroupAstable', 'inputGroupMonostable', 'inputGroupMarkSpace',
-        'inputGroupColorVal', 'inputGroupColorNames'
-    ];
-    groups.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-
-    // Update subtitles properly
-    const subtitle = document.getElementById('moduleSubtitle');
-    if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
-        subtitle.innerText = "1. Circuit Basics";
-    } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
-        subtitle.innerText = "3. Timing Circuits";
-    }
-
-    // Reset quiz state
-    isCurrentProblemSolved = false;
-    hasCheckedCurrentProblem = false;
-    viewedSolution = false;
-    unitErrorMade = false;
-    document.getElementById('feedback').innerHTML = '';
-    document.getElementById('solutions').style.display = 'none';
-    if (document.getElementById('helpBtn')) document.getElementById('helpBtn').style.display = 'none';
-
-    generateProblem();
-}
-function openDataSheet() {
-    const modal = document.getElementById('dataSheetModal');
-    if (modal) modal.style.display = 'block';
-}
-
-function closeDataSheet() {
-    const modal = document.getElementById('dataSheetModal');
-    if (modal) modal.style.display = 'none';
-}
-
-    function openSubmissionModal() {
-            if (problemsAttempted === 0) {
-                alert("Please attempt at least one question before downloading your score!");
-                return;
-            }
-            // Clear previous inputs
-            document.getElementById('studentNameInput').value = '';
-            document.getElementById('teacherSelect').value = '';
-            
-            // Show modal
-            document.getElementById('submissionModal').style.display = 'flex';
-        }
-
-function closeModal() {
-            document.getElementById('submissionModal').style.display = 'none';
-        }
-
 
             
 // =========================================================================================================      
@@ -1509,9 +1409,111 @@ function generateColorCodeProblem(ctx, canvas) {
     if (solText) solText.innerHTML = solTextStr;
 }
 
-// ========================================================================================      
-// FUNCTION 3. MAIN ROUTER
-// ========================================================================================      
+// ===========================================================================================================================      
+// FUNCTION 3. NAVIGATION and UI (Traffic Control) 
+// ===========================================================================================================================      
+
+    function goHome() {
+    document.getElementById('mainMenu').style.display = 'grid'; // Returns to the 2-column grid
+    document.getElementById('menuBasics').style.display = 'none';
+    document.getElementById('menuTiming').style.display = 'none';
+    document.getElementById('menuPlaceholder').style.display = 'none';
+    document.getElementById('contentArea').style.display = 'none';
+    document.getElementById('moduleSubtitle').innerText = 'Mastering the GCSE Course';
+}
+      
+function openModule(module) {
+    document.getElementById('mainMenu').style.display = 'none';
+    document.getElementById('menuBasics').style.display = 'none';
+    document.getElementById('menuTiming').style.display = 'none';
+    document.getElementById('menuPlaceholder').style.display = 'none';
+    document.getElementById('contentArea').style.display = 'none';
+
+    if (module === 'basics') {
+        document.getElementById('menuBasics').style.display = 'flex';
+        switchTab('analysis'); 
+    } else if (module === 'timing') {
+        document.getElementById('menuTiming').style.display = 'flex';
+        switchTab('oscilloscope');
+    } else {
+        document.getElementById('menuPlaceholder').style.display = 'flex';
+        document.getElementById('moduleSubtitle').innerText = 'Coming Soon';
+    }
+}
+
+function switchTab(mode) {
+    currentMode = mode;
+    // Show the main layout (canvas, questions, etc.)
+    document.getElementById('contentArea').style.display = 'block';
+    
+    // Highlight active tab
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const activeTab = document.getElementById('tab-' + mode);
+    if (activeTab) activeTab.classList.add('active');
+
+    // Hide ALL input groups (including the new monostable one)
+    const groups = [
+        'inputGroupV', 'inputGroupI', 'inputGroupR', 
+        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
+        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
+        'inputGroupAstable', 'inputGroupMonostable', 'inputGroupMarkSpace',
+        'inputGroupColorVal', 'inputGroupColorNames'
+    ];
+    groups.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
+    // Update subtitles properly
+    const subtitle = document.getElementById('moduleSubtitle');
+    if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
+        subtitle.innerText = "1. Circuit Basics";
+    } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
+        subtitle.innerText = "3. Timing Circuits";
+    }
+
+    // Reset quiz state
+    isCurrentProblemSolved = false;
+    hasCheckedCurrentProblem = false;
+    viewedSolution = false;
+    unitErrorMade = false;
+    document.getElementById('feedback').innerHTML = '';
+    document.getElementById('solutions').style.display = 'none';
+    if (document.getElementById('helpBtn')) document.getElementById('helpBtn').style.display = 'none';
+
+    generateProblem();
+}
+function openDataSheet() {
+    const modal = document.getElementById('dataSheetModal');
+    if (modal) modal.style.display = 'block';
+}
+
+function closeDataSheet() {
+    const modal = document.getElementById('dataSheetModal');
+    if (modal) modal.style.display = 'none';
+}
+
+    function openSubmissionModal() {
+            if (problemsAttempted === 0) {
+                alert("Please attempt at least one question before downloading your score!");
+                return;
+            }
+            // Clear previous inputs
+            document.getElementById('studentNameInput').value = '';
+            document.getElementById('teacherSelect').value = '';
+            
+            // Show modal
+            document.getElementById('submissionModal').style.display = 'flex';
+        }
+
+function closeModal() {
+            document.getElementById('submissionModal').style.display = 'none';
+        }
+
+
+// ===============================================================================================================      
+// FUNCTION 4. MAIN ROUTER
+// ===============================================================================================================      
     
 function generateProblem() {
     const canvas = document.getElementById('circuitCanvas');
@@ -1591,7 +1593,7 @@ function generateProblem() {
     }
 }
 // =======================================================================================================      
-// FUNCTION 4. INPUT PROCESS AND SCORING (THE GRADERS) 
+// FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
 // =======================================================================================================   
     
 function checkAnswers() {
