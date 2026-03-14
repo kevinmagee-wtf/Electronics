@@ -1881,9 +1881,9 @@ function generateProblem() {
     const ctx = canvas.getContext('2d');
 
     // --- FIX FOR CANVAS SCALING ---
-    // This forces the canvas internal resolution to match your CSS box size
+    // Forces the internal resolution to match your CSS box size
     canvas.width = 600;
-    canvas.height = 400;
+    canvas.height = 420; // Matches your actual layout height
     // ------------------------------
 
     // 1. Reset Quiz State for ALL modules
@@ -1894,6 +1894,7 @@ function generateProblem() {
     
     const helpBtn = document.getElementById('helpBtn');
     const feedback = document.getElementById('feedback');
+    const solutions = document.getElementById('solutions');
     const grade9DividerBtn = document.getElementById('grade9DividerBtn'); 
     const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
 
@@ -1901,15 +1902,15 @@ function generateProblem() {
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
     
-    // 2. Hide Grade 9 Buttons
+    // 2. Hide Grade 9 Buttons by default
     if (grade9DividerBtn) grade9DividerBtn.style.display = 'none';
     if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'none';
 
-    // 3. Reset all text inputs (This clears old answers)
+    // 3. Reset all text inputs (This clears old answers from previous screens)
     const inputs = [
         'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
         'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
-        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
+        'inputAstable', 'inputAstableT', 'inputMarkSpace', 'inputMonostable',
         'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'
     ];
     inputs.forEach(id => {
@@ -1917,12 +1918,12 @@ function generateProblem() {
         if (el) el.value = '';
     });
 
-    // 4. Hide ALL input groups first (This wipes the "previous page" buttons)
+    // 4. Hide ALL input groups (The "Wipe Slate Clean" step)
     const groups = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
-        'inputGroupAstable', 'inputGroupMarkSpace', 
+        'inputGroupAstable', 'inputGroupMarkSpace', 'inputGroupMonostable',
         'inputGroupColorVal', 'inputGroupColorNames'
     ];
     groups.forEach(id => {
@@ -1930,33 +1931,49 @@ function generateProblem() {
         if (el) el.style.display = 'none';
     });
 
-    // 5. NOW call the specific module logic
+    // 5. ROUTER: Call specific module logic based on currentMode
     if (currentMode === 'analysis') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        document.getElementById('inputGroupI').style.display = 'inline-block';
+        const groupV = document.getElementById('inputGroupV');
+        const groupI = document.getElementById('inputGroupI');
+        if (groupV) groupV.style.display = 'inline-block';
+        if (groupI) groupI.style.display = 'inline-block';
         generateAnalysisProblem(ctx, canvas);
+
     } else if (currentMode === 'divider') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
+        const groupV = document.getElementById('inputGroupV');
+        if (groupV) groupV.style.display = 'inline-block';
         if (grade9DividerBtn) grade9DividerBtn.style.display = 'inline-block';
         generateDividerProblem(ctx, canvas);
+
     } else if (currentMode === 'resistance') {
-        document.getElementById('inputGroupR').style.display = 'inline-block';
+        const groupR = document.getElementById('inputGroupR');
+        if (groupR) groupR.style.display = 'inline-block';
         if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'inline-block';
-        // Small delay ensures canvas resizing is processed before complex resistance drawing
+        // Small delay ensures canvas resizing is processed before complex drawing
         setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
+
     } else if (currentMode === 'oscilloscope') {
+        // Osc logic shows its own required groups internally
         generateOscilloscopeProblem(ctx, canvas);
+
     } else if (currentMode === 'astable') {
+        const groupAstable = document.getElementById('inputGroupAstable');
+        const groupRatio = document.getElementById('inputGroupMarkSpace');
+        if (groupAstable) groupAstable.style.display = 'block';
+        if (groupRatio) groupRatio.style.display = 'block';
         generateAstableProblem(ctx, canvas);
+
+    } else if (currentMode === 'monostable') {
+        // Ensure Monostable group is shown and NOT the Astable one
+        const groupMono = document.getElementById('inputGroupMonostable');
+        if (groupMono) groupMono.style.display = 'block';
+        generateMonostableProblem(ctx, canvas);
+
     } else if (currentMode === 'colorcode') {
+        // Color code logic handles its own UI switching
         generateColorCodeProblem(ctx, canvas);
     }
-    else if (currentMode === 'monostable') {
-        // Show the timing input group (reusing the Astable group)
-        document.getElementById('inputGroupAstable').style.display = 'block';
-        generateMonostableProblem(ctx, canvas);
-    }
-}   
+} 
 
 
 // =======================================================================================================  
