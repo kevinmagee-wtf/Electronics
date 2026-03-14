@@ -501,7 +501,7 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
 // FUNCTION 2. PROBLEM GENERATORS (THE CONTENT CREATORS) 
 // =========================================================================================================     
 
-// this function deals with adding resistances in series and parallel
+// This function deals with adding resistances in series and parallel
 function generateResistanceProblem(ctx, canvas) {
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
     const expectedUnitStr = rUnitVisual === 'k\u03A9' ? 'kohms' : 'ohms';
@@ -543,7 +543,7 @@ function generateResistanceProblem(ctx, canvas) {
         ctx.fillText("R\u2082 = " + r2 + " " + rUnitVisual, 330, 260);
 
     } else if (scenario === 1) {
-        // --- SCENARIO 1: PARALLEL (Centered) ---
+        // --- SCENARIO 1: PARALLEL ---
         const pairs = [
             {r1: 10, r2: 10, req: 5}, {r1: 30, r2: 60, req: 20}, 
             {r1: 12, r2: 24, req: 8}, {r1: 40, r2: 40, req: 20},
@@ -578,7 +578,7 @@ function generateResistanceProblem(ctx, canvas) {
         logicHTML += "R<sub>Total</sub> = " + (pair.r1 * pair.r2) + " / " + (pair.r1 + pair.r2) + " = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
 
     } else {
-        // --- SCENARIO 2: SERIES-PARALLEL COMBINATION ---
+        // --- SCENARIO 2: SERIES-PARALLEL ---
         const sp = [
             {r1: 10, r2: 20, r3: 20, rp: 10, req: 20}, 
             {r1: 15, r2: 30, r3: 60, rp: 20, req: 35}, 
@@ -617,9 +617,9 @@ function generateResistanceProblem(ctx, canvas) {
     currentAnswers.rUnit = expectedUnitStr; 
 
     // Update Input UI and Clear Old Text
-    const labelV = document.getElementById('labelV');
-    if (labelV) {
-        labelV.innerHTML = "<span style='color:" + brandPink + "'>Total Resistance</span> = ";
+    const labelElement = document.getElementById('labelV');
+    if (labelElement) {
+        labelElement.innerHTML = "<span style='color:" + brandPink + "'>Total Resistance</span> = ";
     }
 
     const inputBox = document.getElementById('inputV');
@@ -628,13 +628,11 @@ function generateResistanceProblem(ctx, canvas) {
         inputBox.placeholder = "e.g. 10 " + rUnitVisual; 
     }
 
-    // Update Solution Box
     const solText = document.getElementById('solText');
     if (solText) {
         solText.innerHTML = logicHTML;
     }
 }
-
 
 function generateGrade9Resistance() {
     const canvas = document.getElementById('circuitCanvas');
