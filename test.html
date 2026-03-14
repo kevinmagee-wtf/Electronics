@@ -1224,6 +1224,17 @@ function generateOscilloscopeProblem(ctx, canvas) {
         }
 
 function generateAstableProblem(ctx, canvas) {
+    // 0. RESET UI & STATE
+    resetAnswerBox();
+    currentMode = 'astable';
+    const inputAstable = document.getElementById('inputAstable');
+    const inputAstableT = document.getElementById('inputAstableT');
+    const inputRatio = document.getElementById('inputRatio');
+    
+    if (inputAstable) inputAstable.value = "";
+    if (inputAstableT) inputAstableT.value = "";
+    if (inputRatio) inputRatio.value = "";
+
     // 1. Helper for simplifying the Ratio fraction
     const gcd = (a, b) => b ? gcd(b, a % b) : a;
 
@@ -1243,30 +1254,33 @@ function generateAstableProblem(ctx, canvas) {
     const common = gcd(num, den);
     const ratioString = (num / common) + "/" + (den / common);
 
-    // 4. Choose Question Type (Randomly)
-    // 0 = Freq/Period, 1 = Ratio
+    // 4. Choose Question Type (0 = Freq/Period, 1 = Ratio)
     const qType = Math.floor(Math.random() * 2);
     currentAnswers.astableQType = qType;
 
     // Toggle Input Boxes
     if (qType === 0) {
         document.getElementById('inputGroupAstable').style.display = "inline-block";
-        // --- ADD THE NEW CODE HERE ---
-        document.getElementById('inputAstable').placeholder = "Freq to 1 d.p. (e.g. 10.5 Hz)";
-        document.getElementById('inputAstableT').placeholder = "Period to 1 d.p. (e.g. 20.2 ms)";
-        // ------------------------------ 
+        if (inputAstable) inputAstable.placeholder = "e.g. " + freq.toFixed(1) + " Hz";
+        if (inputAstableT) inputAstableT.placeholder = "e.g. " + period_ms.toFixed(1) + " ms";
         
         if (document.getElementById('inputGroupMarkSpace')) {
             document.getElementById('inputGroupMarkSpace').style.display = "none";
         }
-        currentAnswers.astableValue = freq; currentAnswers.astableUnit = "hz";
-        currentAnswers.astableTValue = period_ms; currentAnswers.astableTUnit = "ms";
+
+        // Standardized answers for checker
+        currentAnswers.astableValue = parseFloat(freq.toFixed(1)); 
+        currentAnswers.astableUnit = "hz";
+        currentAnswers.astableTValue = parseFloat(period_ms.toFixed(1)); 
+        currentAnswers.astableTUnit = "ms";
     } else {
         document.getElementById('inputGroupAstable').style.display = "none";
         if (document.getElementById('inputGroupMarkSpace')) {
             document.getElementById('inputGroupMarkSpace').style.display = "inline-block";
+            if (inputRatio) inputRatio.placeholder = "e.g. 2/1";
         }
         currentAnswers.astableRatio = ratioString;
+        currentAnswers.expectedUnit = "ratio"; 
     }
 
     // 5. Drawing Logic
@@ -1342,16 +1356,15 @@ function generateAstableProblem(ctx, canvas) {
     // 6. Update Solutions Text
     let solHTML = "";
     if (qType === 0) {
-        solHTML = "f = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = <strong>" + freq.toFixed(1) + " Hz</strong><br>" +
-                  "T = 1 / f = <strong>" + period_ms.toFixed(1) + " ms</strong>";
+        solHTML = "<strong>Frequency (f)</strong> = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = <strong>" + freq.toFixed(1) + " Hz</strong><br>" +
+                  "<strong>Period (T)</strong> = 1 / f = <strong>" + period_ms.toFixed(1) + " ms</strong>";
     } else {
-        solHTML = "T<sub>ON</sub> / T<sub>OFF</sub> = (R1 + R2) / R2<br>" +
-                  "T<sub>ON</sub> / T<sub>OFF</sub> = (" + R1 + " + " + R2 + ") / " + R2 + "<br>" +
-                  "T<sub>ON</sub> / T<sub>OFF</sub> = " + num + " / " + den + " = <strong>" + ratioString + "</strong>";
+        solHTML = "<strong>Mark-to-Space Ratio</strong> = (R1 + R2) / R2<br>" +
+                  "Ratio = (" + R1 + " + " + R2 + ") / " + R2 + "<br>" +
+                  "Ratio = " + num + " / " + den + " = <strong>" + ratioString + "</strong>";
     }
     document.getElementById('solText').innerHTML = solHTML;
 }
-
 function drawMonostable(ctx, R, C, rUnit, cUnit) {
     ctx.clearRect(0, 0, 600, 420);
     ctx.strokeStyle = brandBlack;
