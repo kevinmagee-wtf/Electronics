@@ -615,6 +615,11 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
     currentAnswers.rValue = rTotal;
     currentAnswers.rUnit = expectedUnitStr; 
 
+    const inputBox = document.getElementById('inputV');
+    if (inputBox) {
+        // Since this level only asks for Total Resistance:
+        inputBox.placeholder = "e.g. 10 " + rUnitVisual; 
+    }
     const solText = document.getElementById('solText');
     if (solText) {
         solText.innerHTML = logicHTML;
@@ -752,15 +757,20 @@ function generateDividerProblem(ctx, canvas) {
     let labelVin  = (targetVar === 1) ? "?" : Vin_val + " " + vUnit;
     let labelVout = (targetVar === 0) ? "?" : Vout_val.toFixed(1) + " " + vUnit;
 
-    // UPDATED: Adding the 1 d.p. placeholder prompt
+    // Adding the placeholder prompt
     const inputBox = document.getElementById('inputV');
     if (inputBox) {
         if (targetVar === 0 || targetVar === 1) {
-            inputBox.placeholder = "Voltage (1 d.p.)"; 
+            // Asking for Voltage
+            inputBox.placeholder = "e.g. 10 " + vUnit; 
         } else {
-            inputBox.placeholder = "Resistance (1 d.p.)"; 
+            // Asking for Resistance
+            inputBox.placeholder = "e.g. 10 " + expectedRUnit; 
         }
     }
+
+
+    
     
     // Random Component Selector Logic
     let compTop, compBottom;
@@ -1023,8 +1033,10 @@ function generateAnalysisProblem(ctx, canvas) {
             document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
             document.getElementById('labelI').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.iNameHTML + "</span> = ";
 
-            document.getElementById('inputV').placeholder = "Value to 1 d.p.";
-            document.getElementById('inputI').placeholder = "Value to 1 d.p.";
+            //placeholder prompts
+            document.getElementById('inputV').placeholder = "e.g. 5 " + vUnit;
+            document.getElementById('inputI').placeholder = "e.g. 2 " + iUnit;
+           
     
             const vLabels = voltages.map(function(v, index) { return index === unknownVIndex ? v.display + " = ?" : v.display + " = " + v.val + " " + vUnit; });
             const iLabels = currents.map(function(c, index) { return index === unknownIIndex ? c.display + " = ?" : c.display + " = " + c.val + " " + iUnit; });
