@@ -2006,7 +2006,7 @@ function checkAnswers() {
         else activeInputs = ['inputMarkSpace'];
     }
     else if (currentMode === 'monostable') {
-        // Correctly points to the new Monostable input ID
+        // MATCH THIS TO YOUR HTML ID
         activeInputs = ['inputMonostable'];
     }
 
@@ -2014,7 +2014,10 @@ function checkAnswers() {
     let hasEmptyBox = false;
     activeInputs.forEach(id => {
         const el = document.getElementById(id);
-        if (el && el.value.trim() === '') hasEmptyBox = true;
+        // If the element doesn't exist or is empty, trigger the warning
+        if (!el || el.value.trim() === '') {
+            hasEmptyBox = true;
+        }
     });
 
     if (hasEmptyBox) {
@@ -2084,7 +2087,7 @@ function checkAnswers() {
         }
     } 
     else if (currentMode === 'monostable') {
-        // Uses parseInput to handle potential unit typing (e.g. "1.5s")
+        // Grabbing from inputMonostable
         const userT = parseInput(document.getElementById('inputMonostable').value);
         results.push(validateMatch(userT, currentAnswers.expectedT, currentAnswers.expectedUnit));
     }
