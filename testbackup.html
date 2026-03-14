@@ -1506,9 +1506,16 @@ function generateMonostableProblem() {
     if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'monostable';
     
-    // 1. Setup Variables (R > 47k and C > 22uF ensures T > 1.1s)
+    // Ensure questionText is cleared to match Basics pages and prevent repeating
+    const qText = document.getElementById('questionText');
+    if (qText) qText.innerHTML = "";
+
+    // 1. Setup Variables (Math adjusted to ensure T > 1.0s)
+    // R between 47k and 220k
     const R1_k = Math.floor(Math.random() * 173) + 47; 
     const R1_ohms = R1_k * 1000;
+    
+    // C between 22uF and 100uF
     const C_uF = [22, 33, 47, 68, 100][Math.floor(Math.random() * 5)];
     const C_farads = C_uF / 1000000;
 
@@ -1516,32 +1523,23 @@ function generateMonostableProblem() {
     const actualTime = 1.1 * R1_ohms * C_farads;
     const roundedTime = parseFloat(actualTime.toFixed(2)); 
  
-    // Store answer for the global checkAnswers() function
+    // Store standardized answer for checking logic
     if (typeof currentAnswers === "undefined") currentAnswers = {};
     currentAnswers.expectedT = roundedTime;
     currentAnswers.expectedUnit = 's';
 
     // 3. UI SETUP
-    // Show the specific Monostable input group we added to HTML
+    // Show the Monostable Input Group (Matches style of Basics)
     const monoGroup = document.getElementById('inputGroupMonostable');
-    if (monoGroup) {
-        monoGroup.style.display = "block";
-    }
+    if (monoGroup) monoGroup.style.display = "inline-block";
     
-    // Reset the input field
+    // Clear and set placeholder to 1 d.p with 's' inside the box
     const inputMono = document.getElementById('inputMonostable');
     if (inputMono) {
         inputMono.value = "";
-        inputMono.placeholder = "e.g. " + roundedTime;
+        inputMono.placeholder = actualTime.toFixed(1) + " s";
     }
 
-    // UPDATE THE NEW QUESTION DIV
-    const qText = document.getElementById('questionText');
-    if (qText) {
-        qText.style.display = "block"; 
-        qText.innerHTML = `<strong>Monostable Timer:</strong> Calculate the Time Period (T) for this one-shot circuit. <br>Give your answer in <strong>seconds (s)</strong>.`;
-    }
- 
     // 4. Drawing Helpers
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
@@ -1569,47 +1567,48 @@ function generateMonostableProblem() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#000000"; ctx.lineWidth = 2; ctx.fillStyle = "#000000";
 
-    // Power Rails
+    // Rails
     ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
     line(100, 40, 500, 40); // +Vcc
     ctx.fillText("+Vcc", 510, 45);
     line(100, 360, 500, 360); // 0V
     ctx.fillText("0V", 510, 365);
 
-    // 555 Chip
+    // 555 Chip Box
     ctx.strokeRect(260, 120, 140, 140);
     ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
     ctx.fillText("555", 330, 195);
 
-    // Timing Network (R and C)
+    // Timing Network
     const bX = 160;
     line(bX, 40, bX, 85); drawNode(bX, 40); 
     drawResistorBox(bX, 110, R1_k + " k\u03a9");
-    line(bX, 135, bX, 285); drawNode(bX, 180); // Middle Node
+    line(bX, 135, bX, 285); drawNode(bX, 180); 
     drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
     line(bX, 295, bX, 360); drawNode(bX, 360); 
 
-    // Connect Pin 6 & 7 to the RC junction (The "Monostable" signature)
-    line(bX, 180, 220, 180); drawNode(bX, 180); 
+    // Monostable Specific: Pin 6 & 7 tied together
+    line(bX, 180, 220, 180); drawNode(220, 180); 
     line(220, 140, 220, 210); 
-    line(220, 140, 260, 140); // To Pin 7
-    line(220, 210, 260, 210); // To Pin 6
+    line(220, 140, 260, 140); 
+    line(220, 210, 260, 210); 
     
     ctx.font = "14px Arial"; ctx.textAlign = "left";
-    ctx.fillText("7 (Discharge)", 265, 145);
-    ctx.fillText("6 (Threshold)", 265, 215);
+    ctx.fillText("7", 265, 145);
+    ctx.fillText("6", 265, 215);
 
-    // Trigger (Pin 2)
+    // Trigger Input (Pin 2)
     line(100, 240, 260, 240);
-    ctx.fillText("2 (Trig)", 265, 245);
+    ctx.fillText("2", 265, 245);
+    ctx.textAlign = "center"; ctx.fillText("Trigger", 130, 235);
 
-    // Power & Ground (Pins 8, 4, 1, 5)
+    // Support Pins
     line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
     line(300, 80, 300, 120); ctx.fillText("4", 300, 135);
     line(360, 80, 360, 120); ctx.fillText("8", 360, 135);
     line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
     line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
-    drawCapacitor(360, 310, "10 nF", "left"); // Control Cap
+    drawCapacitor(360, 310, "10 nF", "left");
     line(360, 315, 360, 360); drawNode(360, 360);
 
     // Output (Pin 3)
@@ -1625,8 +1624,7 @@ function generateMonostableProblem() {
             "T = 1.1 &times; " + R1_ohms + " &Omega; &times; " + C_farads.toExponential(2) + " F<br>" +
             "T = <strong>" + roundedTime + " s</strong>";
     }
-}
-    
+}   
 function generateColorCodeProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -1893,6 +1891,10 @@ function generateProblem() {
     const solutions = document.getElementById('solutions');
     const grade9DividerBtn = document.getElementById('grade9DividerBtn'); 
     const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
+    
+    // UPGRADE: Clear the dedicated question text container
+    const qText = document.getElementById('questionText');
+    if (qText) qText.innerHTML = ''; 
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
@@ -1962,15 +1964,14 @@ function generateProblem() {
     } else if (currentMode === 'monostable') {
         // Ensure Monostable group is shown and NOT the Astable one
         const groupMono = document.getElementById('inputGroupMonostable');
-        if (groupMono) groupMono.style.display = 'block';
+        if (groupMono) groupMono.style.display = 'inline-block';
         generateMonostableProblem(ctx, canvas);
 
     } else if (currentMode === 'colorcode') {
         // Color code logic handles its own UI switching
         generateColorCodeProblem(ctx, canvas);
     }
-} 
-
+}
 
 // =======================================================================================================  
 // FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
