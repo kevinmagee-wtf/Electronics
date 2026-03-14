@@ -613,27 +613,24 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
         logicHTML += "R<sub>Total</sub> = R\u2081 + R<sub>p</sub> = " + s.r1 + " + " + s.rp + " = <strong>" + s.req + " " + rUnitVisual + "</strong>";
     }
 
-   currentAnswers.rValue = rTotal;
+    currentAnswers.rValue = rTotal;
     currentAnswers.rUnit = expectedUnitStr; 
 
-    // Update the label next to the input box
+    // Update Input UI
     document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>Total Resistance</span> = ";
 
-    // Reset the placeholder to integer style (Cleaned up duplicate)
     const inputBox = document.getElementById('inputV');
     if (inputBox) {
+        inputBox.value = ""; // Clears any leftover "Value to 2 d.p." text
         inputBox.placeholder = "e.g. 10 " + rUnitVisual; 
     }
 
-    // Update the solution text
+    // Update Solution Box
     const solText = document.getElementById('solText');
     if (solText) {
         solText.innerHTML = logicHTML;
     }
-    if (inputBox) {
-        inputBox.value = ""; // This clears the "Value to 2 d.p." text
-        inputBox.placeholder = "e.g. 10 " + rUnitVisual;      
-} 
+}
 
 
 function generateGrade9Resistance() {
