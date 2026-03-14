@@ -501,8 +501,8 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
 // FUNCTION 2. PROBLEM GENERATORS (THE CONTENT CREATORS) 
 // =========================================================================================================     
 
-    //this function deals with adding resistances in series and parallel
-    function generateResistanceProblem(ctx, canvas) {
+// this function deals with adding resistances in series and parallel
+function generateResistanceProblem(ctx, canvas) {
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
     const expectedUnitStr = rUnitVisual === 'k\u03A9' ? 'kohms' : 'ohms';
 
@@ -616,12 +616,15 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
     currentAnswers.rValue = rTotal;
     currentAnswers.rUnit = expectedUnitStr; 
 
-    // Update Input UI
-    document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>Total Resistance</span> = ";
+    // Update Input UI and Clear Old Text
+    const labelV = document.getElementById('labelV');
+    if (labelV) {
+        labelV.innerHTML = "<span style='color:" + brandPink + "'>Total Resistance</span> = ";
+    }
 
     const inputBox = document.getElementById('inputV');
     if (inputBox) {
-        inputBox.value = ""; // Clears any leftover "Value to 2 d.p." text
+        inputBox.value = ""; // CLEARS THE GHOST TEXT "Value to 2 d.p."
         inputBox.placeholder = "e.g. 10 " + rUnitVisual; 
     }
 
