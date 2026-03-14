@@ -1975,11 +1975,17 @@ function generateProblem() {
     const grade9DividerBtn = document.getElementById('grade9DividerBtn'); 
     const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
     
-    // UPGRADE: Clear and hide the question text container to remove extra space/lines
+    // UPGRADE: Clear and hide the question text container
     const qText = document.getElementById('questionText');
     if (qText) {
         qText.innerHTML = ''; 
         qText.style.display = 'none';
+    }
+
+    // NEW UPGRADE: Clear the dynamic instruction prompt (e.g., "1 d.p.")
+    const promptEl = document.getElementById('instructionPrompt');
+    if (promptEl) {
+        promptEl.innerHTML = '';
     }
 
     if (helpBtn) helpBtn.style.display = 'none';
@@ -1990,7 +1996,7 @@ function generateProblem() {
     if (grade9DividerBtn) grade9DividerBtn.style.display = 'none';
     if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'none';
 
-    // 3. Reset all text inputs (This clears old answers from previous screens)
+    // 3. Reset all text inputs
     const inputs = [
         'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
         'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
@@ -2002,7 +2008,7 @@ function generateProblem() {
         if (el) el.value = '';
     });
 
-    // 4. Hide ALL input groups (The "Wipe Slate Clean" step)
+    // 4. Hide ALL input groups
     const groups = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -2033,11 +2039,9 @@ function generateProblem() {
         const groupR = document.getElementById('inputGroupR');
         if (groupR) groupR.style.display = 'inline-block';
         if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'inline-block';
-        // Small delay ensures canvas resizing is processed before complex drawing
         setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
 
     } else if (currentMode === 'oscilloscope') {
-        // Osc logic shows its own required groups internally
         generateOscilloscopeProblem(ctx, canvas);
 
     } else if (currentMode === 'astable') {
@@ -2048,13 +2052,11 @@ function generateProblem() {
         generateAstableProblem(ctx, canvas);
 
     } else if (currentMode === 'monostable') {
-        // Ensure Monostable group is shown as inline-block to match simple layout
         const groupMono = document.getElementById('inputGroupMonostable');
         if (groupMono) groupMono.style.display = 'inline-block';
         generateMonostableProblem(ctx, canvas);
 
     } else if (currentMode === 'colorcode') {
-        // Color code logic handles its own UI switching
         generateColorCodeProblem(ctx, canvas);
     }
 }
