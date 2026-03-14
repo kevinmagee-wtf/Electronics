@@ -1525,7 +1525,7 @@ function generateMonostableProblem() {
     const actualTime = 1.1 * R1_ohms * C_farads;
     const roundedTime = parseFloat(actualTime.toFixed(2)); 
  
-    // Store standardized answer for the 'Check Answer' button logic
+    // Store standardized answer for checking logic
     if (typeof currentAnswers === "undefined") currentAnswers = {};
     currentAnswers.expectedT = roundedTime;
     currentAnswers.expectedUnit = 's';
@@ -1542,9 +1542,10 @@ function generateMonostableProblem() {
         inputMono.placeholder = "e.g. " + roundedTime;
     }
 
-    // UPDATE THE QUESTION TEXT (Using the universal ID 'questionText')
+    // UPDATE THE QUESTION TEXT (Using the universal ID 'questionText' from your HTML)
     const qText = document.getElementById('questionText');
     if (qText) {
+        qText.style.display = "block"; // Force visibility
         qText.innerHTML = `<strong>Monostable Timer:</strong> Calculate the Time Period (T) for this one-shot circuit. <br>Give your answer in <strong>seconds (s)</strong>.`;
     }
  
