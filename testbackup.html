@@ -184,6 +184,13 @@
             <div class="quiz-section">
 
 
+
+
+
+
+
+
+                
                 
             <div class="quiz-header">
             <div class="score-container">
@@ -207,8 +214,15 @@
                             <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
                             <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
                         </div>
-
-                        <div class="input-group" id="inputGroupOscAmp" style="display:none;">
+          
+                
+                
+                
+                
+                
+                
+                
+                <div class="input-group" id="inputGroupOscAmp" style="display:none;">
                             <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label>
                             <input type="text" id="inputOscAmp" placeholder="e.g. 5 V">
                         </div>
@@ -1738,8 +1752,8 @@ function switchTab(mode) {
     // 1. Highlight active tab
     document.querySelectorAll('.tab').forEach(t => {
         t.classList.remove('active');
-        // Reset button colors to default pink unless active
-        if (!t.innerText.includes('Home')) {
+        // Reset button colors to default pink unless active (using your existing logic)
+        if (t.innerText && !t.innerText.includes('Home')) {
              t.style.backgroundColor = ""; 
         }
     });
@@ -1749,7 +1763,7 @@ function switchTab(mode) {
         activeTab.classList.add('active');
     }
 
-    // 2. Define ALL possible input groups
+    // 2. Define ALL possible input groups from your HTML
     const groups = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -1780,17 +1794,44 @@ function switchTab(mode) {
     if (g9Div) g9Div.style.display = (mode === 'divider') ? 'inline-block' : 'none';
     if (g9Res) g9Res.style.display = (mode === 'resistance') ? 'inline-block' : 'none';
 
-    // 6. Reset UI & Generate
-    document.getElementById('feedback').innerHTML = '';
-    document.getElementById('solutions').style.display = 'none';
+    // 6. Reset UI State
+    const feedback = document.getElementById('feedback');
+    if (feedback) feedback.innerHTML = '';
+    
+    const solutions = document.getElementById('solutions');
+    if (solutions) solutions.style.display = 'none';
+    
     const helpBtn = document.getElementById('helpBtn');
     if (helpBtn) helpBtn.style.display = 'none';
     
-    // Clear inputs
+    // Clear all text inputs
     const inputs = document.querySelectorAll('.input-area input');
     inputs.forEach(i => i.value = '');
 
-    // 7. DRAW THE CANVAS (This triggers the oscilloscope logic)
+    // 7. SPECIFIC UI PREPARATION FOR TIMING MODULES
+    // We show the containers here so generateProblem() doesn't fail when trying to update labels
+    if (mode === 'oscilloscope') {
+        ['inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'block';
+        });
+    } else if (mode === 'astable') {
+        const astableGroup = document.getElementById('inputGroupAstable');
+        const msGroup = document.getElementById('inputGroupMarkSpace');
+        if (astableGroup) astableGroup.style.display = 'block';
+        if (msGroup) msGroup.style.display = 'block';
+    } else if (mode === 'monostable') {
+        const monoGroup = document.getElementById('inputGroupMonostable');
+        if (monoGroup) monoGroup.style.display = 'block';
+    } else if (mode === 'analysis' || mode === 'divider') {
+        const vGroup = document.getElementById('inputGroupV');
+        const iGroup = document.getElementById('inputGroupI');
+        if (vGroup) vGroup.style.display = 'block';
+        if (iGroup) iGroup.style.display = 'block';
+    }
+
+    // 8. GENERATE THE PROBLEM
+    // Now that the containers are visible, the script can safely write to their labels
     generateProblem();
 }
     
