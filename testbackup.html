@@ -1502,43 +1502,48 @@ function drawMonostable(ctx, R, C, rUnit, cUnit) {
     ctx.stroke();
     ctx.fillText("Vout", chipX + w + 45, chipY + 85);
 }
-   
-function generateMonostableProblem(ctx, canvas) {
+    
+function generateMonostableProblem() {
+    const canvas = document.getElementById('circuitCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
     // 0. RESET UI & STATE
-    resetAnswerBox();
+    if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'monostable';
-    const inputAstable = document.getElementById('inputAstable');
-    if (inputAstable) inputAstable.value = "";
+    
+    // Clear and prepare the specific Monostable input box
+    const inputMono = document.getElementById('inputMonostable');
+    if (inputMono) inputMono.value = "";
 
-    // 1. Setup Variables
-    const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
-    const C_uF = [1, 10, 47, 100][Math.floor(Math.random() * 4)];
+    // 1. Setup Variables (Math adjusted to ensure T > 1.0s)
+    // R between 47k and 220k
+    const R1 = (Math.floor(Math.random() * 173) + 47) * 1000;
+    // C between 22uF and 100uF
+    const C_uF = [22, 33, 47, 68, 100][Math.floor(Math.random() * 5)];
     const C_farads = C_uF / 1000000;
 
-    // 2. Calculate Answer and ROUND to 1 decimal place
+    // 2. Calculate Answer (T = 1.1 * R * C)
     const actualTime = 1.1 * R1 * C_farads;
-    const roundedTime = parseFloat(actualTime.toFixed(1)); 
+    const roundedTime = parseFloat(actualTime.toFixed(2)); 
  
-    // Store standardized answer for checking
+    // Store standardized answer for checking logic
+    if (typeof currentAnswers === "undefined") currentAnswers = {};
     currentAnswers.expectedT = roundedTime;
-    currentAnswers.expectedUnit = 's'; // Standard lowercase 's'
+    currentAnswers.expectedUnit = 's';
 
-    // 3. UI Setup
-    document.getElementById('inputGroupAstable').style.display = "inline-block";
-    document.getElementById('labelAstable').innerHTML = "Time Delay (T) = ";
+    // 3. UI Setup - Using the specific Monostable Group
+    const monoGroup = document.getElementById('inputGroupMonostable');
+    if (monoGroup) monoGroup.style.display = "block";
     
-    if (inputAstable) {
-        inputAstable.placeholder = "e.g. " + roundedTime + " s";
+    const qText = document.getElementById('monostableQuestionText');
+    if (qText) {
+        qText.innerHTML = `Calculate the Time Period (T) for this one-shot timer.`;
     }
     
-    // Ensure secondary input boxes from Astable mode are hidden
-    const inputAstableT = document.getElementById('inputAstableT');
-    const labelAstableT = document.getElementById('labelAstableT');
-    const groupRatio = document.getElementById('inputGroupMarkSpace');
-    
-    if (inputAstableT) inputAstableT.style.display = "none";
-    if (labelAstableT) labelAstableT.style.display = "none";
-    if (groupRatio) groupRatio.style.display = "none";
+    if (inputMono) {
+        inputMono.placeholder = "e.g. " + roundedTime + " s";
+    }
  
     // 4. Drawing Helpers
     const line = (x1, y1, x2, y2) => {
@@ -1616,10 +1621,14 @@ function generateMonostableProblem(ctx, canvas) {
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
     // 6. Update Solution Text
-    document.getElementById('solText').innerHTML = 
-        "<strong>Formula:</strong> T = 1.1 &times; R &times; C<br>" +
-        "T = 1.1 &times; " + R1 + " &Omega; &times; " + C_farads.toExponential(2) + " F<br>" +
-        "T = <strong>" + roundedTime + " s</strong>";
+    const solElement = document.getElementById('solText');
+    if (solElement) {
+        solElement.innerHTML = 
+            "<strong>Formula:</strong> T = 1.1 &times; R &times; C<br>" +
+            "T = 1.1 &times; " + (R1/1000) + "k&Omega; &times; " + C_uF + "&mu;F<br>" +
+            "T = 1.1 &times; " + R1 + " &Omega; &times; " + C_farads.toExponential(2) + " F<br>" +
+            "T = <strong>" + roundedTime + " s</strong>";
+    }
 }
     
 function generateColorCodeProblem(ctx, canvas) {
