@@ -131,162 +131,103 @@
         .modal-actions button { flex: 1; margin: 0; }
     </style>
 </head>
-    <body>
+   <body>
     <div class="header">
         <h1><span>Abingdon</span> Electronics</h1>
         <p id="moduleSubtitle">Mastering the GCSE Course</p>
     </div>
 
     <div id="mainMenu" class="tabs">
-    <button class="tab" onclick="openModule('basics')">1. Circuit Basics</button>
-    <button class="tab" onclick="openModule('transistors')">5. Transistors</button>
-    
-    <button class="tab" onclick="openModule('logic')">2. Logic Gates</button>
-    <button class="tab" onclick="openModule('opamps')">6. Op Amps</button>
-    
-    <button class="tab" onclick="openModule('timing')">3. Timing Circuits</button>
-    <button class="tab" onclick="openModule('systems')">7. Systems</button>
-    
-    <button class="tab" onclick="openModule('flipflops')">4. Flip Flops & Counters</button>
-    <button class="tab" onclick="openModule('diodes')">8. Diodes</button>
-</div>
-
-<div id="menuBasics" class="tabs" style="display:none;">
-    <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
-    <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
-    <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
-    <button class="tab" id="tab-colorcode" onclick="switchTab('colorcode')">Colour Codes</button>
-    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
-</div>
-
-
-<div id="menuTiming" class="tabs" style="display:none;">
-    <button class="tab" id="tab-" onclick="switchTab('')"></button>
-    <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
-    <button class="tab" id="tab-monostable" onclick="switchTab('monostable')">Monostable 555</button>
-    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
-</div>
-        
-<div id="menuPlaceholder" class="tabs" style="display:none;">
-    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
-</div>
-
-<div id="contentArea" style="display:none;">
-        <div class="main-layout">
-        <div class="left-panel">
-        <div class="circuit-container">
-        <canvas id="circuitCanvas" width="600" height="420"></canvas>
-    </div>  
+        <button class="tab" onclick="openModule('basics')">1. Circuit Basics</button>
+        <button class="tab" onclick="openModule('transistors')">5. Transistors</button>
+        <button class="tab" onclick="openModule('logic')">2. Logic Gates</button>
+        <button class="tab" onclick="openModule('opamps')">6. Op Amps</button>
+        <button class="tab" onclick="openModule('timing')">3. Timing Circuits</button>
+        <button class="tab" onclick="openModule('systems')">7. Systems</button>
+        <button class="tab" onclick="openModule('flipflops')">4. Flip Flops & Counters</button>
+        <button class="tab" onclick="openModule('diodes')">8. Diodes</button>
     </div>
-            <div class="right-panel">
-            <div class="quiz-section">
 
+    <div id="menuBasics" class="tabs" style="display:none;">
+        <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
+        <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
+        <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
+        <button class="tab" id="tab-colorcode" onclick="switchTab('colorcode')">Colour Codes</button>
+        <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+    </div>
 
-                
-            <div class="quiz-header">
-            <div class="score-container">
-            <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
-            <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
+    <div id="menuTiming" class="tabs" style="display:none;">
+        <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
+        <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
+        <button class="tab" id="tab-monostable" onclick="switchTab('monostable')">Monostable 555</button>
+        <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+    </div>
+
+    <div id="menuPlaceholder" class="tabs" style="display:none;">
+        <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
+    </div>
+
+    <div id="contentArea" style="display:none;">
+        <div class="main-layout">
+            <div class="left-panel">
+                <div class="circuit-container">
+                    <canvas id="circuitCanvas" width="600" height="420"></canvas>
                 </div>
             </div>
-                    
-            <div class="input-area">
-            <div class="input-group" id="inputGroupV">
-            <label id="labelV" for="inputV">V = </label>
-            <input type="text" id="inputV" placeholder="e.g. 10 mV">
-    </div>
-                        
-                        <div class="input-group" id="inputGroupI">
+            
+            <div class="right-panel">
+                <div class="quiz-section">
+                    <div class="quiz-header">
+                        <div class="score-container">
+                            <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
+                            <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
+                        </div>
+                    </div>
+
+                    <div class="input-area">
+                        <div class="input-group" id="inputGroupV" style="display:none;">
+                            <label id="labelV" for="inputV">V = </label>
+                            <input type="text" id="inputV" placeholder="e.g. 10 V">
+                        </div>
+                        <div class="input-group" id="inputGroupI" style="display:none;">
                             <label id="labelI" for="inputI">I = </label>
                             <input type="text" id="inputI" placeholder="e.g. 5 mA">
                         </div>
-
                         <div class="input-group" id="inputGroupR" style="display:none;">
                             <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
-                            <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
+                            <input type="text" id="inputR" placeholder="e.g. 100 Ω">
                         </div>
 
                         <div class="input-group" id="inputGroupOscAmp" style="display:none;">
-                            <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label>
-                            <input type="text" id="inputOscAmp" placeholder="e.g. 5 V">
+                            <label for="inputOscAmp">Amplitude = </label>
+                            <input type="text" id="inputOscAmp">
                         </div>
                         <div class="input-group" id="inputGroupOscMark" style="display:none;">
-                            <label id="labelOscMark" for="inputOscMark">Mark Time = </label>
-                            <input type="text" id="inputOscMark" placeholder="e.g. 10 ms">
+                            <label for="inputOscMark">Mark = </label>
+                            <input type="text" id="inputOscMark">
                         </div>
                         <div class="input-group" id="inputGroupOscSpace" style="display:none;">
-                            <label id="labelOscSpace" for="inputOscSpace">Space Time = </label>
-                            <input type="text" id="inputOscSpace" placeholder="e.g. 5 ms">
+                            <label for="inputOscSpace">Space = </label>
+                            <input type="text" id="inputOscSpace">
                         </div>
                         <div class="input-group" id="inputGroupOscPeriod" style="display:none;">
-                            <label id="labelOscPeriod" for="inputOscPeriod">Time Period = </label>
-                            <input type="text" id="inputOscPeriod" placeholder="e.g. 15 ms">
+                            <label for="inputOscPeriod">Period = </label>
+                            <input type="text" id="inputOscPeriod">
                         </div>
                         <div class="input-group" id="inputGroupOscFreq" style="display:none;">
-                            <label id="labelOscFreq" for="inputOscFreq">Frequency = </label>
-                            <input type="text" id="inputOscFreq" placeholder="e.g. 66.7 Hz">
+                            <label for="inputOscFreq">Freq = </label>
+                            <input type="text" id="inputOscFreq">
                         </div>
                         <div class="input-group" id="inputGroupOscRatio" style="display:none;">
-                            <label id="labelOscRatio" for="inputOscRatio">Mark-Space ratio = </label>
-                            <input type="text" id="inputOscRatio" placeholder="e.g. 2">
+                            <label for="inputOscRatio">Ratio = </label>
+                            <input type="text" id="inputOscRatio">
                         </div>
 
-                        <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
-                            <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
-                                
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <label id="labelAstable" for="inputAstable">Frequency = </label>
-                                <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
-                            </div>
-                            <div>
-                                <label id="labelAstableT" for="inputAstableT">Time Period = </label>
-                                <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
-                            </div>
+                        <div class="input-group" id="inputGroupAstable" style="display:none;">
+                            <label for="inputAstable">Frequency = </label>
+                            <input type="text" id="inputAstable">
                         </div>
 
-                        <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%;">
-                            <div style="font-size: 16px; margin-bottom: 15px; color: #E64097;">
-                            </div>
-                            <div style="margin-bottom: 10px;">
-                                <label for="inputMarkSpace" style="font-weight: bold;">Mark-Space Ratio = </label>
-                                <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;">
-                            </div>
-                            <div style="font-size: 14px; color: #666;">(Give answer as a simplified fraction)</div>
-                        </div>
-
-
-
-
-<div id="inputGroupColorVal" class="input-group" style="display:none;">
-    <div style="margin-bottom: 10px;">
-        <label>Resistance (Ω): </label>
-        <input type="text" id="inputResValue" placeholder="e.g. 1.2 kΩ" style="width: 140px;">
-    </div>
-    <div>
-        <label>Tolerance (%): </label>
-        <input type="text" id="inputResTol" placeholder="e.g. 5" style="width: 140px;">
-    </div>
-</div>
-
-<div id="inputGroupColorNames" class="input-group" style="display:none;">
-    <label>Band 1: </label><input type="text" id="inputBand1" placeholder="e.g. red" style="width: 100px;">
-    <label>Band 2: </label><input type="text" id="inputBand2" placeholder="e.g. grey" style="width: 100px;">
-    <label>Band 3: </label><input type="text" id="inputBand3" placeholder="e.g. blue" style="width: 100px;">
-    <label>Band 4: </label><input type="text" id="inputBandTol" placeholder="e.g. gold" style="width: 100px;">
-</div>
-
-
-                
-<div class="input-group" id="inputGroupColorNames" style="display:none; text-align: center;">
-    <div style="margin-bottom: 10px;">
-        Band 1: <input type="text" id="inputBand1" placeholder="Colour" style="width: 100px;">
-        Band 2: <input type="text" id="inputBand2" placeholder="Colour" style="width: 100px;">
-        Band 3: <input type="text" id="inputBand3" placeholder="Colour" style="width: 100px;">
-        Band 4: <input type="text" id="inputBandTol" placeholder="Colour" style="width: 100px;">
-    </div>
-</div>
-                
                         <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
                         <div id="feedback" class="feedback"></div>
                     </div>
@@ -294,10 +235,8 @@
 
                 <div class="controls">
                     <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
-                    <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
-                    <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
-                    <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
-                    <button id="dataSheetBtn" class="btn-check" style="background-color: #6c757d; color: white;" onclick="openDataSheet()">📖 Data Sheet</button>
+                    <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Show Solution</button>
+                    <button class="btn-check" style="background-color: #6c757d;" onclick="openDataSheet()">📖 Data Sheet</button>
                 </div>
 
                 <div id="solutions" class="solutions">
@@ -308,67 +247,94 @@
         </div>
     </div>
 
-    <div id="submissionModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <h3>Submit Your Score</h3>
-            <div class="form-group">
-                <label for="studentNameInput">Your Name:</label>
-                <input type="text" id="studentNameInput" placeholder="Enter your full name">
-            </div>
-            <div class="form-group">
-                <label for="teacherSelect">Your Teacher:</label>
-                <select id="teacherSelect">
-                    <option value="">-- Select Your Teacher --</option>
-                    <option value="Mr. Magee">Mr. Magee</option>
-                    <option value="Mr. Brooks">Mr. Brooks</option>
-                    <option value="Mr. Mason">Mr. Mason</option>
-                    <option value="Mr. Willoughby">Mr. Willoughby</option>
-                </select>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn-check" id="confirmSubmitBtn" onclick="processSubmission()">Submit Score</button>
-            </div>
-        </div>
-    </div>
+    <script>
+        // CORE VARIABLES
+        let currentMode = '';
+        let currentAnswers = {};
+        const brandBlack = "#000000";
 
+        // 1. MODULE NAVIGATION
+        function openModule(module) {
+            // Hide Home Menu
+            document.getElementById('mainMenu').style.display = 'none';
+            
+            // Hide all sub-menus
+            document.getElementById('menuBasics').style.display = 'none';
+            document.getElementById('menuTiming').style.display = 'none';
+            
+            // Show content area
+            document.getElementById('contentArea').style.display = 'block';
 
-           <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
-    <div style="background-color: white; padding: 20px; border-radius: 15px; max-width: 600px; width: 90%; position: relative; margin: 10% auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-        <span onclick="closeDataSheet()" style="position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #E64097; font-weight: bold;">&times;</span>
-        
-        <h2 style="color: #E64097; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;">Electronics Data Sheet</h2>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; color: #333; font-family: sans-serif;">
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Basic Laws</h4>
-                <p>V = I &times; R</p>
-                <p>P = I &times; V</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Resistance</h4>
-                <p>Series: R<sub>T</sub> = R<sub>1</sub> + R<sub>2</sub></p>
-                <p>Parallel: R<sub>p</sub> = (R<sub>1</sub> &times; R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>)</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Potential Dividers</h4>
-                <p>V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))</p>
-            </div>
-            <div>
-    <h4 style="margin-bottom: 5px; color: #000;">555 Astable</h4>
-    <p>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</p>
-    <p>T = 0.693 &times; (R<sub>1</sub> + 2R<sub>2</sub>) &times; C</p>
-    <p style="margin-top: 10px; font-weight: bold;">
-        <span>T<sub>ON</sub></span> / <span>T<sub>OFF</sub></span> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub>
-    </p>
-</div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="btn-check" onclick="closeDataSheet()">Close Sheet</button>
-        </div>
-    </div>
-</div>
+            if (module === 'basics') {
+                document.getElementById('menuBasics').style.display = 'flex';
+                switchTab('analysis');
+            } else if (module === 'timing') {
+                document.getElementById('menuTiming').style.display = 'flex';
+                switchTab('oscilloscope');
+            } else {
+                document.getElementById('menuPlaceholder').style.display = 'flex';
+            }
+        }
+
+        function goHome() {
+            document.getElementById('mainMenu').style.display = 'grid';
+            document.getElementById('menuBasics').style.display = 'none';
+            document.getElementById('menuTiming').style.display = 'none';
+            document.getElementById('contentArea').style.display = 'none';
+        }
+
+        function switchTab(tabName) {
+            // Remove 'active' from all tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            // Add 'active' to current tab
+            const activeTab = document.getElementById('tab-' + tabName);
+            if (activeTab) activeTab.classList.add('active');
+
+            currentMode = tabName;
+            generateProblem();
+        }
+
+        function generateProblem() {
+            const canvas = document.getElementById('circuitCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            if (currentMode === 'oscilloscope') {
+                generateOscilloscopeProblem(ctx, canvas);
+            } 
+            // Add your other generator calls here (astable, analysis, etc.)
+        }
+
+        // 2. HELPER: ROUND RECT
+        function drawRoundRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath(); ctx.moveTo(x + radius, y); 
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius); 
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height); 
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius); 
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y); 
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+        }
+
+        // 3. YOUR OSCILLOSCOPE GENERATOR (The one we fixed)
+        function generateOscilloscopeProblem(ctx, canvas) {
+            // ... [Paste the generateOscilloscopeProblem code here] ...
+        }
+
+        function resetAnswerBox() {
+            document.getElementById('feedback').innerText = "";
+            document.getElementById('solutions').style.display = "none";
+        }
+
+        function toggleSolutions() {
+            const s = document.getElementById('solutions');
+            s.style.display = (s.style.display === 'none') ? 'block' : 'none';
+        }
+    </script>
+</body>
 
 
 
