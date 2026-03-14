@@ -857,8 +857,23 @@ function generateDividerProblem(ctx, canvas) {
         logicHTML += "<em>Core Equation:</em> <strong>V<sub>OUT</sub> = V<sub>supply</sub> &times; (R\u2082 / (R\u2081 + R\u2082))</strong><br><br>";
         
         if (targetVar === 0) {
-            logicHTML += "<em>Step 1:</em> Find R<sub>TOTAL</sub> = " + R1_val + " + " + R2_val + " = " + (R1_val+R2_val
- 
+            logicHTML += "<em>Step 1:</em> Find R<sub>TOTAL</sub> = " + R1_val + " + " + R2_val + " = " + (R1_val+R2_val) + "<br>";
+            logicHTML += "<em>Step 2:</em> V<sub>OUT</sub> = " + Vin_val + " &times; (" + R2_val + " / " + (R1_val+R2_val) + ") = <strong>" + Vout_val.toFixed(1) + " " + vUnit + "</strong>";
+        } else if (targetVar === 1) {
+            logicHTML += "<em>Step 1:</em> Rearrange for V<sub>supply</sub> = V<sub>OUT</sub> / (R\u2082 / R<sub>TOTAL</sub>)<br>";
+            logicHTML += "<em>Step 2:</em> V<sub>supply</sub> = " + Vout_val.toFixed(1) + " / (" + R2_val + " / " + (R1_val+R2_val) + ") = <strong>" + Vin_val.toFixed(1) + " " + vUnit + "</strong>";
+        } else if (targetVar === 2) {
+            logicHTML += "<em>Step 1:</em> If V<sub>OUT</sub> is " + Vout_val.toFixed(1) + "V, the voltage across R\u2081 is (" + Vin_val + " - " + Vout_val.toFixed(1) + ") = " + (Vin_val-Vout_val).toFixed(1) + "V.<br>";
+            logicHTML += "<em>Step 2:</em> Since voltage shares in ratio: R\u2081 = R\u2082 &times; (V<sub>R1</sub> / V<sub>R2</sub>)<br>";
+            logicHTML += "<em>Step 3:</em> R\u2081 = " + R2_val + " &times; (" + (Vin_val-Vout_val).toFixed(1) + " / " + Vout_val.toFixed(1) + ") = <strong>" + R1_val.toFixed(1) + " " + rUnitVisual + "</strong>";
+        } else if (targetVar === 3) {
+            logicHTML += "<em>Step 1:</em> If V<sub>OUT</sub> is " + Vout_val.toFixed(1) + "V, the voltage across R\u2081 is (" + Vin_val + " - " + Vout_val.toFixed(1) + ") = " + (Vin_val-Vout_val).toFixed(1) + "V.<br>";
+            logicHTML += "<em>Step 2:</em> Since voltage shares in ratio: R\u2082 = R\u2081 &times; (V<sub>R2</sub> / V<sub>R1</sub>)<br>";
+            logicHTML += "<em>Step 3:</em> R\u2082 = " + R1_val + " &times; (" + Vout_val.toFixed(1) + " / " + (Vin_val-Vout_val).toFixed(1) + ") = <strong>" + R2_val.toFixed(1) + " " + rUnitVisual + "</strong>";
+        }
+        solText.innerHTML = logicHTML;
+    }
+}
 // ======================================================
 // Grade 9 Parallel Divider Problem (Calculator Required)
 // ======================================================
