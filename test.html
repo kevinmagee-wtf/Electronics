@@ -182,15 +182,7 @@
     </div>
             <div class="right-panel">
             <div class="quiz-section">
-
-
-
-
-
-
-
-
-                
+            <div id="questionText" style="font-weight: bold; margin-bottom: 15px; color: #333; min-height: 45px; border-bottom: 1px solid #f2c7db; padding-bottom: 10px;"></div>
                 
             <div class="quiz-header">
             <div class="score-container">
@@ -215,14 +207,14 @@
                             <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
                         </div>
           
+                    
+                        <div class="input-group" id="inputGroupMonostable" style="display:none;">
+                            <label for="inputMonostable">T = </label>
+                            <input type="text" id="inputMonostable" style="width: 100px;">
+                        </div>  
                 
                 
-                
-                
-                
-                
-                
-                <div class="input-group" id="inputGroupOscAmp" style="display:none;">
+                        <div class="input-group" id="inputGroupOscAmp" style="display:none;">
                             <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label>
                             <input type="text" id="inputOscAmp" placeholder="e.g. 5 V">
                         </div>
@@ -1502,44 +1494,49 @@ function drawMonostable(ctx, R, C, rUnit, cUnit) {
     ctx.stroke();
     ctx.fillText("Vout", chipX + w + 45, chipY + 85);
 }
-   
-function generateMonostableProblem(ctx, canvas) {
+    
+function generateMonostableProblem() {
+    const canvas = document.getElementById('circuitCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
     // 0. RESET UI & STATE
-    resetAnswerBox();
+    if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'monostable';
-    const inputAstable = document.getElementById('inputAstable');
-    if (inputAstable) inputAstable.value = "";
+    
+    // Ensure questionText is cleared and hidden to match the simpler Basics layout
+    const qText = document.getElementById('questionText');
+    if (qText) {
+        qText.innerHTML = "";
+        qText.style.display = "none";
+    }
 
-    // 1. Setup Variables
-    const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
-    const C_uF = [1, 10, 47, 100][Math.floor(Math.random() * 4)];
+    // 1. Setup Variables (Math adjusted to ensure T > 1.0s)
+    const R1_k = Math.floor(Math.random() * 173) + 47; 
+    const R1_ohms = R1_k * 1000;
+    const C_uF = [22, 33, 47, 68, 100][Math.floor(Math.random() * 5)];
     const C_farads = C_uF / 1000000;
 
-    // 2. Calculate Answer and ROUND to 1 decimal place
-    const actualTime = 1.1 * R1 * C_farads;
-    const roundedTime = parseFloat(actualTime.toFixed(1)); 
+    // 2. Calculate Answer (T = 1.1 * R * C)
+    const actualTime = 1.1 * R1_ohms * C_farads;
+    const roundedTime = parseFloat(actualTime.toFixed(2)); 
  
-    // Store standardized answer for checking
+    if (typeof currentAnswers === "undefined") currentAnswers = {};
     currentAnswers.expectedT = roundedTime;
-    currentAnswers.expectedUnit = 's'; // Standard lowercase 's'
+    currentAnswers.expectedUnit = 's';
 
-    // 3. UI Setup
-    document.getElementById('inputGroupAstable').style.display = "inline-block";
-    document.getElementById('labelAstable').innerHTML = "Time Delay (T) = ";
+    // 3. UI SETUP
+    // Show the Monostable Input Group as inline-block for a clean row
+    const monoGroup = document.getElementById('inputGroupMonostable');
+    if (monoGroup) monoGroup.style.display = "inline-block";
     
-    if (inputAstable) {
-        inputAstable.placeholder = "e.g. " + roundedTime + " s";
+    // Clear and set placeholder to 1 d.p with 's' inside the box
+    const inputMono = document.getElementById('inputMonostable');
+    if (inputMono) {
+        inputMono.value = "";
+        inputMono.placeholder = actualTime.toFixed(1) + " s";
     }
-    
-    // Ensure secondary input boxes from Astable mode are hidden
-    const inputAstableT = document.getElementById('inputAstableT');
-    const labelAstableT = document.getElementById('labelAstableT');
-    const groupRatio = document.getElementById('inputGroupMarkSpace');
-    
-    if (inputAstableT) inputAstableT.style.display = "none";
-    if (labelAstableT) labelAstableT.style.display = "none";
-    if (groupRatio) groupRatio.style.display = "none";
- 
+
     // 4. Drawing Helpers
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
@@ -1582,7 +1579,7 @@ function generateMonostableProblem(ctx, canvas) {
     // Timing Network
     const bX = 160;
     line(bX, 40, bX, 85); drawNode(bX, 40); 
-    drawResistorBox(bX, 110, (R1/1000) + " k\u03a9");
+    drawResistorBox(bX, 110, R1_k + " k\u03a9");
     line(bX, 135, bX, 285); drawNode(bX, 180); 
     drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
     line(bX, 295, bX, 360); drawNode(bX, 360); 
@@ -1616,10 +1613,14 @@ function generateMonostableProblem(ctx, canvas) {
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
     // 6. Update Solution Text
-    document.getElementById('solText').innerHTML = 
-        "<strong>Formula:</strong> T = 1.1 &times; R &times; C<br>" +
-        "T = 1.1 &times; " + R1 + " &Omega; &times; " + C_farads.toExponential(2) + " F<br>" +
-        "T = <strong>" + roundedTime + " s</strong>";
+    const solElement = document.getElementById('solText');
+    if (solElement) {
+        solElement.innerHTML = 
+            "<strong>Formula:</strong> T = 1.1 &times; R &times; C<br>" +
+            "T = 1.1 &times; " + R1_k + "k&Omega; &times; " + C_uF + "&mu;F<br>" +
+            "T = 1.1 &times; " + R1_ohms + " &Omega; &times; " + C_farads.toExponential(2) + " F<br>" +
+            "T = <strong>" + roundedTime + " s</strong>";
+    }
 }
     
 function generateColorCodeProblem(ctx, canvas) {
@@ -1872,9 +1873,9 @@ function generateProblem() {
     const ctx = canvas.getContext('2d');
 
     // --- FIX FOR CANVAS SCALING ---
-    // This forces the canvas internal resolution to match your CSS box size
+    // Forces the internal resolution to match your CSS box size
     canvas.width = 600;
-    canvas.height = 400;
+    canvas.height = 420; // Matches your actual layout height
     // ------------------------------
 
     // 1. Reset Quiz State for ALL modules
@@ -1885,22 +1886,30 @@ function generateProblem() {
     
     const helpBtn = document.getElementById('helpBtn');
     const feedback = document.getElementById('feedback');
+    const solutions = document.getElementById('solutions');
     const grade9DividerBtn = document.getElementById('grade9DividerBtn'); 
     const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
+    
+    // UPGRADE: Clear and hide the question text container to remove extra space/lines
+    const qText = document.getElementById('questionText');
+    if (qText) {
+        qText.innerHTML = ''; 
+        qText.style.display = 'none';
+    }
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
     if (feedback) feedback.innerHTML = '';
     
-    // 2. Hide Grade 9 Buttons
+    // 2. Hide Grade 9 Buttons by default
     if (grade9DividerBtn) grade9DividerBtn.style.display = 'none';
     if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'none';
 
-    // 3. Reset all text inputs (This clears old answers)
+    // 3. Reset all text inputs (This clears old answers from previous screens)
     const inputs = [
         'inputV', 'inputI', 'inputR', 'inputOscAmp', 'inputOscMark', 
         'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio', 
-        'inputAstable', 'inputAstableT', 'inputMarkSpace', 
+        'inputAstable', 'inputAstableT', 'inputMarkSpace', 'inputMonostable',
         'inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'
     ];
     inputs.forEach(id => {
@@ -1908,12 +1917,12 @@ function generateProblem() {
         if (el) el.value = '';
     });
 
-    // 4. Hide ALL input groups first (This wipes the "previous page" buttons)
+    // 4. Hide ALL input groups (The "Wipe Slate Clean" step)
     const groups = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio', 
-        'inputGroupAstable', 'inputGroupMarkSpace', 
+        'inputGroupAstable', 'inputGroupMarkSpace', 'inputGroupMonostable',
         'inputGroupColorVal', 'inputGroupColorNames'
     ];
     groups.forEach(id => {
@@ -1921,35 +1930,49 @@ function generateProblem() {
         if (el) el.style.display = 'none';
     });
 
-    // 5. NOW call the specific module logic
+    // 5. ROUTER: Call specific module logic based on currentMode
     if (currentMode === 'analysis') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        document.getElementById('inputGroupI').style.display = 'inline-block';
+        const groupV = document.getElementById('inputGroupV');
+        const groupI = document.getElementById('inputGroupI');
+        if (groupV) groupV.style.display = 'inline-block';
+        if (groupI) groupI.style.display = 'inline-block';
         generateAnalysisProblem(ctx, canvas);
+
     } else if (currentMode === 'divider') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
+        const groupV = document.getElementById('inputGroupV');
+        if (groupV) groupV.style.display = 'inline-block';
         if (grade9DividerBtn) grade9DividerBtn.style.display = 'inline-block';
         generateDividerProblem(ctx, canvas);
+
     } else if (currentMode === 'resistance') {
-        document.getElementById('inputGroupR').style.display = 'inline-block';
+        const groupR = document.getElementById('inputGroupR');
+        if (groupR) groupR.style.display = 'inline-block';
         if (grade9ResistorBtn) grade9ResistorBtn.style.display = 'inline-block';
-        // Small delay ensures canvas resizing is processed before complex resistance drawing
+        // Small delay ensures canvas resizing is processed before complex drawing
         setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
+
     } else if (currentMode === 'oscilloscope') {
+        // Osc logic shows its own required groups internally
         generateOscilloscopeProblem(ctx, canvas);
+
     } else if (currentMode === 'astable') {
+        const groupAstable = document.getElementById('inputGroupAstable');
+        const groupRatio = document.getElementById('inputGroupMarkSpace');
+        if (groupAstable) groupAstable.style.display = 'block';
+        if (groupRatio) groupRatio.style.display = 'block';
         generateAstableProblem(ctx, canvas);
+
+    } else if (currentMode === 'monostable') {
+        // Ensure Monostable group is shown as inline-block to match simple layout
+        const groupMono = document.getElementById('inputGroupMonostable');
+        if (groupMono) groupMono.style.display = 'inline-block';
+        generateMonostableProblem(ctx, canvas);
+
     } else if (currentMode === 'colorcode') {
+        // Color code logic handles its own UI switching
         generateColorCodeProblem(ctx, canvas);
     }
-    else if (currentMode === 'monostable') {
-        // Show the timing input group (reusing the Astable group)
-        document.getElementById('inputGroupAstable').style.display = 'block';
-        generateMonostableProblem(ctx, canvas);
-    }
-}   
-
-
+}
 // =======================================================================================================  
 // FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
 // =======================================================================================================   
@@ -1964,7 +1987,7 @@ function checkAnswers() {
     let activeInputs = [];
     if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
     else if (currentMode === 'divider') activeInputs = ['inputV'];
-    else if (currentMode === 'resistance') activeInputs = ['inputR']; // MATCHES YOUR NEW HTML
+    else if (currentMode === 'resistance') activeInputs = ['inputR']; 
     else if (currentMode === 'oscilloscope') {
         activeInputs = ['inputOscAmp'];
         if (currentAnswers.oscQType === 1) activeInputs.push('inputOscMark', 'inputOscSpace');
@@ -1983,15 +2006,18 @@ function checkAnswers() {
         else activeInputs = ['inputMarkSpace'];
     }
     else if (currentMode === 'monostable') {
-        // Checking inputAstable as per your monostable setup
-        activeInputs = ['inputAstable'];
+        // MATCH THIS TO YOUR HTML ID
+        activeInputs = ['inputMonostable'];
     }
 
     // Check for empty boxes
     let hasEmptyBox = false;
     activeInputs.forEach(id => {
         const el = document.getElementById(id);
-        if (el && el.value.trim() === '') hasEmptyBox = true;
+        // If the element doesn't exist or is empty, trigger the warning
+        if (!el || el.value.trim() === '') {
+            hasEmptyBox = true;
+        }
     });
 
     if (hasEmptyBox) {
@@ -2039,7 +2065,6 @@ function checkAnswers() {
     } else if (currentMode === 'divider') {
         results.push(validateMatch(parseInput(document.getElementById('inputV').value), currentAnswers.vValue, currentAnswers.vUnit));
     } else if (currentMode === 'resistance') {
-        // VALIDATING AGAINST inputR
         results.push(validateMatch(parseInput(document.getElementById('inputR').value), currentAnswers.rValue, currentAnswers.rUnit));
     } else if (currentMode === 'oscilloscope') {
         results.push(validateMatch(parseInput(document.getElementById('inputOscAmp').value), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
@@ -2062,8 +2087,9 @@ function checkAnswers() {
         }
     } 
     else if (currentMode === 'monostable') {
-        const userT = parseInput(document.getElementById('inputAstable').value);
-        results.push(validateMatch(userT, currentAnswers.expectedT, 's'));
+        // Grabbing from inputMonostable
+        const userT = parseInput(document.getElementById('inputMonostable').value);
+        results.push(validateMatch(userT, currentAnswers.expectedT, currentAnswers.expectedUnit));
     }
 
     // 4. Final Scoring and Feedback Display
@@ -2095,7 +2121,6 @@ function checkAnswers() {
 
     updateScoreboard();
 }
-
     
 async function processSubmission() {
             const studentName = document.getElementById('studentNameInput').value.trim();
