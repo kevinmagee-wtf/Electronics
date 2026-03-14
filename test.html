@@ -870,9 +870,11 @@ function generateGrade9DividerProblem() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Update Question Text to mention rounding!
+    // Update Question Text to 1 d.p.
     const qText = document.getElementById('questionText');
-    if (qText) qText.innerHTML = "<strong>🏆 Grade 9 Challenge:</strong> Calculate the output voltage (V<sub>OUT</sub>) for this parallel-series network. <em>(Give your answer to 2 decimal places)</em>";
+    if (qText) {
+        qText.innerHTML = "<strong>🏆 Grade 9 Challenge:</strong> Calculate the output voltage (V<sub>OUT</sub>) for this parallel-series network. <em>(Give your answer to 1 decimal place)</em>";
+    }
 
     // Hide feedback and solutions initially
     const feedback = document.getElementById('feedback');
@@ -883,24 +885,23 @@ function generateGrade9DividerProblem() {
     const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
 
-    // 1. GENERATE THE HARDER GRADE 9 MATH
-    // Randomize completely independent resistor values
-    let R1_val = Math.floor(Math.random() * 20) + 5; // 5 to 24
-    let R2_val = Math.floor(Math.random() * 25) + 5; // 5 to 29
-    let R3_val = Math.floor(Math.random() * 25) + 5; // 5 to 29
-    let Vin_val = Math.floor(Math.random() * 20) + 5; // 5 to 24
+    // 1. GENERATE MATH (Now set to 1 d.p.)
+    let R1_val = Math.floor(Math.random() * 20) + 5; 
+    let R2_val = Math.floor(Math.random() * 25) + 5; 
+    let R3_val = Math.floor(Math.random() * 25) + 5; 
+    let Vin_val = Math.floor(Math.random() * 20) + 5; 
 
-    // Calculate precise decimal values
+    // Calculate precision values to 1 d.p.
     let Rp_exact = (R2_val * R3_val) / (R2_val + R3_val);
-    let Rp_rounded = parseFloat(Rp_exact.toFixed(2));
+    let Rp_rounded = parseFloat(Rp_exact.toFixed(1));
 
     let Rtotal_exact = R1_val + Rp_exact;
-    let Rtotal_rounded = parseFloat(Rtotal_exact.toFixed(2));
+    let Rtotal_rounded = parseFloat(Rtotal_exact.toFixed(1));
 
     let Vout_exact = Vin_val * (Rp_exact / Rtotal_exact);
-    let Vout_val = parseFloat(Vout_exact.toFixed(2)); // Round final answer to 2 d.p.
+    let Vout_val = parseFloat(Vout_exact.toFixed(1)); 
 
-    // Set the correct answer for the Check Answer button
+    // Set the correct answer
     currentAnswers.vNameHTML = 'V<sub>OUT</sub>';
     currentAnswers.vValue = Vout_val;
     currentAnswers.vUnit = vUnit;
@@ -908,71 +909,48 @@ function generateGrade9DividerProblem() {
     // Update UI Inputs
     document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>V<sub>OUT</sub></span> = ";
     const inputBox = document.getElementById('inputV');
-    // Hint at decimals in the placeholder
-    if (inputBox) inputBox.placeholder = "e.g. 4.25 " + vUnit; 
+    
+    if (inputBox) {
+        inputBox.value = ""; // Clear any old text
+        inputBox.placeholder = "e.g. 1.2 " + vUnit; // 1 d.p. placeholder as requested
+    }
 
-    // 2. DRAW THE PARALLEL CIRCUIT
+    // --- DRAWING CODE (Remains the same as your original) ---
     ctx.strokeStyle = brandBlack; 
     ctx.lineWidth = 2;
-
-    // Top and Bottom Rails
     drawLine(ctx, 150, 60, 450, 60);
     drawLine(ctx, 150, 360, 450, 360);
     ctx.fillStyle = brandBlack;
     ctx.font = "bold 16px Arial";
     ctx.fillText("0V (GND)", 260, 390);
-
-    // Top Resistor (R1)
     drawLine(ctx, 300, 60, 300, 100);
     drawComponent(ctx, 'fixed', 300, 125);
     drawLine(ctx, 300, 150, 300, 210);
-
-    // Vout Junction (Extended way out to the right to clear the parallel branch)
     ctx.beginPath(); ctx.arc(300, 210, 4, 0, Math.PI * 2); ctx.fill();
     drawLine(ctx, 300, 210, 410, 210); 
     ctx.beginPath(); ctx.arc(414, 210, 4, 0, Math.PI * 2); 
     ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
-    
     ctx.fillStyle = brandBlack;
-    drawLine(ctx, 300, 210, 300, 240); // Wire down to parallel split
-
-    // Parallel Split Node
+    drawLine(ctx, 300, 210, 300, 240);
     ctx.beginPath(); ctx.arc(300, 240, 4, 0, Math.PI * 2); ctx.fill();
-
-    // Left Parallel Branch (R2)
     drawLine(ctx, 300, 240, 220, 240);
     drawLine(ctx, 220, 240, 220, 270);
     drawComponent(ctx, 'fixed', 220, 295);
     drawLine(ctx, 220, 320, 220, 340);
     drawLine(ctx, 220, 340, 300, 340);
-
-    // Right Parallel Branch (R3)
     drawLine(ctx, 300, 240, 380, 240);
     drawLine(ctx, 380, 240, 380, 270);
     drawComponent(ctx, 'fixed', 380, 295);
     drawLine(ctx, 380, 320, 380, 340);
     drawLine(ctx, 380, 340, 300, 340);
-
-    // Parallel Merge Node
     ctx.beginPath(); ctx.arc(300, 340, 4, 0, Math.PI * 2); ctx.fill();
-    
-    // Final wire to ground
     drawLine(ctx, 300, 340, 300, 360);
-
-    // 3. TEXT LABELS
     ctx.font = "16px Arial"; 
     ctx.fillStyle = brandBlack;
-    
     ctx.fillText("+Vsupply = " + Vin_val + " " + vUnit, 230, 45); 
     ctx.fillText("R\u2081 = " + R1_val + " " + rUnitVisual, 340, 130);
-    
-    // R2 (Left Branch Label)
     ctx.fillText("R\u2082 = " + R2_val + " " + rUnitVisual, 130, 300);
-    
-    // R3 (Right Branch Label)
     ctx.fillText("R\u2083 = " + R3_val + " " + rUnitVisual, 420, 300);
-
-    // Vout Target Label (Pink)
     ctx.fillStyle = brandPink;
     ctx.font = "bold 18px Arial";
     ctx.fillText("V", 430, 216);
@@ -981,23 +959,13 @@ function generateGrade9DividerProblem() {
     ctx.font = "bold 16px Arial";
     ctx.fillText("= ?", 475, 216);
 
-    // 4. STEP-BY-STEP SOLUTION (Updated to Product-over-Sum for GCSE!)
+    // 4. SOLUTION TEXT (Now showing 1 d.p. logic)
     const solText = document.getElementById('solText');
     if (solText) {
         let logicHTML = "<strong>🏆 Grade 9 Solution: V<sub>OUT</sub> = " + Vout_val + " " + vUnit + "</strong><br><br>";
-        
-        logicHTML += "<em>Step 1:</em> Find the equivalent resistance of the parallel pair (R<sub>p</sub>) using Product &divide; Sum.<br>";
-        logicHTML += "R<sub>p</sub> = (R\u2082 &times; R\u2083) / (R\u2082 + R\u2083)<br>";
-        logicHTML += "R<sub>p</sub> = (" + R2_val + " &times; " + R3_val + ") / (" + R2_val + " + " + R3_val + ")<br>";
-        logicHTML += "R<sub>p</sub> = " + (R2_val * R3_val) + " / " + (R2_val + R3_val) + " = <strong>" + Rp_rounded + " " + rUnitVisual + "</strong> <em>(rounded to 2 d.p.)</em><br><br>";
-        
-        logicHTML += "<em>Step 2:</em> Find total resistance of the circuit (R<sub>TOTAL</sub>).<br>";
-        logicHTML += "R<sub>TOTAL</sub> = R\u2081 + R<sub>p</sub> = " + R1_val + " + " + Rp_rounded + " = <strong>" + Rtotal_rounded + " " + rUnitVisual + "</strong><br><br>";
-        
-        logicHTML += "<em>Step 3:</em> Calculate V<sub>OUT</sub> using the potential divider equation.<br>";
-        logicHTML += "V<sub>OUT</sub> = V<sub>supply</sub> &times; (R<sub>p</sub> / R<sub>TOTAL</sub>)<br>";
-        logicHTML += "V<sub>OUT</sub> = " + Vin_val + " &times; (" + Rp_rounded + " / " + Rtotal_rounded + ") = <strong>" + Vout_val + " " + vUnit + "</strong>";
-        
+        logicHTML += "<em>Step 1:</em> Find R<sub>p</sub>: (R\u2082 &times; R\u2083) / (R\u2082 + R\u2083) = <strong>" + Rp_rounded + " " + rUnitVisual + "</strong><br>";
+        logicHTML += "<em>Step 2:</em> Total Resistance = R\u2081 + R<sub>p</sub> = <strong>" + Rtotal_rounded + " " + rUnitVisual + "</strong><br>";
+        logicHTML += "<em>Step 3:</em> V<sub>OUT</sub> = V<sub>supply</sub> &times; (R<sub>p</sub> / R<sub>TOTAL</sub>) = <strong>" + Vout_val + " " + vUnit + "</strong>";
         solText.innerHTML = logicHTML;
     }
 }
