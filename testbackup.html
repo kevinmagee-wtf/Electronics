@@ -207,16 +207,14 @@
                             <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
                         </div>
           
-                
-         <div class="input-group" id="inputGroupMonostable" style="display:none;">
-            <label for="inputMonostable">T = </label>
-            <input type="text" id="inputMonostable" style="width: 160px;"> 
-        </div>       
-                
-                
+                    
+                        <div class="input-group" id="inputGroupMonostable" style="display:none;">
+                            <label for="inputMonostable">T = </label>
+                            <input type="text" id="inputMonostable" style="width: 100px;">
+                        </div>  
                 
                 
-                <div class="input-group" id="inputGroupOscAmp" style="display:none;">
+                        <div class="input-group" id="inputGroupOscAmp" style="display:none;">
                             <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label>
                             <input type="text" id="inputOscAmp" placeholder="e.g. 5 V">
                         </div>
@@ -1506,16 +1504,16 @@ function generateMonostableProblem() {
     if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'monostable';
     
-    // Ensure questionText is cleared to match Basics pages and prevent repeating
+    // Ensure questionText is cleared and hidden to match the simpler Basics layout
     const qText = document.getElementById('questionText');
-    if (qText) qText.innerHTML = "";
+    if (qText) {
+        qText.innerHTML = "";
+        qText.style.display = "none";
+    }
 
     // 1. Setup Variables (Math adjusted to ensure T > 1.0s)
-    // R between 47k and 220k
     const R1_k = Math.floor(Math.random() * 173) + 47; 
     const R1_ohms = R1_k * 1000;
-    
-    // C between 22uF and 100uF
     const C_uF = [22, 33, 47, 68, 100][Math.floor(Math.random() * 5)];
     const C_farads = C_uF / 1000000;
 
@@ -1523,13 +1521,12 @@ function generateMonostableProblem() {
     const actualTime = 1.1 * R1_ohms * C_farads;
     const roundedTime = parseFloat(actualTime.toFixed(2)); 
  
-    // Store standardized answer for checking logic
     if (typeof currentAnswers === "undefined") currentAnswers = {};
     currentAnswers.expectedT = roundedTime;
     currentAnswers.expectedUnit = 's';
 
     // 3. UI SETUP
-    // Show the Monostable Input Group (Matches style of Basics)
+    // Show the Monostable Input Group as inline-block for a clean row
     const monoGroup = document.getElementById('inputGroupMonostable');
     if (monoGroup) monoGroup.style.display = "inline-block";
     
@@ -1624,7 +1621,8 @@ function generateMonostableProblem() {
             "T = 1.1 &times; " + R1_ohms + " &Omega; &times; " + C_farads.toExponential(2) + " F<br>" +
             "T = <strong>" + roundedTime + " s</strong>";
     }
-}   
+}
+    
 function generateColorCodeProblem(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -1892,9 +1890,12 @@ function generateProblem() {
     const grade9DividerBtn = document.getElementById('grade9DividerBtn'); 
     const grade9ResistorBtn = document.getElementById('grade9ResistorBtn');
     
-    // UPGRADE: Clear the dedicated question text container
+    // UPGRADE: Clear and hide the question text container to remove extra space/lines
     const qText = document.getElementById('questionText');
-    if (qText) qText.innerHTML = ''; 
+    if (qText) {
+        qText.innerHTML = ''; 
+        qText.style.display = 'none';
+    }
 
     if (helpBtn) helpBtn.style.display = 'none';
     if (solutions) solutions.style.display = 'none';
@@ -1962,7 +1963,7 @@ function generateProblem() {
         generateAstableProblem(ctx, canvas);
 
     } else if (currentMode === 'monostable') {
-        // Ensure Monostable group is shown and NOT the Astable one
+        // Ensure Monostable group is shown as inline-block to match simple layout
         const groupMono = document.getElementById('inputGroupMonostable');
         if (groupMono) groupMono.style.display = 'inline-block';
         generateMonostableProblem(ctx, canvas);
@@ -1972,7 +1973,6 @@ function generateProblem() {
         generateColorCodeProblem(ctx, canvas);
     }
 }
-
 // =======================================================================================================  
 // FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
 // =======================================================================================================   
