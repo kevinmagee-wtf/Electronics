@@ -160,8 +160,10 @@
 </div>
 
 
+        
+
 <div id="menuTiming" class="tabs" style="display:none;">
-    <button class="tab" id="tab-" onclick="switchTab('')"></button>
+    <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
     <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
     <button class="tab" id="tab-monostable" onclick="switchTab('monostable')">Monostable 555</button>
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
@@ -182,6 +184,13 @@
             <div class="quiz-section">
 
 
+
+
+
+
+
+
+                
                 
             <div class="quiz-header">
             <div class="score-container">
@@ -205,8 +214,15 @@
                             <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
                             <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
                         </div>
-
-                        <div class="input-group" id="inputGroupOscAmp" style="display:none;">
+          
+                
+                
+                
+                
+                
+                
+                
+                <div class="input-group" id="inputGroupOscAmp" style="display:none;">
                             <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label>
                             <input type="text" id="inputOscAmp" placeholder="e.g. 5 V">
                         </div>
@@ -1704,39 +1720,50 @@ function generateColorCodeProblem(ctx, canvas) {
     document.getElementById('contentArea').style.display = 'none';
     document.getElementById('moduleSubtitle').innerText = 'Mastering the GCSE Course';
 }
-      
+
 function openModule(module) {
+    // Hide Home Menu
     document.getElementById('mainMenu').style.display = 'none';
+    
+    // Hide all sub-menus first
     document.getElementById('menuBasics').style.display = 'none';
     document.getElementById('menuTiming').style.display = 'none';
     document.getElementById('menuPlaceholder').style.display = 'none';
-    document.getElementById('contentArea').style.display = 'none';
+    
+    // Show the content area
+    document.getElementById('contentArea').style.display = 'block';
 
+    // Show the correct sub-menu and trigger the first tab
     if (module === 'basics') {
         document.getElementById('menuBasics').style.display = 'flex';
-        switchTab('analysis'); 
+        switchTab('analysis');
     } else if (module === 'timing') {
         document.getElementById('menuTiming').style.display = 'flex';
-        switchTab('oscilloscope');
+        switchTab('oscilloscope'); // Default to oscilloscope
     } else {
         document.getElementById('menuPlaceholder').style.display = 'flex';
-        document.getElementById('moduleSubtitle').innerText = 'Coming Soon';
+        document.getElementById('contentArea').style.display = 'none';
     }
 }
-
-
     
 function switchTab(mode) {
     currentMode = mode;
-    // Show the main layout (canvas, questions, etc.)
-    document.getElementById('contentArea').style.display = 'block';
     
-    // Highlight active tab
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    const activeTab = document.getElementById('tab-' + mode);
-    if (activeTab) activeTab.classList.add('active');
+    // 1. Highlight active tab
+    document.querySelectorAll('.tab').forEach(t => {
+        t.classList.remove('active');
+        // Reset button colors to default pink unless active (using your existing logic)
+        if (t.innerText && !t.innerText.includes('Home')) {
+             t.style.backgroundColor = ""; 
+        }
+    });
 
-    // Hide ALL input groups (including the new monostable one)
+    const activeTab = document.getElementById('tab-' + mode);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+
+    // 2. Define ALL possible input groups from your HTML
     const groups = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -1744,30 +1771,70 @@ function switchTab(mode) {
         'inputGroupAstable', 'inputGroupMonostable', 'inputGroupMarkSpace',
         'inputGroupColorVal', 'inputGroupColorNames'
     ];
+
+    // 3. Hide all groups safely
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
-    // Update subtitles properly
+    // 4. Update the Subtitle
     const subtitle = document.getElementById('moduleSubtitle');
-    if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
-        subtitle.innerText = "1. Circuit Basics";
-    } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
-        subtitle.innerText = "3. Timing Circuits";
+    if (subtitle) {
+        if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
+            subtitle.innerText = "Module 1: Circuit Basics";
+        } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
+            subtitle.innerText = "Module 3: Timing Circuits";
+        }
     }
 
-    // Reset quiz state
-    isCurrentProblemSolved = false;
-    hasCheckedCurrentProblem = false;
-    viewedSolution = false;
-    unitErrorMade = false;
-    document.getElementById('feedback').innerHTML = '';
-    document.getElementById('solutions').style.display = 'none';
-    if (document.getElementById('helpBtn')) document.getElementById('helpBtn').style.display = 'none';
+    // 5. Show Grade 9 buttons only for specific modes
+    const g9Div = document.getElementById('grade9DividerBtn');
+    const g9Res = document.getElementById('grade9ResistorBtn');
+    if (g9Div) g9Div.style.display = (mode === 'divider') ? 'inline-block' : 'none';
+    if (g9Res) g9Res.style.display = (mode === 'resistance') ? 'inline-block' : 'none';
 
+    // 6. Reset UI State
+    const feedback = document.getElementById('feedback');
+    if (feedback) feedback.innerHTML = '';
+    
+    const solutions = document.getElementById('solutions');
+    if (solutions) solutions.style.display = 'none';
+    
+    const helpBtn = document.getElementById('helpBtn');
+    if (helpBtn) helpBtn.style.display = 'none';
+    
+    // Clear all text inputs
+    const inputs = document.querySelectorAll('.input-area input');
+    inputs.forEach(i => i.value = '');
+
+    // 7. SPECIFIC UI PREPARATION FOR TIMING MODULES
+    // We show the containers here so generateProblem() doesn't fail when trying to update labels
+    if (mode === 'oscilloscope') {
+        ['inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'block';
+        });
+    } else if (mode === 'astable') {
+        const astableGroup = document.getElementById('inputGroupAstable');
+        const msGroup = document.getElementById('inputGroupMarkSpace');
+        if (astableGroup) astableGroup.style.display = 'block';
+        if (msGroup) msGroup.style.display = 'block';
+    } else if (mode === 'monostable') {
+        const monoGroup = document.getElementById('inputGroupMonostable');
+        if (monoGroup) monoGroup.style.display = 'block';
+    } else if (mode === 'analysis' || mode === 'divider') {
+        const vGroup = document.getElementById('inputGroupV');
+        const iGroup = document.getElementById('inputGroupI');
+        if (vGroup) vGroup.style.display = 'block';
+        if (iGroup) iGroup.style.display = 'block';
+    }
+
+    // 8. GENERATE THE PROBLEM
+    // Now that the containers are visible, the script can safely write to their labels
     generateProblem();
 }
+    
 function openDataSheet() {
     const modal = document.getElementById('dataSheetModal');
     if (modal) modal.style.display = 'block';
