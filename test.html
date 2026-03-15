@@ -1266,10 +1266,15 @@ function generateOscilloscopeProblem(ctx, canvas) {
 
 
     
-function generateAstableProblem(ctx, canvas) {
-    // 0. RESET UI & STATE
+function generateAstableProblem() {
+    // 0. SELF-INITIALIZE CANVAS
+    const canvas = document.getElementById('circuitCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // 1. RESET UI & STATE
     if (typeof resetAnswerBox === "function") resetAnswerBox();
-    currentMode = 'astable';
+    currentMode = 'astable'; 
     
     // MATCHING THE HTML IDs
     const inputAstable = document.getElementById('inputAstable');
