@@ -1879,23 +1879,25 @@ function openModule(module) {
 function switchTab(mode) {
     currentMode = mode;
     
-    // 1. Highlight active tab
+    // 1. Highlight active tab & Reset all others
     document.querySelectorAll('.tab').forEach(t => {
         t.classList.remove('active');
+        // Reset styles to default pink/transparent
         if (t.innerText && !t.innerText.includes('Home')) {
              t.style.backgroundColor = ""; 
              t.style.color = "";
         }
     });
 
+    // Find the specific button using the ID (e.g., tab-astable)
     const activeTab = document.getElementById('tab-' + mode);
     if (activeTab) {
         activeTab.classList.add('active');
-        activeTab.style.backgroundColor = "#333"; // Black highlight
-        activeTab.style.color = "#fff";
+        activeTab.style.backgroundColor = "#333"; // Turn it Black
+        activeTab.style.color = "#fff";           // White text
     }
 
-    // 2. Define ALL possible input groups
+    // 2. Hide ALL potential input groups
     const groups = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -1904,13 +1906,12 @@ function switchTab(mode) {
         'inputGroupColorVal', 'inputGroupColorNames'
     ];
 
-    // 3. Hide all groups safely
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
-    // 4. Update the Subtitle
+    // 3. Update the Subtitle based on the module
     const subtitle = document.getElementById('moduleSubtitle');
     if (subtitle) {
         if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
@@ -1920,30 +1921,34 @@ function switchTab(mode) {
         }
     }
 
-    // 5. Show Grade 9 buttons only for specific modes
+    // 4. Handle Grade 9 Challenge Button Visibility
     const g9Div = document.getElementById('grade9DividerBtn');
     const g9Res = document.getElementById('grade9ResistorBtn');
     if (g9Div) g9Div.style.display = (mode === 'divider') ? 'inline-block' : 'none';
     if (g9Res) g9Res.style.display = (mode === 'resistance') ? 'inline-block' : 'none';
 
-    // 6. Reset UI State
+    // 5. Reset UI Elements
     if (typeof resetAnswerBox === "function") resetAnswerBox();
+    
     const feedback = document.getElementById('feedback');
     if (feedback) feedback.innerHTML = '';
+    
     const solutions = document.getElementById('solutions');
     if (solutions) solutions.style.display = 'none';
+    
     const helpBtn = document.getElementById('helpBtn');
     if (helpBtn) helpBtn.style.display = 'none';
     
-    // Clear all text inputs
+    // Clear all text inputs globally
     const inputs = document.querySelectorAll('.input-area input');
     inputs.forEach(i => i.value = '');
 
-    // 7. Make the content area visible
+    // 6. Ensure the main work area is visible
     const content = document.getElementById('contentArea');
     if (content) content.style.display = 'block';
 
-    // 8. CHOOSE THE CORRECT GENERATOR (The missing logic!)
+    // 7. CALL THE CORRECT GENERATOR
+    // This part ensures the right circuit is drawn on the canvas
     if (mode === 'astable') {
         generateAstableProblem();
     } else if (mode === 'monostable') {
@@ -1951,9 +1956,11 @@ function switchTab(mode) {
     } else if (mode === 'oscilloscope') {
         generateOscilloscopeProblem();
     } else if (mode === 'colorcode') {
-        generateColorCodeProblem(); 
+        if (typeof generateColorCodeProblem === "function") {
+            generateColorCodeProblem();
+        }
     } else {
-        // This handles analysis, divider, and resistance
+        // Fallback for basics: analysis, divider, and resistance
         generateProblem();
     }
 }
