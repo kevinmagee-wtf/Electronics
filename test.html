@@ -366,14 +366,17 @@
                         <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
                     </div>
 
+                    <!--555 MONOSTABLE:-->
                     <div class="input-group" id="inputGroupMonostable" style="display:none;">
-                        <label for="inputMonostable">T = </label>
+                        <label id="labelMonostable" for="inputMonostable">T = </label>
                         <input type="text" id="inputMonostable" style="width: 100px;">
-                        <span> s</span> 
+                        <span id="unitMonostable"> s</span> 
                     <!--GREY INSTRUCTION SUB-LABEL-->
                         <div id="monostableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;"></div>
                     </div>
 
+
+                    
                     <!--555 ASTABLE: FREQUENCY AND PERIOD INPUTS-->
                     <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
                         <div style="margin-bottom: 10px;">
@@ -1672,21 +1675,33 @@ function generateMonostableProblem() {
         cLabel = "C = ?";
     }
 
-    // 3. UI SETUP
+    // 3. UI SETUP (DYNAMIC LABELS & PLACEHOLDERS)
     const monoGroup = document.getElementById('inputGroupMonostable');
     if (monoGroup) monoGroup.style.display = "inline-block";
     
-    const monoPrompt = document.getElementById('monostableInstruction');
+    // Select the label and the prompt elements
+    const monoLabel = document.querySelector('#inputGroupMonostable label'); // The "Pulse Length =" text
+    const monoPrompt = document.getElementById('monostableInstruction');     // The "(Give answer to 1 d.p.)" text
+    const inputMono = document.getElementById('inputMonostable');           // The actual input box
+
     if (monoPrompt) {
-        if (qType === 1) monoPrompt.innerHTML = "Calculate Pulse Length (s)";
-        if (qType === 2) monoPrompt.innerHTML = "Calculate Resistance (k\u03a9)";
-        if (qType === 3) monoPrompt.innerHTML = "Calculate Capacitance (\u03bcF)";
+        monoPrompt.innerHTML = "(Give answer to 1 d.p.)";
+        monoPrompt.style.color = "#6c757d"; // Professional grey
     }
 
-    const inputMono = document.getElementById('inputMonostable');
     if (inputMono) {
         inputMono.value = "";
-        inputMono.placeholder = "1 d.p.";
+        // Set dynamic label and placeholder based on qType
+        if (qType === 1) {
+            if (monoLabel) monoLabel.innerHTML = "Pulse Length = ";
+            inputMono.placeholder = "e.g. 5.2 s";
+        } else if (qType === 2) {
+            if (monoLabel) monoLabel.innerHTML = "Resistance = ";
+            inputMono.placeholder = "e.g. 47.0 kΩ";
+        } else if (qType === 3) {
+            if (monoLabel) monoLabel.innerHTML = "Capacitance = ";
+            inputMono.placeholder = "e.g. 22.0 μF";
+        }
     }
 
     // 4. DRAWING HELPERS (Modified to allow color changes)
