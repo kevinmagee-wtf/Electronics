@@ -1646,7 +1646,6 @@ function generateMonostableProblem() {
     const C_uF = [10, 22, 33, 47, 100][Math.floor(Math.random() * 5)];
     const C_farads = C_uF / 1000000;
 
-    // Calculate T = 1.1 * R * C
     const actualTime = 1.1 * R1_ohms * C_farads;
     const roundedTime = parseFloat(actualTime.toFixed(1)); 
  
@@ -1660,21 +1659,19 @@ function generateMonostableProblem() {
     let cLabel = C_uF + " \u03bcF";
     let tLabel = "Pulse Length = " + roundedTime + " s";
 
-    if (qType === 1) { // Find T
+    if (qType === 1) {
         currentAnswers.expectedT = roundedTime;
         currentAnswers.expectedUnit = 's';
-        tLabel = "Pulse Length = ?";
-    } else if (qType === 2) { // Find R
-        currentAnswers.expectedT = R1_k; // We reuse this variable for the answer checker
+    } else if (qType === 2) {
+        currentAnswers.expectedT = R1_k;
         currentAnswers.expectedUnit = 'k';
         rLabel = "R = ?";
-    } else { // Find C
+    } else {
         currentAnswers.expectedT = C_uF;
         currentAnswers.expectedUnit = 'uf';
         cLabel = "C = ?";
     }
 
-    
     // 3. UI SETUP
     const monoGroup = document.getElementById('inputGroupMonostable');
     if (monoGroup) monoGroup.style.display = "inline-block";
@@ -1692,7 +1689,7 @@ function generateMonostableProblem() {
         inputMono.placeholder = "1 d.p.";
     }
 
-    // 4. DRAWING HELPERS
+    // 4. DRAWING HELPERS (Modified to allow color changes)
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     };
@@ -1700,12 +1697,14 @@ function generateMonostableProblem() {
         ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
     };
     const drawResistorBox = (x, y, val) => {
+        let oldColor = ctx.fillStyle;
         ctx.fillStyle = "white";
         ctx.fillRect(x - 12, y - 25, 24, 50);
         ctx.strokeRect(x - 12, y - 25, 24, 50);
-        ctx.fillStyle = "#000000";
+        ctx.fillStyle = oldColor; // Use the color set before calling helper
         ctx.font = "14px Arial"; ctx.textAlign = "right";
         ctx.fillText(val, x - 20, y + 5);
+        ctx.fillStyle = "#000000"; // Reset to black
     };
     const drawCapacitor = (x, y, val, align="right") => {
         line(x - 15, y - 5, x + 15, y - 5);
@@ -1720,10 +1719,10 @@ function generateMonostableProblem() {
     ctx.strokeStyle = "#000000"; ctx.lineWidth = 2; ctx.fillStyle = "#000000";
 
     // Rails
-    line(100, 40, 500, 40); // +Vcc
+    line(100, 40, 500, 40); 
     ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
     ctx.fillText("+Vcc", 510, 45);
-    line(100, 360, 500, 360); // 0V
+    line(100, 360, 500, 360); 
     ctx.fillText("0V", 510, 365);
 
     // 555 Body
@@ -1731,12 +1730,24 @@ function generateMonostableProblem() {
     ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
     ctx.fillText("555", 330, 195);
 
-    // Left Side Timing Components
+    // Timing Components
     const bX = 160;
     line(bX, 40, bX, 85); drawNode(bX, 40); 
+    
+    // PINK LOGIC FOR R
+    if (qType === 2) ctx.fillStyle = "#ff00ff"; 
+    else ctx.fillStyle = "#000000";
     drawResistorBox(bX, 110, rLabel);
+    ctx.fillStyle = "#000000"; // Reset
+
     line(bX, 135, bX, 285); drawNode(bX, 180); 
+    
+    // PINK LOGIC FOR C
+    if (qType === 3) ctx.fillStyle = "#ff00ff"; 
+    else ctx.fillStyle = "#000000";
     drawCapacitor(bX, 290, cLabel, "right");
+    ctx.fillStyle = "#000000"; // Reset
+
     line(bX, 295, bX, 360); drawNode(bX, 360); 
 
     line(bX, 180, 220, 180); drawNode(220, 180); 
@@ -1748,29 +1759,25 @@ function generateMonostableProblem() {
     ctx.fillText("7", 265, 145);
     ctx.fillText("6", 265, 215);
 
-    // Trigger & Pins
     line(100, 240, 260, 240);
     ctx.fillText("2", 265, 245);
     ctx.textAlign = "center"; ctx.fillText("Trigger", 130, 235);
 
-    // Top & Bottom Pins
+    // Pins
     line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
-    line(300, 80, 300, 120); ctx.fillText("4", 300, 135); // Corrected Alignment
-    line(360, 80, 360, 120); ctx.fillText("8", 360, 135); // Corrected Alignment
+    line(300, 80, 300, 120); ctx.fillText("4", 300, 135); 
+    line(360, 80, 360, 120); ctx.fillText("8", 360, 135); 
     line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
     line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
     drawCapacitor(360, 310, "10 nF", "left");
     line(360, 315, 360, 360); drawNode(360, 360);
 
-    // Output
     line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
-   // 6. VARIABLE LABEL BELOW PICTURE (UPDATED)
-    // We only need to show the pulse length text if we are NOT asking for T (qType !== 1)
+    // 6. VARIABLE LABEL BELOW PICTURE (Conditional & Offset Fix)
     if (qType !== 1) {
         ctx.font = "bold 16px Arial"; ctx.textAlign = "center"; ctx.fillStyle = "#333";
-        // The y-coordinate has been moved from 420 to 410 to stop it "pinching"
         ctx.fillText(tLabel, 300, 410);
     }
 
