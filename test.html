@@ -161,14 +161,16 @@
     margin: 0 auto; 
     padding: 10px 20px; 
     line-height: 1.6; 
-    color: #000; 
+    color: #333; /* Dark grey text for better contrast on light backgrounds */
 
-    /* THE NEW BLUEPRINT LOOK */
-    background-color: #1a2a3a; /* Deep navy */
+    /* BRIGHT ELECTRONICS FEEL */
+    background-color: #f0f4f7; 
     background-image: 
-        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
-    background-size: 30px 30px; /* Size of the grid squares */
+        radial-gradient(#d1d9e0 1px, transparent 1px), 
+        linear-gradient(#e2e8f0 1.5px, transparent 1.5px), 
+        linear-gradient(90deg, #e2e8f0 1.5px, transparent 1.5px);
+    background-size: 20px 20px, 100px 100px, 100px 100px;
+    background-position: 0 0, -1px -1px, -1px -1px;
 }
         .header { text-align: center; margin-bottom: 15px; }
         .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
