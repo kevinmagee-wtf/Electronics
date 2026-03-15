@@ -1765,9 +1765,13 @@ function generateMonostableProblem() {
     line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
-    // 6. VARIABLE LABEL BELOW PICTURE
-    ctx.font = "bold 16px Arial"; ctx.textAlign = "center"; ctx.fillStyle = "#333";
-    ctx.fillText(tLabel, 300, 420);
+   // 6. VARIABLE LABEL BELOW PICTURE (UPDATED)
+    // We only need to show the pulse length text if we are NOT asking for T (qType !== 1)
+    if (qType !== 1) {
+        ctx.font = "bold 16px Arial"; ctx.textAlign = "center"; ctx.fillStyle = "#333";
+        // The y-coordinate has been moved from 420 to 410 to stop it "pinching"
+        ctx.fillText(tLabel, 300, 410);
+    }
 
     // 7. SOLUTION TEXT
     const solElement = document.getElementById('solText');
