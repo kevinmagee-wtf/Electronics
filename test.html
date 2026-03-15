@@ -400,7 +400,7 @@
                     </div>
                     
                     <!--OSCILLOSCOPE INPUTS (KEPT IN ONE BLOCK)-->
-                    <div id="oscilloscopeInputs">
+                    <div id="oscilloscopeInputs" style="display:none;">
                         <div class="input-group" id="inputGroupOscAmp" style="display:none;">
                             <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label><input type="text" id="inputOscAmp">
                         </div>
@@ -2549,38 +2549,38 @@ function toggleSolutions() {
             } else { sol.style.display = 'none'; }
 }
 
-        window.onload = function() {
-        goHome(); // This ensures the 8 module buttons are shown first
-        };   
-    
+// ==========================================
+// FINAL INITIALIZATION (Place at the end of your .js file)
+// ==========================================
+
 function hideAllInputGroups() {
-    // 1. Define all the possible groups that might be visible
     const groups = [
-        'inputGroupV', 'inputGroupI', 'inputGroupR', 
+        'inputGroupV', 'inputGroupI', 'inputGroupR', 'oscilloscopeInputs',
         'inputGroupMonostable', 'inputGroupAstable', 'inputGroupMarkSpace',
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
         'inputGroupColorVal', 'inputGroupColorNames'
     ];
 
-    // 2. Loop through and hide them
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
-    // 3. Clear the feedback and solutions so they don't carry over
-    const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerHTML = "";
+    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = "";
+    if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'none';
     
-    const solutions = document.getElementById('solutions');
-    if (solutions) solutions.style.display = 'none';
-
-    // 4. Ensure the main container is visible
-    const content = document.getElementById('contentArea');
-    if (content) content.style.display = 'block';
+    // We do NOT force contentArea to block here. 
+    // This keeps the page clean until a user clicks a module.
 }
-    hideAllInputGroups();
+
+// This is the "Master Switch" that cleans the page when it first opens
+window.onload = function() {
+    hideAllInputGroups(); 
+    if (typeof goHome === "function") {
+        goHome(); 
+    }
+};
 </script>
 </body>
 </html>
