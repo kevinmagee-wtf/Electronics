@@ -197,11 +197,8 @@
                     </div>
                 </div>
                 
-                '5. THE INPUT AREA (ALL POSSIBLE ANSWER BOXES) These are the new placeholder divs for that grey text ("Give answer to 1 d.p.") you wanted under the boxes.'
+'5. THE INPUT AREA (ALL POSSIBLE ANSWER BOXES) These are the new placeholder divs for that grey text ("Give answer to 1 d.p.") you wanted under the boxes.'
                 <div class="input-area">
-                    
-                    'THE TOP INSTRUCTION (BLUE ITALIC)'
-                    <div id="instructionPrompt" style="color: #0d6efd; font-size: 0.9em; margin-bottom: 5px; font-style: italic;"></div>
 
                     'OHM'S LAW / DIVIDER INPUTS'
                     <div class="input-group" id="inputGroupV" style="display:none;">
@@ -222,10 +219,11 @@
                     '555 MONOSTABLE INPUTS'
                     <div class="input-group" id="inputGroupMonostable" style="display:none;">
                         <label for="inputMonostable">T = </label>
-                        <input type="text" id="inputMonostable" style="width: 100px;">
-                        // GREY INSTRUCTION SUB-LABEL
+                        <input type="text" id="inputMonostable" style="width: 100px;">              
+                    
+                    'GREY INSTRUCTION SUB-LABEL'
                         <div id="monostableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
-                    </div>  
+                    </div> 
 
                     '555 ASTABLE: FREQUENCY AND PERIOD INPUTS'
                     <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
@@ -237,6 +235,7 @@
                             <label id="labelAstableT" for="inputAstableT">Time Period = </label>
                             <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
                         </div>
+                        
                         'GREY INSTRUCTION SUB-LABEL'
                         <div id="astableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
                     </div>
@@ -293,7 +292,7 @@
                 </div> 
             </div> 
 
-            '6. ACTION CONTROLS (THE BUTTONS AT THE VERY BOTTOM)'
+'6. ACTION CONTROLS (THE BUTTONS AT THE VERY BOTTOM)'
             <div class="controls">
                 <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
                 <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
