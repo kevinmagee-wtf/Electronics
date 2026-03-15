@@ -1640,40 +1640,58 @@ function generateMonostableProblem() {
         qText.style.display = "none";
     }
 
-    // 1. Setup Variables
+    // 1. SETUP VARIABLES
     const R1_k = Math.floor(Math.random() * 173) + 47; 
     const R1_ohms = R1_k * 1000;
-    const C_uF = [22, 33, 47, 68, 100][Math.floor(Math.random() * 5)];
+    const C_uF = [10, 22, 33, 47, 100][Math.floor(Math.random() * 5)];
     const C_farads = C_uF / 1000000;
 
-    // 2. Calculate Answer (T = 1.1 * R * C)
+    // Calculate T = 1.1 * R * C
     const actualTime = 1.1 * R1_ohms * C_farads;
     const roundedTime = parseFloat(actualTime.toFixed(1)); 
  
     if (typeof currentAnswers === "undefined") currentAnswers = {};
     
-    // KEY FIX: Using 'expectedT' to match your checkAnswers function
-    currentAnswers.expectedT = roundedTime;
-    currentAnswers.expectedUnit = 's';
+    // 2. DECIDE QUESTION TYPE (1: Find T, 2: Find R, 3: Find C)
+    const qType = Math.floor(Math.random() * 3) + 1;
+    currentAnswers.monoQType = qType;
+
+    let rLabel = R1_k + " k\u03a9";
+    let cLabel = C_uF + " \u03bcF";
+    let tLabel = "Pulse Length = " + roundedTime + " s";
+
+    if (qType === 1) { // Find T
+        currentAnswers.expectedT = roundedTime;
+        currentAnswers.expectedUnit = 's';
+        tLabel = "Pulse Length = ?";
+    } else if (qType === 2) { // Find R
+        currentAnswers.expectedT = R1_k; // We reuse this variable for the answer checker
+        currentAnswers.expectedUnit = 'k';
+        rLabel = "R = ?";
+    } else { // Find C
+        currentAnswers.expectedT = C_uF;
+        currentAnswers.expectedUnit = 'uf';
+        cLabel = "C = ?";
+    }
 
     // 3. UI SETUP
-    hideAllInputGroups(); 
     const monoGroup = document.getElementById('inputGroupMonostable');
     if (monoGroup) monoGroup.style.display = "inline-block";
     
-    // Set the GREY instruction text
     const monoPrompt = document.getElementById('monostableInstruction');
     if (monoPrompt) {
-        monoPrompt.innerHTML = "(Give answer to 1 d.p.)";
+        if (qType === 1) monoPrompt.innerHTML = "Calculate Pulse Length (s)";
+        if (qType === 2) monoPrompt.innerHTML = "Calculate Resistance (k\u03a9)";
+        if (qType === 3) monoPrompt.innerHTML = "Calculate Capacitance (\u03bcF)";
     }
 
     const inputMono = document.getElementById('inputMonostable');
     if (inputMono) {
         inputMono.value = "";
-        inputMono.placeholder = actualTime.toFixed(1) + " s";
+        inputMono.placeholder = "1 d.p.";
     }
 
-    // 4. Drawing Helpers
+    // 4. DRAWING HELPERS
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     };
@@ -1696,25 +1714,28 @@ function generateMonostableProblem() {
         else ctx.fillText(val, x + 25, y + 5);
     };
     
-    // 5. Drawing the Circuit
+    // 5. DRAWING THE CIRCUIT
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#000000"; ctx.lineWidth = 2; ctx.fillStyle = "#000000";
 
+    // Rails
     line(100, 40, 500, 40); // +Vcc
     ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
     ctx.fillText("+Vcc", 510, 45);
     line(100, 360, 500, 360); // 0V
     ctx.fillText("0V", 510, 365);
 
+    // 555 Body
     ctx.strokeRect(260, 120, 140, 140);
     ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
     ctx.fillText("555", 330, 195);
 
+    // Left Side Timing Components
     const bX = 160;
     line(bX, 40, bX, 85); drawNode(bX, 40); 
-    drawResistorBox(bX, 110, R1_k + " k\u03a9");
+    drawResistorBox(bX, 110, rLabel);
     line(bX, 135, bX, 285); drawNode(bX, 180); 
-    drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
+    drawCapacitor(bX, 290, cLabel, "right");
     line(bX, 295, bX, 360); drawNode(bX, 360); 
 
     line(bX, 180, 220, 180); drawNode(220, 180); 
@@ -1726,29 +1747,38 @@ function generateMonostableProblem() {
     ctx.fillText("7", 265, 145);
     ctx.fillText("6", 265, 215);
 
+    // Trigger & Pins
     line(100, 240, 260, 240);
     ctx.fillText("2", 265, 245);
     ctx.textAlign = "center"; ctx.fillText("Trigger", 130, 235);
 
+    // Top & Bottom Pins
     line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
-    line(300, 80, 300, 120); ctx.fillText("4", 360, 135);
-    line(360, 80, 360, 120); ctx.fillText("8", 300, 135);
+    line(300, 80, 300, 120); ctx.fillText("4", 300, 135); // Corrected Alignment
+    line(360, 80, 360, 120); ctx.fillText("8", 360, 135); // Corrected Alignment
     line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
     line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
     drawCapacitor(360, 310, "10 nF", "left");
     line(360, 315, 360, 360); drawNode(360, 360);
 
+    // Output
     line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
-    // 6. Update Solution Text
+    // 6. VARIABLE LABEL BELOW PICTURE
+    ctx.font = "bold 16px Arial"; ctx.textAlign = "center"; ctx.fillStyle = "#333";
+    ctx.fillText(tLabel, 300, 420);
+
+    // 7. SOLUTION TEXT
     const solElement = document.getElementById('solText');
     if (solElement) {
-        solElement.innerHTML = 
-            "<strong>Formula:</strong> T = 1.1 &times; R &times; C<br>" +
-            "T = 1.1 &times; " + R1_k + "k&Omega; &times; " + C_uF + "&mu;F<br>" +
-            "T = 1.1 &times; " + R1_ohms + " &Omega; &times; " + C_farads.toExponential(2) + " F<br>" +
-            "T = <strong>" + actualTime.toFixed(1) + " s</strong>";
+        if (qType === 1) {
+            solElement.innerHTML = "<strong>Find T:</strong> T = 1.1 &times; R &times; C<br>T = 1.1 &times; " + R1_k + "k &times; " + C_uF + "&mu;F = <strong>" + roundedTime + " s</strong>";
+        } else if (qType === 2) {
+            solElement.innerHTML = "<strong>Find R:</strong> R = T / (1.1 &times; C)<br>R = " + roundedTime + " / (1.1 &times; " + C_uF + "e-6) = <strong>" + R1_k + " k&Omega;</strong>";
+        } else {
+            solElement.innerHTML = "<strong>Find C:</strong> C = T / (1.1 &times; R)<br>C = " + roundedTime + " / (1.1 &times; " + R1_ohms + ") = <strong>" + C_uF + " &mu;F</strong>";
+        }
     }
 }
     
