@@ -2186,7 +2186,8 @@ function checkAnswers() {
         else activeInputs.push('inputOscRatio');
     }
     else if (currentMode === 'colorcode') {
-        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
+        const valGroup = document.getElementById('inputGroupColorVal');
+        if (valGroup && valGroup.style.display !== 'none') {
             activeInputs = ['inputResValue', 'inputResTol'];
         } else {
             activeInputs = ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
@@ -2200,7 +2201,7 @@ function checkAnswers() {
         activeInputs = ['inputMonostable'];
     }
 
-    // Check for empty boxes
+    // Check for empty boxes (Safety check prevents script crashes)
     let hasEmptyBox = false;
     activeInputs.forEach(id => {
         const el = document.getElementById(id);
@@ -2268,7 +2269,7 @@ function checkAnswers() {
             results.push(validateMatch(parseInput(document.getElementById('inputOscPeriod').value), currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
             results.push(validateMatch(parseInput(document.getElementById('inputOscFreq').value), currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
         } else {
-            // M:S Ratio (Check as string match to handle the colon)
+            // EXAM BOARD STYLE: Fraction match as string (e.g. "1/2")
             const userRatio = document.getElementById('inputOscRatio').value.trim();
             results.push(userRatio === currentAnswers.oscRatioValue ? 'correct' : 'wrong');
         }
@@ -2277,6 +2278,7 @@ function checkAnswers() {
             results.push(validateMatch(parseInput(document.getElementById('inputAstable').value), currentAnswers.astableValue, currentAnswers.astableUnit));
             results.push(validateMatch(parseInput(document.getElementById('inputAstableT').value), currentAnswers.astableTValue, currentAnswers.astableTUnit));
         } else {
+            // String match for Mark/Space ratio
             const userRatio = document.getElementById('inputMarkSpace').value.trim();
             results.push(userRatio === currentAnswers.astableRatio ? 'correct' : 'wrong');
         }
@@ -2284,7 +2286,7 @@ function checkAnswers() {
     else if (currentMode === 'monostable') {
         const userInput = document.getElementById('inputMonostable').value;
         const parsedUser = parseInput(userInput);
-        // Uses the dynamic expectedT and expectedUnit (s, k, or uf)
+        // validateMatch handles number comparison and the expected unit
         results.push(validateMatch(parsedUser, currentAnswers.expectedT, currentAnswers.expectedUnit));
     }
 
