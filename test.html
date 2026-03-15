@@ -366,12 +366,10 @@
                         <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
                     </div>
 
-                    <!--555 MONOSTABLE:-->
                     <div class="input-group" id="inputGroupMonostable" style="display:none;">
                         <label id="labelMonostable" for="inputMonostable">T = </label>
-                        <input type="text" id="inputMonostable" style="width: 120px;">
-                        <span id="unitMonostable"> s</span> 
-                        <!--GREY INSTRUCTION SUB-LABEL-->
+                        <input type="text" id="inputMonostable" style="width: 140px;">
+                     <!--GREY INSTRUCTION SUB-LABEL-->
                         <div id="monostableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;"></div>
                     </div>
                     
@@ -1673,12 +1671,11 @@ function generateMonostableProblem() {
         cLabel = "C = ?";
     }
 
-// 3. UI SETUP (DYNAMIC LABELS, UNITS & PLACEHOLDERS)
+// 3. UI SETUP (UNITS INSIDE THE BOX)
     const monoGroup = document.getElementById('inputGroupMonostable');
     if (monoGroup) monoGroup.style.display = "inline-block";
     
     const monoLabel = document.getElementById('labelMonostable');
-    const monoUnit = document.getElementById('unitMonostable'); // Target the unit span
     const monoPrompt = document.getElementById('monostableInstruction');
     const inputMono = document.getElementById('inputMonostable');
 
@@ -1687,21 +1684,21 @@ function generateMonostableProblem() {
     if (inputMono) {
         inputMono.value = "";
         
+        // Match the placeholder style of your Basics pages
         if (qType === 1) { // Calculating Time
             if (monoLabel) monoLabel.innerHTML = "T = ";
-            if (monoUnit) monoUnit.innerHTML = " s";
-            inputMono.placeholder = "e.g. 1.2";
+            inputMono.placeholder = "e.g. " + roundedTime.toFixed(1) + " s";
+            currentAnswers.expectedUnit = "s";
         } else if (qType === 2) { // Calculating Resistance
             if (monoLabel) monoLabel.innerHTML = "R = ";
-            if (monoUnit) monoUnit.innerHTML = " k\u03a9";
-            inputMono.placeholder = "e.g. 47.0";
+            inputMono.placeholder = "e.g. " + R1_k.toFixed(1) + " k\u03a9";
+            currentAnswers.expectedUnit = "k";
         } else if (qType === 3) { // Calculating Capacitance
             if (monoLabel) monoLabel.innerHTML = "C = ";
-            if (monoUnit) monoUnit.innerHTML = " \u03bcF";
-            inputMono.placeholder = "e.g. 10.0";
+            inputMono.placeholder = "e.g. " + C_uF.toFixed(1) + " \u03bcF";
+            currentAnswers.expectedUnit = "uf";
         }
     }
-
     
     // 4. DRAWING HELPERS (Modified to allow color changes)
     const line = (x1, y1, x2, y2) => {
@@ -2193,7 +2190,6 @@ function checkAnswers() {
         else activeInputs = ['inputMarkSpace'];
     }
     else if (currentMode === 'monostable') {
-        // MATCH THIS TO YOUR HTML ID
         activeInputs = ['inputMonostable'];
     }
 
@@ -2201,7 +2197,6 @@ function checkAnswers() {
     let hasEmptyBox = false;
     activeInputs.forEach(id => {
         const el = document.getElementById(id);
-        // If the element doesn't exist or is empty, trigger the warning
         if (!el || el.value.trim() === '') {
             hasEmptyBox = true;
         }
@@ -2274,13 +2269,12 @@ function checkAnswers() {
         }
     } 
     else if (currentMode === 'monostable') {
-    const userInput = document.getElementById('inputMonostable').value;
-    const userT = parseInput(userInput);
-    
-    // This ensures we are comparing the user's input to the 1 d.p. answer 
-    // we generated in the generateMonostableProblem function.
-    results.push(validateMatch(userT, currentAnswers.expectedT, currentAnswers.expectedUnit));
-}
+        const userInput = document.getElementById('inputMonostable').value;
+        const parsedUser = parseInput(userInput);
+        
+        // validateMatch handles number comparison and the expected unit (s, k, or uf)
+        results.push(validateMatch(parsedUser, currentAnswers.expectedT, currentAnswers.expectedUnit));
+    }
 
     // 4. Final Scoring and Feedback Display
     if (results.every(r => r === 'correct')) {
