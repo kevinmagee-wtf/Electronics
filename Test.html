@@ -307,7 +307,7 @@
     <p id="moduleSubtitle">Mastering the GCSE Course</p>
 </div>
 
-<!--2. MAIN CATEGORY MENU (THE TOP ROW OF BUTTONS) These are the "Navigation Folders." They hold your buttons and keep the menu looking consistent.-->
+<!--2. MAIN CATEGORY MENU  These are the "Navigation Folders." They hold your buttons and keep the menu looking consistent.-->
 <div id="mainMenu" class="tabs">
     <button class="tab" onclick="openModule('basics')">1. Circuit Basics</button>
     <button class="tab" onclick="openModule('transistors')">5. Transistors</button>
@@ -320,6 +320,7 @@
 </div>
 
 <!--3. SUB-MENUS (APPEAR AFTER CLICKING A MAIN CATEGORY) This is the main "Stage." When you click a module, we show this whole area; when you go "Home," we hide it.-->
+<!--BASICS PAGE -->
 <div id="menuBasics" class="tabs" style="display:none;">
     <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
     <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
@@ -328,6 +329,7 @@
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
 </div>
 
+<!--TIMINGPAGE -->
 <div id="menuTiming" class="tabs" style="display:none;">
     <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
     <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
@@ -335,10 +337,19 @@
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
 </div>
 
+<!--DIODESPAGE -->
+<div id="menuDiodes" class="tabs" style="display:none;">
+    <button class="tab" id="tab-silicon" onclick="switchTab('silicon')">Silicon Diodes</button>
+    <button class="tab" id="tab-zener" onclick="switchTab('zener')">Zener Diodes</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+</div>
+    
 <div id="menuPlaceholder" class="tabs" style="display:none;">
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
 </div>
 
+
+    
 <!--4. THE MAIN WORK AREA (CANVAS + QUIZ) This is an "Input Envelope." We keep the label, the text box, and the instruction together so they move as one unit.-->
 <div id="contentArea" style="display:none;">
     <div class="main-layout">
@@ -365,100 +376,114 @@
                     </div>
                 </div>
                 
-<!--5. THE INPUT AREA (ALL POSSIBLE ANSWER BOXES) These are the new placeholder divs for that grey text ("Give answer to 1 d.p.") you wanted under the boxes.-->
-                <div class="input-area">
+        <!--5. THE INPUT AREA (ALL POSSIBLE ANSWER BOXES) Iincuding the placeholder divs for the grey text ("Give answer to 1 d.p.") -->
+        <div class="input-area">
 
-                    <!--OHM'S LAW / DIVIDER INPUTS-->
-                    <div class="input-group" id="inputGroupV" style="display:none;">
-                        <label id="labelV" for="inputV">V = </label>
-                        <input type="text" id="inputV" placeholder="e.g. 10 mV">
-                    </div>
-                    <div class="input-group" id="inputGroupI" style="display:none;">
-                        <label id="labelI" for="inputI">I = </label>
-                        <input type="text" id="inputI" placeholder="e.g. 5 mA">
-                    </div>
+                <!--OHM'S LAW / DIVIDER INPUTS-->
+                <div class="input-group" id="inputGroupV" style="display:none;">
+                    <label id="labelV" for="inputV">V = </label>
+                    <input type="text" id="inputV" placeholder="e.g. 10 mV">
+                </div>
+                <div class="input-group" id="inputGroupI" style="display:none;">
+                       <label id="labelI" for="inputI">I = </label>
+                    <input type="text" id="inputI" placeholder="e.g. 5 mA">
+                </div>
 
-                    <!--TOTAL RESISTANCE INPUTS-->
-                    <div class="input-group" id="inputGroupR" style="display:none;">
-                        <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
-                        <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
-                    </div>
+                <!--TOTAL RESISTANCE INPUTS-->
+                <div class="input-group" id="inputGroupR" style="display:none;">
+                    <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
+                    <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
+                </div>
 
-                    <div class="input-group" id="inputGroupMonostable" style="display:none;">
-                        <label id="labelMonostable" for="inputMonostable">T = </label>
-                        <input type="text" id="inputMonostable" style="width: 140px;">
-                     <!--GREY INSTRUCTION SUB-LABEL-->
-                        <div id="monostableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;"></div>
-                    </div>
+                <div class="input-group" id="inputGroupMonostable" style="display:none;">
+                    <label id="labelMonostable" for="inputMonostable">T = </label>
+                    <input type="text" id="inputMonostable" style="width: 140px;">
+                 <!--GREY INSTRUCTION SUB-LABEL-->
+                    <div id="monostableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;"></div>
+                </div>
                     
-                    <!--555 ASTABLE: FREQUENCY AND PERIOD INPUTS-->
-                    <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
-                        <div style="margin-bottom: 10px;">
-                            <label id="labelAstable" for="inputAstable">Frequency = </label>
-                            <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
-                        </div>
-                        <div>
-                            <label id="labelAstableT" for="inputAstableT">Time Period = </label>
-                            <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
-                        </div>
+                <!--555 ASTABLE: FREQUENCY AND PERIOD INPUTS-->
+                <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
+                    <div style="margin-bottom: 10px;">
+                        <label id="labelAstable" for="inputAstable">Frequency = </label>
+                        <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
+                    </div>
+                    <div>
+                        <label id="labelAstableT" for="inputAstableT">Time Period = </label>
+                        <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
+                    </div>
+                    <!--GREY INSTRUCTION SUB-LABEL-->
+                    <div id="astableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
+                </div>
+
+                <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%;">
+                    <div style="height: 55px; visibility: hidden;"></div> 
+                    <div style="margin-bottom: 10px;">
+                        <label for="inputMarkSpace" style="font-weight: bold;">Mark-Space Ratio = </label>
+                        <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;">
+                    </div>
+                    <!--GREY INSTRUCTION SUB-LABEL-->
+                    <div id="ratioInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
+                </div>
+                    
+                <!--OSCILLOSCOPE INPUTS (KEPT IN ONE BLOCK)-->
+                <div id="oscilloscopeInputs" style="display:none;">
+                    <div class="input-group" id="inputGroupOscAmp" style="display:none;">
+                        <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label><input type="text" id="inputOscAmp">
+                    </div>
+                    <div class="input-group" id="inputGroupOscMark" style="display:none;">
+                        <label id="labelOscMark" for="inputOscMark">Mark Time = </label><input type="text" id="inputOscMark">
+                    </div>
+                    <div class="input-group" id="inputGroupOscSpace" style="display:none;">
+                        <label id="labelOscSpace" for="inputOscSpace">Space Time = </label><input type="text" id="inputOscSpace">
+                    </div>
+                    <div class="input-group" id="inputGroupOscPeriod" style="display:none;">
+                        <label id="labelOscPeriod" for="inputOscPeriod">Time Period = </label><input type="text" id="inputOscPeriod">
+                    </div>
+                    <div class="input-group" id="inputGroupOscFreq" style="display:none;">
+                        <label id="labelOscFreq" for="inputOscFreq">Frequency = </label><input type="text" id="inputOscFreq">
+                    </div>
+                    <div class="input-group" id="inputGroupOscRatio" style="display:none;">
+                    <div class="input-spacer"></div> <label>Mark/Space Ratio = </label>
+                        <input type="text" id="inputOscRatio" placeholder="e.g. 1/2">
+                    </div>
                         
-                        <!--GREY INSTRUCTION SUB-LABEL-->
-                        <div id="astableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
+                </div>
+
+                <!--RESISTOR COLOUR CODE INPUTS-->
+                <div id="inputGroupColorVal" class="input-group" style="display:none;">
+                    <label>Resistance: </label><input type="text" id="inputResValue" style="width: 140px;">
+                    <label>Tolerance (%): </label><input type="text" id="inputResTol" style="width: 140px;">
+                </div>
+                <div id="inputGroupColorNames" class="input-group" style="display:none; text-align: center;">
+                    <label>Band 1: </label><input type="text" id="inputBand1" style="width: 100px;">
+                    <label>Band 2: </label><input type="text" id="inputBand2" style="width: 100px;">
+                    <label>Band 3: </label><input type="text" id="inputBand3" style="width: 100px;">
+                    <label>Band 4: </label><input type="text" id="inputBandTol" style="width: 100px;">
+                </div>
+
+                <!--DIODE INPUTS-->
+                <div id="inputGroupZener" class="input-group" style="display:none; text-align: left; width: 100%;">
+                    <!--CANVAS TEXT under picture-->
+                    <div style="margin-bottom: 10px; color: #333; font-weight: normal;">
+                        The minimum Zener holding current = <span id="zenerMinHoldCurrent" style="font-weight: bold;">XX</span> mA.
+                    </div>
+    
+                    <div style="margin-bottom: 10px;">
+                        <label id="labelZener" for="inputZener" style="font-weight: bold;">I<sub>L(max)</sub> = </label>
+                        <input type="text" id="inputZener" placeholder="e.g. 15.0 mA" style="width: 140px;">
                     </div>
 
-                    <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%;">
-                        <div style="height: 55px; visibility: hidden;"></div> 
-                        <div style="margin-bottom: 10px;">
-                            <label for="inputMarkSpace" style="font-weight: bold;">Mark-Space Ratio = </label>
-                            <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;">
-                        </div>
-                        <!--GREY INSTRUCTION SUB-LABEL-->
-                        <div id="ratioInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
-                    </div>
-                    
-                    <!--OSCILLOSCOPE INPUTS (KEPT IN ONE BLOCK)-->
-                    <div id="oscilloscopeInputs" style="display:none;">
-                        <div class="input-group" id="inputGroupOscAmp" style="display:none;">
-                            <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label><input type="text" id="inputOscAmp">
-                        </div>
-                        <div class="input-group" id="inputGroupOscMark" style="display:none;">
-                            <label id="labelOscMark" for="inputOscMark">Mark Time = </label><input type="text" id="inputOscMark">
-                        </div>
-                        <div class="input-group" id="inputGroupOscSpace" style="display:none;">
-                            <label id="labelOscSpace" for="inputOscSpace">Space Time = </label><input type="text" id="inputOscSpace">
-                        </div>
-                        <div class="input-group" id="inputGroupOscPeriod" style="display:none;">
-                            <label id="labelOscPeriod" for="inputOscPeriod">Time Period = </label><input type="text" id="inputOscPeriod">
-                        </div>
-                        <div class="input-group" id="inputGroupOscFreq" style="display:none;">
-                            <label id="labelOscFreq" for="inputOscFreq">Frequency = </label><input type="text" id="inputOscFreq">
-                        </div>
-                        <div class="input-group" id="inputGroupOscRatio" style="display:none;">
-                        <div class="input-spacer"></div> <label>Mark/Space Ratio = </label>
-                            <input type="text" id="inputOscRatio" placeholder="e.g. 1/2">
-                        </div>
-                        
-                    </div>
-
-                    <!--RESISTOR COLOUR CODE INPUTS-->
-                    <div id="inputGroupColorVal" class="input-group" style="display:none;">
-                        <label>Resistance: </label><input type="text" id="inputResValue" style="width: 140px;">
-                        <label>Tolerance (%): </label><input type="text" id="inputResTol" style="width: 140px;">
-                    </div>
-                    <div id="inputGroupColorNames" class="input-group" style="display:none; text-align: center;">
-                        <label>Band 1: </label><input type="text" id="inputBand1" style="width: 100px;">
-                        <label>Band 2: </label><input type="text" id="inputBand2" style="width: 100px;">
-                        <label>Band 3: </label><input type="text" id="inputBand3" style="width: 100px;">
-                        <label>Band 4: </label><input type="text" id="inputBandTol" style="width: 100px;">
-                    </div>
-                    
-                    <!--THE CHECK ANSWER BUTTON-->
-                    <div style="margin-top: 20px;">
-                        <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
-                        <div id="feedback" class="feedback"></div>
-                    </div>
-                </div> 
+                    <div id="zenerInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;">(Give answer to 1 d.p.)</div>
+                </div>
+            
+                <!--THE CHECK ANSWER BUTTON-->
+                <div style="margin-top: 20px;">
+                    <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
+                     <div id="feedback" class="feedback"></div>
+                </div>
             </div> 
+        </div> 
 
 <!--6. ACTION CONTROLS (THE BUTTONS AT THE VERY BOTTOM)-->
             <div class="controls">
@@ -1906,6 +1931,115 @@ function generateColorCodeProblem(ctx, canvas) {
     if (solText) solText.innerHTML = solTextStr;
 }
 
+function generateZenerProblem() {
+    // 1. INITIALIZE CANVAS & UI
+    hideAllInputGroups();
+    const canvas = document.getElementById('circuitCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    if (typeof resetAnswerBox === "function") resetAnswerBox();
+    currentMode = 'zener';
+
+    // 2. GENERATE MATH (Zener Regulator Logic)
+    // Vin must be > Vz. Usually R protects the Zener.
+    const Vin = Math.floor(Math.random() * 5) + 10; // 10V to 14V
+    const Vz = [4.7, 5.1, 5.6, 6.2, 7.5, 9.1][Math.floor(Math.random() * 6)];
+    const R_val = (Math.floor(Math.random() * 5) + 2) * 100; // 200 to 600 ohms
+    const Iz_min = 5; // Minimum holding current in mA
+
+    // Calculate Max Load Current (IL_max)
+    // Total Current It = (Vin - Vz) / R
+    // IL_max occurs when Iz is at its minimum (Iz_min)
+    // IL_max = It - Iz_min
+    const It_mA = ((Vin - Vz) / R_val) * 1000;
+    const IL_max = It_mA - Iz_min;
+
+    // Store answers for the checker
+    currentAnswers.zenerValue = parseFloat(IL_max.toFixed(1));
+    currentAnswers.zenerUnit = "ma";
+
+    // 3. UPDATE UI ELEMENTS
+    const zenerGroup = document.getElementById('inputGroupZener');
+    if (zenerGroup) zenerGroup.style.display = "block";
+
+    const holdDisplay = document.getElementById('zenerMinHoldCurrent');
+    if (holdDisplay) holdDisplay.innerText = Iz_min;
+
+    const inputZ = document.getElementById('inputZener');
+    if (inputZ) {
+        inputZ.value = "";
+        inputZ.placeholder = "e.g. " + IL_max.toFixed(1) + " mA";
+    }
+
+    // 4. DRAW THE CIRCUIT
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = brandBlack;
+    ctx.lineWidth = 2;
+    
+    // Draw Rails
+    drawLine(ctx, 100, 80, 500, 80); // Top
+    drawLine(ctx, 100, 320, 500, 320); // Bottom (GND)
+    
+    // Series Resistor R
+    drawResistorBox(ctx, 250, 80, R_val + " \u03a9", "vertical"); // Note: You may need to adapt drawResistor for horizontal
+    
+    // Zener Diode (Parallel)
+    const zX = 350;
+    drawLine(ctx, zX, 80, zX, 160);
+    drawZener(ctx, zX, 200); // Custom helper for Zener shape
+    drawLine(ctx, zX, 240, zX, 320);
+    
+    // Output Terminals
+    drawNode(ctx, 450, 80);
+    drawNode(ctx, 450, 320);
+    drawLine(ctx, 450, 80, 500, 80);
+    drawLine(ctx, 450, 320, 500, 320);
+
+    // Labels
+    ctx.fillStyle = brandBlack;
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("Vsupply = " + Vin + " V", 110, 60);
+    ctx.fillText("Vz = " + Vz + " V", zX + 30, 205);
+    
+    // Target Variable IL in Pink
+    ctx.fillStyle = brandPink;
+    ctx.fillText("I", 460, 180);
+    ctx.font = "10px Arial"; ctx.fillText("L(max)", 465, 185);
+    ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", 485, 180);
+
+    // 5. SOLUTION TEXT
+    const solElement = document.getElementById('solText');
+    if (solElement) {
+        solElement.innerHTML = `
+            <strong>Step 1:</strong> Find total current (I<sub>T</sub>) through the resistor.<br>
+            I<sub>T</sub> = (V<sub>supply</sub> - V<sub>z</sub>) / R = (${Vin} - ${Vz}) / ${R_val} = ${(It_mA/1000).toFixed(4)} A (${It_mA.toFixed(1)} mA)<br><br>
+            <strong>Step 2:</strong> Max Load Current (I<sub>L</sub>) occurs when Zener takes minimum current.<br>
+            I<sub>L(max)</sub> = I<sub>T</sub> - I<sub>z(min)</sub> = ${It_mA.toFixed(1)} - ${Iz_min} = <strong>${IL_max.toFixed(1)} mA</strong>
+        `;
+    }
+}
+
+// Helper to draw the Zener "Z" symbol
+function drawZener(ctx, x, y) {
+    ctx.beginPath();
+    // Triangle
+    ctx.moveTo(x - 15, y - 20);
+    ctx.lineTo(x + 15, y - 20);
+    ctx.lineTo(x, y + 20);
+    ctx.closePath();
+    ctx.fill();
+    // The "Z" Bar
+    ctx.beginPath();
+    ctx.moveTo(x - 20, y + 15);
+    ctx.lineTo(x - 15, y + 20);
+    ctx.lineTo(x + 15, y + 20);
+    ctx.lineTo(x + 20, y + 25);
+    ctx.stroke();
+}
+    
+
+    
 // ===========================================================================================================================      
 // FUNCTION 3. NAVIGATION and UI (Traffic Control) 
 // ===========================================================================================================================      
@@ -1924,6 +2058,7 @@ function generateColorCodeProblem(ctx, canvas) {
     // 3. Reset the title
     document.getElementById('moduleSubtitle').innerText = 'Mastering the GCSE Course';
 }
+
 function openModule(module) {
     // Hide Home Menu
     document.getElementById('mainMenu').style.display = 'none';
@@ -1931,6 +2066,7 @@ function openModule(module) {
     // Hide all sub-menus first
     document.getElementById('menuBasics').style.display = 'none';
     document.getElementById('menuTiming').style.display = 'none';
+    document.getElementById('menuDiodes').style.display = 'none'; // Added for Diodes
     document.getElementById('menuPlaceholder').style.display = 'none';
     
     // Show the content area
@@ -1943,6 +2079,9 @@ function openModule(module) {
     } else if (module === 'timing') {
         document.getElementById('menuTiming').style.display = 'flex';
         switchTab('oscilloscope'); // Default to oscilloscope
+    } else if (module === 'diodes') {
+        document.getElementById('menuDiodes').style.display = 'flex';
+        switchTab('zener'); // Default to Zener Diodes
     } else {
         document.getElementById('menuPlaceholder').style.display = 'flex';
         document.getElementById('contentArea').style.display = 'none';
@@ -1976,7 +2115,7 @@ function switchTab(mode) {
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
         'inputGroupAstable', 'inputGroupMonostable', 'inputGroupMarkSpace',
-        'inputGroupColorVal', 'inputGroupColorNames'
+        'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener'
     ];
 
     groups.forEach(id => {
@@ -1991,6 +2130,8 @@ function switchTab(mode) {
             subtitle.innerText = "Module 1: Circuit Basics";
         } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
             subtitle.innerText = "Module 3: Timing Circuits";
+        } else if (['silicon', 'zener'].includes(mode)) {
+            subtitle.innerText = "Module 8: Diodes";
         }
     }
 
@@ -2021,13 +2162,19 @@ function switchTab(mode) {
     if (content) content.style.display = 'block';
 
     // 7. CALL THE CORRECT GENERATOR
-    // This part ensures the right circuit is drawn on the canvas
     if (mode === 'astable') {
         generateAstableProblem();
     } else if (mode === 'monostable') {
         generateMonostableProblem();
     } else if (mode === 'oscilloscope') {
         generateOscilloscopeProblem();
+    } else if (mode === 'zener') {
+        if (typeof generateZenerProblem === "function") {
+            generateZenerProblem();
+        }
+    } else if (mode === 'silicon') {
+        // Placeholder for silicon generator
+        console.log("Silicon diode module selected");
     } else if (mode === 'colorcode') {
         if (typeof generateColorCodeProblem === "function") {
             generateColorCodeProblem();
@@ -2037,7 +2184,9 @@ function switchTab(mode) {
         generateProblem();
     }
 }
-    
+
+
+
 function openDataSheet() {
     const modal = document.getElementById('dataSheetModal');
     if (modal) modal.style.display = 'block';
@@ -2536,7 +2685,7 @@ function hideAllInputGroups() {
         'inputGroupMonostable', 'inputGroupAstable', 'inputGroupMarkSpace',
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
-        'inputGroupColorVal', 'inputGroupColorNames'
+        'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener' // Added Zener
     ];
 
     // 2. Hide all input groups
@@ -2569,8 +2718,11 @@ function hideAllInputGroups() {
     
     const astablePrompt = document.getElementById('astableInstruction');
     const ratioPrompt = document.getElementById('ratioInstruction');
+    const zenerPrompt = document.getElementById('zenerInstruction'); // Added Zener instruction reset
+    
     if (astablePrompt) astablePrompt.innerHTML = "";
     if (ratioPrompt) ratioPrompt.innerHTML = "";
+    if (zenerPrompt) zenerPrompt.innerHTML = "";
 }
 
 // This is the "Master Switch" that cleans the page when it first opens
