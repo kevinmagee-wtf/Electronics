@@ -1989,7 +1989,7 @@ function generateColorCodeProblem(ctx, canvas) {
 }
 
 function generateZenerProblem() {
-    // 1. INITIALIZE CANVAS & UI
+    // 1. INITIALIZE
     hideAllInputGroups();
     const canvas = document.getElementById('circuitCanvas');
     if (!canvas) return;
@@ -1998,12 +1998,11 @@ function generateZenerProblem() {
     if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'zener';
 
-    // 2. MATH LOGIC (Matches GCSE style: low resistance, specific Zener voltages)
-    const Vin = Math.floor(Math.random() * 5) + 10; // 10-14V
+    // 2. MATH
+    const Vin = Math.floor(Math.random() * 5) + 10; 
     const Vz = [3.6, 4.7, 5.1, 5.6, 6.2][Math.floor(Math.random() * 5)];
-    const R_val = (Math.floor(Math.random() * 5) + 2) * 10; // 20-60 ohms
-    const Iz_min = 5; // mA
-
+    const R_val = (Math.floor(Math.random() * 5) + 2) * 10; 
+    const Iz_min = 5; 
     const It_mA = ((Vin - Vz) / R_val) * 1000;
     const IL_max = It_mA - Iz_min;
 
@@ -2011,13 +2010,9 @@ function generateZenerProblem() {
     currentAnswers.zenerValue = parseFloat(IL_max.toFixed(1));
     currentAnswers.zenerUnit = "ma";
 
-    // 3. UI UPDATES
-    const zGroup = document.getElementById('inputGroupZener');
-    if (zGroup) zGroup.style.display = "block";
-    
-    const holdDisplay = document.getElementById('zenerMinHoldCurrent');
-    if (holdDisplay) holdDisplay.innerText = Iz_min;
-    
+    // 3. UI
+    document.getElementById('inputGroupZener').style.display = "block";
+    document.getElementById('zenerMinHoldCurrent').innerText = Iz_min;
     const inputZ = document.getElementById('inputZener');
     if (inputZ) { 
         inputZ.value = ""; 
@@ -2026,74 +2021,71 @@ function generateZenerProblem() {
 
     // 4. DRAWING
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = brandBlack;
+    ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     
-    // Power Rails (Consistent heights with Divider)
-    drawLine(ctx, 80, 60, 480, 60);   // Top (+V)
-    drawLine(ctx, 80, 360, 480, 360); // Bottom (0V)
+    // Rails
+    drawLine(ctx, 50, 60, 480, 60);   // Top
+    drawLine(ctx, 50, 360, 480, 360); // Bottom
     
-    ctx.fillStyle = brandBlack;
+    ctx.fillStyle = "black";
     ctx.font = "bold 16px Arial";
-    ctx.fillText(Vin + " V", 30, 65);
-    ctx.fillText("0 V", 35, 365);
+    ctx.fillText(Vin + " V", 10, 65);
+    ctx.fillText("0 V", 10, 365);
 
-    // --- MAIN BRANCH (REGULATOR) ---
-    // Resistor R at x=200
-    drawLine(ctx, 200, 60, 200, 100);
-    drawComponent(ctx, 'fixed', 200, 125); 
-    ctx.fillText(R_val + " \u03a9", 145, 130);
+    // --- MAIN REGULATOR BRANCH ---
+    const xReg = 180; 
+    drawLine(ctx, xReg, 60, xReg, 100);
+    drawComponent(ctx, 'fixed', xReg, 125); 
+    ctx.fillText(R_val + " \u03a9", xReg - 65, 130);
     
-    // Wire straight down through the Zener position
-    drawLine(ctx, 200, 150, 200, 360); 
-    drawHollowZener(ctx, 200, 280); 
-    ctx.fillText(Vz + " V", 145, 285);
+    drawLine(ctx, xReg, 150, xReg, 360); 
+    drawHollowZener(ctx, xReg, 280); 
+    ctx.fillText("Vz=" + Vz + "V", xReg - 75, 285);
     
-    // Junction Nodes (Dots)
-    drawNode(ctx, 200, 60);  // Power entry
-    drawNode(ctx, 200, 210); // Splitting point for Load
-    drawNode(ctx, 200, 360); // Ground rejoin
+    // Using your new drawNode function
+    drawNode(ctx, xReg, 60);  
+    drawNode(ctx, xReg, 210); // Splitting point for the parallel branch
+    drawNode(ctx, xReg, 360); 
 
-    // --- PARALLEL BRANCH (LOAD) ---
-    // Horizontal wire to the switch
-    drawLine(ctx, 200, 210, 280, 210); 
+    // --- PARALLEL LOAD BRANCH ---
+    const xLoad = 380; 
+    const yJunc = 210; 
+
+    drawLine(ctx, xReg, yJunc, 300, yJunc); // Bridge to switch
     
-    // Open Switch S
-    drawLine(ctx, 280, 210, 320, 190); // Tilted lever
-    ctx.beginPath(); ctx.arc(280, 210, 3, 0, Math.PI*2); ctx.stroke(); // Left dot
-    ctx.beginPath(); ctx.arc(330, 210, 3, 0, Math.PI*2); ctx.stroke(); // Right dot
-    ctx.fillText("S", 300, 180);
+    // Switch S (Open)
+    drawLine(ctx, 300, yJunc, 340, yJunc - 20); 
+    ctx.beginPath(); ctx.arc(300, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
+    ctx.beginPath(); ctx.arc(350, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
+    ctx.fillText("S", 320, 180);
     
-    // Wire from switch to Load Box
-    drawLine(ctx, 330, 210, 400, 210);
-    drawLine(ctx, 400, 210, 400, 240);
+    drawLine(ctx, 350, yJunc, xLoad, yJunc); // Bridge to load
+    drawLine(ctx, xLoad, yJunc, xLoad, yJunc + 30);
     
     // LOAD Box
-    ctx.strokeRect(370, 240, 60, 45);
+    ctx.strokeRect(xLoad - 30, yJunc + 30, 60, 45);
     ctx.font = "bold 14px Arial";
-    ctx.fillText("LOAD", 377, 268);
+    ctx.fillText("LOAD", xLoad - 20, yJunc + 58);
     
-    // Return wire from Load to 0V rail
-    drawLine(ctx, 400, 285, 400, 360);
-    drawNode(ctx, 400, 360); // Final ground junction
+    drawLine(ctx, xLoad, yJunc + 75, xLoad, 360); // Return wire
+    drawNode(ctx, xLoad, 360); // Ground junction
 
-    // --- TARGET LABEL (Pink) ---
+    // Target Label (Pink)
     ctx.fillStyle = brandPink;
     ctx.font = "bold 18px Arial";
-    ctx.fillText("I", 430, 220);
-    ctx.font = "bold 10px Arial"; ctx.fillText("L(max)", 435, 225);
-    ctx.font = "bold 18px Arial"; ctx.fillText(" = ?", 470, 220);
+    ctx.fillText("I", xLoad + 40, yJunc + 10);
+    ctx.font = "bold 10px Arial"; ctx.fillText("L(max)", xLoad + 45, yJunc + 15);
+    ctx.font = "bold 18px Arial"; ctx.fillText(" = ?", xLoad + 80, yJunc + 10);
 
     // 5. SOLUTION TEXT
     const solElement = document.getElementById('solText');
     if (solElement) {
         solElement.innerHTML = `
-            <strong>Step 1:</strong> Calculate the total current (I<sub>T</sub>) entering the junction.<br>
-            The voltage across the resistor is (V<sub>supply</sub> - V<sub>z</sub>).<br>
-            I<sub>T</sub> = (${Vin}V - ${Vz}V) / ${R_val}&Omega; = ${(It_mA/1000).toFixed(4)} A (<strong>${It_mA.toFixed(1)} mA</strong>)<br><br>
-            <strong>Step 2:</strong> Find the maximum load current (I<sub>L</sub>).<br>
-            The Zener must always keep at least ${Iz_min}mA to stay 'on'.<br>
-            I<sub>L(max)</sub> = I<sub>T</sub> - I<sub>z(min)</sub> = ${It_mA.toFixed(1)}mA - ${Iz_min}mA = <strong>${IL_max.toFixed(1)} mA</strong>
+            <strong>Step 1:</strong> Calculate total current (I<sub>T</sub>) through the resistor.<br>
+            I<sub>T</sub> = (${Vin}V - ${Vz}V) / ${R_val}&Omega; = <strong>${It_mA.toFixed(1)} mA</strong><br><br>
+            <strong>Step 2:</strong> Max load current (I<sub>L</sub>) is total current minus Zener's minimum.<br>
+            I<sub>L(max)</sub> = ${It_mA.toFixed(1)}mA - ${Iz_min}mA = <strong>${IL_max.toFixed(1)} mA</strong>
         `;
     }
 }
