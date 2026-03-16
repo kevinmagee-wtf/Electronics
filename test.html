@@ -635,7 +635,7 @@ function handleGenerateClick() {
 // FUNCTION 1: DRAWING Helpers
 // =======================================================================================================
 
-function drawResistor(ctx, x, y) {
+Resistor(ctx, x, y) {
             ctx.beginPath();
             ctx.rect(x - 12, y - 25, 24, 50); 
             ctx.fillStyle = "white";
@@ -646,7 +646,7 @@ function drawResistor(ctx, x, y) {
 
 //Draws specific components over the standard resistor box
 // (Make sure this is pasted ABOVE generateDividerProblem)
-    function drawComponent(ctx, type, x, y) {
+    Component(ctx, type, x, y) {
     drawResistor(ctx, x, y); // Always draw the base resistor rectangle first
     
     ctx.strokeStyle = "#000";
@@ -706,24 +706,22 @@ function drawResistor(ctx, x, y) {
 // --- GLOBAL DRAWING HELPERS ---
 // These can be called by any function in your script
 
-function drawLine(ctx, x1, y1, x2, y2) {
+Line(ctx, x1, y1, x2, y2) {
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
 }
 
-function drawNode(ctx, x, y) {
+Node(ctx, x, y) {
     ctx.beginPath();
     ctx.arc(x, y, 4, 0, Math.PI * 2);
     ctx.fillStyle = "#000000"; // Black dots
     ctx.fill();
 }
 
-/**
- * Helper to draw a HOLLOW Zener Diode Symbol vertically
- */
-function drawHollowZener(ctx, x, y) {
+//Helper to draw a HOLLOW Zener Diode Symbol vertically
+HollowZener(ctx, x, y) {
     const size = 18;
     ctx.strokeStyle = "#000000";
     ctx.lineWidth = 2;
@@ -1653,7 +1651,7 @@ function generateAstableProblem() {
     document.getElementById('solText').innerHTML = solHTML;
 }
     
-function drawMonostable(ctx, R, C, rUnit, cUnit) {
+Monostable(ctx, R, C, rUnit, cUnit) {
     ctx.clearRect(0, 0, 600, 420);
     ctx.strokeStyle = brandBlack;
     ctx.lineWidth = 2;
@@ -1998,7 +1996,7 @@ function generateZenerProblem() {
     if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'zener';
 
-    // 2. MATH
+    // 2. MATH LOGIC
     const Vin = Math.floor(Math.random() * 5) + 10; 
     const Vz = [3.6, 4.7, 5.1, 5.6, 6.2][Math.floor(Math.random() * 5)];
     const R_val = (Math.floor(Math.random() * 5) + 2) * 10; 
@@ -2010,7 +2008,7 @@ function generateZenerProblem() {
     currentAnswers.zenerValue = parseFloat(IL_max.toFixed(1));
     currentAnswers.zenerUnit = "ma";
 
-    // 3. UI
+    // 3. UI UPDATES
     document.getElementById('inputGroupZener').style.display = "block";
     document.getElementById('zenerMinHoldCurrent').innerText = Iz_min;
     const inputZ = document.getElementById('inputZener');
@@ -2024,9 +2022,9 @@ function generateZenerProblem() {
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     
-    // Rails
-    drawLine(ctx, 50, 60, 480, 60);   // Top
-    drawLine(ctx, 50, 360, 480, 360); // Bottom
+    // Power Rails
+    drawLine(ctx, 50, 60, 480, 60);   // Top (+V)
+    drawLine(ctx, 50, 360, 480, 360); // Bottom (0V)
     
     ctx.fillStyle = "black";
     ctx.font = "bold 16px Arial";
@@ -2035,17 +2033,22 @@ function generateZenerProblem() {
 
     // --- MAIN REGULATOR BRANCH ---
     const xReg = 180; 
+    
+    // Top wire to Resistor
     drawLine(ctx, xReg, 60, xReg, 100);
     drawComponent(ctx, 'fixed', xReg, 125); 
     ctx.fillText(R_val + " \u03a9", xReg - 65, 130);
     
+    // THE MAIN WIRE: Draws through the diode area first
     drawLine(ctx, xReg, 150, xReg, 360); 
-    drawHollowZener(ctx, xReg, 280); 
-    ctx.fillText("Vz=" + Vz + "V", xReg - 75, 285);
     
-    // Using your new drawNode function
+    // THE ZENER SYMBOL: Drawn on top (hollow, so wire shows through)
+    drawHollowZener(ctx, xReg, 280); 
+    ctx.fillText("Vz = " + Vz + "V", xReg - 85, 285);
+    
+    // Junction Nodes
     drawNode(ctx, xReg, 60);  
-    drawNode(ctx, xReg, 210); // Splitting point for the parallel branch
+    drawNode(ctx, xReg, 210); // Splitting point
     drawNode(ctx, xReg, 360); 
 
     // --- PARALLEL LOAD BRANCH ---
@@ -2054,13 +2057,13 @@ function generateZenerProblem() {
 
     drawLine(ctx, xReg, yJunc, 300, yJunc); // Bridge to switch
     
-    // Switch S (Open)
+    // Open Switch S
     drawLine(ctx, 300, yJunc, 340, yJunc - 20); 
     ctx.beginPath(); ctx.arc(300, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
     ctx.beginPath(); ctx.arc(350, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
     ctx.fillText("S", 320, 180);
     
-    drawLine(ctx, 350, yJunc, xLoad, yJunc); // Bridge to load
+    drawLine(ctx, 350, yJunc, xLoad, yJunc); 
     drawLine(ctx, xLoad, yJunc, xLoad, yJunc + 30);
     
     // LOAD Box
@@ -2068,11 +2071,12 @@ function generateZenerProblem() {
     ctx.font = "bold 14px Arial";
     ctx.fillText("LOAD", xLoad - 20, yJunc + 58);
     
-    drawLine(ctx, xLoad, yJunc + 75, xLoad, 360); // Return wire
-    drawNode(ctx, xLoad, 360); // Ground junction
+    // Return Wire
+    drawLine(ctx, xLoad, yJunc + 75, xLoad, 360); 
+    drawNode(ctx, xLoad, 360); 
 
     // Target Label (Pink)
-    ctx.fillStyle = brandPink;
+    ctx.fillStyle = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
     ctx.font = "bold 18px Arial";
     ctx.fillText("I", xLoad + 40, yJunc + 10);
     ctx.font = "bold 10px Arial"; ctx.fillText("L(max)", xLoad + 45, yJunc + 15);
@@ -2082,17 +2086,14 @@ function generateZenerProblem() {
     const solElement = document.getElementById('solText');
     if (solElement) {
         solElement.innerHTML = `
-            <strong>Step 1:</strong> Calculate total current (I<sub>T</sub>) through the resistor.<br>
+            <strong>Step 1:</strong> Calculate I<sub>Total</sub> = (V<sub>in</sub> - V<sub>z</sub>) / R <br>
             I<sub>T</sub> = (${Vin}V - ${Vz}V) / ${R_val}&Omega; = <strong>${It_mA.toFixed(1)} mA</strong><br><br>
-            <strong>Step 2:</strong> Max load current (I<sub>L</sub>) is total current minus Zener's minimum.<br>
-            I<sub>L(max)</sub> = ${It_mA.toFixed(1)}mA - ${Iz_min}mA = <strong>${IL_max.toFixed(1)} mA</strong>
+            <strong>Step 2:</strong> Max load current occurs when Zener is at minimum holding current (${Iz_min}mA).<br>
+            I<sub>L(max)</sub> = I<sub>T</sub> - I<sub>z(min)</sub> = ${It_mA.toFixed(1)} - ${Iz_min} = <strong>${IL_max.toFixed(1)} mA</strong>
         `;
     }
 }
-
-
-
-    
+  
 // ===========================================================================================================================      
 // FUNCTION 3. NAVIGATION and UI (Traffic Control) 
 // ===========================================================================================================================      
