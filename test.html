@@ -2148,11 +2148,11 @@ function generateZenerProblem() {
     ctx.font = "10px Arial"; ctx.fillText("L", xLoad + 52, yJunc + 60);
     ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xLoad + 62, yJunc + 55);
 
-    // --- FOOTER TECHNICAL DATA (The replacement for the answer box text) ---
+    // CANVAS FOOTER TEXT
     ctx.fillStyle = "#444";
-    ctx.font = "italic 14px Arial";
+    ctx.font = "italic 18px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("Technical Data: Min. Zener holding current (Iz min) = " + Iz_min + " mA", canvas.width/2, 390);
+    ctx.fillText(" Min. Zener holding current = " + Iz_min + " mA", canvas.width/2, 390);
     ctx.textAlign = "left";
 
     // 5. SOLUTION TEXT
