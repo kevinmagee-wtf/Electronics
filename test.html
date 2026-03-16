@@ -728,44 +728,42 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
             ctx.quadraticCurveTo(x, y, x + radius, y); ctx.closePath(); ctx.fill(); ctx.stroke();
 }
 
-/**
- * Helper to draw a HOLLOW Zener Diode Symbol vertically
- */
-/**
- * Helper: GCSE Style Zener (Single wing on right)
- */
-function drawHollowZener(ctx, x, y) {
+
+
+ // GCSE Style Zener - Pointed UP
+function drawHollowZenerUp(ctx, x, y) {
     const size = 18;
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
 
-    // 1. Triangle Outline (Hollow)
+    // 1. Triangle Pointed UP
     ctx.beginPath();
-    ctx.moveTo(x - size, y - size); // Top Left
-    ctx.lineTo(x + size, y - size); // Top Right
-    ctx.lineTo(x, y + size);        // Bottom Point
+    ctx.moveTo(x - size, y + size); // Bottom Left
+    ctx.lineTo(x + size, y + size); // Bottom Right
+    ctx.lineTo(x, y - size);        // Top Point (Up)
     ctx.closePath();
     ctx.stroke();
 
-    // 2. Cathode Bar (Horizontal with single upward wing on the right)
+    // 2. Cathode Bar (At the top point)
     ctx.beginPath();
-    ctx.moveTo(x - size, y + size); // Start left
-    ctx.lineTo(x + size, y + size); // Draw to right
-    ctx.lineTo(x + size, y + size - 8); // Single wing pointing backwards/upwards
+    ctx.moveTo(x - size, y - size); 
+    ctx.lineTo(x + size, y - size); 
+    ctx.lineTo(x + size, y - size + 8); // Hook points BACKWARD/DOWN
     ctx.stroke();
 }
 
-// Simple Arrow Helper
-function drawArrow(ctx, fromx, fromy, tox, toy) {
+/**
+ * Arrowhead on wire helper
+ */
+function drawArrowOnWire(ctx, fromx, fromy, tox, toy) {
     const headlen = 10;
     const dx = tox - fromx;
     const dy = toy - fromy;
     const angle = Math.atan2(dy, dx);
+    
     ctx.beginPath();
-    ctx.moveTo(fromx, fromy);
+    ctx.moveTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
     ctx.lineTo(tox, toy);
-    ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-    ctx.moveTo(tox, toy);
     ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
     ctx.stroke();
 }
@@ -2013,24 +2011,24 @@ function generateZenerProblem() {
     currentMode = 'zener';
 
     // 1. RANDOM VARIABLES
-    const Vin = Math.floor(Math.random() * 10) + 6; // 6V to 15V (Integer)
-    const Vz = (Math.floor(Math.random() * 41) + 20) / 10; // 2.0V to 6.0V (1 d.p.)
-    const Iz_min = Math.floor(Math.random() * 6) + 5; // 5mA to 10mA
-    const Ir_mA = Math.floor(Math.random() * 401) + 200; // 200mA to 600mA
+    const Vin = Math.floor(Math.random() * 10) + 6; // 6V to 15V Integer
+    const Vz = (Math.floor(Math.random() * 41) + 20) / 10; // 2.0 to 6.0 (1 d.p.)
+    const Iz_min = Math.floor(Math.random() * 6) + 5; // 5 to 10 mA
+    const Ir_mA = Math.floor(Math.random() * 401) + 200; // 200 to 600 mA
 
     // 2. MATH CALCULATIONS
-    const IL_max = Ir_mA - Iz_min; // Question 1
-    const VL_at_max = Vz;          // Question 2 (Always Vz if regulator is working)
-    const Pz_open_mW = Ir_mA * Vz; // Question 3 (Switch open, all Ir goes through Zener)
+    const IL_max = Ir_mA - Iz_min;
+    const VL_at_max = Vz;
+    const Pz_open_mW = Ir_mA * Vz;
 
-    // Store answers for checker (adjust IDs as per your HTML)
+    // Store answers
+    if (typeof currentAnswers === "undefined") currentAnswers = {};
     currentAnswers.zenerQ1 = parseFloat(IL_max.toFixed(1));
     currentAnswers.zenerQ2 = parseFloat(VL_at_max.toFixed(1));
     currentAnswers.zenerQ3 = parseFloat(Pz_open_mW.toFixed(1));
 
     // 3. UI SETUP
     document.getElementById('inputGroupZener').style.display = "block";
-    // We clear the "holding current" from the answer box text as requested
     
     // 4. DRAWING
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -2047,71 +2045,76 @@ function generateZenerProblem() {
 
     const xReg = 180; 
     const xLoad = 380;
-    const yJunc = 210;
+    const yJunc = 220; // Shifted down to give room for IR text
 
     // --- LEFT BRANCH ---
-    drawLine(ctx, xReg, 60, xReg, 100);
-    drawComponent(ctx, 'fixed', xReg, 125); // Resistor
-    drawLine(ctx, xReg, 150, xReg, 360); 
-    drawHollowZener(ctx, xReg, 280); 
-    
-    // Labels for Left Branch
-    ctx.fillStyle = "black";
-    ctx.fillText(Vz.toFixed(1) + " V", xReg - 65, 285); // Vz value (no "Vz=")
-    
-    // IR Arrow and Label
-    ctx.strokeStyle = "blue";
-    drawArrow(ctx, xReg + 25, 70, xReg + 25, 100); // Helper for arrows
+    // A. Input Current IR (On the wire)
     ctx.fillStyle = "blue";
-    ctx.fillText("I", xReg + 35, 85);
-    ctx.font = "10px Arial"; ctx.fillText("R", xReg + 42, 90);
-    ctx.font = "bold 14px Arial"; ctx.fillText(" = " + Ir_mA + " mA", xReg + 55, 85);
-    ctx.strokeStyle = "black"; ctx.fillStyle = "black"; // Reset
+    ctx.strokeStyle = "blue";
+    ctx.fillText(Ir_mA + " mA", xReg - 75, 90); 
+    
+    drawLine(ctx, xReg, 60, xReg, 110); 
+    drawArrowOnWire(ctx, xReg, 80, xReg, 105); // Arrowhead pointing down
+    
+    ctx.fillText("I", xReg + 12, 95);
+    ctx.font = "10px Arial"; ctx.fillText("R", xReg + 18, 100);
+    ctx.font = "bold 16px Arial";
+
+    // B. Resistor (Lowered)
+    ctx.strokeStyle = "black";
+    drawComponent(ctx, 'fixed', xReg, 135); 
+    
+    // C. Vertical Line through Diode
+    drawLine(ctx, xReg, 160, xReg, 360); 
+
+    // D. Corrected Zener (Pointing UP)
+    drawHollowZenerUp(ctx, xReg, 290); 
+    ctx.fillStyle = "black";
+    ctx.fillText(Vz.toFixed(1) + " V", xReg - 65, 295);
 
     // --- RIGHT BRANCH (LOAD) ---
     drawLine(ctx, xReg, yJunc, 300, yJunc); 
-    drawLine(ctx, 300, yJunc, 340, yJunc - 20); // Switch
+    drawNode(ctx, xReg, yJunc);
+    drawNode(ctx, xReg, 60);
+    drawNode(ctx, xReg, 360);
+
+    // Switch
+    drawLine(ctx, 300, yJunc, 340, yJunc - 20); 
     ctx.beginPath(); ctx.arc(300, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
     ctx.beginPath(); ctx.arc(350, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
     
     drawLine(ctx, 350, yJunc, xLoad, yJunc); 
+    
+    // E. IL current arrow on horizontal bridge
+    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
+    ctx.strokeStyle = pink;
+    drawArrowOnWire(ctx, 355, yJunc, 375, yJunc); 
+
+    ctx.fillStyle = pink;
+    ctx.fillText("I", 360, yJunc - 15);
+    ctx.font = "10px Arial"; ctx.fillText("L", 366, yJunc - 10);
+    ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", 375, yJunc - 15);
+    
+    // F. Load Box and VL Label
+    ctx.strokeStyle = "black"; ctx.fillStyle = "black";
     drawLine(ctx, xLoad, yJunc, xLoad, yJunc + 30);
-    ctx.strokeRect(xLoad - 30, yJunc + 30, 60, 45); // Load Box
+    ctx.strokeRect(xLoad - 30, yJunc + 30, 60, 45); 
     ctx.fillText("LOAD", xLoad - 20, yJunc + 58);
     drawLine(ctx, xLoad, yJunc + 75, xLoad, 360);
+    drawNode(ctx, xLoad, 360);
 
-    // IL Arrow (Pink ?)
-    ctx.strokeStyle = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
-    drawArrow(ctx, xLoad + 25, yJunc - 30, xLoad + 25, yJunc - 5);
-    ctx.fillStyle = ctx.strokeStyle;
-    ctx.fillText("I", xLoad + 35, yJunc - 15);
-    ctx.font = "10px Arial"; ctx.fillText("L", xLoad + 42, yJunc - 10);
-    ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xLoad + 52, yJunc - 15);
-
-    // VL Label (Pink ?)
+    ctx.fillStyle = pink;
     ctx.fillText("V", xLoad + 40, yJunc + 55);
     ctx.font = "10px Arial"; ctx.fillText("L", xLoad + 52, yJunc + 60);
     ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xLoad + 62, yJunc + 55);
 
-    // --- FOOTER INFO ---
+    // --- FOOTER ---
     ctx.fillStyle = "#444";
     ctx.font = "italic 14px Arial";
     ctx.textAlign = "center";
     ctx.fillText("Minimum Zener holding current (Iz_min) = " + Iz_min + " mA", canvas.width/2, 390);
     ctx.textAlign = "left";
-
-    // Nodes
-    drawNode(ctx, xReg, 60); drawNode(ctx, xReg, yJunc); drawNode(ctx, xReg, 360);
-    drawNode(ctx, xLoad, 360);
-
-    // 5. UPDATE TEXT
-    document.getElementById('solText').innerHTML = `
-        1. Max I<sub>L</sub> = I<sub>R</sub> - I<sub>Zmin</sub> = ${Ir_mA} - ${Iz_min} = <b>${IL_max} mA</b><br>
-        2. V<sub>L</sub> = V<sub>Z</sub> = <b>${Vz.toFixed(1)} V</b><br>
-        3. P<sub>Z</sub> (open) = I<sub>R</sub> &times; V<sub>Z</sub> = ${Ir_mA}mA &times; ${Vz.toFixed(1)}V = <b>${Pz_open_mW.toFixed(1)} mW</b>
-    `;
 }
-
 
     
 // ===========================================================================================================================      
