@@ -1988,82 +1988,105 @@ function generateZenerProblem() {
     if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'zener';
 
-    // 2. MATH LOGIC
-    const Vin = Math.floor(Math.random() * 5) + 10;
+    // 2. MATH LOGIC (Matches GCSE style: low resistance, specific Zener voltages)
+    const Vin = Math.floor(Math.random() * 5) + 10; // 10-14V
     const Vz = [3.6, 4.7, 5.1, 5.6, 6.2][Math.floor(Math.random() * 5)];
-    const R_val = (Math.floor(Math.random() * 5) + 2) * 10; // e.g., 16 ohms style
-    const Iz_min = 5;
+    const R_val = (Math.floor(Math.random() * 5) + 2) * 10; // 20-60 ohms
+    const Iz_min = 5; // mA
 
     const It_mA = ((Vin - Vz) / R_val) * 1000;
     const IL_max = It_mA - Iz_min;
 
+    if (typeof currentAnswers === "undefined") currentAnswers = {};
     currentAnswers.zenerValue = parseFloat(IL_max.toFixed(1));
     currentAnswers.zenerUnit = "ma";
 
     // 3. UI UPDATES
-    document.getElementById('inputGroupZener').style.display = "block";
-    document.getElementById('zenerMinHoldCurrent').innerText = Iz_min;
+    const zGroup = document.getElementById('inputGroupZener');
+    if (zGroup) zGroup.style.display = "block";
+    
+    const holdDisplay = document.getElementById('zenerMinHoldCurrent');
+    if (holdDisplay) holdDisplay.innerText = Iz_min;
+    
     const inputZ = document.getElementById('inputZener');
-    if (inputZ) { inputZ.value = ""; inputZ.placeholder = "e.g. " + IL_max.toFixed(1) + " mA"; }
+    if (inputZ) { 
+        inputZ.value = ""; 
+        inputZ.placeholder = "e.g. " + IL_max.toFixed(1) + " mA"; 
+    }
 
     // 4. DRAWING
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = brandBlack;
     ctx.lineWidth = 2;
     
-    // Rails
-    drawLine(ctx, 50, 60, 500, 60);  // Top
-    drawLine(ctx, 50, 360, 500, 360); // Bottom
+    // Power Rails (Consistent heights with Divider)
+    drawLine(ctx, 80, 60, 480, 60);   // Top (+V)
+    drawLine(ctx, 80, 360, 480, 360); // Bottom (0V)
     
     ctx.fillStyle = brandBlack;
     ctx.font = "bold 16px Arial";
-    ctx.fillText(Vin + " V", 15, 65);
-    ctx.fillText("0 V", 15, 365);
+    ctx.fillText(Vin + " V", 30, 65);
+    ctx.fillText("0 V", 35, 365);
 
-    // Main Vertical Branch (Resistor + Zener)
-    drawLine(ctx, 250, 60, 250, 100);
-    drawComponent(ctx, 'fixed', 250, 125); // Resistor
-    ctx.fillText(R_val + " \u03a9", 200, 130);
+    // --- MAIN BRANCH (REGULATOR) ---
+    // Resistor R at x=200
+    drawLine(ctx, 200, 60, 200, 100);
+    drawComponent(ctx, 'fixed', 200, 125); 
+    ctx.fillText(R_val + " \u03a9", 145, 130);
     
-    // Wire straight through the diode
-    drawLine(ctx, 250, 150, 250, 360); 
-    drawHollowZener(ctx, 250, 295); // Diode symbol over the wire
-    ctx.fillText(Vz + " V", 190, 300);
+    // Wire straight down through the Zener position
+    drawLine(ctx, 200, 150, 200, 360); 
+    drawHollowZener(ctx, 200, 280); 
+    ctx.fillText(Vz + " V", 145, 285);
     
-    // Junction Nodes
-    drawNode(ctx, 250, 60);
-    drawNode(ctx, 250, 210);
-    drawNode(ctx, 250, 360);
+    // Junction Nodes (Dots)
+    drawNode(ctx, 200, 60);  // Power entry
+    drawNode(ctx, 200, 210); // Splitting point for Load
+    drawNode(ctx, 200, 360); // Ground rejoin
 
-    // Load Branch to the right
-    drawLine(ctx, 250, 210, 320, 210); // To Switch
+    // --- PARALLEL BRANCH (LOAD) ---
+    // Horizontal wire to the switch
+    drawLine(ctx, 200, 210, 280, 210); 
     
     // Open Switch S
-    drawLine(ctx, 320, 210, 360, 190); // The tilted switch lever
-    ctx.beginPath(); ctx.arc(320, 210, 3, 0, Math.PI*2); ctx.stroke(); // Switch dot 1
-    ctx.beginPath(); ctx.arc(370, 210, 3, 0, Math.PI*2); ctx.stroke(); // Switch dot 2
-    ctx.fillText("S", 340, 180);
+    drawLine(ctx, 280, 210, 320, 190); // Tilted lever
+    ctx.beginPath(); ctx.arc(280, 210, 3, 0, Math.PI*2); ctx.stroke(); // Left dot
+    ctx.beginPath(); ctx.arc(330, 210, 3, 0, Math.PI*2); ctx.stroke(); // Right dot
+    ctx.fillText("S", 300, 180);
     
-    // Wire to Load
-    drawLine(ctx, 370, 210, 420, 210);
-    drawLine(ctx, 420, 210, 420, 250);
+    // Wire from switch to Load Box
+    drawLine(ctx, 330, 210, 400, 210);
+    drawLine(ctx, 400, 210, 400, 240);
     
     // LOAD Box
-    ctx.strokeRect(390, 250, 60, 40);
-    ctx.fillText("LOAD", 395, 275);
+    ctx.strokeRect(370, 240, 60, 45);
+    ctx.font = "bold 14px Arial";
+    ctx.fillText("LOAD", 377, 268);
     
-    // Return Wire from Load
-    drawLine(ctx, 420, 290, 420, 360);
-    drawNode(ctx, 420, 360);
-    
-    // Pink Question Mark Label
+    // Return wire from Load to 0V rail
+    drawLine(ctx, 400, 285, 400, 360);
+    drawNode(ctx, 400, 360); // Final ground junction
+
+    // --- TARGET LABEL (Pink) ---
     ctx.fillStyle = brandPink;
     ctx.font = "bold 18px Arial";
-    ctx.fillText("I", 440, 230);
-    ctx.font = "bold 10px Arial"; ctx.fillText("L(max)", 445, 235);
-    ctx.font = "bold 18px Arial"; ctx.fillText(" = ?", 480, 230);
-}
+    ctx.fillText("I", 430, 220);
+    ctx.font = "bold 10px Arial"; ctx.fillText("L(max)", 435, 225);
+    ctx.font = "bold 18px Arial"; ctx.fillText(" = ?", 470, 220);
 
+    // 5. SOLUTION TEXT
+    const solElement = document.getElementById('solText');
+    if (solElement) {
+        solElement.innerHTML = `
+            <strong>Step 1:</strong> Calculate the total current (I<sub>T</sub>) entering the junction.<br>
+            The voltage across the resistor is (V<sub>supply</sub> - V<sub>z</sub>).<br>
+            I<sub>T</sub> = (${Vin}V - ${Vz}V) / ${R_val}&Omega; = ${(It_mA/1000).toFixed(4)} A (<strong>${It_mA.toFixed(1)} mA</strong>)<br><br>
+            <strong>Step 2:</strong> Find the maximum load current (I<sub>L</sub>).<br>
+            The Zener must always keep at least ${Iz_min}mA to stay 'on'.<br>
+            I<sub>L(max)</sub> = I<sub>T</sub> - I<sub>z(min)</sub> = ${It_mA.toFixed(1)}mA - ${Iz_min}mA = <strong>${IL_max.toFixed(1)} mA</strong>
+        `;
+    }
+}
 // Helper to draw the Zener Diode
 
 function drawHollowZener(ctx, x, y) {
