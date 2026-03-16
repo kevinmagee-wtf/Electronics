@@ -2104,61 +2104,84 @@ function generateZenerProblem() {
     drawHollowZenerUp(ctx, xReg, 290); 
     ctx.fillText(Vz.toFixed(1) + " V", xReg - 65, 295);
 
-    // --- RIGHT BRANCH (LOAD & SWITCH) ---
+// --- RIGHT BRANCH (LOAD & SWITCH) ---
     const bridgeStartX = xReg;     
     const switchStartX = 240;      
     const switchEndX = 290;        
     const loadX = 380;             
+    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
+    // 1. Draw Connection Bridge
     drawLine(ctx, bridgeStartX, yJunc, switchStartX, yJunc); 
     drawNode(ctx, xReg, yJunc); 
     
-    // Draw the switch based on randomized state
+    // 2. Draw Switch and Dynamic Pink Labels
     if (switchClosed) {
+        // --- SWITCH IS CLOSED ---
         drawLine(ctx, switchStartX, yJunc, switchEndX, yJunc); // Straight line
-        ctx.fillText("S (Closed)", switchStartX + 10, yJunc - 30);
+        ctx.fillStyle = "black";
+        ctx.font = "bold 16px Arial";
+        ctx.fillText("S (Closed)", switchStartX + 5, yJunc - 30);
+
+        // Pink Labels for LOAD (Appear only when closed)
+        ctx.fillStyle = pink;
+        // I_LOAD Label
+        ctx.font = "bold 16px Arial"; ctx.fillText("I", switchEndX + 40, yJunc - 15);
+        ctx.font = "10px Arial"; ctx.fillText("LOAD", switchEndX + 47, yJunc - 10);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 82, yJunc - 15);
+        
+        // V_LOAD Label
+        ctx.fillText("V", loadX + 40, yJunc + 55);
+        ctx.font = "10px Arial"; ctx.fillText("LOAD", loadX + 52, yJunc + 60);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", loadX + 90, yJunc + 55);
+
     } else {
+        // --- SWITCH IS OPEN ---
         drawLine(ctx, switchStartX, yJunc, switchEndX - 10, yJunc - 20); // Angled line
-        ctx.fillText("S (Open)", switchStartX + 10, yJunc - 30);
+        ctx.fillStyle = "black";
+        ctx.font = "bold 16px Arial";
+        ctx.fillText("S (Open)", switchStartX + 5, yJunc - 30);
+
+        // Pink Labels for ZENER (Appear only when open)
+        ctx.fillStyle = pink;
+        // I_ZENER Label
+        ctx.font = "bold 16px Arial"; ctx.fillText("I", xReg + 20, 270);
+        ctx.font = "10px Arial"; ctx.fillText("ZENER", xReg + 26, 275);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 68, 270);
+        
+        // P_ZENER Label
+        ctx.fillText("P", xReg + 20, 310);
+        ctx.font = "10px Arial"; ctx.fillText("ZENER", xReg + 32, 315);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 74, 310);
     }
     
-    // Switch terminals
+    // 3. Switch terminals
+    ctx.strokeStyle = "black";
     ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
     ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
     
+    // 4. Wire to Load and Arrow
     drawLine(ctx, switchEndX, yJunc, loadX, yJunc); 
-    
-    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
     ctx.strokeStyle = "black";
     drawArrowOnWire(ctx, switchEndX + 30, yJunc, switchEndX + 50, yJunc); 
 
-    ctx.fillStyle = pink;
-    ctx.fillText("I", switchEndX + 45, yJunc - 15);
-    ctx.font = "10px Arial"; ctx.fillText("L", switchEndX + 51, yJunc - 10);
-    ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 60, yJunc - 15);
-    
-    // Load Box
+    // 5. Load Box (Always drawn)
     ctx.strokeStyle = "black"; ctx.fillStyle = "black";
     drawLine(ctx, loadX, yJunc, loadX, yJunc + 30);
     ctx.strokeRect(loadX - 30, yJunc + 30, 60, 45); 
+    ctx.font = "bold 16px Arial";
     ctx.fillText("LOAD", loadX - 20, yJunc + 58);
     drawLine(ctx, loadX, yJunc + 75, loadX, 360);
     drawNode(ctx, loadX, 360);
 
-    ctx.fillStyle = pink;
-    ctx.fillText("V", loadX + 40, yJunc + 55);
-    ctx.font = "10px Arial"; ctx.fillText("L", loadX + 52, yJunc + 60);
-    ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", loadX + 62, yJunc + 55);
-
-    // --- FOOTER TECHNICAL DATA ---
-    ctx.fillStyle = "#444";
+    // --- FOOTER TECHNICAL DATA (Updated to Solid Black) ---
+    ctx.fillStyle = "black";
     ctx.font = "italic 16px Arial";
     ctx.textAlign = "left";
     ctx.fillText("Minimum Zener holding current = " + Iz_min + " mA", 70, 390);
 
-    // Update the solution text based on the current picture
+    // Update the solution text based on the current state
     updateZenerSolution(switchClosed);
-}
     
     
 // ===========================================================================================================================      
