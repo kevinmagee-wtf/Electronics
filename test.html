@@ -487,7 +487,7 @@
 
 <!--6. ACTION CONTROLS (THE BUTTONS AT THE VERY BOTTOM)-->
             <div class="controls">
-                <button class="btn-black" onclick="generateProblem()">Generate New Problem</button>
+                <button class="btn-black" onclick="handleGenerateClick()">Generate New Problem</button>
                 <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
                 <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
                 <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
@@ -555,6 +555,11 @@
                 <p>T = 0.693 &times; (R<sub>1</sub> + 2R<sub>2</sub>) &times; C</p>
                 <p style="margin-top: 10px; font-weight: bold;">T<sub>ON</sub> / T<sub>OFF</sub> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub></p>
             </div>
+            <div>
+                <h4 style="margin-bottom: 5px; color: #000;">Zener Regulators</h4>
+                <p>I<sub>Total</sub> = (V<sub>S</sub> - V<sub>Z</sub>) / R</p>
+                <p>I<sub>L(max)</sub> = I<sub>Total</sub> - I<sub>Z(min)</sub></p>
+            </div>
         </div>
         <div style="text-align: center; margin-top: 20px;">
             <button class="btn-check" onclick="closeDataSheet()">Close Sheet</button>
@@ -584,6 +589,23 @@ let currentAnswers = {
     osc2Value: 0, osc2Unit: '',
     astableRatio: '' // Added for 555 logic
 };
+
+/* --- 2. MAIN CONTROLLER --- */
+function handleGenerateClick() {
+    if (currentMode === 'zener') {
+        generateZenerProblem();
+    } else if (currentMode === 'astable') {
+        generateAstableProblem();
+    } else if (currentMode === 'monostable') {
+        generateMonostableProblem();
+    } else if (currentMode === 'oscilloscope') {
+        generateOscilloscopeProblem();
+    } else if (currentMode === 'colorcode') {
+        generateColorCodeProblem();
+    } else {
+        generateProblem(); // Default for basics
+    }
+}
 
 // ==================================================================================================================
 // FUNCTION 0: SMALL UTILITIES (HELPERS)   
