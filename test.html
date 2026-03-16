@@ -2434,8 +2434,16 @@ function checkAnswers() {
     else if (currentMode === 'monostable') {
         activeInputs = ['inputMonostable'];
     }
+    // --- ADDED ZENER INPUT IDENTIFICATION ---
+    else if (currentMode === 'zener') {
+        if (currentZenerState === "closed") {
+            activeInputs = ['zenerQ_IL', 'zenerQ_VL'];
+        } else {
+            activeInputs = ['zenerQ_IZ', 'zenerQ_PZ'];
+        }
+    }
 
-    // Check for empty boxes (Safety check prevents script crashes)
+    // Check for empty boxes
     let hasEmptyBox = false;
     activeInputs.forEach(id => {
         const el = document.getElementById(id);
@@ -2449,7 +2457,6 @@ function checkAnswers() {
         return; 
     }
     
-    // 2. Mark the problem as attempted
     if (!hasCheckedCurrentProblem) { 
         problemsAttempted++; 
         hasCheckedCurrentProblem = true; 
@@ -2458,7 +2465,26 @@ function checkAnswers() {
     // 3. Grade the inputs
     let results = [];
     
-    if (currentMode === 'colorcode') {
+    if (currentMode === 'zener') {
+        // --- ADDED ZENER GRADING LOGIC ---
+        if (currentZenerState === "closed") {
+            const valIL = parseFloat(document.getElementById('zenerQ_IL').value);
+            const valVL = parseFloat(document.getElementById('zenerQ_VL').value);
+            
+            results.push(Math.abs(valIL - currentAnswers.targetIL) < 0.2 ? 'correct' : 'wrong');
+            results.push(Math.abs(valVL - currentAnswers.targetVL) < 0.2 ? 'correct' : 'wrong');
+        } else {
+            const valIZ = parseFloat(document.getElementById('zenerQ_IZ').value);
+            const valPZ = parseFloat(document.getElementById('zenerQ_PZ').value);
+            
+            results.push(Math.abs(valIZ - currentAnswers.targetIZ) < 0.2 ? 'correct' : 'wrong');
+            results.push(Math.abs(valPZ - currentAnswers.targetPZ) < 0.5 ? 'correct' : 'wrong');
+        }
+        // Note: Zener doesn't use the 'parseInput' unit-checking helper currently 
+        // because units are pre-defined in labels (mA/V/mW).
+    } 
+    else if (currentMode === 'colorcode') {
+        // ... (Keep existing colorcode logic)
         const valGroup = document.getElementById('inputGroupColorVal');
         if (valGroup && valGroup.style.display !== 'none') {
             const userRes = parseInput(document.getElementById('inputResValue').value);
@@ -2491,19 +2517,14 @@ function checkAnswers() {
     } else if (currentMode === 'resistance') {
         results.push(validateMatch(parseInput(document.getElementById('inputR').value), currentAnswers.rValue, currentAnswers.rUnit));
     } else if (currentMode === 'oscilloscope') {
-        // Amplitude
         results.push(validateMatch(parseInput(document.getElementById('inputOscAmp').value), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
-        
         if (currentAnswers.oscQType === 1) {
-            // Mark & Space
             results.push(validateMatch(parseInput(document.getElementById('inputOscMark').value), currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
             results.push(validateMatch(parseInput(document.getElementById('inputOscSpace').value), currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
         } else if (currentAnswers.oscQType === 2) {
-            // Period & Frequency
             results.push(validateMatch(parseInput(document.getElementById('inputOscPeriod').value), currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
             results.push(validateMatch(parseInput(document.getElementById('inputOscFreq').value), currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
         } else {
-            // EXAM BOARD STYLE: Fraction match as string (e.g. "1/2")
             const userRatio = document.getElementById('inputOscRatio').value.trim();
             results.push(userRatio === currentAnswers.oscRatioValue ? 'correct' : 'wrong');
         }
@@ -2512,19 +2533,23 @@ function checkAnswers() {
             results.push(validateMatch(parseInput(document.getElementById('inputAstable').value), currentAnswers.astableValue, currentAnswers.astableUnit));
             results.push(validateMatch(parseInput(document.getElementById('inputAstableT').value), currentAnswers.astableTValue, currentAnswers.astableTUnit));
         } else {
-            // String match for Mark/Space ratio
             const userRatio = document.getElementById('inputMarkSpace').value.trim();
             results.push(userRatio === currentAnswers.astableRatio ? 'correct' : 'wrong');
         }
     } 
     else if (currentMode === 'monostable') {
-        const userInput = document.getElementById('inputMonostable').value;
-        const parsedUser = parseInput(userInput);
-        // validateMatch handles number comparison and the expected unit
-        results.push(validateMatch(parsedUser, currentAnswers.expectedT, currentAnswers.expectedUnit));
+        results.push(validateMatch(parseInput(document.getElementById('inputMonostable').value), currentAnswers.expectedT, currentAnswers.expectedUnit));
     }
 
     // 4. Final Scoring and Feedback Display
+    // Update border colors for Zener specifically
+    if (currentMode === 'zener') {
+        activeInputs.forEach((id, index) => {
+            document.getElementById(id).style.borderColor = (results[index] === 'correct') ? "#28a745" : "#dc3545";
+            document.getElementById(id).style.borderWidth = "2px";
+        });
+    }
+
     if (results.every(r => r === 'correct')) {
         isCurrentProblemSolved = true;
         if (!viewedSolution && !unitErrorMade) {
@@ -2536,6 +2561,11 @@ function checkAnswers() {
             feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed).</span>";
         }
         if (helpBtn) helpBtn.style.display = 'none';
+        
+        // Auto-show solution on success for Zener
+        const solBox = document.getElementById('solutions');
+        if (solBox) solBox.style.display = 'block';
+
     } else {
         if (helpBtn) helpBtn.style.display = 'block';
         if (results.includes('nounit')) {
