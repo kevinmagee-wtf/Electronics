@@ -2092,11 +2092,17 @@ function generateZenerProblem() {
     ctx.fillText(Ir_mA + " mA", xReg - 75, 90); 
     
     drawLine(ctx, xReg, 60, xReg, 110); 
-    drawArrowOnWire(ctx, xReg, 80, xReg, 105); // Arrowhead is now black by default
+    drawArrowOnWire(ctx, xReg, 70, xReg, 85 ); 
 
+// --- LEFT BRANCH ---
+    // A. Input Current Value (Black)
+    // Position text at y=85 to match the higher arrow
+    ctx.fillText(Ir_mA + " mA", xReg - 75, 85); 
+
+    
     // Resistor
     drawComponent(ctx, 'fixed', xReg, 135); 
-    
+
     // Wire through Diode
     drawLine(ctx, xReg, 160, xReg, 360); 
 
@@ -2148,6 +2154,20 @@ function generateZenerProblem() {
     ctx.textAlign = "left";
 }
 
+
+
+
+
+    
+    
+   
+
+   
+
+
+
+
+    
     
 // ===========================================================================================================================      
 // FUNCTION 3. NAVIGATION and UI (Traffic Control) 
