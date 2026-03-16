@@ -11,7 +11,6 @@
     const ctx = canvas.getContext('2d');
     
     // 2. RESET UI & STATE
-    if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'astable';
     
     // MATCHING THE HTML IDs
@@ -1989,105 +1988,106 @@ function generateZenerProblem() {
     if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'zener';
 
-    // 2. GENERATE MATH (Zener Regulator Logic)
-    const Vin = Math.floor(Math.random() * 5) + 10; // 10V to 14V
-    const Vz = [4.7, 5.1, 5.6, 6.2, 7.5, 9.1][Math.floor(Math.random() * 6)];
-    const R_val = (Math.floor(Math.random() * 5) + 2) * 100; // 200 to 600 ohms
-    const Iz_min = 5; // Minimum holding current in mA
+    // 2. MATH LOGIC
+    const Vin = Math.floor(Math.random() * 5) + 10;
+    const Vz = [3.6, 4.7, 5.1, 5.6, 6.2][Math.floor(Math.random() * 5)];
+    const R_val = (Math.floor(Math.random() * 5) + 2) * 10; // e.g., 16 ohms style
+    const Iz_min = 5;
 
-    // Calculate Max Load Current (IL_max)
     const It_mA = ((Vin - Vz) / R_val) * 1000;
     const IL_max = It_mA - Iz_min;
 
-    // Store answers for the checker
-    if (typeof currentAnswers === "undefined") currentAnswers = {};
     currentAnswers.zenerValue = parseFloat(IL_max.toFixed(1));
     currentAnswers.zenerUnit = "ma";
 
-    // 3. UPDATE UI ELEMENTS
-    const zenerGroup = document.getElementById('inputGroupZener');
-    if (zenerGroup) zenerGroup.style.display = "block";
-
-    const holdDisplay = document.getElementById('zenerMinHoldCurrent');
-    if (holdDisplay) holdDisplay.innerText = Iz_min;
-
+    // 3. UI UPDATES
+    document.getElementById('inputGroupZener').style.display = "block";
+    document.getElementById('zenerMinHoldCurrent').innerText = Iz_min;
     const inputZ = document.getElementById('inputZener');
-    if (inputZ) {
-        inputZ.value = "";
-        inputZ.placeholder = "e.g. " + IL_max.toFixed(1) + " mA";
-    }
+    if (inputZ) { inputZ.value = ""; inputZ.placeholder = "e.g. " + IL_max.toFixed(1) + " mA"; }
 
-    // 4. DRAW THE CIRCUIT (Divider Style)
+    // 4. DRAWING
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = brandBlack;
     ctx.lineWidth = 2;
     
-    // Draw Rails (Same as Divider)
-    drawLine(ctx, 150, 60, 450, 60);  // Top Rail
-    drawLine(ctx, 150, 360, 450, 360); // Bottom Rail
+    // Rails
+    drawLine(ctx, 50, 60, 500, 60);  // Top
+    drawLine(ctx, 50, 360, 500, 360); // Bottom
     
     ctx.fillStyle = brandBlack;
-    ctx.font = "bold 18px Arial";
-    ctx.fillText("0V (GND)", 260, 390);
-    ctx.fillText("+Vsupply = " + Vin + "V", 230, 45);
+    ctx.font = "bold 16px Arial";
+    ctx.fillText(Vin + " V", 15, 65);
+    ctx.fillText("0 V", 15, 365);
 
-    // Series Resistor R (Top Component position)
-    drawLine(ctx, 300, 60, 300, 100);
-    drawComponent(ctx, 'fixed', 300, 125); 
-    drawLine(ctx, 300, 150, 300, 210); // Down to central node
+    // Main Vertical Branch (Resistor + Zener)
+    drawLine(ctx, 250, 60, 250, 100);
+    drawComponent(ctx, 'fixed', 250, 125); // Resistor
+    ctx.fillText(R_val + " \u03a9", 200, 130);
     
-    // Zener Diode (Bottom Component position)
-    drawLine(ctx, 300, 210, 300, 270); 
-    drawZenerSymbol(ctx, 300, 295); 
-    drawLine(ctx, 300, 320, 300, 360); // Down to bottom rail
+    // Wire straight through the diode
+    drawLine(ctx, 250, 150, 250, 360); 
+    drawHollowZener(ctx, 250, 295); // Diode symbol over the wire
+    ctx.fillText(Vz + " V", 190, 300);
+    
+    // Junction Nodes
+    drawNode(ctx, 250, 60);
+    drawNode(ctx, 250, 210);
+    drawNode(ctx, 250, 360);
 
-    // Junction Node and Output Line
-    drawNode(ctx, 300, 210);
-    drawLine(ctx, 300, 210, 380, 210);
+    // Load Branch to the right
+    drawLine(ctx, 250, 210, 320, 210); // To Switch
     
-    // Output Terminal (White circle like Divider)
-    ctx.beginPath(); ctx.arc(384, 210, 4, 0, Math.PI * 2); ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
-
-    // Labels
-    ctx.fillStyle = brandBlack;
-    ctx.font = "16px Arial";
-    ctx.fillText("R = " + R_val + " \u03a9", 350, 130);
-    ctx.fillText("Vz = " + Vz + " V", 350, 300);
+    // Open Switch S
+    drawLine(ctx, 320, 210, 360, 190); // The tilted switch lever
+    ctx.beginPath(); ctx.arc(320, 210, 3, 0, Math.PI*2); ctx.stroke(); // Switch dot 1
+    ctx.beginPath(); ctx.arc(370, 210, 3, 0, Math.PI*2); ctx.stroke(); // Switch dot 2
+    ctx.fillText("S", 340, 180);
     
-    // Target Variable in Pink
+    // Wire to Load
+    drawLine(ctx, 370, 210, 420, 210);
+    drawLine(ctx, 420, 210, 420, 250);
+    
+    // LOAD Box
+    ctx.strokeRect(390, 250, 60, 40);
+    ctx.fillText("LOAD", 395, 275);
+    
+    // Return Wire from Load
+    drawLine(ctx, 420, 290, 420, 360);
+    drawNode(ctx, 420, 360);
+    
+    // Pink Question Mark Label
     ctx.fillStyle = brandPink;
     ctx.font = "bold 18px Arial";
-    ctx.fillText("I", 400, 210);
-    ctx.font = "bold 11px Arial"; ctx.fillText("L(max)", 410, 216);
-    ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", 445, 210);
-
-    // 5. SOLUTION TEXT
-    const solElement = document.getElementById('solText');
-    if (solElement) {
-        solElement.innerHTML = `
-            <strong>Step 1:</strong> Find total current (I<sub>T</sub>) through the resistor.<br>
-            I<sub>T</sub> = (V<sub>supply</sub> - V<sub>z</sub>) / R = (${Vin}V - ${Vz}V) / ${R_val}&Omega; = ${(It_mA/1000).toFixed(4)} A (<strong>${It_mA.toFixed(1)} mA</strong>)<br><br>
-            <strong>Step 2:</strong> Max Load Current (I<sub>L</sub>) occurs when Zener takes minimum current (Iz<sub>min</sub>).<br>
-            I<sub>L(max)</sub> = I<sub>T</sub> - I<sub>z(min)</sub> = ${It_mA.toFixed(1)}mA - ${Iz_min}mA = <strong>${IL_max.toFixed(1)} mA</strong>
-        `;
-    }
+    ctx.fillText("I", 440, 230);
+    ctx.font = "bold 10px Arial"; ctx.fillText("L(max)", 445, 235);
+    ctx.font = "bold 18px Arial"; ctx.fillText(" = ?", 480, 230);
 }
 
-// Helper to draw the Zener "Z" symbol
-function drawZener(ctx, x, y) {
+// Helper to draw the Zener Diode
+
+function drawHollowZener(ctx, x, y) {
+    const size = 18;
+    ctx.strokeStyle = brandBlack;
+    ctx.lineWidth = 2;
+
+    // Hollow Triangle
     ctx.beginPath();
-    // Triangle
-    ctx.moveTo(x - 15, y - 20);
-    ctx.lineTo(x + 15, y - 20);
-    ctx.lineTo(x, y + 20);
+    ctx.moveTo(x - size, y - size);
+    ctx.lineTo(x + size, y - size);
+    ctx.lineTo(x, y + size);
     ctx.closePath();
+    ctx.fillStyle = "white"; // Fill with white to hide the wire segment behind the triangle
     ctx.fill();
-    // The "Z" Bar
+    ctx.stroke();
+
+    // The Cathode Bar (The Z shape)
     ctx.beginPath();
-    ctx.moveTo(x - 20, y + 15);
-    ctx.lineTo(x - 15, y + 20);
-    ctx.lineTo(x + 15, y + 20);
-    ctx.lineTo(x + 20, y + 25);
+    ctx.moveTo(x - size, y + size);
+    ctx.lineTo(x + size, y + size); // Flat bar
+    ctx.lineTo(x + size, y + size + 6); // Bend down
+    ctx.moveTo(x - size, y + size);
+    ctx.lineTo(x - size, y + size - 6); // Bend up
     ctx.stroke();
 }
     
