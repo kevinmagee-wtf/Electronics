@@ -1590,13 +1590,7 @@ function generateMonostableProblem() {
     // 0. RESET UI & STATE
     if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'monostable';
-    
-    // Clear and hide questionText (No-Text Policy)
-    const qText = document.getElementById('questionText');
-    if (qText) {
-        qText.innerHTML = "";
-        qText.style.display = "none";
-    }
+    document.getElementById('solText').style.display = "none"; // Hide old answer
 
     // 1. SETUP VARIABLES
     const R1_k = Math.floor(Math.random() * 173) + 47; 
@@ -1615,9 +1609,9 @@ function generateMonostableProblem() {
 
     let rLabel = R1_k + " k\u03a9";
     let cLabel = C_uF + " \u03bcF";
-    let tLabel = "Pulse Length = " + roundedTime + " s";
+    let tLabel = "Pulse Length (T) = " + roundedTime + " s";
 
-    // 3. UI SETUP (UNITS INSIDE THE BOX)
+    // 3. UI SETUP
     const monoGroup = document.getElementById('inputGroupMonostable');
     if (monoGroup) monoGroup.style.display = "inline-block";
     
@@ -1626,29 +1620,28 @@ function generateMonostableProblem() {
     const inputMono = document.getElementById('inputMonostable');
 
     if (monoPrompt) monoPrompt.innerHTML = "(Give answer to 1 d.p.)";
+    if (inputMono) inputMono.value = "";
 
-    if (inputMono) {
-        inputMono.value = "";
-        if (qType === 1) { // Calculating Time
-            if (monoLabel) monoLabel.innerHTML = "T = ";
-            inputMono.placeholder = "e.g. " + roundedTime.toFixed(1) + " s";
-            currentAnswers.expectedT = roundedTime;
-            currentAnswers.expectedUnit = "s";
-        } else if (qType === 2) { // Calculating Resistance
-            if (monoLabel) monoLabel.innerHTML = "R = ";
-            inputMono.placeholder = "e.g. " + R1_k.toFixed(1) + " k\u03a9";
-            currentAnswers.expectedT = R1_k;
-            currentAnswers.expectedUnit = "k";
-            rLabel = "R = ?";
-        } else if (qType === 3) { // Calculating Capacitance
-            if (monoLabel) monoLabel.innerHTML = "C = ";
-            inputMono.placeholder = "e.g. " + C_uF.toFixed(1) + " \u03bcF";
-            currentAnswers.expectedT = C_uF;
-            currentAnswers.expectedUnit = "uf";
-            cLabel = "C = ?";
-        }
+    // Coordination with checkAnswers()
+    if (qType === 1) { // Calculating Time
+        if (monoLabel) monoLabel.innerHTML = "T = ";
+        inputMono.placeholder = "e.g. " + roundedTime + " s";
+        currentAnswers.expectedT = roundedTime;
+        currentAnswers.expectedUnit = "s";
+    } else if (qType === 2) { // Calculating Resistance
+        if (monoLabel) monoLabel.innerHTML = "R = ";
+        inputMono.placeholder = "e.g. " + R1_k + " k\u03a9";
+        currentAnswers.expectedT = R1_k;
+        currentAnswers.expectedUnit = "k";
+        rLabel = "R = ?";
+    } else if (qType === 3) { // Calculating Capacitance
+        if (monoLabel) monoLabel.innerHTML = "C = ";
+        inputMono.placeholder = "e.g. " + C_uF + " \u03bcF";
+        currentAnswers.expectedT = C_uF;
+        currentAnswers.expectedUnit = "uf";
+        cLabel = "C = ?";
     }
-    
+
     // 4. DRAWING HELPERS
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
@@ -1656,58 +1649,53 @@ function generateMonostableProblem() {
     const drawNode = (x, y) => {
         ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
     };
-    const drawResistorBox = (x, y, val) => {
-        let oldColor = ctx.fillStyle;
+    const drawResistorBox = (x, y, val, color="#000") => {
         ctx.fillStyle = "white";
         ctx.fillRect(x - 12, y - 25, 24, 50);
+        ctx.strokeStyle = "#000";
         ctx.strokeRect(x - 12, y - 25, 24, 50);
-        ctx.fillStyle = oldColor; 
-        ctx.font = "14px Arial"; ctx.textAlign = "right";
+        ctx.fillStyle = color; 
+        ctx.font = "bold 14px Arial"; ctx.textAlign = "right";
         ctx.fillText(val, x - 20, y + 5);
-        ctx.fillStyle = "#000000"; 
+        ctx.fillStyle = "#000"; // Reset for next draw
     };
-    const drawCapacitor = (x, y, val, align="right") => {
+    const drawCapacitor = (x, y, val, align="right", color="#000") => {
+        ctx.strokeStyle = "#000";
         line(x - 15, y - 5, x + 15, y - 5);
         line(x - 15, y + 5, x + 15, y + 5);
-        ctx.font = "14px Arial"; ctx.textAlign = align;
-        if (align === "right") ctx.fillText(val, x - 25, y + 5);
-        else ctx.fillText(val, x + 25, y + 5);
+        ctx.fillStyle = color;
+        ctx.font = "bold 14px Arial"; ctx.textAlign = align;
+        ctx.fillText(val, align === "right" ? x - 25 : x + 25, y + 5);
+        ctx.fillStyle = "#000";
     };
-    
+
     // 5. DRAWING THE CIRCUIT
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#000000"; ctx.lineWidth = 2; ctx.fillStyle = "#000000";
+    ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.fillStyle = "#000";
 
     // Rails
-    line(100, 40, 500, 40); 
-    ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
-    ctx.fillText("+Vcc", 510, 45);
-    line(100, 360, 500, 360); 
-    ctx.fillText("0V", 510, 365);
+    line(100, 40, 500, 40); ctx.font = "bold 16px Arial"; ctx.textAlign = "left"; ctx.fillText("+Vcc", 510, 45);
+    line(100, 360, 500, 360); ctx.fillText("0V", 510, 365);
 
     // 555 Body
     ctx.strokeRect(260, 120, 140, 140);
-    ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
-    ctx.fillText("555", 330, 195);
+    ctx.font = "bold 24px Arial"; ctx.textAlign = "center"; ctx.fillText("555", 330, 195);
 
     // Timing Components
     const bX = 160;
     line(bX, 40, bX, 85); drawNode(bX, 40); 
     
-    if (qType === 2) ctx.fillStyle = "#ff00ff"; 
-    else ctx.fillStyle = "#000000";
-    drawResistorBox(bX, 110, rLabel);
-    ctx.fillStyle = "#000000"; 
+    // Highlight R if it's the question
+    drawResistorBox(bX, 110, rLabel, (qType === 2 ? "#E64097" : "#000"));
 
     line(bX, 135, bX, 285); drawNode(bX, 180); 
     
-    if (qType === 3) ctx.fillStyle = "#ff00ff"; 
-    else ctx.fillStyle = "#000000";
-    drawCapacitor(bX, 290, cLabel, "right");
-    ctx.fillStyle = "#000000"; 
+    // Highlight C if it's the question
+    drawCapacitor(bX, 290, cLabel, "right", (qType === 3 ? "#E64097" : "#000"));
 
     line(bX, 295, bX, 360); drawNode(bX, 360); 
 
+    // Internal Pin Connections
     line(bX, 180, 220, 180); drawNode(220, 180); 
     line(220, 140, 220, 210); 
     line(220, 140, 260, 140); 
@@ -1721,7 +1709,7 @@ function generateMonostableProblem() {
     ctx.fillText("2", 265, 245);
     ctx.textAlign = "center"; ctx.fillText("Trigger", 130, 235);
 
-    // Pins
+    // Pins 4, 8, 1, 5
     line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
     line(300, 80, 300, 120); ctx.fillText("4", 300, 135); 
     line(360, 80, 360, 120); ctx.fillText("8", 360, 135); 
@@ -1733,21 +1721,20 @@ function generateMonostableProblem() {
     line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
-    // 6. VARIABLE LABEL BELOW PICTURE (Conditional & Offset Fix)
-    if (qType !== 1) {
-        ctx.font = "bold 16px Arial"; ctx.textAlign = "center"; ctx.fillStyle = "#333";
-        ctx.fillText(tLabel, 300, 410);
-    }
+    // 6. Pulse Length label (Highlight if T is the question)
+    ctx.font = "bold 18px Arial"; ctx.textAlign = "center";
+    ctx.fillStyle = (qType === 1 ? "#E64097" : "#333");
+    ctx.fillText(tLabel, 300, 410);
 
     // 7. SOLUTION TEXT
     const solElement = document.getElementById('solText');
     if (solElement) {
         if (qType === 1) {
-            solElement.innerHTML = "<strong>Find T:</strong> T = 1.1 &times; R &times; C<br>T = 1.1 &times; " + R1_k + "k &times; " + C_uF + "&mu;F = <strong>" + roundedTime + " s</strong>";
+            solElement.innerHTML = "<strong>Find T:</strong> T = 1.1 &times; R &times; C = 1.1 &times; " + R1_k + "k &times; " + C_uF + "&mu;F = <strong>" + roundedTime + " s</strong>";
         } else if (qType === 2) {
-            solElement.innerHTML = "<strong>Find R:</strong> R = T / (1.1 &times; C)<br>R = " + roundedTime + " / (1.1 &times; " + C_uF + "e-6) = <strong>" + R1_k + " k&Omega;</strong>";
+            solElement.innerHTML = "<strong>Find R:</strong> R = T / (1.1 &times; C) = " + roundedTime + " / (1.1 &times; " + C_uF + "&mu;F) = <strong>" + R1_k + " k&Omega;</strong>";
         } else {
-            solElement.innerHTML = "<strong>Find C:</strong> C = T / (1.1 &times; R)<br>C = " + roundedTime + " / (1.1 &times; " + R1_ohms + ") = <strong>" + C_uF + " &mu;F</strong>";
+            solElement.innerHTML = "<strong>Find C:</strong> C = T / (1.1 &times; R) = " + roundedTime + " / (1.1 &times; " + R1_k + "k) = <strong>" + C_uF + " &mu;F</strong>";
         }
     }
 }
