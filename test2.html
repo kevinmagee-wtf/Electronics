@@ -1914,22 +1914,28 @@ function generateZenerProblem() {
     drawLine(ctx, xReg, yJunc, switchStartX, yJunc); 
     drawNode(ctx, xReg, yJunc); 
     
-    // 1. Draw the Switch Label "S" (Centered above the switch gap)
+    // Draw Switch Label "S" below the switch
     ctx.fillStyle = "black";
     ctx.font = "bold 16px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("S", (switchStartX + switchEndX) / 2, yJunc + 20);
-    ctx.textAlign = "left"; // Reset alignment for other labels
+    ctx.fillText("S", (switchStartX + switchEndX) / 2, yJunc + 20); 
+    ctx.textAlign = "left"; 
 
     if (switchClosed) {
-        // --- SWITCH IS CLOSED ---
+        // --- SWITCH IS CLOSED (Asking for LOAD values) ---
         drawLine(ctx, switchStartX, yJunc, switchEndX, yJunc); 
 
+        ctx.strokeStyle = pink;
         ctx.fillStyle = pink;
+
+        // 1. Pink Arrow for I_LOAD (Only shows when switch is closed)
+        drawArrowOnWire(ctx, switchEndX + 10, yJunc, switchEndX + 40, yJunc);
+
+        // 2. Labels with Subscripts
         // I subscript LOAD = ?
-        ctx.font = "bold 16px Arial"; ctx.fillText("I", switchEndX + 40, yJunc - 15);
-        ctx.font = "bold 10px Arial"; ctx.fillText("LOAD", switchEndX + 47, yJunc - 10);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 80, yJunc - 15);
+        ctx.font = "bold 16px Arial"; ctx.fillText("I", switchEndX + 45, yJunc - 15);
+        ctx.font = "bold 10px Arial"; ctx.fillText("LOAD", switchEndX + 52, yJunc - 10);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 85, yJunc - 15);
         
         // V subscript LOAD = ?
         ctx.font = "bold 16px Arial"; ctx.fillText("V", loadX + 40, yJunc + 55);
@@ -1937,20 +1943,30 @@ function generateZenerProblem() {
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", loadX + 85, yJunc + 55);
 
     } else {
-        // --- SWITCH IS OPEN ---
+        // --- SWITCH IS OPEN (Asking for ZENER values) ---
         drawLine(ctx, switchStartX, yJunc, switchEndX - 10, yJunc - 20); 
 
+        ctx.strokeStyle = pink;
         ctx.fillStyle = pink;
-        // I subscript ZENER = ?
-        ctx.font = "bold 16px Arial"; ctx.fillText("I", xReg + 20, 270);
-        ctx.font = "bold 10px Arial"; ctx.fillText("ZENER", xReg + 26, 275);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 68, 270);
+
+        // 1. Pink Arrow for I_ZENER (Points down beside the diode)
+        // Placed at xReg + 15 to keep it close but not overlapping the wire
+        drawArrowOnWire(ctx, xReg + 15, 230, xReg + 15, 260);
+
+        // 2. Labels with Subscripts (Shifted Left to reduce clutter)
+        // I subscript ZENER = ? (x changed from +20 to -65)
+        ctx.font = "bold 16px Arial"; ctx.fillText("I", xReg - 65, 245);
+        ctx.font = "bold 10px Arial"; ctx.fillText("ZENER", xReg - 59, 250);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 17, 245);
         
         // P subscript ZENER = ?
-        ctx.font = "bold 16px Arial"; ctx.fillText("P", xReg + 20, 310);
-        ctx.font = "bold 10px Arial"; ctx.fillText("ZENER", xReg + 32, 315);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 74, 310);
+        ctx.font = "bold 16px Arial"; ctx.fillText("P", xReg + 25, 310);
+        ctx.font = "bold 10px Arial"; ctx.fillText("ZENER", xReg + 37, 315);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 79, 310);
     }
+    
+    // Reset stroke to black for any subsequent drawing
+    ctx.strokeStyle = "black";
     
     // Switch terminals
     ctx.strokeStyle = "black";
