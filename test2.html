@@ -4,174 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abingdon School - Circuit function generateAstableProblem() {
-    // 1. SELF-INITIALIZE CANVAS & CONTEXT
-    const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    <title>Abingdon School - Electronics Quiz</title>
     
-    // 2. RESET UI & STATE
-    currentMode = 'astable';
-    
-    // MATCHING THE HTML IDs
-    const inputAstable = document.getElementById('inputAstable');
-    const inputAstableT = document.getElementById('inputAstableT');
-    const inputMarkSpace = document.getElementById('inputMarkSpace');
-    
-    // Target the specific sub-instruction elements (The Grey Text)
-    const astablePrompt = document.getElementById('astableInstruction');
-    const ratioPrompt = document.getElementById('ratioInstruction');
-    
-    // Clear old values and instructions
-    if (inputAstable) inputAstable.value = "";
-    if (inputAstableT) inputAstableT.value = "";
-    if (inputMarkSpace) inputMarkSpace.value = "";
-    if (astablePrompt) astablePrompt.innerHTML = "";
-    if (ratioPrompt) ratioPrompt.innerHTML = "";
-
-    // 3. Setup Variables
-    const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
-    const R2 = (Math.floor(Math.random() * 9) + 1) * 1000;
-    const C_uF = [0.1, 1, 10, 47][Math.floor(Math.random() * 4)];
-    const C_farads = C_uF / 1000000;
-
-    // 4. Calculate Answers
-    const freq = 1.44 / ((R1 + 2 * R2) * C_farads);
-    const period_ms = (1 / freq) * 1000;
-    
-    // GCD Helper for Ratio
-    const gcd = (a, b) => b ? gcd(b, a % b) : a;
-    const num = R1 + R2;
-    const den = R2;
-    const common = gcd(num, den);
-    const ratioString = (num / common) + "/" + (den / common);
-
-    // 5. Choose Question Type
-    const qType = Math.floor(Math.random() * 2);
-    currentAnswers.astableQType = qType;
-
-    hideAllInputGroups(); 
-
-    if (qType === 0) {
-        document.getElementById('inputGroupAstable').style.display = "inline-block";
-        if (astablePrompt) astablePrompt.innerHTML = "(Give answer to 1 d.p.)";
-        
-        if (inputAstable) inputAstable.placeholder = "e.g. " + freq.toFixed(1) + " Hz";
-        if (inputAstableT) inputAstableT.placeholder = "e.g. " + period_ms.toFixed(1) + " ms";
-        
-        // NAMES MATCHING YOUR checkAnswers()
-        currentAnswers.astableValue = parseFloat(freq.toFixed(1)); 
-        currentAnswers.astableUnit = "hz";
-        currentAnswers.astableTValue = parseFloat(period_ms.toFixed(1)); 
-        currentAnswers.astableTUnit = "ms";
-    } else {
-        document.getElementById('inputGroupMarkSpace').style.display = "inline-block";
-        if (ratioPrompt) ratioPrompt.innerHTML = "(Give answer as a simplified fraction)";
-        
-        if (inputMarkSpace) inputMarkSpace.placeholder = "e.g. 2/1";
-        
-        // NAMES MATCHING YOUR checkAnswers()
-        currentAnswers.astableRatio = ratioString;
-        currentAnswers.expectedUnit = "ratio"; 
-    }
-
-    // 6. Drawing Helpers
-    const line = (x1, y1, x2, y2) => {
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-    };
-    const drawNode = (x, y) => {
-        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
-    };
-    const drawResistorBox = (x, y, val) => {
-        ctx.fillStyle = "white";
-        ctx.fillRect(x - 12, y - 25, 24, 50);
-        ctx.strokeRect(x - 12, y - 25, 24, 50);
-        ctx.fillStyle = "#000000";
-        ctx.font = "14px Arial"; ctx.textAlign = "right";
-        ctx.fillText(val, x - 20, y + 5);
-    };
-    const drawCapacitor = (x, y, val, align="right") => {
-        line(x - 15, y - 5, x + 15, y - 5);
-        line(x - 15, y + 5, x + 15, y + 5);
-        ctx.font = "14px Arial"; ctx.textAlign = align;
-        if (align === "right") ctx.fillText(val, x - 25, y + 5);
-        else ctx.fillText(val, x + 25, y + 5);
-    };
-
-    // 7. Drawing the Circuit
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#000000"; ctx.lineWidth = 2; ctx.fillStyle = "#000000";
-
-    // Rails
-    ctx.font = "bold 16px Arial"; ctx.textAlign = "left";
-    line(100, 40, 500, 40); ctx.fillText("+Vcc", 510, 45);
-    line(100, 360, 500, 360); ctx.fillText("0V", 510, 365);
-    
-    // 555 Box
-    ctx.strokeRect(260, 120, 140, 140); 
-    ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
-    ctx.fillText("555", 330, 195);
-
-    // Components
-    const bX = 160;
-    line(bX, 40, bX, 60); drawNode(bX, 40);
-    drawResistorBox(bX, 85, (R1/1000) + " k\u03a9");
-    line(bX, 110, bX, 155); drawNode(bX, 140);
-    drawResistorBox(bX, 180, (R2/1000) + " k\u03a9");
-    line(bX, 205, bX, 285); drawNode(bX, 225);
-    drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
-    line(bX, 295, bX, 360); drawNode(bX, 360);
-
-    // Connections
-    line(bX, 140, 260, 140); // Pin 7
-    ctx.font = "14px Arial"; ctx.textAlign = "left"; ctx.fillText("7", 265, 145);
-    line(bX, 225, 220, 225); drawNode(220, 225); line(220, 180, 220, 240);
-    line(220, 180, 260, 180); ctx.fillText("6", 265, 185); 
-    line(220, 240, 260, 240); ctx.fillText("2", 265, 245); 
-
-    // Static Pins (4, 8, 1, 5)
-    line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
-    line(300, 80, 300, 120); ctx.textAlign = "center"; ctx.fillText("8", 300, 135);
-    line(360, 80, 360, 120); ctx.fillText("4", 360, 135);
-    line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
-    line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
-    drawCapacitor(360, 310, "10 nF", "left");
-    line(360, 315, 360, 360); drawNode(360, 360);
-
-    // Output
-    line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
-    ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
-
-    // 8. Update Solution Text
-    let solHTML = "";
-    if (qType === 0) {
-        solHTML = "<strong>Frequency (f)</strong> = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = <strong>" + freq.toFixed(1) + " Hz</strong><br>" +
-                  "<strong>Period (T)</strong> = 1 / f = <strong>" + period_ms.toFixed(1) + " ms</strong>";
-    } else {
-        solHTML = "<strong>Mark-to-Space Ratio</strong> = (R1 + R2) / R2<br>" +
-                  "Ratio = (" + R1 + " + " + R2 + ") / " + R2 + "<br>" +
-                  "Ratio = " + num + " / " + den + " = <strong>" + ratioString + "</strong>";
-    }
-    document.getElementById('solText').innerHTML = solHTML;
-}Quiz</title>
     <style>
-        body { 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    max-width: 1100px; 
-    margin: 0 auto; 
-    padding: 10px 20px; 
-    line-height: 1.6; 
-    color: #333; /* Dark grey text for better contrast on light backgrounds */
-
-    /* BRIGHT ELECTRONICS FEEL */
-    background-color: #f0f4f7; 
-    background-image: 
-        radial-gradient(#d1d9e0 1px, transparent 1px), 
-        linear-gradient(#e2e8f0 1.5px, transparent 1.5px), 
-        linear-gradient(90deg, #e2e8f0 1.5px, transparent 1.5px);
-    background-size: 20px 20px, 100px 100px, 100px 100px;
-    background-position: 0 0, -1px -1px, -1px -1px;
-}
+    body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        max-width: 1100px; 
+        margin: 0 auto; 
+        padding: 10px 20px; 
+        line-height: 1.6; 
+        color: #333; /* Dark grey text for better contrast on light backgrounds */
+        background-color: #f0f4f7; 
+        background-image: 
+            radial-gradient(#d1d9e0 1px, transparent 1px), 
+            linear-gradient(#e2e8f0 1.5px, transparent 1.5px), 
+            linear-gradient(90deg, #e2e8f0 1.5px, transparent 1.5px);
+        background-size: 20px 20px, 100px 100px, 100px 100px;
+        background-position: 0 0, -1px -1px, -1px -1px;
+    }
+   
         .header { text-align: center; margin-bottom: 15px; }
         .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
         .header p { margin-top: 5px; font-size: 18px; color: #555; }
@@ -236,9 +87,6 @@
     color: white;
     border-color: #000;
 }
-
-
-
         .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
         
         .left-panel { flex: 1 1 550px; max-width: 650px; }
@@ -501,22 +349,6 @@
     <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
     <div id="feedback" class="feedback"></div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             
 <!--6. ACTION CONTROLS (THE BUTTONS AT THE VERY BOTTOM)-->
             <div class="controls">
@@ -1548,119 +1380,90 @@ function generateOscilloscopeProblem() {
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = solTextStr;
 }
-
-
-
-    
+ 
 function generateAstableProblem() {
+    // 1. UI RESET
     hideAllInputGroups();
-    // 1. SELF-INITIALIZE
+    const solBox = document.getElementById('solText');
+    if (solBox) solBox.style.display = "none"; // Hide previous answer
+    if (typeof resetAnswerBox === "function") resetAnswerBox();
+    
+    // 2. SELF-INITIALIZE CANVAS
     const canvas = document.getElementById('circuitCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    
-    // 2. RESET UI & STATE
-    if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'astable';
     
-    // Target inputs and clear values
+    // 3. CLEAR OLD INPUTS
     const inputAstable = document.getElementById('inputAstable');
     const inputAstableT = document.getElementById('inputAstableT');
     const inputMarkSpace = document.getElementById('inputMarkSpace');
     const astablePrompt = document.getElementById('astableInstruction');
     const ratioPrompt = document.getElementById('ratioInstruction');
     
-    if (inputAstable) inputAstable.value = "";
-    if (inputAstableT) inputAstableT.value = "";
-    if (inputMarkSpace) inputMarkSpace.value = "";
-    if (astablePrompt) astablePrompt.innerHTML = "";
-    if (ratioPrompt) ratioPrompt.innerHTML = "";
+    [inputAstable, inputAstableT, inputMarkSpace].forEach(el => { if(el) el.value = ""; });
+    [astablePrompt, ratioPrompt].forEach(el => { if(el) el.innerHTML = ""; });
 
-    // 3. Setup Variables
+    // 4. MATH & VARIABLES
     const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
     const R2 = (Math.floor(Math.random() * 9) + 1) * 1000;
     const C_uF = [0.1, 1, 10, 47][Math.floor(Math.random() * 4)];
     const C_farads = C_uF / 1000000;
 
-    // 4. Calculate Answers
     const freq = 1.44 / ((R1 + 2 * R2) * C_farads);
     const period_ms = (1 / freq) * 1000;
     
-    // GCD Helper for Ratio
     const gcd = (a, b) => b ? gcd(b, a % b) : a;
     const num = R1 + R2;
     const den = R2;
     const common = gcd(num, den);
     const ratioString = (num / common) + "/" + (den / common);
 
-    // 5. Choose Question Type
+    // 5. CHOOSE QUESTION TYPE
     const qType = Math.floor(Math.random() * 2);
     currentAnswers.astableQType = qType;
 
-    // --- REMOVED THE QUESTION TEXT LOGIC HERE ---
-    // No more qText.style.display or qText.innerHTML
+    // Toggle Input Groups
+    const groupStd = document.getElementById('inputGroupAstable');
+    const groupRatio = document.getElementById('inputGroupMarkSpace');
 
     if (qType === 0) {
-        // Show Standard Inputs, explicitly hide Ratio
-        document.getElementById('inputGroupAstable').style.display = "inline-block";
-        document.getElementById('inputGroupMarkSpace').style.display = "none";
-        
-        if (astablePrompt) astablePrompt.innerHTML = "(Give answer to 1 d.p.)";
-        if (inputAstable) inputAstable.placeholder = "e.g. " + freq.toFixed(1) + " Hz";
-        if (inputAstableT) inputAstableT.placeholder = "e.g. " + period_ms.toFixed(1) + " ms";
+        if(groupStd) groupStd.style.display = "inline-block";
+        if(groupRatio) groupRatio.style.display = "none";
+        if(astablePrompt) astablePrompt.innerHTML = "(Give answer to 1 d.p.)";
         
         currentAnswers.astableValue = parseFloat(freq.toFixed(1)); 
-        currentAnswers.astableUnit = "hz";
         currentAnswers.astableTValue = parseFloat(period_ms.toFixed(1)); 
-        currentAnswers.astableTUnit = "ms";
     } else {
-        // Show Ratio Input, explicitly hide Standard
-        document.getElementById('inputGroupMarkSpace').style.display = "block";
-        document.getElementById('inputGroupAstable').style.display = "none";
-        
-        if (ratioPrompt) ratioPrompt.innerHTML = "(Give answer as a simplified fraction)";
-        if (inputMarkSpace) inputMarkSpace.placeholder = "e.g. 2/1";
+        if(groupRatio) groupRatio.style.display = "inline-block";
+        if(groupStd) groupStd.style.display = "none";
+        if(ratioPrompt) ratioPrompt.innerHTML = "(Simplified fraction, e.g. 2/1)";
         
         currentAnswers.astableRatio = ratioString;
     }
 
-    // 6. Drawing Helpers
-    const line = (x1, y1, x2, y2) => {
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-    };
-    const drawNode = (x, y) => {
-        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
-    };
+    // 6. DRAWING HELPERS (Kept your logic)
+    const line = (x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+    const drawNode = (x, y) => { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); };
     const drawResistorBox = (x, y, val) => {
-        ctx.fillStyle = "white";
-        ctx.fillRect(x - 12, y - 25, 24, 50);
-        ctx.strokeRect(x - 12, y - 25, 24, 50);
-        ctx.fillStyle = "#000000";
-        ctx.font = "14px Arial"; ctx.textAlign = "right";
-        ctx.fillText(val, x - 20, y + 5);
+        ctx.fillStyle = "white"; ctx.fillRect(x - 12, y - 25, 24, 50); ctx.strokeRect(x - 12, y - 25, 24, 50);
+        ctx.fillStyle = "#000"; ctx.font = "14px Arial"; ctx.textAlign = "right"; ctx.fillText(val, x - 20, y + 5);
     };
     const drawCapacitor = (x, y, val, align="right") => {
-        line(x - 15, y - 5, x + 15, y - 5);
-        line(x - 15, y + 5, x + 15, y + 5);
+        line(x - 15, y - 5, x + 15, y - 5); line(x - 15, y + 5, x + 15, y + 5);
         ctx.font = "14px Arial"; ctx.textAlign = align;
-        if (align === "right") ctx.fillText(val, x - 25, y + 5);
-        else ctx.fillText(val, x + 25, y + 5);
+        ctx.fillText(val, align === "right" ? x - 25 : x + 25, y + 5);
     };
 
-    // 7. Drawing the Circuit
-    
+    // 7. DRAWING THE CIRCUIT (Your layout)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#000000"; ctx.lineWidth = 2; ctx.fillStyle = "#000000";
+    ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.fillStyle = "#000";
 
-    // Rails
     line(100, 40, 500, 40); ctx.font = "bold 16px Arial"; ctx.textAlign = "left"; ctx.fillText("+Vcc", 510, 45);
     line(100, 360, 500, 360); ctx.fillText("0V", 510, 365);
-    
-    // 555 Box
     ctx.strokeRect(260, 120, 140, 140); 
     ctx.font = "bold 24px Arial"; ctx.textAlign = "center"; ctx.fillText("555", 330, 195);
 
-    // Components
     const bX = 160;
     line(bX, 40, bX, 60); drawNode(bX, 40);
     drawResistorBox(bX, 85, (R1/1000) + " k\u03a9");
@@ -1670,13 +1473,12 @@ function generateAstableProblem() {
     drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
     line(bX, 295, bX, 360); drawNode(bX, 360);
 
-    // Pin Connections
     line(bX, 140, 260, 140); ctx.font = "14px Arial"; ctx.textAlign = "left"; ctx.fillText("7", 265, 145);
     line(bX, 225, 220, 225); drawNode(220, 225); line(220, 180, 220, 240);
     line(220, 180, 260, 180); ctx.fillText("6", 265, 185); 
     line(220, 240, 260, 240); ctx.fillText("2", 265, 245); 
 
-    // Static Pins
+    // Static Pins & Output (Your existing logic)
     line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
     line(300, 80, 300, 120); ctx.textAlign = "center"; ctx.fillText("8", 300, 135);
     line(360, 80, 360, 120); ctx.fillText("4", 360, 135);
@@ -1684,20 +1486,15 @@ function generateAstableProblem() {
     line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
     drawCapacitor(360, 310, "10 nF", "left");
     line(360, 315, 360, 360); drawNode(360, 360);
-
-    // Output
     line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
     // 8. Update Solution Text
-    let solHTML = "";
-    if (qType === 0) {
-        solHTML = "<strong>Frequency (f)</strong> = 1.44 / ((" + R1 + " + 2*" + R2 + ") * " + C_farads.toExponential(2) + ") = <strong>" + freq.toFixed(1) + " Hz</strong><br>" +
-                  "<strong>Period (T)</strong> = 1 / f = <strong>" + period_ms.toFixed(1) + " ms</strong>";
-    } else {
-        solHTML = "<strong>Mark-to-Space Ratio</strong> = (R1 + R2) / R2 = (" + R1 + "+" + R2 + ")/" + R2 + " = <strong>" + ratioString + "</strong>";
+    if (solBox) {
+        solBox.innerHTML = qType === 0 ? 
+            "<strong>f</strong> = " + freq.toFixed(1) + " Hz, <strong>T</strong> = " + period_ms.toFixed(1) + " ms" :
+            "<strong>Ratio</strong> = (R1 + R2) / R2 = <strong>" + ratioString + "</strong>";
     }
-    document.getElementById('solText').innerHTML = solHTML;
 }
     
 function drawMonostable(ctx, R, C, rUnit, cUnit) {
