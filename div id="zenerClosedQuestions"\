@@ -313,40 +313,12 @@
                     <label>Band 4: </label><input type="text" id="inputBandTol" style="width: 100px;">
                 </div>
 
-    <!--ZENER DIODE-->
-    <div id="inputGroupZener" style="display:none; text-align: left; width: 100%;">
-    
-    <div id="zenerClosedQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 15px;">
-        <p style="margin-top:0; font-weight: bold; color: #333;">Switch S is CLOSED. Calculate:</p>
-        
-        <div style="margin-bottom: 12px;">
-            <label for="zenerQ_IL">1. Max Load Current (I<sub>L</sub>):</label><br>
-            <input type="number" id="zenerQ_IL" placeholder="mA" step="0.1" style="width: 120px; padding: 5px;">
-        </div>
-
-        <div style="margin-bottom: 12px;">
-            <label for="zenerQ_VL">2. Load Voltage (V<sub>L</sub>):</label><br>
-            <input type="number" id="zenerQ_VL" placeholder="V" step="0.1" style="width: 120px; padding: 5px;">
-        </div>
-    </div>
-
-    <div id="zenerOpenQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 15px;">
-        <p style="margin-top:0; font-weight: bold; color: #333;">Switch S is OPEN. Calculate:</p>
-        
-        <div style="margin-bottom: 12px;">
-            <label for="zenerQ_IZ">1. Zener Current (I<sub>Z</sub>):</label><br>
-            <input type="number" id="zenerQ_IZ" placeholder="mA" step="0.1" style="width: 120px; padding: 5px;">
-        </div>
-
-        <div style="margin-bottom: 12px;">
-            <label for="zenerQ_PZ">2. Zener Power (P<sub>Z</sub>):</label><br>
-            <input type="number" id="zenerQ_PZ" placeholder="mW" step="0.1" style="width: 120px; padding: 5px;">
-        </div>
-    </div>
 
     <div id="zenerInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;">
         (Give all answers to 1 d.p.)
     </div>
+
+    <div id="inputGroupZener" style="display:none;"></div>        
 </div>
 
 <div style="margin-top: 20px;">
@@ -2162,6 +2134,37 @@ function switchTab(mode) {
     } else {
         // Fallback for basics: analysis, divider, and resistance
         generateProblem();
+    }
+
+//### 2. The JavaScript "Bridge"
+//Since we deleted the input boxes, we must tell the `generateZenerProblem` function to write the text into the `solText` box (which is the area at the bottom where your Astable solutions usually appear).
+
+
+    // 1. Show the main Zener container
+    const zGroup = document.getElementById('inputGroupZener');
+    if (zGroup) zGroup.style.display = 'block';
+
+    // 2. Put the plain text question into the 'solText' area
+    const solElement = document.getElementById('solText');
+    const solContainer = document.getElementById('solutions'); // The wrapper div
+    
+    if (solElement && solContainer) {
+        solContainer.style.display = 'block'; // Make the box visible
+        
+        if (switchClosed) {
+            solElement.innerHTML = `
+                <p><b>I<sub>LOAD</sub> = ?</b> (e.g. 12.4 mA)</p>
+                <p><b>V<sub>LOAD</sub> = ?</b> (e.g. 5.1 V)</p>
+            `;
+        } else {
+            solElement.innerHTML = `
+                <p><b>I<sub>ZENER</sub> = ?</b> (e.g. 8.2 mA)</p>
+                <p><b>P<sub>ZENER</sub> = ?</b> (e.g. 42.5 mW)</p>
+            `;
+        }
+        
+        // Add the "1 d.p." instruction
+        solElement.innerHTML += `<p style="font-size: 0.9em; margin-top: 10px; color: #666; font-style: italic;">Give all answers to 1 decimal place.</p>`;
     }
 }
 
