@@ -1865,6 +1865,10 @@ function generateZenerProblem() {
     // 3. UI SETUP
     const zenerMainGroup = document.getElementById('inputGroupZener');
     if(zenerMainGroup) zenerMainGroup.style.display = "block";
+
+    // Ensure both sub-groups are HIDDEN before we decide which one to show
+    if (document.getElementById('zenerClosedQuestions')) document.getElementById('zenerClosedQuestions').style.display = "none";
+    if (document.getElementById('zenerOpenQuestions')) document.getElementById('zenerOpenQuestions').style.display = "none";
     
     const closedGroup = document.getElementById('zenerClosedQuestions');
     const openGroup = document.getElementById('zenerOpenQuestions');
@@ -2628,6 +2632,36 @@ function toggleSolutions() {
 // FINAL INITIALIZATION (Place at the end of your .js file)
 // ==========================================
 
+function updateZenerSolution(isClosed) {
+    const solElement = document.getElementById('solText');
+    if (!solElement) return;
+
+    if (isClosed) {
+        // This math matches the "Switch Closed" state
+        solElement.innerHTML = `
+            <strong>Switch Closed Solution:</strong><br>
+            1. The Zener diode is active, so it takes its minimum current: <strong>${currentAnswers.Iz_min}mA</strong>.<br>
+            2. The load current is whatever is left over from the total current.<br>
+            I<sub>LOAD</sub> = I<sub>TOTAL</sub> - I<sub>ZENER</sub><br>
+            I<sub>LOAD</sub> = ${currentAnswers.Ir_mA}mA - ${currentAnswers.Iz_min}mA = <strong>${currentAnswers.targetIL}mA</strong><br>
+            3. The voltage across the load is clamped by the Zener: <strong>${currentAnswers.targetVL}V</strong>.
+        `;
+    } else {
+        // This math matches the "Switch Open" state
+        solElement.innerHTML = `
+            <strong>Switch Open Solution:</strong><br>
+            1. Because the switch is open, the load is disconnected. I<sub>LOAD</sub> = 0mA.<br>
+            2. This means 100% of the current must go through the Zener diode.<br>
+            I<sub>ZENER</sub> = <strong>${currentAnswers.targetIZ}mA</strong><br>
+            3. Power Dissipated = I &times; V<br>
+            P<sub>ZENER</sub> = ${currentAnswers.targetIZ}mA &times; ${currentAnswers.Vz}V = <strong>${currentAnswers.targetPZ}mW</strong>.
+        `;
+    }
+}
+
+
+
+    
 function hideAllInputGroups() {
     // 1. All specific input groups and parent wrappers
     const groups = [
