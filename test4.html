@@ -7,13 +7,14 @@
     <title>Abingdon School - Electronics Quiz</title>
     
     <style>
+    /* 1. CSS STYLING FOR THE BODY ELEMENT */
     body { 
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
         max-width: 1100px; 
         margin: 0 auto; 
         padding: 10px 20px; 
         line-height: 1.6; 
-        color: #333; /* Dark grey text for better contrast on light backgrounds */
+        color: #333; 
         background-color: #f0f4f7; 
         background-image: 
             radial-gradient(#d1d9e0 1px, transparent 1px), 
@@ -21,133 +22,104 @@
             linear-gradient(90deg, #e2e8f0 1.5px, transparent 1.5px);
         background-size: 20px 20px, 100px 100px, 100px 100px;
         background-position: 0 0, -1px -1px, -1px -1px;
-    }
+    } /* <--- This is the CSS closing brace */
    
-        .header { text-align: center; margin-bottom: 15px; }
-        .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
-        .header p { margin-top: 5px; font-size: 18px; color: #555; }
-        .header span { color: #E64097; font-weight: bold; }
+    .header { text-align: center; margin-bottom: 15px; }
+    .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
+    .header p { margin-top: 5px; font-size: 18px; color: #555; }
+    .header span { color: #E64097; font-weight: bold; }
+    
+    #mainMenu {
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+        justify-items: center; 
+        column-gap: 40px; 
+        row-gap: 30px;    
+        max-width: 900px; 
+        margin: 60px auto; 
+    }
         
-        .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-        /* Specific layout for the 8-button Home Page */
+    .tab { 
+        padding: 10px 25px; 
+        font-size: 16px; 
+        font-weight: bold; 
+        cursor: pointer; 
+        background-color: #E64097; 
+        border: 2px solid #c5307d; 
+        border-radius: 8px; 
+        color: white; 
+        transition: all 0.2s;
+        min-width: 120px;
+    }
 
-/* Home Page Grid */
-#mainMenu {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    justify-items: center; 
-    column-gap: 40px; 
-    row-gap: 30px;    
-    max-width: 900px; 
-    margin: 60px auto; 
-}
-        
-/* Ensure the sub-menus stay as a single row */
-#menuBasics, #menuTiming, #menuPlaceholder {
-    display: none; /* Hidden by default */
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-        /* General Tab Styling - Updated for Pink branding and more height */
-/* 1. Updated Tab Styling: Fixed width to make them shorter */
-.tab { 
-    padding: 10px 25px; 
-    font-size: 16px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    background-color: #E64097; /* Keeping them pink */
-    border: 2px solid #c5307d; 
-    border-radius: 8px; 
-    color: white; 
-    transition: all 0.2s;
-    min-width: 120px;
-    height: auto;
-}
+    #mainMenu .tab {
+        width: 320px;      
+        min-height: 90px;  
+        font-size: 19px;   
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
 
-#mainMenu .tab {
-    width: 320px;      /* Big width for Home Page only */
-    min-height: 90px;  /* Big height for Home Page only */
-    font-size: 19px;   /* Larger text for Home Page only */
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
+    .tab:hover {
+        background-color: #cf3584;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
 
-.tab:hover {
-    background-color: #cf3584;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
+    .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+    
+    .left-panel { flex: 1 1 550px; max-width: 650px; }
+    .circuit-container { 
+        border: 2px solid #eaeaea; 
+        padding: 15px; 
+        text-align: center; 
+        background-color: #fff; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+    }
+    canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
+    
+    .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
+    .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
+    
+    .quiz-header { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        border-bottom: 2px solid #f2c7db; 
+        padding-bottom: 10px; 
+        margin-bottom: 10px; 
+    }
+    
+    .scoreboard { 
+        background-color: #fff; 
+        padding: 6px 15px; 
+        border: 2px solid #E64097; 
+        border-radius: 6px; 
+        font-weight: bold; 
+        color: #E64097; 
+    }
 
-.tab.active {
-    background-color: #000000;
-    color: white;
-    border-color: #000;
-}
-        .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
-        
-        .left-panel { flex: 1 1 550px; max-width: 650px; }
-        .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
-        
-        .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
-        .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
-        .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
-        .quiz-header h3 { margin: 0; font-size: 1.2rem; }
-        
-        .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-        .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
-        .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
-        .btn-download:hover { background-color: #157347; }
-        .btn-download:disabled { background-color: #6c757d; cursor: wait; }
-        
-        .input-area { text-align: center; }
-        .input-spacer { height: 55px; visibility: hidden; display: block; }
-        .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
-        input[type="text"] { 
-            font-size: 18px; /* Slightly larger text */
-            padding: 10px;  /* More 'breathing room' inside the box */
-            height: 45px;   /* Consistent height */
-            width: 140px;   /* Slightly wider for unit strings */
-            text-align: center;
-            margin: 0 5px; 
-            border: 2px solid #ccc; /* Thicker border to match brand style */
-            border-radius: 6px; 
-            outline-color: #E64097;
-            box-sizing: border-box; /* Ensures padding doesn't break the width */
-}
-        input[type="text"]:focus {
-        border-color: #E64097 !important; /* Turns pink again when they start typing a new answer */
-        outline: none;
-}
-        b.feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
-        
-        .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
-        button:active { transform: scale(0.98); }
-        .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; }
-        .btn-check:hover { background-color: #cc2b81; }
-        .btn-black { background-color: #000000; }
-        .btn-black:hover { background-color: #333333; }
-        .btn-secondary { background-color: #6c757d; }
-        .btn-secondary:hover { background-color: #5c636a; }
-        
-        .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
-        .solutions p { margin-bottom: 0; font-size: 0.95rem; }
+    .quiz-input { 
+        font-size: 18px; 
+        padding: 8px; 
+        width: 100%; 
+        border: 2px solid #ccc; 
+        border-radius: 6px; 
+        box-sizing: border-box;
+    }
 
-        /* Modal Styles */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-top: 6px solid #E64097; }
-        .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px;}
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; font-size: 16px; outline-color: #E64097; }
-        .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
-        .modal-actions button { flex: 1; margin: 0; }
+    .solutions { 
+        padding: 15px; 
+        background-color: #fff; 
+        border: 1px solid #ddd; 
+        border-radius: 8px; 
+        display: none; 
+        margin-top: 10px;
+    }
     </style>
 </head>
 
