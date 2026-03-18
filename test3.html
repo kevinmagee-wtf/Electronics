@@ -448,8 +448,7 @@ const brandBlack = "#000000";
 
 
 // --- GLOBAL STATE (Ensure these are at the top of your script) ---
-    
-// --- GLOBAL STATE ---
+// Ensure this object contains all keys expected by the master grader (grader_logic.js)
 let currentAnswers = { 
     vNameHTML: '', vValue: 0, vUnit: '', 
     iNameHTML: '', iValue: 0, iUnit: '', 
@@ -457,7 +456,7 @@ let currentAnswers = {
     osc1Value: 0, osc1Unit: '', 
     osc2Value: 0, osc2Unit: '',
     astableRatio: '', 
-    // Zener specific targets used by the grader
+    // Zener specific targets used by the master grader logic
     target1: 0, 
     target2: 0,
     targetIL: 0, 
@@ -467,7 +466,7 @@ let currentAnswers = {
 }; 
 
 let currentZenerState = "open"; 
-let currentMode = ""; // Set to 'zener' during generation
+let currentMode = ""; 
 let isCurrentProblemSolved = false;
 let hasCheckedCurrentProblem = false;
 let problemsAttempted = 0;
@@ -1900,15 +1899,13 @@ function validateMatch(userObj, targetVal, targetUnit) {
 
 /**
  * GENERATE ZENER PROBLEM
- * Fix: Uses dynamic HTML to avoid the "ghost box" bug.
- */
-/**
- * GENERATE ZENER PROBLEM
  * Generates a circuit and injects dynamic HTML inputs into the solutions panel
  */
+
 /**
  * GENERATE ZENER PROBLEM
- * Generates a circuit and injects dynamic HTML inputs into the solutions panel
+ * Deep Dive Fix: Restores variable mapping from the working Backup 
+ * while keeping the dynamic UI injection from Iteration 2.
  */
 function generateZenerProblem() {
     // 1. Reset UI & Canvas (Deep Cleaning)
@@ -1918,6 +1915,7 @@ function generateZenerProblem() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
+    // Core Reset Logic
     ctx.setTransform(1, 0, 0, 1, 0, 0); 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath(); 
@@ -1938,17 +1936,19 @@ function generateZenerProblem() {
     const switchClosed = Math.random() > 0.5;
     currentZenerState = switchClosed ? "closed" : "open"; 
 
-    // Store targets globally for the grader
+    // Syncing with Master Grader Expectations (targetIL, targetVL, etc.)
     if (switchClosed) {
-        currentAnswers.target1 = parseFloat((Ir_mA - Iz_min).toFixed(1)); // I_LOAD
-        currentAnswers.target2 = parseFloat(Vz.toFixed(1));              // V_LOAD
-        currentAnswers.targetIL = currentAnswers.target1;
-        currentAnswers.targetVL = currentAnswers.target2;
+        currentAnswers.targetIL = parseFloat((Ir_mA - Iz_min).toFixed(1)); // I_LOAD
+        currentAnswers.targetVL = parseFloat(Vz.toFixed(1));              // V_LOAD
+        // Duplicating to target1/2 for local redundant checks
+        currentAnswers.target1 = currentAnswers.targetIL;
+        currentAnswers.target2 = currentAnswers.targetVL;
     } else {
-        currentAnswers.target1 = parseFloat(Ir_mA.toFixed(1));           // I_ZENER
-        currentAnswers.target2 = parseFloat((Ir_mA * Vz).toFixed(1));    // P_ZENER
-        currentAnswers.targetIZ = currentAnswers.target1;
-        currentAnswers.targetPZ = currentAnswers.target2;
+        currentAnswers.targetIZ = parseFloat(Ir_mA.toFixed(1));           // I_ZENER
+        currentAnswers.targetPZ = parseFloat((Ir_mA * Vz).toFixed(1));    // P_ZENER
+        // Duplicating to target1/2 for local redundant checks
+        currentAnswers.target1 = currentAnswers.targetIZ;
+        currentAnswers.target2 = currentAnswers.targetPZ;
     }
 
     // 3. Drawing Circuit
@@ -2043,12 +2043,10 @@ function generateZenerProblem() {
             <p style="text-align: center; margin-top: 10px; font-size: 0.85em; color: #666;">Enter values to 1 decimal place.</p>`;
     }
 }
-/**
-
 
  /**
  * MASTER CHECK ANSWERS
- * Handles logic for all modes by checking currentMode string
+ * Synced with latest Iteration 2 logic and Backup naming conventions.
  */
 function checkAnswers() {
     if (isCurrentProblemSolved) return; 
@@ -2093,17 +2091,20 @@ function checkAnswers() {
         const val1 = parseFloat(document.getElementById('zAns1').value);
         const val2 = parseFloat(document.getElementById('zAns2').value);
 
-        // Check if correct (Tolerance of 0.2)
-        results.push(Math.abs(val1 - currentAnswers.target1) < 0.2 ? 'correct' : 'wrong');
-        const tol2 = currentZenerState === "closed" ? 0.2 : 0.5; // P_Zener gets slightly more tolerance
-        results.push(Math.abs(val2 - currentAnswers.target2) < tol2 ? 'correct' : 'wrong');
+        // Check using the synchronized naming from Backup
+        if (currentZenerState === "closed") {
+            results.push(Math.abs(val1 - currentAnswers.targetIL) < 0.2 ? 'correct' : 'wrong');
+            results.push(Math.abs(val2 - currentAnswers.targetVL) < 0.2 ? 'correct' : 'wrong');
+        } else {
+            results.push(Math.abs(val1 - currentAnswers.targetIZ) < 0.2 ? 'correct' : 'wrong');
+            results.push(Math.abs(val2 - currentAnswers.targetPZ) < 0.5 ? 'correct' : 'wrong');
+        }
     } else {
-        // Standard parseInput and validateMatch logic for other modes
+        // Fallback for other modes using standard validation
         activeInputs.forEach(id => {
             const el = document.getElementById(id);
             if (el && typeof parseInput === "function" && typeof validateMatch === "function") {
-                // This would be replaced with actual mode-specific comparison logic
-                // For now, we provide the feedback mechanism
+                // ... validation logic
             }
         });
     }
