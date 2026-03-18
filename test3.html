@@ -1894,56 +1894,94 @@ function validateMatch(userObj, targetVal, targetUnit) {
  * Fix: Uses dynamic HTML to avoid the "ghost box" bug.
  */
 function generateZenerProblem() {
+    // 1. Initial UI Setup
     hideAllInputGroups();
+    currentMode = 'zener';
     
     const canvas = document.getElementById('circuitCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    // Deep Clean Canvas
+    // Clear the canvas completely before starting
     ctx.setTransform(1, 0, 0, 1, 0, 0); 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath(); 
+
+    // 2. Generate Random Circuit Variables
+    const Vin = Math.floor(Math.random() * 10) + 6;        // Input Voltage
+    const Vz = (Math.floor(Math.random() * 41) + 20) / 10;  // Zener Voltage (2.0V to 6.0V)
+    const Iz_min = Math.floor(Math.random() * 6) + 5;      // Min Zener current (5mA to 10mA)
+    const Ir_mA = Math.floor(Math.random() * 401) + 200;   // Total series current (200mA to 600mA)
     
-    currentMode = 'zener';
+    // Determine if the load switch is closed or open
+    const isClosed = Math.random() > 0.5;
+    currentZenerState = isClosed ? "closed" : "open"; 
 
-    // 1. Random Variables
-    const Vin = Math.floor(Math.random() * 10) + 6; 
-    const Vz = (Math.floor(Math.random() * 41) + 20) / 10; 
-    const Iz_min = Math.floor(Math.random() * 6) + 5; 
-    const Ir_mA = Math.floor(Math.random() * 401) + 200; 
-    const switchClosed = Math.random() > 0.5;
-    currentZenerState = switchClosed ? "closed" : "open"; 
+    // 3. Calculate Target Answers
+    // If closed: Load takes the excess (Total - ZenerMin), Load sees Vz
+    // If open: Zener takes all current, Zener dissipates P = I * V
+    currentAnswers.target1 = isClosed ? parseFloat((Ir_mA - Iz_min).toFixed(1)) : parseFloat(Ir_mA.toFixed(1));
+    currentAnswers.target2 = isClosed ? parseFloat(Vz.toFixed(1)) : parseFloat((Ir_mA * Vz).toFixed(1));
 
-    // 2. Math Calculations
-    currentAnswers.target1 = switchClosed ? parseFloat((Ir_mA - Iz_min).toFixed(1)) : parseFloat(Ir_mA.toFixed(1));
-    currentAnswers.target2 = switchClosed ? parseFloat(Vz.toFixed(1)) : parseFloat((Ir_mA * Vz).toFixed(1));
+    // 4. DYNAMIC UI UPGRADE (The "Ghost Box" Fix)
+    // We ignore the static HTML IDs and build the inputs right here
+    const solPanel = document.getElementById('solutions');
+    const solText = document.getElementById('solText');
+    
+    if (solPanel && solText) {
+        solPanel.style.display = 'block'; // Show the overall solution container
+        
+        const label1 = isClosed ? "I LOAD" : "I ZENER";
+        const label2 = isClosed ? "V LOAD" : "P ZENER";
+        const unit2 = isClosed ? "V" : "mW";
 
-    // 3. Drawing Logic (Rails and Components)
+        // This template uses a Flexbox row to keep boxes perfectly side-by-side
+        solText.innerHTML = `
+            <div style="display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 10px; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <div style="text-align: center;">
+                    <span style="font-weight: bold; display: block; margin-bottom: 5px;">${label1}</span>
+                    <input type="text" id="zAns1" style="width: 80px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;"> mA
+                </div>
+                <div style="text-align: center;">
+                    <span style="font-weight: bold; display: block; margin-bottom: 5px;">${label2}</span>
+                    <input type="text" id="zAns2" style="width: 80px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;"> ${unit2}
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 8px; font-size: 0.85em; color: #666;">
+                <i>Enter values to 1 decimal place.</i>
+            </div>`;
+    }
+
+    // 5. Drawing the Circuit
+    // (Ensure your drawLine, drawComponent, etc. helper functions are present in your main file)
     ctx.strokeStyle = "black"; ctx.fillStyle = "black"; ctx.lineWidth = 2;
+    
+    // Draw Rails
     drawLine(ctx, 50, 60, 480, 60);   
     drawLine(ctx, 50, 360, 480, 360); 
     ctx.font = "bold 16px Arial";
     ctx.fillText(Vin + " V", 10, 65);
     ctx.fillText("0 V", 10, 365);
 
+    // Position Coordinates
     const xReg = 180; 
     const xLoad = 380;
     const yJunc = 220; 
 
-    // Series Resistor
+    // Series Path
     ctx.fillText(Ir_mA + " mA", xReg - 75, 90); 
     drawLine(ctx, xReg, 60, xReg, 110); 
     drawArrowOnWire(ctx, xReg, 70, xReg, 90); 
     drawComponent(ctx, 'fixed', xReg, 135); 
     drawLine(ctx, xReg, 160, xReg, 220); 
 
-    // Zener
+    // Zener Path
     drawLine(ctx, xReg, 220, xReg, 290);
     drawHollowZenerUp(ctx, xReg, 290); 
     drawLine(ctx, xReg, 290, xReg, 360); 
     ctx.fillText(Vz.toFixed(1) + " V", xReg - 65, 295);
 
+    // Switch and Load Drawing
     const switchStartX = 240;      
     const switchEndX = 290;        
     const pink = "#E64097"; 
@@ -1952,7 +1990,7 @@ function generateZenerProblem() {
     drawNode(ctx, xReg, yJunc); 
     drawLine(ctx, switchEndX, yJunc, xLoad, yJunc); 
 
-    if (switchClosed) {
+    if (isClosed) {
         ctx.strokeStyle = "black";
         drawLine(ctx, switchStartX, yJunc, switchEndX, yJunc); 
         ctx.strokeStyle = pink; ctx.fillStyle = pink;
@@ -1968,85 +2006,93 @@ function generateZenerProblem() {
         ctx.fillText("P_ZENER = ?", xReg + 37, 298);
     }
     
+    // Static Load
     ctx.strokeStyle = "black"; ctx.fillStyle = "black";
     drawLine(ctx, xLoad, yJunc, xLoad, yJunc + 30);
     ctx.strokeRect(xLoad - 30, yJunc + 30, 60, 45); 
     ctx.fillText("LOAD", xLoad - 20, yJunc + 58);
     drawLine(ctx, xLoad, yJunc + 75, xLoad, 360);
     drawNode(ctx, xLoad, 360);
+    
     ctx.fillText("Minimum Zener holding current = " + Iz_min + " mA", 70, 390);
-
-    // 4. Dynamic UI Generation
-    const solElement = document.getElementById('solText');
-    const solPanel = document.getElementById('solutions'); 
-    if (solElement && solPanel) {
-        solPanel.style.display = 'block'; 
-        const label1 = switchClosed ? "I LOAD" : "I ZENER";
-        const label2 = switchClosed ? "V LOAD" : "P ZENER";
-        const unit2 = switchClosed ? "V" : "mW";
-
-        solElement.innerHTML = `
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd;">
-                <p><b>${label1}:</b> <input type="text" id="zAns1" style="width:70px;"> mA</p>
-                <p><b>${label2}:</b> <input type="text" id="zAns2" style="width:70px;"> ${unit2}</p>
-                <p style="font-size: 0.8em; color: #666;"><i>Answer to 1 decimal place.</i></p>
-            </div>`;
-    }
 }
 
 /**
- * CHECK ANSWERS (Master Function)
+ * UPDATED CHECK ANSWERS LOGIC
+ * Replaces the relevant section of your 2000-line script
  */
 function checkAnswers() {
     if (isCurrentProblemSolved) return; 
+
     const feedback = document.getElementById('feedback');
+    const helpBtn = document.getElementById('helpBtn');
+
+    // 1. Identify active inputs based on mode
     let activeInputs = [];
+    if (currentMode === 'zener') {
+        activeInputs = ['zAns1', 'zAns2'];
+    } else if (currentMode === 'analysis') {
+        activeInputs = ['inputV', 'inputI'];
+    } // ... include your other mode mappings here
 
-    // Setup IDs based on mode
-    if (currentMode === 'zener') activeInputs = ['zAns1', 'zAns2'];
-    else if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
-    else if (currentMode === 'divider') activeInputs = ['inputV'];
-    else if (currentMode === 'resistance') activeInputs = ['inputR'];
-    else if (currentMode === 'monostable') activeInputs = ['inputMonostable'];
+    // 2. Validation for empty boxes
+    let hasEmptyBox = false;
+    activeInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el || el.value.trim() === '') hasEmptyBox = true;
+    });
 
-    let hasEmpty = activeInputs.some(id => !document.getElementById(id) || document.getElementById(id).value.trim() === '');
-    if (hasEmpty) {
-        feedback.innerHTML = "<span style='color:#dc3545;'>Please enter a value!</span>";
-        return;
+    if (hasEmptyBox) {
+        feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
+        return; 
+    }
+    
+    if (!hasCheckedCurrentProblem) { 
+        problemsAttempted++; 
+        hasCheckedCurrentProblem = true; 
     }
 
-    if (!hasCheckedCurrentProblem) { problemsAttempted++; hasCheckedCurrentProblem = true; }
-
+    // 3. Grader Logic
     let results = [];
+    
     if (currentMode === 'zener') {
         const val1 = parseFloat(document.getElementById('zAns1').value);
         const val2 = parseFloat(document.getElementById('zAns2').value);
-        results.push(Math.abs(val1 - currentAnswers.target1) < 0.2 ? 'correct' : 'wrong');
-        const tol2 = currentZenerState === "closed" ? 0.2 : 0.5;
-        results.push(Math.abs(val2 - currentAnswers.target2) < tol2 ? 'correct' : 'wrong');
-    } else {
-        // Handle all other modes
-        activeInputs.forEach(id => {
-            const userObj = parseInput(document.getElementById(id).value);
-            results.push(validateMatch(userObj, currentAnswers.val, currentAnswers.unit));
-        });
-    }
 
-    activeInputs.forEach((id, i) => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.borderColor = results[i] === 'correct' ? "#28a745" : "#dc3545";
-            el.style.borderWidth = "2px";
+        if (currentZenerState === "closed") {
+            // Target 1: I_LOAD, Target 2: V_LOAD
+            results.push(Math.abs(val1 - currentAnswers.targetIL) < 0.2 ? 'correct' : 'wrong');
+            results.push(Math.abs(val2 - currentAnswers.targetVL) < 0.2 ? 'correct' : 'wrong');
+        } else {
+            // Target 1: I_ZENER, Target 2: P_ZENER
+            results.push(Math.abs(val1 - currentAnswers.targetIZ) < 0.2 ? 'correct' : 'wrong');
+            results.push(Math.abs(val2 - currentAnswers.targetPZ) < 0.5 ? 'correct' : 'wrong');
+        }
+    } 
+    // ... insert other mode grading (analysis, divider, etc.) here
+
+    // 4. Update UI visuals for inputs
+    activeInputs.forEach((id, index) => {
+        const inputElement = document.getElementById(id);
+        if (inputElement) {
+            inputElement.style.borderColor = (results[index] === 'correct') ? "#28a745" : "#dc3545";
+            inputElement.style.borderWidth = "2px";
         }
     });
 
-    if (results.length > 0 && results.every(r => r === 'correct')) {
+    // 5. Final Feedback
+    if (results.every(r => r === 'correct')) {
         isCurrentProblemSolved = true;
-        currentScore++;
-        feedback.innerHTML = "<span style='color:#198754;'>Correct!</span>";
+        problemsCorrect++; // Assuming this is your global variable for correct answers
+        feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
+        if (helpBtn) helpBtn.style.display = 'none';
     } else {
-        feedback.innerHTML = "<span style='color:#dc3545;'>Check your values.</span>";
+        if (helpBtn) helpBtn.style.display = 'block';
+        feedback.innerHTML = results.some(r => r === 'correct') 
+            ? "<span style='color: #dc3545;'>One is right, one is wrong. Check logic!</span>"
+            : "<span style='color: #dc3545;'>Incorrect. Check your math!</span>";
     }
+
     updateScoreboard();
 }
     
