@@ -2187,7 +2187,7 @@ function openModule(module) {
 function switchTab(mode) {
     currentMode = mode;
     
-    // 1. Highlight active tab & Reset all others
+    // 1. Highlight active tab
     document.querySelectorAll('.tab').forEach(t => {
         t.classList.remove('active');
         if (t.innerText && !t.innerText.includes('Home')) {
@@ -2203,15 +2203,14 @@ function switchTab(mode) {
         activeTab.style.color = "#fff";            
     }
 
-    // 2. Hide ALL potential input groups AND Instructions (This fixes the UI Bleed!)
+    // 2. Hide ALL potential input groups and Zener sub-sections
     const elementsToHide = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
         'inputGroupAstable', 'inputGroupMonostable', 'inputGroupMarkSpace',
         'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
-        'inputGroupSilicon',
-        'zenerOpenQuestions', 'zenerClosedQuestions', 
+        'inputGroupSilicon', 'zenerOpenQuestions', 'zenerClosedQuestions', 
         'instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction'
     ];
 
@@ -2220,11 +2219,11 @@ function switchTab(mode) {
         if (el) el.style.display = 'none';
     });
 
-    // 3. Update the Subtitle based on the module
+    // 3. Update Subtitle
     const subtitle = document.getElementById('moduleSubtitle');
     if (subtitle) {
         if (mode === 'home') {
-            subtitle.innerText = "Welcome to Electronics"; // Resets subtitle for Home!
+            subtitle.innerText = "Welcome to Electronics";
         } else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
             subtitle.innerText = "Module 1: Circuit Basics";
         } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
@@ -2234,30 +2233,23 @@ function switchTab(mode) {
         }
     }
 
-    // 4. Handle Grade 9 Challenge Button Visibility
-    const g9Div = document.getElementById('grade9DividerBtn');
-    const g9Res = document.getElementById('grade9ResistorBtn');
-    if (g9Div) g9Div.style.display = (mode === 'divider') ? 'inline-block' : 'none';
-    if (g9Res) g9Res.style.display = (mode === 'resistance') ? 'inline-block' : 'none';
+    // 4. Reset ALL Inputs (including Zener boxes) manually and safely
+    const allInputs = document.querySelectorAll('input');
+    allInputs.forEach(input => {
+        input.value = '';
+        input.style.backgroundColor = '';
+        if(input.type === 'radio') input.checked = false;
+    });
 
-    // 5. Reset UI Elements
-    if (typeof resetAnswerBox === "function") resetAnswerBox();
-    if (typeof clearZenerInputs === "function") clearZenerInputs(); // Safely clear Zener data too
-    
+    // 5. Reset UI text areas
     const feedback = document.getElementById('feedback');
     if (feedback) feedback.innerHTML = '';
     
     const solutions = document.getElementById('solutions');
     if (solutions) solutions.style.display = 'none';
     
-    const helpBtn = document.getElementById('helpBtn');
-    if (helpBtn) helpBtn.style.display = 'none';
-    
-    const inputs = document.querySelectorAll('.input-area input');
-    inputs.forEach(i => {
-        i.value = '';
-        i.style.backgroundColor = ''; 
-    });
+    const solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = '';
 
     // 6. Main work area visibility
     const content = document.getElementById('contentArea');
@@ -2265,11 +2257,11 @@ function switchTab(mode) {
 
     // 7. CALL THE CORRECT GENERATOR
     if (mode === 'astable') {
-        generateAstableProblem();
+        if (typeof generateAstableProblem === "function") generateAstableProblem();
     } else if (mode === 'monostable') {
-        generateMonostableProblem();
+        if (typeof generateMonostableProblem === "function") generateMonostableProblem();
     } else if (mode === 'oscilloscope') {
-        generateOscilloscopeProblem();
+        if (typeof generateOscilloscopeProblem === "function") generateOscilloscopeProblem();
     } else if (mode === 'zener') {
         const zGroup = document.getElementById('inputGroupZener');
         if (zGroup) zGroup.style.display = 'inline-block';
@@ -2280,6 +2272,8 @@ function switchTab(mode) {
         if (typeof generateSiliconProblem === "function") generateSiliconProblem();
     } else if (mode === 'colorcode') {
         if (typeof generateColorCodeProblem === "function") generateColorCodeProblem();
+    } else if (mode === 'home') {
+        // Do nothing special for home, just let the clear happen
     } else {
         if (typeof generateProblem === "function") generateProblem();
     }
