@@ -2701,16 +2701,20 @@ function updateZenerSolution(isClosed) {
  * This hides the containers and resets the UI layout.
  */
 function hideAllInputGroups() {
+    // 1. Comprehensive list of all possible UI containers
     const groups = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 'oscilloscopeInputs',
         'inputGroupMonostable', 'inputGroupAstable', 'inputGroupMarkSpace',
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
-        'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
-        'zenerOpenQuestions', 'zenerClosedQuestions' // Added these to the main hide list
+        'inputGroupColorVal', 'inputGroupColorNames', 
+        'inputGroupZener',         // The main Zener wrapper
+        'zenerOpenQuestions',      // The "Open Circuit" button/input area
+        'zenerClosedQuestions',    // The "Closed Circuit" button/input area
+        'zenerQuestionContainer'   // Potential wrapper name
     ];
 
-    // 1. Hide the main input wrappers
+    // Hide all identified groups
     groups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -2722,7 +2726,9 @@ function hideAllInputGroups() {
 
     const solutions = document.getElementById('solutions');
     const solText = document.getElementById('solText');
-    if (solutions) solutions.style.display = 'none';
+    if (solutions) {
+        solutions.style.display = 'none';
+    }
     if (solText) solText.innerHTML = "";
 
     // 3. Wipe and hide the Question Text
@@ -2733,24 +2739,33 @@ function hideAllInputGroups() {
     }
 
     // 4. Clear instruction prompts
-    const prompts = ['instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction'];
+    const prompts = [
+        'instructionPrompt', 
+        'astableInstruction', 
+        'ratioInstruction', 
+        'zenerInstruction',
+        'zenerPrompt' // Common alias
+    ];
     prompts.forEach(id => {
         const p = document.getElementById(id);
         if (p) p.innerHTML = "";
     });
 
-    // 5. Specifically hide Zener sub-sections (Redundant safeguard)
-    const zOpen = document.getElementById('zenerOpenQuestions');
-    const zClosed = document.getElementById('zenerClosedQuestions');
-    if (zOpen) zOpen.style.display = 'none';
-    if (zClosed) zClosed.style.display = 'none';
+    // 5. BRUTE FORCE: Specifically target any element starting with 'zener' 
+    // This catches stray buttons or divs not explicitly listed above
+    const zenerElements = document.querySelectorAll('[id^="zener"]');
+    zenerElements.forEach(el => {
+        // We hide them unless they are the navigation buttons themselves
+        if (!el.classList.contains('nav-btn')) {
+            el.style.display = 'none';
+        }
+    });
 
-    // 6. IMPORTANT: Always call the data clearer as well
+    // 6. IMPORTANT: Clear logic data
     if (typeof clearZenerInputs === "function") {
         clearZenerInputs();
     }
 }
-
 /**
  * PART 2: The Data Clearer
  * This specifically empties the values inside the input boxes.
