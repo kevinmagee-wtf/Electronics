@@ -6,158 +6,200 @@
     <title>Abingdon School - Electronics Quiz</title>
     
     <style>
-    body { 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        max-width: 1100px; 
-        margin: 0 auto; 
-        padding: 10px 20px; 
-        line-height: 1.6; 
-        color: #333; /* Dark grey text for better contrast on light backgrounds */
-        background-color: #f0f4f7; 
-        background-image: 
-            radial-gradient(#d1d9e0 1px, transparent 1px), 
-            linear-gradient(#e2e8f0 1.5px, transparent 1.5px), 
-            linear-gradient(90deg, #e2e8f0 1.5px, transparent 1.5px);
-        background-size: 20px 20px, 100px 100px, 100px 100px;
-        background-position: 0 0, -1px -1px, -1px -1px;
-    }
-   
-        .header { text-align: center; margin-bottom: 15px; }
-        .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
-        .header p { margin-top: 5px; font-size: 18px; color: #555; }
-        .header span { color: #E64097; font-weight: bold; }
+        :root {
+            --abingdon-pink: #E64097;
+            --abingdon-pink-hover: #cf3584;
+            --dark-bg: #2c3e50;
+            --light-bg: #f0f4f7;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --border-radius: 12px;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 10px 20px; 
+            line-height: 1.6; 
+            color: #333; 
+            background-color: var(--light-bg); 
+            /* Blueprint Grid Effect */
+            background-image: 
+                radial-gradient(#d1d9e0 1px, transparent 1px), 
+                linear-gradient(#e2e8f0 1.5px, transparent 1.5px), 
+                linear-gradient(90deg, #e2e8f0 1.5px, transparent 1.5px);
+            background-size: 20px 20px, 100px 100px, 100px 100px;
+            background-position: 0 0, -1px -1px, -1px -1px;
+        }
+
+        /* --- Header Styles --- */
+        .header { text-align: center; margin-bottom: 25px; padding-top: 20px; }
+        .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 36px; font-weight: 800; }
+        .header h1 span { color: var(--abingdon-pink); }
+        .header p { margin-top: 5px; font-size: 18px; color: #555; font-weight: 500; }
         
+        /* --- Navigation & Menus --- */
         .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-        /* Specific layout for the 8-button Home Page */
+        
+        #mainMenu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            justify-items: center; 
+            gap: 20px; 
+            max-width: 1000px; 
+            margin: 40px auto; 
+        }
 
-/* Home Page Grid */
-#mainMenu {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    justify-items: center; 
-    column-gap: 40px; 
-    row-gap: 30px;    
-    max-width: 900px; 
-    margin: 60px auto; 
-}
-        
-/* Ensure the sub-menus stay as a single row */
-#menuBasics, #menuTiming, #menuPlaceholder {
-    display: none; /* Hidden by default */
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-        /* General Tab Styling - Updated for Pink branding and more height */
-/* 1. Updated Tab Styling: Fixed width to make them shorter */
-.tab { 
-    padding: 10px 25px; 
-    font-size: 16px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    background-color: #E64097; /* Keeping them pink */
-    border: 2px solid #c5307d; 
-    border-radius: 8px; 
-    color: white; 
-    transition: all 0.2s;
-    min-width: 120px;
-    height: auto;
-}
-
-#mainMenu .tab {
-    width: 320px;      /* Big width for Home Page only */
-    min-height: 90px;  /* Big height for Home Page only */
-    font-size: 19px;   /* Larger text for Home Page only */
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.tab:hover {
-    background-color: #cf3584;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-.tab.active {
-    background-color: #000000;
-    color: white;
-    border-color: #000;
-}
-        .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
-        
-        .left-panel { flex: 1 1 550px; max-width: 650px; }
-        .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
-        
-        .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
-        .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
-        .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
-        .quiz-header h3 { margin: 0; font-size: 1.2rem; }
-        
-        .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-        .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
-        .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
-        .btn-download:hover { background-color: #157347; }
-        .btn-download:disabled { background-color: #6c757d; cursor: wait; }
-        
-        .input-area { text-align: center; }
-        .input-spacer { height: 55px; visibility: hidden; display: block; }
-        .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
-        input[type="text"] { 
-            font-size: 18px; /* Slightly larger text */
-            padding: 10px;  /* More 'breathing room' inside the box */
-            height: 45px;   /* Consistent height */
-            width: 140px;   /* Slightly wider for unit strings */
+        /* General Button/Tab Styling */
+        .tab { 
+            padding: 12px 25px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            background-color: var(--abingdon-pink); 
+            border: 2px solid #c5307d; 
+            border-radius: var(--border-radius); 
+            color: white; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            margin: 0 5px; 
-            border: 2px solid #ccc; /* Thicker border to match brand style */
-            border-radius: 6px; 
-            outline-color: #E64097;
-            box-sizing: border-box; /* Ensures padding doesn't break the width */
-}
-        input[type="text"]:focus {
-        border-color: #E64097 !important; /* Turns pink again when they start typing a new answer */
-        outline: none;
-}
-        b.feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
-        
-        .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
-        button:active { transform: scale(0.98); }
-        .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; }
-        .btn-check:hover { background-color: #cc2b81; }
-        .btn-black { background-color: #000000; }
-        .btn-black:hover { background-color: #333333; }
-        .btn-secondary { background-color: #6c757d; }
-        .btn-secondary:hover { background-color: #5c636a; }
-        
-        .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
-        .solutions p { margin-bottom: 0; font-size: 0.95rem; }
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
-        /* Modal Styles */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-top: 6px solid #E64097; }
-        .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px;}
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; font-size: 16px; outline-color: #E64097; }
-        .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
-        .modal-actions button { flex: 1; margin: 0; }
+        #mainMenu .tab {
+            width: 100%;
+            min-height: 90px;
+            font-size: 20px;
+            border-radius: 14px;
+        }
+
+        .tab:hover {
+            background-color: var(--abingdon-pink-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .tab.active {
+            background-color: #000;
+            border-color: #000;
+        }
+
+        .tab-home { background-color: #6c757d !important; border-color: #5a6268 !important; }
+
+        /* --- Layout Structures --- */
+        .main-layout { display: flex; gap: 25px; align-items: flex-start; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+        .left-panel { flex: 1 1 550px; max-width: 700px; }
+        .right-panel { flex: 1 1 350px; display: flex; flex-direction: column; gap: 20px; }
+
+        .circuit-container { 
+            border: 2px solid #eaeaea; 
+            padding: 25px; 
+            background-color: #fff; 
+            border-radius: var(--border-radius); 
+            box-shadow: var(--card-shadow); 
+            text-align: center;
+        }
+
+        canvas { background-color: white; border-radius: 6px; max-width: 100%; height: auto; }
+
+        /* --- Quiz UI Elements --- */
+        .quiz-section { 
+            background-color: #fdf4f8; 
+            padding: 25px; 
+            border-radius: var(--border-radius); 
+            border: 1px solid #f2c7db; 
+            box-shadow: var(--card-shadow);
+        }
+
+        .quiz-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid #f2c7db; 
+            padding-bottom: 15px; 
+            margin-bottom: 15px; 
+        }
+
+        .scoreboard { 
+            background-color: #fff; 
+            padding: 8px 18px; 
+            border: 2px solid var(--abingdon-pink); 
+            border-radius: 8px; 
+            font-weight: 800; 
+            color: var(--abingdon-pink); 
+        }
+
+        /* Zener State Selector Styling */
+        #zenerChoiceContainer {
+            display: none; 
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.5);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .action-btn {
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .action-btn:hover { background-color: #2980b9; transform: scale(1.02); }
+
+        /* --- Input Fields --- */
+        .input-group { margin: 15px 0; display: block; }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 15px; color: #444; }
+        
+        input[type="text"] { 
+            font-size: 18px; 
+            padding: 12px; 
+            width: 100%;
+            max-width: 200px;
+            text-align: center;
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--abingdon-pink);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(230, 64, 151, 0.1);
+        }
+
+        /* --- Modals --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .modal-content { background: #fff; padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; border-top: 8px solid var(--abingdon-pink); }
+
+        /* --- Helpers --- */
+        .feedback { min-height: 28px; font-weight: bold; text-align: center; margin: 15px 0; font-size: 18px; }
+        .hidden { display: none !important; }
+        
+        /* Transition for section showing */
+        #contentArea { transition: opacity 0.3s ease-in; }
     </style>
 </head>
 
 <body>     
-<!-- 1. NAVIGATION HEADERS (THE TITLE BOX)-->
+
+<!-- 1. NAVIGATION HEADERS -->
 <div class="header">
     <h1><span>Abingdon</span> Electronics</h1>
     <p id="moduleSubtitle">Mastering the GCSE Course</p>
 </div>
 
-<!--2. MAIN CATEGORY MENU  These are the "Navigation Folders." They hold your buttons and keep the menu looking consistent.-->
+<!-- 2. MAIN CATEGORY MENU -->
 <div id="mainMenu" class="tabs">
     <button class="tab" onclick="openModule('basics')">1. Circuit Basics</button>
     <button class="tab" onclick="openModule('transistors')">5. Transistors</button>
@@ -169,268 +211,128 @@
     <button class="tab" onclick="openModule('diodes')">8. Diodes</button>
 </div>
 
-<!--3. SUB-MENUS (APPEAR AFTER CLICKING A MAIN CATEGORY) This is the main "Stage." When you click a module, we show this whole area; when you go "Home," we hide it.-->
-<!--BASICS PAGE -->
-<div id="menuBasics" class="tabs" style="display:none;">
+<!-- 3. SUB-MENUS -->
+<div id="menuBasics" class="tabs hidden">
     <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Circuit Analysis</button>
     <button class="tab" id="tab-divider" onclick="switchTab('divider')">Potential Divider</button>
     <button class="tab" id="tab-resistance" onclick="switchTab('resistance')">Total Resistance</button>
     <button class="tab" id="tab-colorcode" onclick="switchTab('colorcode')">Colour Codes</button>
-    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+    <button class="tab tab-home" onclick="goHome()">🏠 Home</button>
 </div>
 
-<!--TIMINGPAGE -->
-<div id="menuTiming" class="tabs" style="display:none;">
+<div id="menuTiming" class="tabs hidden">
     <button class="tab" id="tab-oscilloscope" onclick="switchTab('oscilloscope')">Oscilloscope</button>
     <button class="tab" id="tab-astable" onclick="switchTab('astable')">Astable 555</button>
     <button class="tab" id="tab-monostable" onclick="switchTab('monostable')">Monostable 555</button>
-    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+    <button class="tab tab-home" onclick="goHome()">🏠 Home</button>
 </div>
 
-<!--DIODESPAGE -->
-<div id="menuDiodes" class="tabs" style="display:none;">
+<div id="menuDiodes" class="tabs hidden">
     <button class="tab" id="tab-silicon" onclick="switchTab('silicon')">Silicon Diodes</button>
     <button class="tab" id="tab-zener" onclick="switchTab('zener')">Zener Diodes</button>
-    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Home</button>
+    <button class="tab tab-home" onclick="goHome()">🏠 Home</button>
 </div>
-    
-<div id="menuPlaceholder" class="tabs" style="display:none;">
-    <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
+
+<div id="menuPlaceholder" class="tabs hidden">
+    <button class="tab tab-home" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
 </div>
  
-<!--4. THE MAIN WORK AREA (CANVAS + QUIZ) This is an "Input Envelope." We keep the label, the text box, and the instruction together so they move as one unit.-->
-<div id="contentArea" style="display:none;">
+<!-- 4. MAIN WORK AREA -->
+<div id="contentArea" class="hidden">
     <div class="main-layout">
         
-        <!--LEFT SIDE: THE DRAWING AREA-->
+        <!-- LEFT SIDE: DRAWING -->
         <div class="left-panel">
             <div class="circuit-container">
                 <canvas id="circuitCanvas" width="600" height="450"></canvas>
             </div>  
         </div>
 
-        <!--RIGHT SIDE: THE QUESTION AND ANSWER AREA-->
+        <!-- RIGHT SIDE: QUIZ -->
         <div class="right-panel">
             <div class="quiz-section">
                 
-                <!--BOX FOR THE MAIN QUESTION TEXT-->
-                <div id="questionText" style="font-weight: bold; margin-bottom: 15px; color: #333; min-height: 45px; border-bottom: 1px solid #f2c7db; padding-bottom: 10px;"></div>
-                
-                <!--SCORE AND DOWNLOAD SECTION-->
                 <div class="quiz-header">
-                    <div class="score-container">
-                        <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
-                        <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
-                    </div>
+                    <div id="questionText" style="font-weight: bold; color: #333; font-size: 1.1em;">Prepare for calculation...</div>
+                    <div class="scoreboard" id="scoreDisplay">Score: 0</div>
+                </div>
+
+                <!-- ZENER INITIAL CHOICE (Step 1) -->
+                <div id="zenerChoiceContainer">
+                    <p style="font-weight: bold; font-size: 0.95em; margin-bottom: 12px; color: var(--abingdon-pink);">Step 1: Determine the Zener state</p>
+                    <button id="zenerOpenBtn" class="action-btn" onclick="checkZenerState('open')" style="margin-bottom: 8px;">Zener is OPEN (Not Conducting)</button>
+                    <button id="zenerClosedBtn" class="action-btn" onclick="checkZenerState('closed')">Zener is CLOSED (Conducting)</button>
                 </div>
                 
-        <!--5. THE INPUT AREA (ALL POSSIBLE ANSWER BOXES) Iincuding the placeholder divs for the grey text ("Give answer to 1 d.p.") -->
-        <div class="input-area">
-
-                <!--OHM'S LAW / DIVIDER INPUTS-->
-                <div class="input-group" id="inputGroupV" style="display:none;">
-                    <label id="labelV" for="inputV">V = </label>
-                    <input type="text" id="inputV" placeholder="e.g. 10 mV">
-                </div>
-                <div class="input-group" id="inputGroupI" style="display:none;">
-                       <label id="labelI" for="inputI">I = </label>
-                    <input type="text" id="inputI" placeholder="e.g. 5 mA">
-                </div>
-
-                <!--TOTAL RESISTANCE INPUTS-->
-                <div class="input-group" id="inputGroupR" style="display:none;">
-                    <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
-                    <input type="text" id="inputR" placeholder="e.g. 10 ohms" style="height: 45px; width: 160px; font-size: 18px; padding: 10px;">
-                </div>
-
-                <div class="input-group" id="inputGroupMonostable" style="display:none;">
-                    <label id="labelMonostable" for="inputMonostable">T = </label>
-                    <input type="text" id="inputMonostable" style="width: 140px;">
-                 <!--GREY INSTRUCTION SUB-LABEL-->
-                    <div id="monostableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;"></div>
-                </div>
+                <div class="input-area">
+                    <!-- Standard Answer Groups -->
+                    <div class="input-group hidden" id="inputGroupV">
+                        <label id="labelV">Calculated Voltage (V):</label>
+                        <input type="text" id="inputV" placeholder="e.g. 12.5">
+                    </div>
                     
-                <!--555 ASTABLE: FREQUENCY AND PERIOD INPUTS-->
-                <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
-                    <div style="margin-bottom: 10px;">
-                        <label id="labelAstable" for="inputAstable">Frequency = </label>
-                        <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
+                    <div class="input-group hidden" id="inputGroupI">
+                        <label id="labelI">Calculated Current (I):</label>
+                        <input type="text" id="inputI" placeholder="e.g. 10 mA">
                     </div>
-                    <div>
-                        <label id="labelAstableT" for="inputAstableT">Time Period = </label>
-                        <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
+
+                    <!-- Zener Specific Detailed Inputs (Step 2) -->
+                    <div id="inputGroupZener" class="hidden">
+                        <div id="zenerClosedQuestions" class="hidden">
+                            <div class="input-group">
+                                <label>1. Max Load Current (I<sub>L</sub>) mA:</label>
+                                <input type="text" id="zenerQ_IL" class="zener-input" placeholder="mA">
+                            </div>
+                            <div class="input-group">
+                                <label>2. Load Voltage (V<sub>L</sub>) V:</label>
+                                <input type="text" id="zenerQ_VL" class="zener-input" placeholder="V">
+                            </div>
+                        </div>
+                        <div id="zenerOpenQuestions" class="hidden">
+                            <div class="input-group">
+                                <label>1. Zener Current (I<sub>Z</sub>) mA:</label>
+                                <input type="text" id="zenerQ_IZ" class="zener-input" placeholder="mA">
+                            </div>
+                            <div class="input-group">
+                                <label>2. Zener Power (P<sub>Z</sub>) mW:</label>
+                                <input type="text" id="zenerQ_PZ" class="zener-input" placeholder="mW">
+                            </div>
+                        </div>
                     </div>
-                    <!--GREY INSTRUCTION SUB-LABEL-->
-                    <div id="astableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
                 </div>
 
-                <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%;">
-                    <div style="height: 55px; visibility: hidden;"></div> 
-                    <div style="margin-bottom: 10px;">
-                        <label for="inputMarkSpace" style="font-weight: bold;">Mark-Space Ratio = </label>
-                        <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;">
-                    </div>
-                    <!--GREY INSTRUCTION SUB-LABEL-->
-                    <div id="ratioInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
+                <div id="feedback" class="feedback"></div>
+
+                <div class="controls" style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
+                    <button class="tab" style="width: 100%;" onclick="checkAnswers()">Check Answer(s)</button>
+                    <button class="tab active" style="width: 100%;" onclick="handleGenerateClick()">Generate New Problem</button>
+                    <button id="helpBtn" class="tab tab-home" style="width: 100%; display: none;" onclick="toggleSolutions()">Need Help?</button>
+                    <button class="tab tab-home" style="width: 100%;" onclick="openDataSheet()">📖 Data Sheet</button>
                 </div>
-                    
-                <!--OSCILLOSCOPE INPUTS (KEPT IN ONE BLOCK)-->
-                <div id="oscilloscopeInputs" style="display:none;">
-                    <div class="input-group" id="inputGroupOscAmp" style="display:none;">
-                        <label id="labelOscAmp" for="inputOscAmp">Amplitude = </label><input type="text" id="inputOscAmp">
-                    </div>
-                    <div class="input-group" id="inputGroupOscMark" style="display:none;">
-                        <label id="labelOscMark" for="inputOscMark">Mark Time = </label><input type="text" id="inputOscMark">
-                    </div>
-                    <div class="input-group" id="inputGroupOscSpace" style="display:none;">
-                        <label id="labelOscSpace" for="inputOscSpace">Space Time = </label><input type="text" id="inputOscSpace">
-                    </div>
-                    <div class="input-group" id="inputGroupOscPeriod" style="display:none;">
-                        <label id="labelOscPeriod" for="inputOscPeriod">Time Period = </label><input type="text" id="inputOscPeriod">
-                    </div>
-                    <div class="input-group" id="inputGroupOscFreq" style="display:none;">
-                        <label id="labelOscFreq" for="inputOscFreq">Frequency = </label><input type="text" id="inputOscFreq">
-                    </div>
-                    <div class="input-group" id="inputGroupOscRatio" style="display:none;">
-                    <div class="input-spacer"></div> <label>Mark/Space Ratio = </label>
-                        <input type="text" id="inputOscRatio" placeholder="e.g. 1/2">
-                    </div>                      
-                </div>
-
-                <!--RESISTOR COLOUR CODE INPUTS-->
-                <div id="inputGroupColorVal" class="input-group" style="display:none;">
-                    <label>Resistance: </label><input type="text" id="inputResValue" style="width: 140px;">
-                    <label>Tolerance (%): </label><input type="text" id="inputResTol" style="width: 140px;">
-                </div>
-                <div id="inputGroupColorNames" class="input-group" style="display:none; text-align: center;">
-                    <label>Band 1: </label><input type="text" id="inputBand1" style="width: 100px;">
-                    <label>Band 2: </label><input type="text" id="inputBand2" style="width: 100px;">
-                    <label>Band 3: </label><input type="text" id="inputBand3" style="width: 100px;">
-                    <label>Band 4: </label><input type="text" id="inputBandTol" style="width: 100px;">
-                </div>
-
-<!-- ZENER DIODE SECTION -->
-<div id="inputGroupZener" style="display:none; text-align: left; width: 100%;">
-    
-    <!-- Case 1: Switch CLOSED -->
-    <div id="zenerClosedQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
-        <p style="margin-top:0; font-weight: bold; color: #333; margin-bottom: 15px;">Switch S is CLOSED. Calculate:</p>
-        
-        <div style="margin-bottom: 15px;">
-            <label for="zenerQ_IL" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">1. Max Load Current (I<sub>L</sub>):</label>
-            <input type="text" id="zenerQ_IL" placeholder="e.g. 15.2 mA" class="standard-input" style="width: 100%; max-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label for="zenerQ_VL" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">2. Load Voltage (V<sub>L</sub>):</label>
-            <input type="text" id="zenerQ_VL" placeholder="e.g. 12.0 V" class="standard-input" style="width: 100%; max-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-    </div>
-
-    <!-- Case 2: Switch OPEN -->
-    <div id="zenerOpenQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
-        <p style="margin-top:0; font-weight: bold; color: #333; margin-bottom: 15px;">Switch S is OPEN. Calculate:</p>
-        
-        <div style="margin-bottom: 15px;">
-            <label for="zenerQ_IZ" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">1. Zener Current (I<sub>Z</sub>):</label>
-            <input type="text" id="zenerQ_IZ" placeholder="e.g. 24.5 mA" class="standard-input" style="width: 100%; max-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label for="zenerQ_PZ" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">2. Zener Power (P<sub>Z</sub>):</label>
-            <input type="text" id="zenerQ_PZ" placeholder="e.g. 150.0 mW" class="standard-input" style="width: 100%; max-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
-    </div>
-</div>
-
-<!-- Controls shared by all modes -->
-<div style="margin-top: 20px;">
-    <button class="btn-check" onclick="checkAnswers()" style="padding: 10px 20px; background-color: #E64097; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Check Answer(s)</button>
-    <div id="feedback" class="feedback" style="margin-top: 15px; font-weight: bold; min-height: 1.2em;"></div>
-</div>
-            
-<!--6. ACTION CONTROLS (THE BUTTONS AT THE VERY BOTTOM)-->
-            <div class="controls">
-                <button class="btn-black" onclick="handleGenerateClick()">Generate New Problem</button>
-                <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
-                <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
-                <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
-                <button id="dataSheetBtn" class="btn-check" style="background-color: #6c757d; color: white;" onclick="openDataSheet()">📖 Data Sheet</button>
             </div>
 
-            <!--7. SOLUTIONS PANEL (SHOWN ONLY WHEN HELP IS CLICKED)-->
-            <div id="solutions" class="solutions" style="display:none;">
-                <h3>Step-by-Step Logic</h3>
-                <p id="solText"></p>
+            <!-- SOLUTIONS PANEL -->
+            <div id="solutions" class="quiz-section hidden" style="background: #fff; border-left: 6px solid var(--abingdon-pink); margin-top: 10px;">
+                <h3 style="margin-top:0; color: var(--abingdon-pink); font-size: 1.1em;">Step-by-Step Logic</h3>
+                <p id="solText" style="font-size: 0.95em; color: #444;"></p>
             </div>
         </div>
     </div>
 </div>
 
-<!--8. POP-UP MODALS (HIDDEN BY DEFAULT) They are coded at the bottom of the file so they don't get in the way of the main layout, but they "pop" to the front when needed.-->
-<!--STUDENT SUBMISSION MODAL-->
-<div id="submissionModal" class="modal-overlay" style="display: none;">
+<!-- DATA SHEET MODAL -->
+<div id="dataSheetModal" class="modal-overlay hidden">
     <div class="modal-content">
-        <h3>Submit Your Score</h3>
-        <div class="form-group">
-            <label for="studentNameInput">Your Name:</label>
-            <input type="text" id="studentNameInput">
+        <h2 style="color: var(--abingdon-pink); text-align: center; margin-top: 0;">Data Sheet</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 1em; padding: 10px; background: #f9f9f9; border-radius: 8px;">
+            <div><strong>V = I × R</strong></div>
+            <div><strong>P = I × V</strong></div>
+            <div><strong>Series:</strong> R1 + R2</div>
+            <div><strong>Parallel:</strong> (R1×R2)/(R1+R2)</div>
         </div>
-        <div class="form-group">
-            <label for="teacherSelect">Your Teacher:</label>
-            <select id="teacherSelect">
-                <option value="">-- Select Your Teacher --</option>
-                <option value="Mr. Magee">Mr. Magee</option>
-                <option value="Mr. Brooks">Mr. Brooks</option>
-                <option value="Mr. Mason">Mr. Mason</option>
-                <option value="Mr. Willoughby">Mr. Willoughby</option>
-            </select>
-        </div>
-        <div class="modal-actions">
-            <button class="btn-secondary" onclick="closeModal()">Cancel</button>
-            <button class="btn-check" id="confirmSubmitBtn" onclick="processSubmission()">Submit Score</button>
-        </div>
+        <button class="tab" style="width: 100%; margin-top: 25px;" onclick="closeDataSheet()">Close</button>
     </div>
 </div>
-
-<!--ELECTRONICS DATA SHEET MODAL-->
-<div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
-    <div style="background-color: white; padding: 20px; border-radius: 15px; max-width: 600px; width: 90%; position: relative; margin: 10% auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-        <span onclick="closeDataSheet()" style="position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #E64097; font-weight: bold;">&times;</span>
-        <h2 style="color: #E64097; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;">Electronics Data Sheet</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 10px; color: #333;">
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Basic Laws</h4>
-                <p>V = I &times; R</p>
-                <p>P = I &times; V</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Resistance</h4>
-                <p>Series: R<sub>T</sub> = R<sub>1</sub> + R<sub>2</sub></p>
-                <p>Parallel: R<sub>p</sub> = (R<sub>1</sub> &times; R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>)</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Potential Dividers</h4>
-                <p>V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))</p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">555 Timing</h4>
-                <p>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) &times; C)</p>
-                <p>T = 0.693 &times; (R<sub>1</sub> + 2R<sub>2</sub>) &times; C</p>
-                <p style="margin-top: 10px; font-weight: bold;">T<sub>ON</sub> / T<sub>OFF</sub> = (R<sub>1</sub> + R<sub>2</sub>) / R<sub>2</sub></p>
-            </div>
-            <div>
-                <h4 style="margin-bottom: 5px; color: #000;">Zener Regulators</h4>
-                <p>I<sub>Total</sub> = (V<sub>S</sub> - V<sub>Z</sub>) / R</p>
-                <p>I<sub>L(max)</sub> = I<sub>Total</sub> - I<sub>Z(min)</sub></p>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="btn-check" onclick="closeDataSheet()">Close Sheet</button>
-        </div>
-    </div>
-</div>
-<script>
 // SCRIPT STARTS NOW============================================================================      
 // GLOBAL VARIABLES
 // ================================================================================================  
