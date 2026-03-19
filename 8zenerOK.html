@@ -2751,15 +2751,6 @@ function clearZenerInputs() {
         }
     });
 }
-    
-    zenerIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.value = ''; // Remove the number typed by the user
-            el.style.backgroundColor = ''; // Remove any red/green background colors
-        }
-    });
-}
 
 // Master Switch on Load
 window.onload = function() {
