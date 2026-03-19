@@ -1834,7 +1834,7 @@ function generateZenerProblem() {
     const Vz = (Math.floor(Math.random() * 41) + 40) / 10; // 4.0V - 8.0V
     const Iz_min = Math.floor(Math.random() * 6) + 5; 
     
-    // Internal Math Values (Hidden from user)
+    // Internal Math Values (Hidden from user as requested)
     const R1 = (Math.floor(Math.random() * 10) + 10) * 10; 
     const RL = (Math.floor(Math.random() * 20) + 10) * 10; 
 
@@ -1890,23 +1890,24 @@ function generateZenerProblem() {
 
     // --- SERIES SECTION (Resistor & Current Arrow) ---
     drawLine(ctx, xReg, 60, xReg, 110); 
-    drawComponent(ctx, 'fixed', xReg, 135); 
+    drawComponent(ctx, 'fixed', xReg, 135); // Series resistor drawn without R1 label
     drawLine(ctx, xReg, 160, xReg, 360); 
 
-    // Vertical Downward Current Arrow (per screenshot)
+    // Vertical Downward Current Arrow (Per New Specification)
     ctx.strokeStyle = "black";
     ctx.fillStyle = "black";
     const arrowYStart = 70;
     const arrowYEnd = 100;
-    drawLine(ctx, xReg + 25, arrowYStart, xReg + 25, arrowYEnd);
+    const arrowXOffset = xReg + 25;
+    drawLine(ctx, arrowXOffset, arrowYStart, arrowXOffset, arrowYEnd);
     // Arrow head
     ctx.beginPath();
-    ctx.moveTo(xReg + 25, arrowYEnd); 
-    ctx.lineTo(xReg + 20, arrowYEnd - 8); 
-    ctx.lineTo(xReg + 30, arrowYEnd - 8); 
+    ctx.moveTo(arrowXOffset, arrowYEnd); 
+    ctx.lineTo(arrowXOffset - 5, arrowYEnd - 8); 
+    ctx.lineTo(arrowXOffset + 5, arrowYEnd - 8); 
     ctx.fill();
     ctx.font = "bold 14px Arial";
-    ctx.fillText(totalCurrent_mA.toFixed(1) + " mA", xReg + 35, arrowYStart + 15);
+    ctx.fillText(totalCurrent_mA.toFixed(1) + " mA", arrowXOffset + 10, (arrowYStart + arrowYEnd) / 2 + 5);
 
     // Zener
     drawHollowZenerUp(ctx, xReg, 290); 
@@ -1958,9 +1959,12 @@ function generateZenerProblem() {
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 79, 298);
     }
     
+    // --- LOAD SECTION (Centered Text within box) ---
     ctx.strokeStyle = "black";
     ctx.fillStyle = "black";
-    drawComponent(ctx, 'fixed', xLoad, yJunc + 55); 
+    drawComponent(ctx, 'fixed', xLoad, yJunc + 55); // Resistor drawn without RL label
+    
+    // Centering the "LOAD" text inside the box
     ctx.font = "bold 12px Arial";
     ctx.textAlign = "center";
     ctx.fillText("LOAD", xLoad, yJunc + 60);
