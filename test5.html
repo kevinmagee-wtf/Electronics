@@ -197,9 +197,7 @@
 <div id="menuPlaceholder" class="tabs" style="display:none;">
     <button class="tab" style="background:#6c757d; color:white;" onclick="goHome()">🏠 Module Under Construction - Return Home</button>
 </div>
-
-
-    
+ 
 <!--4. THE MAIN WORK AREA (CANVAS + QUIZ) This is an "Input Envelope." We keep the label, the text box, and the instruction together so they move as one unit.-->
 <div id="contentArea" style="display:none;">
     <div class="main-layout">
@@ -296,8 +294,7 @@
                     <div class="input-group" id="inputGroupOscRatio" style="display:none;">
                     <div class="input-spacer"></div> <label>Mark/Space Ratio = </label>
                         <input type="text" id="inputOscRatio" placeholder="e.g. 1/2">
-                    </div>
-                        
+                    </div>                      
                 </div>
 
                 <!--RESISTOR COLOUR CODE INPUTS-->
@@ -478,7 +475,6 @@ function handleGenerateClick() {
 // ==================================================================================================================
 // FUNCTION 0: SMALL UTILITIES (HELPERS)   
 // ==================================================================================================================
-    
     function formatResValue(val) {
     if (val >= 1000000) return (val / 1000000) + " MΩ";
     if (val >= 1000) return (val / 1000) + " kΩ";
@@ -499,11 +495,9 @@ function handleGenerateClick() {
     if (solutions) solutions.style.display = "none";
 } 
 
-
 // =======================================================================================================
 // FUNCTION 1: DRAWING Helpers
 // =======================================================================================================
-
 function drawResistor(ctx, x, y) {
             ctx.beginPath();
             ctx.rect(x - 12, y - 25, 24, 50); 
@@ -636,12 +630,10 @@ function drawArrowOnWire(ctx, fromx, fromy, tox, toy) {
     ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
     ctx.stroke();
 }
-
   
 // =========================================================================================================      
 // FUNCTION 2. PROBLEM GENERATORS (THE CONTENT CREATORS) 
 // =========================================================================================================     
-
 // this function deals with adding resistances in series and parallel
 function generateResistanceProblem(ctx, canvas) {
     resetAnswerBox();
@@ -659,8 +651,7 @@ function generateResistanceProblem(ctx, canvas) {
     if (labelV) {
         labelV.innerHTML = "<span style='color:" + brandPink + "'>Total Resistance</span> = ";
     }
-
-    
+   
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = brandBlack; 
     ctx.lineWidth = 2; 
@@ -771,7 +762,6 @@ function generateResistanceProblem(ctx, canvas) {
     // This matches the "normalized" units in our new parseInput
     currentAnswers.rUnit = (rUnitVisual === 'k\u03A9') ? 'kohms' : 'ohms';
     currentAnswers.rValue = rTotal; // e.g., 10
-    
     
     const solText = document.getElementById('solText');
     if (solText) {
@@ -1810,7 +1800,6 @@ function generateColorCodeProblem(ctx, canvas) {
 
         document.getElementById('inputGroupColorNames').style.display = 'block';
         
-
         // Generate Solution Logic for Help Button
         solTextStr = "<strong>Required Colours:</strong><br><br>";
         solTextStr += "1. " + resColors[b1].toUpperCase() + " (for digit " + b1 + ")<br>";
