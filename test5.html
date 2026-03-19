@@ -1828,29 +1828,30 @@ function generateZenerProblem() {
     const solBox = document.getElementById('solText');
     if (solBox) solBox.style.display = "none";
 
-    // --- 1. RANDOM VARIABLES (WITH 800mA LIMIT) ---
+    // --- 1. RANDOM VARIABLES (3 SIG FIGS, MAX 999mA) ---
     let Vz, R1, Vin, totalCurrent_mA, RL, switchClosed;
-    const RL_options = [100, 200, 250, 400, 500];
+    const RL_options = [100, 120, 150, 220, 270, 330, 470, 560]; 
     
-    // Loop until we find a combination where current <= 800mA
     let validProblem = false;
-    while (!validProblem) {
-        Vz = Math.floor(Math.random() * 5) + 5; // 5V to 9V
-        R1 = (Math.floor(Math.random() * 5) + 1) * 100; // 100, 200, 300, 400, 500 Ohms
-        const currentSteps = Math.floor(Math.random() * 10) + 5; 
-        Vin = Vz + (currentSteps * (R1 / 10)); 
+    let attempts = 0;
+    while (!validProblem && attempts < 100) {
+        attempts++;
+        // Generating values that naturally produce 3 sig figs
+        Vz = parseFloat((Math.random() * 7 + 3).toFixed(1)); 
+        R1 = Math.floor(Math.random() * 450) + 50; 
+        Vin = parseFloat((Vz + (Math.random() * 10 + 2)).toFixed(1)); 
         RL = RL_options[Math.floor(Math.random() * RL_options.length)];
         switchClosed = Math.random() > 0.5;
 
-        // Calculate potential regulation
         const V_unregulated = Vin * (RL / (R1 + RL));
         const isRegulating = V_unregulated > Vz;
         const finalVL = isRegulating ? Vz : V_unregulated;
         
-        // Check current
+        // Calculate current in mA
         totalCurrent_mA = Math.round(((Vin - finalVL) / R1) * 1000);
         
-        if (totalCurrent_mA <= 800) {
+        // STRICT LIMIT: Max 999mA, Min 100mA (to guarantee 3 digits)
+        if (totalCurrent_mA < 1000 && totalCurrent_mA >= 100) {
             validProblem = true;
         }
     }
@@ -1858,9 +1859,8 @@ function generateZenerProblem() {
     const Iz_min = Math.floor(Math.random() * 6) + 5; 
     currentZenerState = switchClosed ? "closed" : "open"; 
 
-    // --- 2. MATH CALCULATIONS (FINAL) ---
+    // --- 2. MATH CALCULATIONS ---
     if (typeof currentAnswers === "undefined") currentAnswers = {};
-    
     const V_unregulated = Vin * (RL / (R1 + RL));
     const isRegulating = V_unregulated > Vz;
     const finalVL = isRegulating ? Vz : V_unregulated;
@@ -1895,16 +1895,18 @@ function generateZenerProblem() {
     drawLine(ctx, 50, 60, 480, 60);   
     drawLine(ctx, 50, 360, 480, 360); 
     ctx.font = "bold 16px Arial";
-    ctx.fillText(Vin + " V", 10, 65);
+    ctx.fillText(Vin.toFixed(1) + " V", 10, 65);
     ctx.fillText("0 V", 10, 365);
 
     const xReg = 180; 
     const xLoad = 380;
     const yJunc = 220;
 
-    // --- MAIN INPUT BRANCH ---
-    // Input Current Value - Moved right (xReg - 65) + 800mA limit applied
-    ctx.fillText(totalCurrent_mA + " mA", xReg - 65, 90); 
+    // Fixed Offset Logic: Since max is 999mA, 65px remains safe.
+    let currentXOffset = 65; 
+    
+    // Main Current Label
+    ctx.fillText(totalCurrent_mA + " mA", xReg - currentXOffset, 90); 
     
     drawLine(ctx, xReg, 60, xReg, 110); 
     drawArrowOnWire(ctx, xReg, 70, xReg, 90); 
@@ -1915,9 +1917,9 @@ function generateZenerProblem() {
 
     // Zener Diode
     drawHollowZenerUp(ctx, xReg, 290); 
-    ctx.fillText(Vz.toFixed(0) + " V", xReg - 65, 295);
+    ctx.fillText(Vz.toFixed(1) + " V", xReg - 65, 295);
 
-    // --- RIGHT BRANCH (LOAD) ---
+    // --- LOAD BRANCH ---
     const switchStartX = 240; 
     const switchEndX = 290;    
 
@@ -1929,15 +1931,12 @@ function generateZenerProblem() {
         ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
         ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
         
-        // I_L Question
-        ctx.strokeStyle = "black";
         drawArrowOnWire(ctx, switchEndX + 15, yJunc, switchEndX + 40, yJunc); 
         ctx.fillStyle = pink;
         ctx.fillText("I", switchEndX + 42, yJunc - 15);
         ctx.font = "10px Arial"; ctx.fillText("L", switchEndX + 47, yJunc - 10);
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 54, yJunc - 15);
 
-        // V_L Question
         ctx.fillText("V", xLoad + 40, yJunc + 55);
         ctx.font = "10px Arial"; ctx.fillText("L", xLoad + 51, yJunc + 60);
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xLoad + 57, yJunc + 55);
@@ -1947,14 +1946,12 @@ function generateZenerProblem() {
         ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
         drawLine(ctx, switchEndX, yJunc, xLoad, yJunc); 
 
-        // I_Z Question - Moved right to xReg - 60
         ctx.fillStyle = pink;
         drawArrowOnWire(ctx, xReg, 230, xReg, 255);
         ctx.fillText("I", xReg - 60, 255);
         ctx.font = "10px Arial"; ctx.fillText("Z", xReg - 55, 260);
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 48, 255);
 
-        // P_Z Question - Moved left to xReg + 35
         ctx.fillText("P", xReg + 35, 298);
         ctx.font = "10px Arial"; ctx.fillText("Z", xReg + 45, 303);
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 52, 298);
@@ -1963,18 +1960,17 @@ function generateZenerProblem() {
     ctx.fillStyle = "black";
     ctx.fillText("S", (switchStartX + switchEndX)/2, yJunc + 25);
 
-    // --- LOAD BOX ---
+    // LOAD BOX
     ctx.strokeStyle = "black"; ctx.fillStyle = "black"; ctx.font = "bold 16px Arial";
     drawLine(ctx, xLoad, yJunc, xLoad, yJunc + 30);
     ctx.strokeRect(xLoad - 30, yJunc + 30, 60, 45); 
     ctx.textAlign = "center";
     ctx.fillText("LOAD", xLoad, yJunc + 58); 
     ctx.textAlign = "left";
-
     drawLine(ctx, xLoad, yJunc + 75, xLoad, 360);
     drawNode(ctx, xLoad, 360);
 
-    // --- FOOTER ---
+    // FOOTER
     ctx.fillStyle = "#444";
     ctx.font = "italic 16px Arial";
     ctx.fillText("Minimum Zener holding current = " + Iz_min + " mA", 70, 390);
