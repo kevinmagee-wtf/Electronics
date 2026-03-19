@@ -302,16 +302,23 @@
                 </div>
 
                 <!--RESISTOR COLOUR CODE INPUTS-->
-                <div id="inputGroupColorVal" class="input-group" style="display:none;">
-                    <label>Resistance: </label><input type="text" id="inputResValue" style="width: 140px;">
-                    <label>Tolerance (%): </label><input type="text" id="inputResTol" style="width: 140px;">
+                <div id="inputGroupColorVal" style="display:none;">
+                    <div class="input-group">
+                        <label>Resistance Value:</label>
+                        <input type="text" id="answerInputColorVal">
+                    </div>
+                    <div class="input-group">
+                         <label>Tolerance (%):</label>
+                        <input type="text" id="answerInputColorTol">
+                    </div>
                 </div>
-                <div id="inputGroupColorNames" class="input-group" style="display:none; text-align: center;">
-                    <label>Band 1: </label><input type="text" id="inputBand1" style="width: 100px;">
-                    <label>Band 2: </label><input type="text" id="inputBand2" style="width: 100px;">
-                    <label>Band 3: </label><input type="text" id="inputBand3" style="width: 100px;">
-                    <label>Band 4: </label><input type="text" id="inputBandTol" style="width: 100px;">
-                </div>
+
+<div id="inputGroupColorNames" style="display:none;">
+    <div class="input-group"><label>Band 1:</label><input type="text" id="colorBand1"></div>
+    <div class="input-group"><label>Band 2:</label><input type="text" id="colorBand2"></div>
+    <div class="input-group"><label>Band 3:</label><input type="text" id="colorBand3"></div>
+    <div class="input-group"><label>Band 4:</label><input type="text" id="colorBand4"></div>
+</div>
 
 <!-- ZENER DIODE SECTION -->
 <div id="inputGroupZener" style="display:none; text-align: left; width: 100%;">
@@ -1291,7 +1298,9 @@ function generateColorCodeProblem() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // 2. Ensure the canvas and question area are visible
+    // 2. Clear the slate: Hide other inputs and reset UI
+    if (typeof hideAllInputGroups === "function") hideAllInputGroups();
+    
     canvas.style.display = 'block';
     const qText = document.getElementById('questionText');
     if (qText) {
@@ -1299,7 +1308,7 @@ function generateColorCodeProblem() {
         qText.innerHTML = "Identify the resistance values or required colors below:";
     }
 
-    // 3. Clear the canvas
+    // 3. Clear the canvas drawing
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
@@ -1312,8 +1321,8 @@ function generateColorCodeProblem() {
     const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
     const toleranceValue = tolColors[tolKey];
 
-    // Store answers for grading (Matches your global currentAnswers)
-    currentAnswers = {}; // Reset container
+    // 4. Store answers for grading (Matches global currentAnswers)
+    currentAnswers = {}; 
     currentAnswers.resVal = resistanceValue;
     currentAnswers.resTol = toleranceValue;
     currentAnswers.b1 = resColors[b1];
@@ -1321,10 +1330,14 @@ function generateColorCodeProblem() {
     currentAnswers.b3 = resColors[b3];
     currentAnswers.tol = tolKey;
 
-    // Draw Resistor Body
+    // 5. Draw Resistor Body
     ctx.lineWidth = 4; ctx.strokeStyle = '#000';
+    // Leads
     ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke(); 
-    ctx.fillStyle = '#f4d3a6'; ctx.fillRect(200, 170, 200, 80); ctx.strokeRect(200, 170, 200, 80); 
+    // Body rectangle
+    ctx.fillStyle = '#f4d3a6'; 
+    ctx.fillRect(200, 170, 200, 80); 
+    ctx.strokeRect(200, 170, 200, 80); 
 
     const qType = Math.floor(Math.random() * 2);
     let solTextStr = "";
@@ -1340,10 +1353,11 @@ function generateColorCodeProblem() {
         drawBand(280, resColors[b3]);
         drawBand(360, tolKey);
 
-        document.getElementById('inputGroupColorVal').style.display = 'block';
+        const group = document.getElementById('inputGroupColorVal');
+        if (group) group.style.display = 'block';
 
-        // UPDATED: Use formatNum instead of formatResValue
-        solTextStr = "<strong>Solution: " + formatNum(resistanceValue) + " &plusmn; " + toleranceValue + "%</strong><br><br>";
+        // Solution Logic using formatNum
+        solTextStr = "<strong>Solution: " + formatNum(resistanceValue) + "Ω &plusmn; " + toleranceValue + "%</strong><br><br>";
         solTextStr += "<em>Logic:</em><br>";
         solTextStr += "Band 1 (" + resColors[b1].toUpperCase() + ") = " + b1 + "<br>";
         solTextStr += "Band 2 (" + resColors[b2].toUpperCase() + ") = " + b2 + "<br>";
@@ -1364,16 +1378,15 @@ function generateColorCodeProblem() {
         drawHiddenBand(280, "3");
         drawHiddenBand(360, "4");
 
-        // UPDATED: Use formatNum instead of formatResValue
         const formatted = formatNum(resistanceValue);
         ctx.fillStyle = '#000';
         ctx.font = 'bold 28px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(`${formatted} ± ${toleranceValue}%`, 300, 310);
+        ctx.fillText(`${formatted}Ω ± ${toleranceValue}%`, 300, 310);
 
-        document.getElementById('inputGroupColorNames').style.display = 'block';
+        const group = document.getElementById('inputGroupColorNames');
+        if (group) group.style.display = 'block';
 
-        // Generate Solution Logic for Help Button
         solTextStr = "<strong>Required Colours:</strong><br><br>";
         solTextStr += "1. " + resColors[b1].toUpperCase() + " (for digit " + b1 + ")<br>";
         solTextStr += "2. " + resColors[b2].toUpperCase() + " (for digit " + b2 + ")<br>";
