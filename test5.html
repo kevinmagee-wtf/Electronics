@@ -1819,49 +1819,56 @@ function generateZenerProblem() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    // --- 0. CONSISTENCY FIX: DEEP CLEAN CANVAS ---
+    // Reset canvas transform and clear
     ctx.setTransform(1, 0, 0, 1, 0, 0); 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath(); 
     
     if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'zener';
     const solBox = document.getElementById('solText');
     if (solBox) solBox.style.display = "none";
 
-    // 1. RANDOM VARIABLES (Advanced Physics Logic)
-    const Vin = Math.floor(Math.random() * 10) + 12;  // 12V - 21V
-    const Vz = (Math.floor(Math.random() * 41) + 40) / 10; // 4.0V - 8.0V
+    // --- 1. RANDOM VARIABLES (FORCE INTEGER CURRENTS) ---
+    // We pick Vz, R1, and Vin such that (Vin - Vz) / R1 is an integer in mA
+    const Vz = Math.floor(Math.random() * 5) + 5; // 5V to 9V
+    const R1 = (Math.floor(Math.random() * 5) + 1) * 100; // 100, 200, 300, 400, 500 Ohms
+    
+    // To get integer mA: (Vin - Vz) / R1 * 1000 must be an integer
+    // This means (Vin - Vz) * (1000/R1) is an integer. 
+    // Since R1 is a multiple of 100, 1000/R1 is 10, 5, 3.33, 2.5, or 2.
+    // We'll pick a Vin that ensures an integer mA result.
+    const currentSteps = Math.floor(Math.random() * 10) + 5; // e.g. 5 steps of R1/1000 Volts
+    const Vin = Vz + (currentSteps * (R1 / 10)); // Guaranteed integer mA: (Vin-Vz)/R1 * 1000
+    
     const Iz_min = Math.floor(Math.random() * 6) + 5; // 5mA - 10mA
     
-    // Internal Math Values (Discovery items)
-    const R1 = (Math.floor(Math.random() * 10) + 10) * 10; // 100 - 190 Ohms
-    const RL = (Math.floor(Math.random() * 20) + 10) * 10; // 100 - 290 Ohms
+    // Determine RL for integer load current if closed
+    // IL = Vz / RL. To keep it integer, RL must be a factor of Vz*1000
+    const RL_options = [100, 200, 250, 400, 500];
+    const RL = RL_options[Math.floor(Math.random() * RL_options.length)];
 
     const switchClosed = Math.random() > 0.5;
     currentZenerState = switchClosed ? "closed" : "open"; 
 
-    // 2. MATH CALCULATIONS (Regulated vs Unregulated logic)
+    // --- 2. MATH CALCULATIONS ---
     if (typeof currentAnswers === "undefined") currentAnswers = {};
     
     const V_unregulated = Vin * (RL / (R1 + RL));
     const isRegulating = V_unregulated > Vz;
     
     const finalVL = isRegulating ? Vz : V_unregulated;
-    const finalIL = (finalVL / RL) * 1000; 
-    const totalCurrent_mA = ((Vin - finalVL) / R1) * 1000;
-    const finalIZ = totalCurrent_mA - finalIL;
+    const finalIL = Math.round((finalVL / RL) * 1000); 
+    const totalCurrent_mA = Math.round(((Vin - finalVL) / R1) * 1000);
+    const finalIZ = totalCurrent_mA - (switchClosed ? finalIL : 0);
 
     currentAnswers.Vin = Vin;
     currentAnswers.Vz = Vz;
-    currentAnswers.R1 = R1;
-    currentAnswers.RL = RL;
-    currentAnswers.targetIL = parseFloat(finalIL.toFixed(1));
+    currentAnswers.targetIL = finalIL;
     currentAnswers.targetVL = parseFloat(finalVL.toFixed(1));
-    currentAnswers.targetIZ = parseFloat(finalIZ.toFixed(1));
-    currentAnswers.targetPZ = parseFloat((finalIZ * finalVL).toFixed(1));
+    currentAnswers.targetIZ = finalIZ;
+    currentAnswers.targetPZ = Math.round(finalIZ * finalVL);
 
-    // 3. UI SETUP
+    // --- 3. UI SETUP ---
     const zenerMainGroup = document.getElementById('inputGroupZener');
     if(zenerMainGroup) zenerMainGroup.style.display = "block";
     
@@ -1872,10 +1879,11 @@ function generateZenerProblem() {
         openGroup.style.display = switchClosed ? "none" : "block";
     }
 
-    // 4. DRAWING (Merged with "Correct Look" Visuals)
+    // --- 4. DRAWING ---
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.fillStyle = "black";
+    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
     
     // Rails
     drawLine(ctx, 50, 60, 480, 60);   
@@ -1887,82 +1895,74 @@ function generateZenerProblem() {
     const xReg = 180; 
     const xLoad = 380;
     const yJunc = 220;
-    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
     // --- MAIN INPUT BRANCH ---
-    // Total Current Text near input
-    ctx.fillText(totalCurrent_mA.toFixed(1) + " mA", xReg - 75, 90); 
+    // Input Current Value - Moved further left (-100 instead of -75)
+    ctx.fillText(totalCurrent_mA + " mA", xReg - 100, 90); 
     
     drawLine(ctx, xReg, 60, xReg, 110); 
-    drawArrowOnWire(ctx, xReg, 70, xReg, 90); // Vertical input arrow
+    drawArrowOnWire(ctx, xReg, 70, xReg, 90); 
 
-    // Series Resistor (No Label)
+    // Series Resistor
     drawComponent(ctx, 'fixed', xReg, 135); 
     drawLine(ctx, xReg, 160, xReg, 360); 
 
-    // Zener (POINTING UP)
+    // Zener Diode
     drawHollowZenerUp(ctx, xReg, 290); 
-    ctx.fillText(Vz.toFixed(1) + " V", xReg - 65, 295);
+    ctx.fillText(Vz.toFixed(0) + " V", xReg - 65, 295);
 
     // --- RIGHT BRANCH (LOAD) ---
     const switchStartX = 240; 
     const switchEndX = 290;   
 
-    // Bridge and Switch
     drawLine(ctx, xReg, yJunc, switchStartX, yJunc); 
     drawNode(ctx, xReg, yJunc); 
 
     if (switchClosed) {
-        // Closed Switch Line
         drawLine(ctx, switchStartX, yJunc, xLoad, yJunc);
         ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
         ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
+        
+        // I_L Question - Tightened spacing
+        ctx.strokeStyle = "black";
+        drawArrowOnWire(ctx, switchEndX + 15, yJunc, switchEndX + 40, yJunc); 
+        ctx.fillStyle = pink;
+        ctx.fillText("I", switchEndX + 42, yJunc - 15);
+        ctx.font = "10px Arial"; ctx.fillText("L", switchEndX + 47, yJunc - 10);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 54, yJunc - 15);
+
+        // V_L Question - Tightened spacing
+        ctx.fillText("V", xLoad + 40, yJunc + 55);
+        ctx.font = "10px Arial"; ctx.fillText("L", xLoad + 51, yJunc + 60);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xLoad + 57, yJunc + 55);
     } else {
-        // Open Switch Line
         drawLine(ctx, switchStartX, yJunc, switchEndX - 10, yJunc - 20); 
         ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
         ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
         drawLine(ctx, switchEndX, yJunc, xLoad, yJunc); 
+
+        // I_Z Question - Shifted IZ to the right relative to label
+        ctx.fillStyle = pink;
+        drawArrowOnWire(ctx, xReg, 230, xReg, 255);
+        ctx.fillText("I", xReg - 80, 255);
+        ctx.font = "10px Arial"; ctx.fillText("Z", xReg - 75, 260);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 68, 255);
+
+        // P_Z Question
+        ctx.fillText("P", xReg + 45, 298);
+        ctx.font = "10px Arial"; ctx.fillText("Z", xReg + 55, 303);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 62, 298);
     }
     
     ctx.fillStyle = "black";
     ctx.fillText("S", (switchStartX + switchEndX)/2, yJunc + 25);
 
-    // --- QUESTION LABELS (PINK) ---
-    if (switchClosed) {
-        // Load Current Arrow between switch and load
-        ctx.strokeStyle = "black";
-        drawArrowOnWire(ctx, switchEndX + 20, yJunc, switchEndX + 50, yJunc); 
-        
-        ctx.fillStyle = pink;
-        ctx.fillText("I", switchEndX + 45, yJunc - 15);
-        ctx.font = "10px Arial"; ctx.fillText("L", switchEndX + 51, yJunc - 10);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 60, yJunc - 15);
-
-        ctx.fillText("V", xLoad + 40, yJunc + 55);
-        ctx.font = "10px Arial"; ctx.fillText("L", xLoad + 52, yJunc + 60);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xLoad + 62, yJunc + 55);
-    } else {
-        // Zener Branch labels for Open state
-        ctx.fillStyle = pink;
-        drawArrowOnWire(ctx, xReg, 230, xReg, 255);
-        ctx.fillText("I", xReg - 91, 255);
-        ctx.font = "10px Arial"; ctx.fillText("Z", xReg - 85, 260);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 48, 255);
-
-        ctx.fillText("P", xReg + 37, 298);
-        ctx.font = "10px Arial"; ctx.fillText("Z", xReg + 44, 303);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 79, 298);
-    }
-
-    // --- LOAD BOX (BIGGER & CENTERED TEXT) ---
+    // --- LOAD BOX (PROMINENT) ---
     ctx.strokeStyle = "black"; ctx.fillStyle = "black"; ctx.font = "bold 16px Arial";
     drawLine(ctx, xLoad, yJunc, xLoad, yJunc + 30);
-    
-    // The Box (60 wide, 45 high as requested)
     ctx.strokeRect(xLoad - 30, yJunc + 30, 60, 45); 
     ctx.textAlign = "center";
-    ctx.fillText("LOAD", xLoad, yJunc + 58); // Perfectly centered
+    ctx.fillText("LOAD", xLoad, yJunc + 58); 
     ctx.textAlign = "left";
 
     drawLine(ctx, xLoad, yJunc + 75, xLoad, 360);
