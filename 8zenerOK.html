@@ -2203,17 +2203,19 @@ function switchTab(mode) {
         activeTab.style.color = "#fff";            
     }
 
-    // 2. Hide ALL potential input groups
-    const groups = [
+    // 2. Hide ALL potential input groups AND Instructions (This fixes the UI Bleed!)
+    const elementsToHide = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
         'inputGroupAstable', 'inputGroupMonostable', 'inputGroupMarkSpace',
         'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
-        'inputGroupSilicon'
+        'inputGroupSilicon',
+        'zenerOpenQuestions', 'zenerClosedQuestions', 
+        'instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction'
     ];
 
-    groups.forEach(id => {
+    elementsToHide.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
@@ -2221,7 +2223,9 @@ function switchTab(mode) {
     // 3. Update the Subtitle based on the module
     const subtitle = document.getElementById('moduleSubtitle');
     if (subtitle) {
-        if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
+        if (mode === 'home') {
+            subtitle.innerText = "Welcome to Electronics"; // Resets subtitle for Home!
+        } else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
             subtitle.innerText = "Module 1: Circuit Basics";
         } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
             subtitle.innerText = "Module 3: Timing Circuits";
@@ -2238,6 +2242,7 @@ function switchTab(mode) {
 
     // 5. Reset UI Elements
     if (typeof resetAnswerBox === "function") resetAnswerBox();
+    if (typeof clearZenerInputs === "function") clearZenerInputs(); // Safely clear Zener data too
     
     const feedback = document.getElementById('feedback');
     if (feedback) feedback.innerHTML = '';
@@ -2274,10 +2279,9 @@ function switchTab(mode) {
         if (sGroup) sGroup.style.display = 'inline-block';
         if (typeof generateSiliconProblem === "function") generateSiliconProblem();
     } else if (mode === 'colorcode') {
-        // Just call the function directly! The function already handles showing the canvas and inputs.
-        generateColorCodeProblem();
+        if (typeof generateColorCodeProblem === "function") generateColorCodeProblem();
     } else {
-        generateProblem();
+        if (typeof generateProblem === "function") generateProblem();
     }
 }
 
