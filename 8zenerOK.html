@@ -1279,6 +1279,14 @@ function generateColorCodeProblem() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
+    // Internal Helper: Formats numbers to k and M (e.g. 4700 -> 4.7k)
+    // We define it here to prevent "ReferenceError: formatNum is not defined"
+    const formatNum = (n) => {
+        if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + "M";
+        if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + "k";
+        return n.toString();
+    };
+
     // 2. UI Cleanup: Hide other inputs and reset UI
     if (typeof hideAllInputGroups === "function") hideAllInputGroups();
     
@@ -1303,7 +1311,9 @@ function generateColorCodeProblem() {
     const toleranceValue = tolColors[tolKey];
 
     // 4. Store answers globally for the Check button
-    currentAnswers = {}; 
+    // Ensure the global object exists
+    if (typeof currentAnswers === 'undefined') window.currentAnswers = {};
+    
     currentAnswers.resVal = resistanceValue;
     currentAnswers.resTol = toleranceValue;
     currentAnswers.b1 = resColors[b1];
@@ -1334,7 +1344,7 @@ function generateColorCodeProblem() {
         drawBand(280, resColors[b3]);
         drawBand(360, tolKey);
 
-        // MATCHED TO YOUR HTML ID: inputGroupColorVal
+        // Shows the numeric input fields
         const group = document.getElementById('inputGroupColorVal');
         if (group) group.style.display = 'block';
 
@@ -1365,7 +1375,7 @@ function generateColorCodeProblem() {
         ctx.textAlign = 'center';
         ctx.fillText(`${formatted}Ω ± ${toleranceValue}%`, 300, 310);
 
-        // MATCHED TO YOUR HTML ID: inputGroupColorNames
+        // Shows the color name input fields
         const group = document.getElementById('inputGroupColorNames');
         if (group) group.style.display = 'block';
 
