@@ -2160,45 +2160,51 @@ function closeModal() {
 // ===============================================================================================================      
 // FUNCTION 4. MAIN ROUTER
 // ===============================================================================================================      
-    
+
 function generateProblem() {
     const canvas = document.getElementById('circuitCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // 1. Force Canvas Resolution (Matches your current setup)
+    // 1. Force Canvas Resolution (Matches your uploaded backup)
     canvas.width = 600;
     canvas.height = 420;
 
-    // 2. Full UI Reset
-    // Uses your helper to clear existing UI states
-    if (typeof hideAllInputGroups === "function") {
-        hideAllInputGroups();
-    } else {
-        // Fallback manual hide if helper isn't loaded
-        const allGroups = ['inputGroupV', 'inputGroupI', 'inputGroupR', 'inputGroupOscAmp', 
-                           'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupAstable', 
-                           'inputGroupMonostable', 'inputGroupZener', 'inputGroupSilicon'];
-        allGroups.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.style.display = 'none';
-        });
-    }
+    // 2. Full UI Reset using your existing helper
+    hideAllInputGroups(); 
     
-    // Reset global flags from your existing code
+    // Global flag resets from your code
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
     viewedSolution = false; 
     unitErrorMade = false; 
 
-    // Clear question text container
+    // 3. Clear the question text and hide container
     const qText = document.getElementById('questionText');
     if (qText) {
-        qText.innerHTML = '';
-        qText.style.display = 'none'; // Ensure it's hidden until generator fills it
+        qText.innerHTML = "";      
+        qText.style.display = 'none'; 
     }
 
-    // 3. ROUTER: Open module inputs and call generators
+    // 4. Clear instruction prompts (Matches your backup logic)
+    const prompts = ['instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction'];
+    prompts.forEach(id => {
+        const p = document.getElementById(id);
+        if (p) p.innerHTML = "";
+    });
+
+    // 5. Specifically hide Zener sub-sections & clear inputs
+    const zOpen = document.getElementById('zenerOpenQuestions');
+    const zClosed = document.getElementById('zenerClosedQuestions');
+    if (zOpen) zOpen.style.display = 'none';
+    if (zClosed) zClosed.style.display = 'none';
+    
+    // This function from your backup is crucial for clearing previous data
+    if (typeof clearZenerInputs === 'function') {
+        clearZenerInputs();
+    }
+
+    // 6. ROUTER: Open module inputs and call generators
     if (currentMode === 'analysis') {
         document.getElementById('inputGroupV').style.display = 'inline-block';
         document.getElementById('inputGroupI').style.display = 'inline-block';
@@ -2214,7 +2220,7 @@ function generateProblem() {
         document.getElementById('inputGroupR').style.display = 'inline-block';
         const g9 = document.getElementById('grade9ResistorBtn');
         if (g9) g9.style.display = 'inline-block';
-        // Keeps your existing timeout for drawing consistency
+        // Your backup uses a 20ms timeout here to ensure canvas stability
         setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
 
     } else if (currentMode === 'oscilloscope') {
@@ -2223,6 +2229,7 @@ function generateProblem() {
         generateOscilloscopeProblem(ctx, canvas);
 
     } else if (currentMode === 'astable') {
+        // Astable generator usually handles its own inputs
         generateAstableProblem(ctx, canvas);
 
     } else if (currentMode === 'monostable') {
@@ -2233,6 +2240,7 @@ function generateProblem() {
         generateColorCodeProblem(ctx, canvas);
 
     } else if (currentMode === 'zener') {
+        // New Module Support
         const zGroup = document.getElementById('inputGroupZener');
         if (zGroup) zGroup.style.display = 'inline-block';
         if (typeof generateZenerProblem === "function") {
@@ -2240,6 +2248,7 @@ function generateProblem() {
         }
 
     } else if (currentMode === 'silicon') {
+        // New Module Support
         const sGroup = document.getElementById('inputGroupSilicon');
         if (sGroup) sGroup.style.display = 'inline-block';
         if (typeof generateSiliconProblem === "function") {
