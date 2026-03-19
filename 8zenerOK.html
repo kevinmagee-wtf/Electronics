@@ -1991,18 +1991,33 @@ function generateZenerProblem() {
 // ===========================================================================================================================      
 
    function goHome() {
-    // 1. Hide the work area and specific inputs
+    // 1. Hide the main work area and all sub-menus
     document.getElementById('contentArea').style.display = 'none';
-    hideAllInputGroups(); // <--- ADD THIS LINE to reset spacers and inputs
-    
-    // 2. Reset the menus
-    document.getElementById('mainMenu').style.display = 'grid'; 
     document.getElementById('menuBasics').style.display = 'none';
     document.getElementById('menuTiming').style.display = 'none';
+    document.getElementById('menuDiodes').style.display = 'none';
     document.getElementById('menuPlaceholder').style.display = 'none';
+
+    // 2. Show the main 8-button grid
+    document.getElementById('mainMenu').style.display = 'grid';
+
+    // --- FIX STARTS HERE ---
+    // 3. Specifically hide the Zener input groups so they don't stay visible
+    const zenerGroup = document.getElementById('inputGroupZener');
+    if (zenerGroup) zenerGroup.style.display = 'none';
     
-    // 3. Reset the title
-    document.getElementById('moduleSubtitle').innerText = 'Mastering the GCSE Course';
+    const zenerOpen = document.getElementById('zenerOpenQuestions');
+    if (zenerOpen) zenerOpen.style.display = 'none';
+    
+    const zenerClosed = document.getElementById('zenerClosedQuestions');
+    if (zenerClosed) zenerClosed.style.display = 'none';
+    
+    // Also clear any values left in the boxes
+    clearZenerInputs(); 
+    // --- FIX ENDS HERE ---
+
+    // Reset subtitles/branding if needed
+    document.getElementById('moduleSubtitle').innerText = "Mastering the GCSE Course";
 }
 
 function openModule(module) {
@@ -2727,13 +2742,15 @@ function hideAllInputGroups() {
  * This specifically empties the values inside the input boxes.
  */
 function clearZenerInputs() {
-    // Ensure these IDs match the 'id' attributes in your HTML <input> tags
-    const zenerIds = [
-        'zenerQ_IL', 
-        'zenerQ_VL', 
-        'zenerQ_IZ', 
-        'zenerQ_PZ'
-    ];
+    const zenerIds = ['zenerQ_IL', 'zenerQ_VL', 'zenerQ_IZ', 'zenerQ_PZ'];
+    zenerIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.value = ''; 
+            el.style.backgroundColor = ''; // Resets the red/green status
+        }
+    });
+}
     
     zenerIds.forEach(id => {
         const el = document.getElementById(id);
