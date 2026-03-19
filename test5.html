@@ -1829,19 +1829,19 @@ function generateZenerProblem() {
     const solBox = document.getElementById('solText');
     if (solBox) solBox.style.display = "none";
 
-    // 1. RANDOM VARIABLES
-    const Vin = Math.floor(Math.random() * 10) + 12; 
+    // 1. RANDOM VARIABLES (Advanced Physics Logic)
+    const Vin = Math.floor(Math.random() * 10) + 12;  // 12V - 21V
     const Vz = (Math.floor(Math.random() * 41) + 40) / 10; // 4.0V - 8.0V
-    const Iz_min = Math.floor(Math.random() * 6) + 5; 
+    const Iz_min = Math.floor(Math.random() * 6) + 5; // 5mA - 10mA
     
-    // Internal Math Values (Hidden from user as requested)
-    const R1 = (Math.floor(Math.random() * 10) + 10) * 10; 
-    const RL = (Math.floor(Math.random() * 20) + 10) * 10; 
+    // Internal Math Values (Discovery items)
+    const R1 = (Math.floor(Math.random() * 10) + 10) * 10; // 100 - 190 Ohms
+    const RL = (Math.floor(Math.random() * 20) + 10) * 10; // 100 - 290 Ohms
 
     const switchClosed = Math.random() > 0.5;
     currentZenerState = switchClosed ? "closed" : "open"; 
 
-    // 2. MATH CALCULATIONS
+    // 2. MATH CALCULATIONS (Regulated vs Unregulated logic)
     if (typeof currentAnswers === "undefined") currentAnswers = {};
     
     const V_unregulated = Vin * (RL / (R1 + RL));
@@ -1872,7 +1872,7 @@ function generateZenerProblem() {
         openGroup.style.display = switchClosed ? "none" : "block";
     }
 
-    // 4. DRAWING
+    // 4. DRAWING (Merged with "Correct Look" Visuals)
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.fillStyle = "black";
@@ -1886,95 +1886,91 @@ function generateZenerProblem() {
 
     const xReg = 180; 
     const xLoad = 380;
-    const yJunc = 220; 
+    const yJunc = 220;
+    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
-    // --- SERIES SECTION (Resistor & Current Arrow) ---
+    // --- MAIN INPUT BRANCH ---
+    // Total Current Text near input
+    ctx.fillText(totalCurrent_mA.toFixed(1) + " mA", xReg - 75, 90); 
+    
     drawLine(ctx, xReg, 60, xReg, 110); 
-    drawComponent(ctx, 'fixed', xReg, 135); // Series resistor drawn without R1 label
+    drawArrowOnWire(ctx, xReg, 70, xReg, 90); // Vertical input arrow
+
+    // Series Resistor (No Label)
+    drawComponent(ctx, 'fixed', xReg, 135); 
     drawLine(ctx, xReg, 160, xReg, 360); 
 
-    // Vertical Downward Current Arrow (Per New Specification)
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "black";
-    const arrowYStart = 70;
-    const arrowYEnd = 100;
-    const arrowXOffset = xReg + 25;
-    drawLine(ctx, arrowXOffset, arrowYStart, arrowXOffset, arrowYEnd);
-    // Arrow head
-    ctx.beginPath();
-    ctx.moveTo(arrowXOffset, arrowYEnd); 
-    ctx.lineTo(arrowXOffset - 5, arrowYEnd - 8); 
-    ctx.lineTo(arrowXOffset + 5, arrowYEnd - 8); 
-    ctx.fill();
-    ctx.font = "bold 14px Arial";
-    ctx.fillText(totalCurrent_mA.toFixed(1) + " mA", arrowXOffset + 10, (arrowYStart + arrowYEnd) / 2 + 5);
-
-    // Zener
+    // Zener (POINTING UP)
     drawHollowZenerUp(ctx, xReg, 290); 
-    ctx.font = "bold 16px Arial";
     ctx.fillText(Vz.toFixed(1) + " V", xReg - 65, 295);
 
-    // --- LOAD BRANCH ---
-    const switchStartX = 240;      
-    const switchEndX = 290;        
-    const pink = "#E64097"; 
+    // --- RIGHT BRANCH (LOAD) ---
+    const switchStartX = 240; 
+    const switchEndX = 290;   
 
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "black";
-    
+    // Bridge and Switch
     drawLine(ctx, xReg, yJunc, switchStartX, yJunc); 
     drawNode(ctx, xReg, yJunc); 
-    drawLine(ctx, switchEndX, yJunc, xLoad, yJunc); 
-
-    ctx.textAlign = "center";
-    ctx.fillText("S", (switchStartX + switchEndX) / 2, yJunc + 25); 
-    ctx.textAlign = "left"; 
-
-    ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI * 2); ctx.stroke(); 
-    ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI * 2); ctx.stroke(); 
 
     if (switchClosed) {
-        ctx.strokeStyle = "black";
-        drawLine(ctx, switchStartX, yJunc, switchEndX, yJunc); 
-        ctx.strokeStyle = pink;
-        ctx.fillStyle = pink;
-        drawArrowOnWire(ctx, switchEndX + 20, yJunc, switchEndX + 50, yJunc);
-        ctx.font = "bold 16px Arial"; ctx.fillText("I", switchEndX + 45, yJunc - 15);
-        ctx.font = "bold 10px Arial"; ctx.fillText("LOAD", switchEndX + 52, yJunc - 10);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 85, yJunc - 15);
-        ctx.font = "bold 16px Arial"; ctx.fillText("V", xLoad + 40, yJunc + 55);
-        ctx.font = "bold 10px Arial"; ctx.fillText("LOAD", xLoad + 52, yJunc + 60);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xLoad + 85, yJunc + 55);
+        // Closed Switch Line
+        drawLine(ctx, switchStartX, yJunc, xLoad, yJunc);
+        ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
+        ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
     } else {
-        ctx.strokeStyle = "black";
+        // Open Switch Line
         drawLine(ctx, switchStartX, yJunc, switchEndX - 10, yJunc - 20); 
-        ctx.strokeStyle = pink;
-        ctx.fillStyle = pink;
-        drawArrowOnWire(ctx, xReg, 230, xReg, 255);
-        ctx.font = "bold 16px Arial"; ctx.fillText("I", xReg - 91, 255);
-        ctx.font = "bold 10px Arial"; ctx.fillText("ZENER", xReg - 85, 260);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 48, 255);
-        ctx.font = "bold 16px Arial"; ctx.fillText("P", xReg + 37, 298);
-        ctx.font = "bold 10px Arial"; ctx.fillText("ZENER", xReg + 44, 303);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 79, 298);
+        ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
+        ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
+        drawLine(ctx, switchEndX, yJunc, xLoad, yJunc); 
     }
     
-    // --- LOAD SECTION (Centered Text within box) ---
-    ctx.strokeStyle = "black";
     ctx.fillStyle = "black";
-    drawComponent(ctx, 'fixed', xLoad, yJunc + 55); // Resistor drawn without RL label
+    ctx.fillText("S", (switchStartX + switchEndX)/2, yJunc + 25);
+
+    // --- QUESTION LABELS (PINK) ---
+    if (switchClosed) {
+        // Load Current Arrow between switch and load
+        ctx.strokeStyle = "black";
+        drawArrowOnWire(ctx, switchEndX + 20, yJunc, switchEndX + 50, yJunc); 
+        
+        ctx.fillStyle = pink;
+        ctx.fillText("I", switchEndX + 45, yJunc - 15);
+        ctx.font = "10px Arial"; ctx.fillText("L", switchEndX + 51, yJunc - 10);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 60, yJunc - 15);
+
+        ctx.fillText("V", xLoad + 40, yJunc + 55);
+        ctx.font = "10px Arial"; ctx.fillText("L", xLoad + 52, yJunc + 60);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xLoad + 62, yJunc + 55);
+    } else {
+        // Zener Branch labels for Open state
+        ctx.fillStyle = pink;
+        drawArrowOnWire(ctx, xReg, 230, xReg, 255);
+        ctx.fillText("I", xReg - 91, 255);
+        ctx.font = "10px Arial"; ctx.fillText("Z", xReg - 85, 260);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 48, 255);
+
+        ctx.fillText("P", xReg + 37, 298);
+        ctx.font = "10px Arial"; ctx.fillText("Z", xReg + 44, 303);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 79, 298);
+    }
+
+    // --- LOAD BOX (BIGGER & CENTERED TEXT) ---
+    ctx.strokeStyle = "black"; ctx.fillStyle = "black"; ctx.font = "bold 16px Arial";
+    drawLine(ctx, xLoad, yJunc, xLoad, yJunc + 30);
     
-    // Centering the "LOAD" text inside the box
-    ctx.font = "bold 12px Arial";
+    // The Box (60 wide, 45 high as requested)
+    ctx.strokeRect(xLoad - 30, yJunc + 30, 60, 45); 
     ctx.textAlign = "center";
-    ctx.fillText("LOAD", xLoad, yJunc + 60);
+    ctx.fillText("LOAD", xLoad, yJunc + 58); // Perfectly centered
     ctx.textAlign = "left";
 
-    drawLine(ctx, xLoad, yJunc, xLoad, yJunc + 30);
-    drawLine(ctx, xLoad, yJunc + 80, xLoad, 360);
+    drawLine(ctx, xLoad, yJunc + 75, xLoad, 360);
     drawNode(ctx, xLoad, 360);
 
-    ctx.font = "bold 16px Arial";
+    // --- FOOTER ---
+    ctx.fillStyle = "#444";
+    ctx.font = "italic 16px Arial";
     ctx.fillText("Minimum Zener holding current = " + Iz_min + " mA", 70, 390);
 }
     
