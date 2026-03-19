@@ -301,14 +301,6 @@
                         
                 </div>
 
-                <!--RESISTOR COLOUR CODE INPUTS-->
-<div id="inputGroupColorNames" style="display:none;">
-    <div class="input-group"><label>Band 1:</label><input type="text" id="colorBand1"></div>
-    <div class="input-group"><label>Band 2:</label><input type="text" id="colorBand2"></div>
-    <div class="input-group"><label>Band 3:</label><input type="text" id="colorBand3"></div>
-    <div class="input-group"><label>Band 4:</label><input type="text" id="colorBand4"></div>
-</div>
-
 <!-- ZENER DIODE SECTION -->
 <div id="inputGroupZener" style="display:none; text-align: left; width: 100%;">
     
@@ -1342,8 +1334,8 @@ function generateColorCodeProblem() {
         drawBand(280, resColors[b3]);
         drawBand(360, tolKey);
 
-        // MATCHED TO YOUR HTML ID: colorCodeInputs
-        const group = document.getElementById('colorCodeInputs');
+        // MATCHED TO YOUR HTML ID: inputGroupColorVal
+        const group = document.getElementById('inputGroupColorVal');
         if (group) group.style.display = 'block';
 
         solTextStr = "<strong>Solution: " + formatNum(resistanceValue) + "Ω &plusmn; " + toleranceValue + "%</strong><br><br>";
@@ -1373,8 +1365,8 @@ function generateColorCodeProblem() {
         ctx.textAlign = 'center';
         ctx.fillText(`${formatted}Ω ± ${toleranceValue}%`, 300, 310);
 
-        // MATCHED TO YOUR HTML ID: colorNameInputs
-        const group = document.getElementById('colorNameInputs');
+        // MATCHED TO YOUR HTML ID: inputGroupColorNames
+        const group = document.getElementById('inputGroupColorNames');
         if (group) group.style.display = 'block';
 
         solTextStr = "<strong>Required Colours:</strong><br><br>";
