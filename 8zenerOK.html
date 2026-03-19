@@ -459,6 +459,8 @@ let currentAnswers = {
     astableRatio: '' // Added for 555 logic
 };
 
+    
+
 /* --- 2. MAIN CONTROLLER --- */
 function handleGenerateClick() {
     if (currentMode === 'zener') {
@@ -485,6 +487,13 @@ function handleGenerateClick() {
     if (val >= 1000) return (val / 1000) + " kΩ";
     return val + " Ω";
 }   
+
+    // Formatting helper to turn large numbers into k and M (e.g., 1000 -> 1k)
+    function formatNum(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(2).replace(/\.00$/, '') + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(2).replace(/\.00$/, '') + 'k';
+    return num.toString();
+}
    function resetAnswerBox() {
     const box = document.getElementById('inputV');
     if (box) {
