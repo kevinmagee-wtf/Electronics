@@ -1829,21 +1829,14 @@ function generateZenerProblem() {
     if (solBox) solBox.style.display = "none";
 
     // --- 1. RANDOM VARIABLES (FORCE INTEGER CURRENTS) ---
-    // We pick Vz, R1, and Vin such that (Vin - Vz) / R1 is an integer in mA
     const Vz = Math.floor(Math.random() * 5) + 5; // 5V to 9V
     const R1 = (Math.floor(Math.random() * 5) + 1) * 100; // 100, 200, 300, 400, 500 Ohms
     
-    // To get integer mA: (Vin - Vz) / R1 * 1000 must be an integer
-    // This means (Vin - Vz) * (1000/R1) is an integer. 
-    // Since R1 is a multiple of 100, 1000/R1 is 10, 5, 3.33, 2.5, or 2.
-    // We'll pick a Vin that ensures an integer mA result.
-    const currentSteps = Math.floor(Math.random() * 10) + 5; // e.g. 5 steps of R1/1000 Volts
-    const Vin = Vz + (currentSteps * (R1 / 10)); // Guaranteed integer mA: (Vin-Vz)/R1 * 1000
+    const currentSteps = Math.floor(Math.random() * 10) + 5; 
+    const Vin = Vz + (currentSteps * (R1 / 10)); // Guaranteed integer mA
     
     const Iz_min = Math.floor(Math.random() * 6) + 5; // 5mA - 10mA
     
-    // Determine RL for integer load current if closed
-    // IL = Vz / RL. To keep it integer, RL must be a factor of Vz*1000
     const RL_options = [100, 200, 250, 400, 500];
     const RL = RL_options[Math.floor(Math.random() * RL_options.length)];
 
@@ -1897,8 +1890,8 @@ function generateZenerProblem() {
     const yJunc = 220;
 
     // --- MAIN INPUT BRANCH ---
-    // Input Current Value - Moved further left (-100 instead of -75)
-    ctx.fillText(totalCurrent_mA + " mA", xReg - 100, 90); 
+    // Input Current Value - Moved to the right (from -100 to -65)
+    ctx.fillText(totalCurrent_mA + " mA", xReg - 65, 90); 
     
     drawLine(ctx, xReg, 60, xReg, 110); 
     drawArrowOnWire(ctx, xReg, 70, xReg, 90); 
@@ -1913,7 +1906,7 @@ function generateZenerProblem() {
 
     // --- RIGHT BRANCH (LOAD) ---
     const switchStartX = 240; 
-    const switchEndX = 290;   
+    const switchEndX = 290;    
 
     drawLine(ctx, xReg, yJunc, switchStartX, yJunc); 
     drawNode(ctx, xReg, yJunc); 
@@ -1923,7 +1916,7 @@ function generateZenerProblem() {
         ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
         ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
         
-        // I_L Question - Tightened spacing
+        // I_L Question
         ctx.strokeStyle = "black";
         drawArrowOnWire(ctx, switchEndX + 15, yJunc, switchEndX + 40, yJunc); 
         ctx.fillStyle = pink;
@@ -1931,7 +1924,7 @@ function generateZenerProblem() {
         ctx.font = "10px Arial"; ctx.fillText("L", switchEndX + 47, yJunc - 10);
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 54, yJunc - 15);
 
-        // V_L Question - Tightened spacing
+        // V_L Question
         ctx.fillText("V", xLoad + 40, yJunc + 55);
         ctx.font = "10px Arial"; ctx.fillText("L", xLoad + 51, yJunc + 60);
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xLoad + 57, yJunc + 55);
@@ -1941,17 +1934,17 @@ function generateZenerProblem() {
         ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI*2); ctx.stroke(); 
         drawLine(ctx, switchEndX, yJunc, xLoad, yJunc); 
 
-        // I_Z Question - Shifted IZ to the right relative to label
+        // I_Z Question - Moved to the right (from -80 to -60)
         ctx.fillStyle = pink;
         drawArrowOnWire(ctx, xReg, 230, xReg, 255);
-        ctx.fillText("I", xReg - 80, 255);
-        ctx.font = "10px Arial"; ctx.fillText("Z", xReg - 75, 260);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 68, 255);
+        ctx.fillText("I", xReg - 60, 255);
+        ctx.font = "10px Arial"; ctx.fillText("Z", xReg - 55, 260);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 48, 255);
 
-        // P_Z Question
-        ctx.fillText("P", xReg + 45, 298);
-        ctx.font = "10px Arial"; ctx.fillText("Z", xReg + 55, 303);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 62, 298);
+        // P_Z Question - Moved slightly to the left (from +45 to +35)
+        ctx.fillText("P", xReg + 35, 298);
+        ctx.font = "10px Arial"; ctx.fillText("Z", xReg + 45, 303);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 52, 298);
     }
     
     ctx.fillStyle = "black";
