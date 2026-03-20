@@ -1273,33 +1273,21 @@ function generateAnalysisProblem(ctx, canvas) {
     }
 }   
 
-function generateColorCodeProblem() {
-    // 1. Core Data & Canvas Setup
+function generateColorCodeProblem(ctx, canvas) {
+    // 1. Core Data Setup
     const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
     const tolColors = { 'gold': 5, 'silver': 10 };
-    const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    
-    // Helper to format numbers (4700 -> 4.7k)
-    const formatNum = (n) => {
-        if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + "M";
-        if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + "k";
-        return n.toString();
-    };
 
-    // 2. UI RESET: Clear canvas and hide both groups immediately
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 2. UI RESET: Hide both potential input groups before starting
     const valGroup = document.getElementById('inputGroupColorVal');
-    const nameGroup = document.getElementById('inputGroupColorNames');
+    const namesGroup = document.getElementById('inputGroupColorNames');
     if (valGroup) valGroup.style.display = 'none';
-    if (nameGroup) nameGroup.style.display = 'none';
+    if (namesGroup) namesGroup.style.display = 'none';
 
-    const qText = document.getElementById('questionText');
-    if (qText) {
-        qText.style.display = 'block';
-        qText.innerHTML = "Identify the resistance values or required colors below:";
-    }
+    // Clear the canvas and reset feedback
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const feedback = document.getElementById('feedback');
+    if (feedback) feedback.innerHTML = "";
 
     // 3. Generate Random Values
     const b1 = Math.floor(Math.random() * 9) + 1; 
@@ -1309,26 +1297,24 @@ function generateColorCodeProblem() {
     const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
     const toleranceValue = tolColors[tolKey];
 
-    // 4. Save Answers Globally
-    if (typeof window.currentAnswers === 'undefined') window.currentAnswers = {};
-    window.currentAnswers.resVal = resistanceValue;
-    window.currentAnswers.resTol = toleranceValue;
-    window.currentAnswers.b1 = resColors[b1];
-    window.currentAnswers.b2 = resColors[b2];
-    window.currentAnswers.b3 = resColors[b3];
-    window.currentAnswers.tol = tolKey;
+    // 4. Store answers for the grader (MUST match these names)
+    currentAnswers.resVal = resistanceValue;
+    currentAnswers.resTol = toleranceValue;
+    currentAnswers.b1 = resColors[b1];
+    currentAnswers.b2 = resColors[b2];
+    currentAnswers.b3 = resColors[b3];
+    currentAnswers.tol = tolKey;
 
     // 5. Draw Resistor Body
     ctx.lineWidth = 4; ctx.strokeStyle = '#000';
     ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke(); 
     ctx.fillStyle = '#f4d3a6'; ctx.fillRect(200, 170, 200, 80); ctx.strokeRect(200, 170, 200, 80); 
 
-    // 6. Select Question Type (0 = Value, 1 = Colors)
     const qType = Math.floor(Math.random() * 2);
     let solTextStr = "";
 
     if (qType === 0) {
-        // --- MODE A: Identify the Value ---
+        // TYPE 0: Visual Resistor -> Student enters Numbers
         const drawBand = (x, color) => {
             ctx.fillStyle = (color === 'gold') ? '#FFD700' : (color === 'silver') ? '#C0C0C0' : color;
             ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
@@ -1338,19 +1324,22 @@ function generateColorCodeProblem() {
         drawBand(280, resColors[b3]);
         drawBand(360, tolKey);
 
-        if (valGroup) valGroup.style.display = 'flex';
+        if (valGroup) valGroup.style.display = 'block';
 
-        solTextStr = `<strong>Solution: ${formatNum(resistanceValue)}Ω &plusmn; ${toleranceValue}%</strong><br><br>
-                      <em>Logic:</em><br>
-                      Band 1 (${resColors[b1].toUpperCase()}) = ${b1}<br>
-                      Band 2 (${resColors[b2].toUpperCase()}) = ${b2}<br>
-                      Band 3 (${resColors[b3].toUpperCase()}) = Multiplier 10<sup>${b3}</sup><br>
-                      Band 4 (${tolKey.toUpperCase()}) = &plusmn;${toleranceValue}%`;
+        solTextStr = "<strong>Solution: " + resistanceValue.toLocaleString() + " Ω &plusmn; " + toleranceValue + "%</strong><br><br>";
+        solTextStr += "<em>Logic:</em><br>";
+        solTextStr += "Band 1 (" + resColors[b1].toUpperCase() + ") = " + b1 + "<br>";
+        solTextStr += "Band 2 (" + resColors[b2].toUpperCase() + ") = " + b2 + "<br>";
+        solTextStr += "Band 3 (" + resColors[b3].toUpperCase() + ") = Multiplier 10<sup>" + b3 + "</sup><br>";
+        solTextStr += "Band 4 (" + tolKey.toUpperCase() + ") = &plusmn;" + toleranceValue + "%";
     } else {
-        // --- MODE B: Identify the Colors ---
+        // TYPE 1: B&W Resistor -> Student enters Colour NAMES
         const drawHiddenBand = (x, num) => {
-            ctx.fillStyle = '#ccc'; ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
-            ctx.fillStyle = '#000'; ctx.font = 'bold 22px Arial'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#ccc'; 
+            ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 22px Arial';
+            ctx.textAlign = 'center';
             ctx.fillText(num, x + 10, 160);
         };
         drawHiddenBand(220, "1");
@@ -1358,19 +1347,20 @@ function generateColorCodeProblem() {
         drawHiddenBand(280, "3");
         drawHiddenBand(360, "4");
 
-        ctx.fillStyle = '#000'; ctx.font = 'bold 28px Arial'; ctx.textAlign = 'center';
-        ctx.fillText(`${formatNum(resistanceValue)}Ω ± ${toleranceValue}%`, 300, 310);
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 28px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(resistanceValue.toLocaleString() + " Ω ± " + toleranceValue + "%", 300, 310);
 
-        if (nameGroup) nameGroup.style.display = 'block';
+        if (namesGroup) namesGroup.style.display = 'block';
 
-        solTextStr = `<strong>Required Colours:</strong><br><br>
-                      1. ${resColors[b1].toUpperCase()} (for digit ${b1})<br>
-                      2. ${resColors[b2].toUpperCase()} (for digit ${b2})<br>
-                      3. ${resColors[b3].toUpperCase()} (for multiplier 10<sup>${b3}</sup>)<br>
-                      4. ${tolKey.toUpperCase()} (for &plusmn;${toleranceValue}%)`;
+        solTextStr = "<strong>Required Colours:</strong><br><br>";
+        solTextStr += "1. " + resColors[b1].toUpperCase() + " (for digit " + b1 + ")<br>";
+        solTextStr += "2. " + resColors[b2].toUpperCase() + " (for digit " + b2 + ")<br>";
+        solTextStr += "3. " + resColors[b3].toUpperCase() + " (for multiplier 10<sup>" + b3 + "</sup>)<br>";
+        solTextStr += "4. " + tolKey.toUpperCase() + " (for &plusmn;" + toleranceValue + "%)";
     }
 
-    // 7. Push Solution to Help Panel
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = solTextStr;
 }
