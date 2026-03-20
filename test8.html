@@ -340,24 +340,28 @@
         <span class="unit">Ω</span>
     </div>
 
-    <div id="inputGroupColorNames" style="display:none;">
-        <div class="input-group">
-            <label>Band 1 Colour:</label>
-            <input type="text" id="colorBand1">
-        </div>
-        <div class="input-group">
-            <label>Band 2 Colour:</label>
-            <input type="text" id="colorBand2">
-        </div>
-        <div class="input-group">
-            <label>Multiplier Colour:</label>
-            <input type="text" id="colorBand3">
-        </div>
-        <div class="input-group">
-            <label>Tolerance Colour:</label>
-            <input type="text" id="colorBand4">
-        </div>
+<div id="inputGroupColorNames" style="display:none; justify-content: center; align-items: flex-end; gap: 15px; width: 100%; margin-top: 15px;">
+    
+    <div class="input-group" style="margin: 0; text-align: center;">
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Band 1:</label>
+        <input type="text" id="inputBand1" style="height: 45px; width: 140px; font-size: 18px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
     </div>
+
+    <div class="input-group" style="margin: 0; text-align: center;">
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Band 2:</label>
+        <input type="text" id="inputBand2" style="height: 45px; width: 140px; font-size: 18px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
+    </div>
+
+    <div class="input-group" style="margin: 0; text-align: center;">
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Band 3:</label>
+        <input type="text" id="inputBand3" style="height: 45px; width: 140px; font-size: 18px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
+    </div>
+
+    <div class="input-group" style="margin: 0; text-align: center;">
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Band 4:</label>
+        <input type="text" id="inputBandTol" style="height: 45px; width: 140px; font-size: 18px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
+    </div>
+</div>
             
 <!-- Controls shared by all modes -->
 <div style="margin-top: 20px;">
@@ -1377,7 +1381,7 @@ function generateColorCodeProblem(ctx, canvas) {
         ctx.textAlign = 'center';
         ctx.fillText(resistanceValue.toLocaleString() + " Ω ± " + toleranceValue + "%", 300, 310);
 
-        if (namesGroup) namesGroup.style.display = 'block';
+        if (namesGroup) namesGroup.style.display = 'flex';
 
         solTextStr = "<strong>Required Colours:</strong><br><br>";
         solTextStr += "1. " + resColors[b1].toUpperCase() + " (for digit " + b1 + ")<br>";
