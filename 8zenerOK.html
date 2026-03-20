@@ -1278,11 +1278,19 @@ function generateColorCodeProblem(ctx, canvas) {
     const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
     const tolColors = { 'gold': 5, 'silver': 10 };
 
-    // 2. UI RESET: Hide both potential input groups before starting
+    // 2. UI Safety Checks (Prevents the "null" error)
     const valGroup = document.getElementById('inputGroupColorVal');
     const namesGroup = document.getElementById('inputGroupColorNames');
+    const qText = document.getElementById('questionText'); // Find the question box
+
     if (valGroup) valGroup.style.display = 'none';
     if (namesGroup) namesGroup.style.display = 'none';
+    
+    // Only update qText if it actually exists in the HTML
+    if (qText) {
+        qText.style.display = 'block';
+        qText.innerHTML = "Identify the resistance values or required colors below:";
+    }
 
     // Clear the canvas and reset feedback
     ctx.clearRect(0, 0, canvas.width, canvas.height);
