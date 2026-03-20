@@ -1251,27 +1251,15 @@ function generateAnalysisProblem(ctx, canvas) {
 }   
 
 function generateColorCodeProblem(ctx, canvas) {
-    // 1. Core Data Setup
+    // 1. UI Reset & Safety (The Heavy Lifting is done here now)
+    hideAllInputGroups(); // This hides EVERYTHING and calls resetAnswerBox() to clear values
+    currentMode = 'colorcode';
+
+    // 2. Core Data Setup
     const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
     const tolColors = { 'gold': 5, 'silver': 10 };
-
-    // 2. UI Reset & Safety Checks
     const valGroup = document.getElementById('inputGroupColorVal');
     const namesGroup = document.getElementById('inputGroupColorNames');
-    
-    // Hide both groups to prevent overlap
-    if (valGroup) valGroup.style.display = 'none';
-    if (namesGroup) namesGroup.style.display = 'flex';
-
-    // Clear old student answers so placeholders can show up!
-    const inputsToClear = ['inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
-    inputsToClear.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = ''; 
-    });
-
-    // Clear Canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // 3. Generate Random Values
     const b1 = Math.floor(Math.random() * 9) + 1; 
@@ -1290,15 +1278,14 @@ function generateColorCodeProblem(ctx, canvas) {
     currentAnswers.b3 = resColors[b3];
     currentAnswers.tol = tolKey;
 
-    // 5. Draw Resistor Body
+    // 5. Drawing Setup
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.lineWidth = 4; ctx.strokeStyle = '#000';
     ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke(); 
     ctx.fillStyle = '#f4d3a6'; ctx.fillRect(200, 170, 200, 80); ctx.strokeRect(200, 170, 200, 80); 
 
     const qType = Math.floor(Math.random() * 2);
     let solTextStr = "";
-    
-    // Safely format the resistance value (e.g., 4700 -> 4.7k)
     const formattedVal = (typeof formatResValue === "function") ? formatResValue(resistanceValue) : resistanceValue.toLocaleString();
 
     if (qType === 0) {
@@ -1312,23 +1299,22 @@ function generateColorCodeProblem(ctx, canvas) {
         drawBand(280, resColors[b3]);
         drawBand(360, tolKey);
 
+        // Turn ON the numbers group (hideAllInputGroups already turned it off)
         if (valGroup) valGroup.style.display = 'block';
 
-        // Generate Solution Logic for Help Button
-        solTextStr = "<strong>Solution: " + formattedVal + " Ω &plusmn; " + toleranceValue + "%</strong><br><br>";
-        solTextStr += "<em>Logic:</em><br>";
-        solTextStr += "Band 1 (" + resColors[b1].toUpperCase() + ") = " + b1 + "<br>";
-        solTextStr += "Band 2 (" + resColors[b2].toUpperCase() + ") = " + b2 + "<br>";
-        solTextStr += "Band 3 (" + resColors[b3].toUpperCase() + ") = Multiplier 10<sup>" + b3 + "</sup><br>";
-        solTextStr += "Band 4 (" + tolKey.toUpperCase() + ") = &plusmn;" + toleranceValue + "%";
+        solTextStr = `<strong>Solution: ${formattedVal} Ω &plusmn; ${toleranceValue}%</strong><br><br>
+                      <em>Logic:</em><br>
+                      Band 1 (${resColors[b1].toUpperCase()}) = ${b1}<br>
+                      Band 2 (${resColors[b2].toUpperCase()}) = ${b2}<br>
+                      Band 3 (${resColors[b3].toUpperCase()}) = Multiplier 10<sup>${b3}</sup><br>
+                      Band 4 (${tolKey.toUpperCase()}) = &plusmn;${toleranceValue}%`;
     } else {
         // TYPE 1: B&W Resistor -> Student enters Colour NAMES
         const drawHiddenBand = (x, num) => {
             ctx.fillStyle = '#ccc'; 
             ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
             ctx.fillStyle = '#000';
-            ctx.font = 'bold 22px Arial';
-            ctx.textAlign = 'center';
+            ctx.font = 'bold 22px Arial'; ctx.textAlign = 'center';
             ctx.fillText(num, x + 10, 160);
         };
         drawHiddenBand(220, "1");
@@ -1337,26 +1323,24 @@ function generateColorCodeProblem(ctx, canvas) {
         drawHiddenBand(360, "4");
 
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 28px Arial';
-        ctx.textAlign = 'center';
+        ctx.font = 'bold 28px Arial'; ctx.textAlign = 'center';
         ctx.fillText(`${formattedVal} Ω ± ${toleranceValue}%`, 300, 310);
 
-        // Uses 'flex' to keep the 2x2 grid looking perfect
+        // Turn ON the names group (hideAllInputGroups already turned it off)
         if (namesGroup) namesGroup.style.display = 'flex'; 
 
-        // Generate Solution Logic for Help Button
-        solTextStr = "<strong>Required Colours:</strong><br><br>";
-        solTextStr += "1. " + resColors[b1].toUpperCase() + " (for digit " + b1 + ")<br>";
-        solTextStr += "2. " + resColors[b2].toUpperCase() + " (for digit " + b2 + ")<br>";
-        solTextStr += "3. " + resColors[b3].toUpperCase() + " (for multiplier 10<sup>" + b3 + "</sup>)<br>";
-        solTextStr += "4. " + tolKey.toUpperCase() + " (for &plusmn;" + toleranceValue + "%)";
+        solTextStr = `<strong>Required Colours:</strong><br><br>
+                      1. ${resColors[b1].toUpperCase()} (for digit ${b1})<br>
+                      2. ${resColors[b2].toUpperCase()} (for digit ${b2})<br>
+                      3. ${resColors[b3].toUpperCase()} (for multiplier 10<sup>${b3}</sup>)<br>
+                      4. ${tolKey.toUpperCase()} (for &plusmn;${toleranceValue}%)`;
     }
 
-    // 6. Push the solution text to the hidden div
+    // 6. Push solution
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = solTextStr;
     
-    // 7. Ensure the main instruction text appears
+    // 7. Instruction text
     const qText = document.getElementById('questionText');
     if (qText) {
         qText.style.display = 'block';
