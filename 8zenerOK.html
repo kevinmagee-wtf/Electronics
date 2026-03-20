@@ -2187,7 +2187,7 @@ function openModule(module) {
 function switchTab(mode) {
     currentMode = mode;
     
-    // 1. Highlight active tab
+    // 1. Highlight active tab & Reset all others
     document.querySelectorAll('.tab').forEach(t => {
         t.classList.remove('active');
         if (t.innerText && !t.innerText.includes('Home')) {
@@ -2203,7 +2203,7 @@ function switchTab(mode) {
         activeTab.style.color = "#fff";            
     }
 
-    // 2. Hide UI Elements (The "Clean Slate")
+    // 2. Hide ALL potential input groups and specialized Zener/Timing sections
     const elementsToHide = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -2219,7 +2219,7 @@ function switchTab(mode) {
         if (el) el.style.display = 'none';
     });
 
-    // 3. Subtitle Logic
+    // 3. Update the Subtitle based on the module
     const subtitle = document.getElementById('moduleSubtitle');
     if (subtitle) {
         if (mode === 'home') {
@@ -2233,54 +2233,73 @@ function switchTab(mode) {
         }
     }
 
-    // 4. Reset Inputs Safely
-    const allInputs = document.querySelectorAll('input');
-    allInputs.forEach(input => {
-        input.value = '';
-        input.style.backgroundColor = '';
-        if(input.type === 'radio') input.checked = false;
-    });
+    // 4. Handle Grade 9 Challenge Button Visibility
+    const g9Div = document.getElementById('grade9DividerBtn');
+    const g9Res = document.getElementById('grade9ResistorBtn');
+    if (g9Div) g9Div.style.display = (mode === 'divider') ? 'inline-block' : 'none';
+    if (g9Res) g9Res.style.display = (mode === 'resistance') ? 'inline-block' : 'none';
 
+    // 5. Global UI Cleanup (No external function calls required)
     const feedback = document.getElementById('feedback');
     if (feedback) feedback.innerHTML = '';
+    
     const solutions = document.getElementById('solutions');
     if (solutions) solutions.style.display = 'none';
+    
+    const solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = '';
 
-    // 5. CALL GENERATORS (With Safety Checks)
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(i => {
+        i.value = '';
+        i.style.backgroundColor = ''; 
+        if(i.type === 'radio') i.checked = false;
+    });
+
+    // 6. Home Screen Specific Cleanup
     if (mode === 'home') {
-        // Clear the canvas for the home screen
         const canvas = document.getElementById('circuitCanvas');
         if (canvas) {
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
         const qText = document.getElementById('questionText');
-        if (qText) qText.innerHTML = "Select a module from the tabs above to begin.";
-    } 
-    else if (mode === 'astable' && typeof generateAstableProblem === "function") {
-        generateAstableProblem();
-    } 
-    else if (mode === 'monostable' && typeof generateMonostableProblem === "function") {
-        generateMonostableProblem();
-    } 
-    else if (mode === 'oscilloscope' && typeof generateOscilloscopeProblem === "function") {
-        generateOscilloscopeProblem();
-    } 
-    else if (mode === 'zener') {
-        document.getElementById('inputGroupZener').style.display = 'inline-block';
-        if (typeof generateZenerProblem === "function") generateZenerProblem();
-    } 
-    else if (mode === 'colorcode') {
-        if (typeof generateColorCodeProblem === "function") generateColorCodeProblem();
-    }
-    else {
-        // This is the fallback for Ohm's Law / Divider / Resistance
-        // We use a safety check to ensure generateProblem exists
-        if (typeof generateProblem === "function") {
-            generateProblem();
-        } else {
-            console.warn("generateProblem function not found. Check if it was renamed.");
+        if (qText) {
+            qText.style.display = 'block';
+            qText.innerHTML = "Select a module from the tabs above to begin.";
         }
+        return; // STOP HERE for home so it doesn't try to call any generators
+    }
+
+    // 7. CALL GENERATORS WITH SAFETY WRAPPERS
+    // This prevents the "Uncaught ReferenceError" from freezing your site
+    try {
+        if (mode === 'astable') {
+            if (typeof generateAstableProblem === "function") generateAstableProblem();
+        } else if (mode === 'monostable') {
+            if (typeof generateMonostableProblem === "function") generateMonostableProblem();
+        } else if (mode === 'oscilloscope') {
+            if (typeof generateOscilloscopeProblem === "function") generateOscilloscopeProblem();
+        } else if (mode === 'zener') {
+            const zGroup = document.getElementById('inputGroupZener');
+            if (zGroup) zGroup.style.display = 'inline-block';
+            if (typeof generateZenerProblem === "function") generateZenerProblem();
+        } else if (mode === 'silicon') {
+            const sGroup = document.getElementById('inputGroupSilicon');
+            if (sGroup) sGroup.style.display = 'inline-block';
+            if (typeof generateSiliconProblem === "function") generateSiliconProblem();
+        } else if (mode === 'colorcode') {
+            if (typeof generateColorCodeProblem === "function") generateColorCodeProblem();
+        } else {
+            // Fallback for Analysis/Divider/Resistance
+            if (typeof generateProblem === "function") {
+                generateProblem();
+            } else {
+                console.log("Note: generateProblem not defined, skipping generator call.");
+            }
+        }
+    } catch (e) {
+        console.error("Generator failed but navigation preserved:", e);
     }
 }
 
