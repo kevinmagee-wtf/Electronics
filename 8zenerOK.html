@@ -2190,9 +2190,9 @@ function switchTab(mode) {
         // Fallback for Module 1
         if (typeof generateProblem === "function") {
             generateProblem();
-        } else if (typeof generateAnalysisProblem === "function") {
-            generateAnalysisProblem();
-        }
+        } else if (mode === 'analysis') {
+    generateAnalysisProblem();
+}
     }
 }
 
