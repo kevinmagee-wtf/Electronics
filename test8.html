@@ -335,64 +335,51 @@
     </div>
 </div>
 <div class="input-group" id="inputGroupColorVal" style="display:none; text-align: center; width: 100%; margin-top: 15px;">
-    <label for="inputResValue" style="font-weight: bold; font-size: 16px;">Resistance = </label>
-    <input type="text" id="inputResValue" placeholder="e.g. 4700" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box; margin-right: 5px;">
-    <span style="font-size: 18px; font-weight: bold;">Ω &plusmn;</span>
-    <input type="text" id="inputResTol" placeholder="e.g. 5" style="height: 45px; width: 90px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box; margin-left: 5px;">
-    <span style="font-size: 18px; font-weight: bold;">%</span>
-</div>          
-        
-<div id="inputGroupColorNames" style="display:none; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 15px; margin-top: 15px;">
-    
-    <div class="input-group" style="margin: 0; text-align: center;">
-        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 1:</label>
-        <input type="text" id="inputBand1" placeholder="e.g. blue" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
-    </div>
-
-    <div class="input-group" style="margin: 0; text-align: center;">
-        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 2:</label>
-        <input type="text" id="inputBand2" placeholder="e.g. red" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
-    </div>
-
-    <div class="input-group" style="margin: 0; text-align: center;">
-        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 3:</label>
-        <input type="text" id="inputBand3" placeholder="e.g. grey" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
-    </div>
-
-    <div class="input-group" style="margin: 0; text-align: center;">
-        <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 4:</label>
-        <input type="text" id="inputBandTol" placeholder="e.g. gold" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
-    </div>
-
-</div>
-            
-<!-- Controls shared by all modes -->
-<div style="margin-top: 20px;">
-    <button class="btn-check" onclick="checkAnswers()" style="padding: 10px 20px; background-color: #E64097; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Check Answer(s)</button>
-    <div id="feedback" class="feedback" style="margin-top: 15px; font-weight: bold; min-height: 1.2em;"></div>
-</div>
-            
-<!--6. ACTION CONTROLS (THE BUTTONS AT THE VERY BOTTOM)-->
-            <div class="controls">
-                <button class="btn-black" onclick="handleGenerateClick()">Generate New Problem</button>
-                <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
-                <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
-                <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
-                <button id="dataSheetBtn" class="btn-check" style="background-color: #6c757d; color: white;" onclick="openDataSheet()">📖 Data Sheet</button>
+            <label for="inputResValue" style="font-weight: bold; font-size: 16px;">Resistance = </label>
+            <input type="text" id="inputResValue" placeholder="e.g. 4700" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box; margin-right: 5px;">
+            <span style="font-size: 18px; font-weight: bold;">Ω &plusmn;</span>
+            <input type="text" id="inputResTol" placeholder="e.g. 5" style="height: 45px; width: 90px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box; margin-left: 5px;">
+            <span style="font-size: 18px; font-weight: bold;">%</span>
+        </div>          
+                
+        <div id="inputGroupColorNames" style="display:none; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 15px; margin-top: 15px;">
+            <div class="input-group" style="margin: 0; text-align: center;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 1:</label>
+                <input type="text" id="inputBand1" placeholder="e.g. blue" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
             </div>
-
-            <!--7. SOLUTIONS PANEL (SHOWN ONLY WHEN HELP IS CLICKED)-->
-            <div id="solutions" class="solutions" style="display:none;">
-                <h3>Step-by-Step Logic</h3>
-                <p id="solText"></p>
+            <div class="input-group" style="margin: 0; text-align: center;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 2:</label>
+                <input type="text" id="inputBand2" placeholder="e.g. red" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
+            </div>
+            <div class="input-group" style="margin: 0; text-align: center;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 3:</label>
+                <input type="text" id="inputBand3" placeholder="e.g. grey" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
+            </div>
+            <div class="input-group" style="margin: 0; text-align: center;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 4:</label>
+                <input type="text" id="inputBandTol" placeholder="e.g. gold" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
             </div>
         </div>
-    </div>
-</div>
 
-<!--8. POP-UP MODALS (HIDDEN BY DEFAULT) They are coded at the bottom of the file so they don't get in the way of the main layout, but they "pop" to the front when needed.-->
-<!--STUDENT SUBMISSION MODAL-->
-<div id="submissionModal" class="modal-overlay" style="display: none;">
+        </div> <div style="margin-top: 20px;">
+            <button class="btn-check" onclick="checkAnswers()" style="padding: 10px 20px; background-color: #E64097; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Check Answer(s)</button>
+            <div id="feedback" class="feedback" style="margin-top: 15px; font-weight: bold; min-height: 1.2em;"></div>
+        </div>
+                    
+        <div class="controls">
+            <button class="btn-black" onclick="handleGenerateClick()">Generate New Problem</button>
+            <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge (Divider)</button>
+            <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700; color: #000; display: none;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge (Resistance)</button>
+            <button id="helpBtn" class="btn-secondary" onclick="toggleSolutions()" style="display: none;">Need Help? (Show Solution)</button>
+            <button id="dataSheetBtn" class="btn-check" style="background-color: #6c757d; color: white;" onclick="openDataSheet()">📖 Data Sheet</button>
+        </div>
+
+        <div id="solutions" class="solutions" style="display:none;">
+            <h3>Step-by-Step Logic</h3>
+            <p id="solText"></p>
+        </div>
+
+    </div> </div> </div> </div> <div id="submissionModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
         <h3>Submit Your Score</h3>
         <div class="form-group">
@@ -416,7 +403,6 @@
     </div>
 </div>
 
-<!--ELECTRONICS DATA SHEET MODAL-->
 <div id="dataSheetModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
     <div style="background-color: white; padding: 20px; border-radius: 15px; max-width: 600px; width: 90%; position: relative; margin: 10% auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
         <span onclick="closeDataSheet()" style="position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #E64097; font-weight: bold;">&times;</span>
