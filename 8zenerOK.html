@@ -506,23 +506,31 @@ function handleGenerateClick() {
   function resetAnswerBox() {
     // 1. Universal Clear: Find EVERY input box on the page and wipe it
     document.querySelectorAll('input').forEach(box => {
-        box.value = "";             // Wipes the text
-        box.defaultValue = "";      // Clears browser memory
-        box.placeholder = "";       // Clears the hint
-        box.style.backgroundColor = ""; // Removes any red/green "Correct/Wrong" colors
+        box.value = "";             // Wipes the student's typing
+        box.defaultValue = "";      // Clears browser "memory"
+        box.placeholder = "";       // Clears any placeholder hints
+        box.style.backgroundColor = ""; // Removes the Red/Green "Correct/Wrong" colors
     });
 
-    // 2. Clear feedback text
+    // 2. Clear all feedback and solution text areas
     const feedback = document.getElementById('feedback');
     if (feedback) feedback.innerHTML = "";
     
-    // 3. Hide the solutions panel
+    const solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = "";
+
+    // 3. Hide panels that shouldn't be visible yet
     const solutions = document.getElementById('solutions');
     if (solutions) solutions.style.display = "none";
 
-    // 4. Clear the solution text inside the help panel
-    const solText = document.getElementById('solText');
-    if (solText) solText.innerHTML = "";
+    // 4. Wipe the Question Text (Crucial for switching between Colour Code and Math)
+    const qText = document.getElementById('questionText');
+    if (qText) qText.innerHTML = "";
+
+    // 5. Specifically clear Zener inputs if that function exists
+    if (typeof clearZenerInputs === "function") {
+        clearZenerInputs();
+    }
 }
 
 
@@ -1869,6 +1877,16 @@ function generateMonostableProblem() {
     }
 }
 
+function clearZenerInputs() {
+    const ids = ['zenerQ_IL', 'zenerQ_VL', 'zenerQ_IZ', 'zenerQ_PZ'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.value = '';
+            el.style.backgroundColor = '';
+        }
+    });
+}
 function generateZenerProblem() {
     hideAllInputGroups();
     const canvas = document.getElementById('circuitCanvas');
@@ -2029,7 +2047,8 @@ function generateZenerProblem() {
     const steps = document.getElementById('solutionSteps');
     if (steps) steps.innerHTML = `<p class="text-gray-400 italic">Complete the problem to unlock the breakdown.</p>`;
 }
-    
+
+
 // ===========================================================================================================================      
 // FUNCTION 3. NAVIGATION and UI (Traffic Control) 
 // ===========================================================================================================================      
