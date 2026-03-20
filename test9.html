@@ -1308,6 +1308,7 @@ function generateColorCodeProblem(ctx, canvas) {
                       Band 2 (${resColors[b2].toUpperCase()}) = ${b2}<br>
                       Band 3 (${resColors[b3].toUpperCase()}) = Multiplier 10<sup>${b3}</sup><br>
                       Band 4 (${tolKey.toUpperCase()}) = &plusmn;${toleranceValue}%`;
+        
     } else {
         // TYPE 1: B&W Resistor -> Student enters Colour NAMES
         const drawHiddenBand = (x, num) => {
@@ -1323,8 +1324,8 @@ function generateColorCodeProblem(ctx, canvas) {
         drawHiddenBand(360, "4");
 
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 28px Arial'; ctx.textAlign = 'center';
-        ctx.fillText(`${formattedVal} Ω ± ${toleranceValue}%`, 300, 310);
+        ctx.font = 'bold 28px Arial'; ctx.textAlign = 'center';        
+        ctx.fillText(`${formattedVal} ± ${toleranceValue}%`, 300, 310);
 
         // Turn ON the names group (hideAllInputGroups already turned it off)
         if (namesGroup) namesGroup.style.display = 'flex'; 
