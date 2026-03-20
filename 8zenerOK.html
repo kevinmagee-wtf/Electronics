@@ -2097,7 +2097,7 @@ function switchTab(mode) {
     if (activeTab) {
         activeTab.classList.add('active');
         activeTab.style.backgroundColor = "#333"; 
-        activeTab.style.color = "#fff";            
+        activeTab.style.color = "#fff";             
     }
 
     // 2. Hide ALL specialized UI elements (Prevents UI Bleed)
@@ -2144,21 +2144,20 @@ function switchTab(mode) {
     });
 
     // 5. THE HOME FIX: Clear canvas and EXIT early
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas ? canvas.getContext('2d') : null;
+
     if (mode === 'home') {
-        const canvas = document.getElementById('circuitCanvas');
-        if (canvas) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
         const qText = document.getElementById('questionText');
         if (qText) {
             qText.innerHTML = "Select a module from the tabs above to begin.";
             qText.style.display = 'block';
         }
-        return; // This is the most important line! It stops the crash.
+        return; 
     }
 
-    // 6. CALL GENERATORS SAFELY
+    // 6. CALL GENERATORS SAFELY (Updated for compatibility)
     if (mode === 'astable') {
         if (typeof generateAstableProblem === "function") generateAstableProblem();
     } else if (mode === 'monostable') {
@@ -2174,14 +2173,16 @@ function switchTab(mode) {
         if (sGroup) sGroup.style.display = 'inline-block';
         if (typeof generateSiliconProblem === "function") generateSiliconProblem();
     } else if (mode === 'colorcode') {
-        if (typeof generateColorCodeProblem === "function") generateColorCodeProblem();
+        // PASS CTX AND CANVAS HERE TO PREVENT ERRORS
+        if (typeof generateColorCodeProblem === "function" && ctx && canvas) {
+            generateColorCodeProblem(ctx, canvas);
+        }
     } else {
-        // Fallback for Module 1
-        if (typeof generateProblem === "function") {
+        if (mode === 'analysis') {
+            generateAnalysisProblem();
+        } else if (typeof generateProblem === "function") {
             generateProblem();
-        } else if (mode === 'analysis') {
-    generateAnalysisProblem();
-}
+        }
     }
 }
 
