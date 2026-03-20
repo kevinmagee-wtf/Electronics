@@ -2187,7 +2187,7 @@ function openModule(module) {
 function switchTab(mode) {
     currentMode = mode;
     
-    // 1. Highlight active tab & Reset all others
+    // 1. Highlight active tab
     document.querySelectorAll('.tab').forEach(t => {
         t.classList.remove('active');
         if (t.innerText && !t.innerText.includes('Home')) {
@@ -2203,7 +2203,7 @@ function switchTab(mode) {
         activeTab.style.color = "#fff";            
     }
 
-    // 2. Hide ALL potential input groups and specialized Zener/Timing sections
+    // 2. Hide ALL specialized UI elements (Prevents UI Bleed)
     const elementsToHide = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -2219,7 +2219,7 @@ function switchTab(mode) {
         if (el) el.style.display = 'none';
     });
 
-    // 3. Update the Subtitle based on the module
+    // 3. Reset Subtitle
     const subtitle = document.getElementById('moduleSubtitle');
     if (subtitle) {
         if (mode === 'home') {
@@ -2233,30 +2233,19 @@ function switchTab(mode) {
         }
     }
 
-    // 4. Handle Grade 9 Challenge Button Visibility
-    const g9Div = document.getElementById('grade9DividerBtn');
-    const g9Res = document.getElementById('grade9ResistorBtn');
-    if (g9Div) g9Div.style.display = (mode === 'divider') ? 'inline-block' : 'none';
-    if (g9Res) g9Res.style.display = (mode === 'resistance') ? 'inline-block' : 'none';
-
-    // 5. Global UI Cleanup (No external function calls required)
+    // 4. Global Input Cleanup
     const feedback = document.getElementById('feedback');
     if (feedback) feedback.innerHTML = '';
-    
     const solutions = document.getElementById('solutions');
     if (solutions) solutions.style.display = 'none';
     
-    const solText = document.getElementById('solText');
-    if (solText) solText.innerHTML = '';
-
-    const inputs = document.querySelectorAll('input');
-    inputs.forEach(i => {
+    document.querySelectorAll('input').forEach(i => {
         i.value = '';
         i.style.backgroundColor = ''; 
         if(i.type === 'radio') i.checked = false;
     });
 
-    // 6. Home Screen Specific Cleanup
+    // 5. THE HOME FIX: Clear canvas and EXIT early
     if (mode === 'home') {
         const canvas = document.getElementById('circuitCanvas');
         if (canvas) {
@@ -2265,41 +2254,36 @@ function switchTab(mode) {
         }
         const qText = document.getElementById('questionText');
         if (qText) {
-            qText.style.display = 'block';
             qText.innerHTML = "Select a module from the tabs above to begin.";
+            qText.style.display = 'block';
         }
-        return; // STOP HERE for home so it doesn't try to call any generators
+        return; // This is the most important line! It stops the crash.
     }
 
-    // 7. CALL GENERATORS WITH SAFETY WRAPPERS
-    // This prevents the "Uncaught ReferenceError" from freezing your site
-    try {
-        if (mode === 'astable') {
-            if (typeof generateAstableProblem === "function") generateAstableProblem();
-        } else if (mode === 'monostable') {
-            if (typeof generateMonostableProblem === "function") generateMonostableProblem();
-        } else if (mode === 'oscilloscope') {
-            if (typeof generateOscilloscopeProblem === "function") generateOscilloscopeProblem();
-        } else if (mode === 'zener') {
-            const zGroup = document.getElementById('inputGroupZener');
-            if (zGroup) zGroup.style.display = 'inline-block';
-            if (typeof generateZenerProblem === "function") generateZenerProblem();
-        } else if (mode === 'silicon') {
-            const sGroup = document.getElementById('inputGroupSilicon');
-            if (sGroup) sGroup.style.display = 'inline-block';
-            if (typeof generateSiliconProblem === "function") generateSiliconProblem();
-        } else if (mode === 'colorcode') {
-            if (typeof generateColorCodeProblem === "function") generateColorCodeProblem();
-        } else {
-            // Fallback for Analysis/Divider/Resistance
-            if (typeof generateProblem === "function") {
-                generateProblem();
-            } else {
-                console.log("Note: generateProblem not defined, skipping generator call.");
-            }
+    // 6. CALL GENERATORS SAFELY
+    if (mode === 'astable') {
+        if (typeof generateAstableProblem === "function") generateAstableProblem();
+    } else if (mode === 'monostable') {
+        if (typeof generateMonostableProblem === "function") generateMonostableProblem();
+    } else if (mode === 'oscilloscope') {
+        if (typeof generateOscilloscopeProblem === "function") generateOscilloscopeProblem();
+    } else if (mode === 'zener') {
+        const zGroup = document.getElementById('inputGroupZener');
+        if (zGroup) zGroup.style.display = 'inline-block';
+        if (typeof generateZenerProblem === "function") generateZenerProblem();
+    } else if (mode === 'silicon') {
+        const sGroup = document.getElementById('inputGroupSilicon');
+        if (sGroup) sGroup.style.display = 'inline-block';
+        if (typeof generateSiliconProblem === "function") generateSiliconProblem();
+    } else if (mode === 'colorcode') {
+        if (typeof generateColorCodeProblem === "function") generateColorCodeProblem();
+    } else {
+        // Fallback for Module 1
+        if (typeof generateProblem === "function") {
+            generateProblem();
+        } else if (typeof generateAnalysisProblem === "function") {
+            generateAnalysisProblem();
         }
-    } catch (e) {
-        console.error("Generator failed but navigation preserved:", e);
     }
 }
 
