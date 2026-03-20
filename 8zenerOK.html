@@ -470,21 +470,17 @@ function handleGenerateClick() {
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
 
-    if (currentMode === 'zener') {
+    if (currentMode === 'colorcode') {
+        if (typeof generateColorCodeProblem === "function") generateColorCodeProblem(ctx, canvas);
+    } else if (currentMode === 'zener') {
         generateZenerProblem();
-    } else if (currentMode === 'colorcode') {
-        // Pass ctx and canvas so the drawing logic doesn't fail
-        if (ctx && canvas) {
-            generateColorCodeProblem(ctx, canvas);
-        }
-    } else if (currentMode === 'astable') {
-        generateAstableProblem();
-    } else if (currentMode === 'monostable') {
-        generateMonostableProblem();
-    } else if (currentMode === 'oscilloscope') {
-        generateOscilloscopeProblem();
+    } else if (currentMode === 'silicon') {
+        generateSiliconProblem();
+    } else if (currentMode === 'analysis') {
+        generateAnalysisProblem();
     } else {
-        generateProblem(); // Default for basics
+        // Handles Astable, Monostable, Oscilloscope
+        generateProblem();
     }
 }
 // ==================================================================================================================
@@ -2047,7 +2043,13 @@ function generateZenerProblem() {
     const steps = document.getElementById('solutionSteps');
     if (steps) steps.innerHTML = `<p class="text-gray-400 italic">Complete the problem to unlock the breakdown.</p>`;
 }
-
+//function silicon yet to be created. Placeholder only 
+    function generateSiliconProblem() {
+    const qText = document.getElementById('questionText');
+    if (qText) qText.innerHTML = "Silicon Diode module coming soon!";
+    const ctx = document.getElementById('circuitCanvas').getContext('2d');
+    ctx.clearRect(0, 0, 600, 450);
+}
 
 // ===========================================================================================================================      
 // FUNCTION 3. NAVIGATION and UI (Traffic Control) 
@@ -2145,31 +2147,21 @@ function switchTab(mode) {
 
     elementsToHide.forEach(id => {
         const el = document.getElementById(id);
-        if (el) { 
-            // This 'if' check is what stops the "null" console error
-            el.style.display = 'none'; 
-        }
+        if (el) el.style.display = 'none'; 
     });
 
     // 3. Reset Subtitle
     const subtitle = document.getElementById('moduleSubtitle');
     if (subtitle) {
-        if (mode === 'home') {
-            subtitle.innerText = "Welcome to Electronics";
-        } else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
-            subtitle.innerText = "Module 1: Circuit Basics";
-        } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
-            subtitle.innerText = "Module 3: Timing Circuits";
-        } else if (['silicon', 'zener'].includes(mode)) {
-            subtitle.innerText = "Module 8: Diodes";
-        }
+        if (mode === 'home') subtitle.innerText = "Welcome to Electronics";
+        else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
+        else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
+        else if (['silicon', 'zener'].includes(mode)) subtitle.innerText = "Module 8: Diodes";
     }
 
     // 4. Global Cleanup
-    const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerHTML = '';
-    const solutions = document.getElementById('solutions');
-    if (solutions) solutions.style.display = 'none';
+    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '';
+    if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'none';
     
     document.querySelectorAll('input').forEach(i => {
         i.value = '';
@@ -2177,8 +2169,8 @@ function switchTab(mode) {
         if(i.type === 'radio') i.checked = false;
     });
 
-    // 5. Canvas and Question Text Reset
-    const canvas = document.getElementById('circuitCanvas');
+    // 5. THE CANVAS FIX: Find the canvas even if the ID is different
+    const canvas = document.getElementById('circuitCanvas') || document.getElementById('resistorCanvas') || document.querySelector('canvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
     const qText = document.getElementById('questionText');
 
@@ -2191,7 +2183,7 @@ function switchTab(mode) {
         return; 
     }
 
-    // 6. Call the Generators
+    // 6. CALL GENERATORS SAFELY
     if (mode === 'astable') {
         if (typeof generateAstableProblem === "function") generateAstableProblem();
     } else if (mode === 'monostable') {
@@ -2199,22 +2191,19 @@ function switchTab(mode) {
     } else if (mode === 'oscilloscope') {
         if (typeof generateOscilloscopeProblem === "function") generateOscilloscopeProblem();
     } else if (mode === 'zener') {
-        const zGroup = document.getElementById('inputGroupZener');
-        if (zGroup) zGroup.style.display = 'inline-block';
+        if (document.getElementById('inputGroupZener')) document.getElementById('inputGroupZener').style.display = 'inline-block';
         if (typeof generateZenerProblem === "function") generateZenerProblem();
     } else if (mode === 'colorcode') {
-        // Fix: Pass the ctx and canvas so it can draw immediately
         if (typeof generateColorCodeProblem === "function" && ctx && canvas) {
             generateColorCodeProblem(ctx, canvas);
         }
     } else if (mode === 'silicon') {
-        const sGroup = document.getElementById('inputGroupSilicon');
-        if (sGroup) sGroup.style.display = 'inline-block';
+        if (document.getElementById('inputGroupSilicon')) document.getElementById('inputGroupSilicon').style.display = 'inline-block';
         if (typeof generateSiliconProblem === "function") generateSiliconProblem();
     } else {
-        // This handles Module 1 tabs (Analysis, Divider, etc)
-        if (mode === 'analysis') {
-             if (typeof generateAnalysisProblem === "function") generateAnalysisProblem();
+        // Module 1 Routing
+        if (mode === 'analysis' && typeof generateAnalysisProblem === "function") {
+            generateAnalysisProblem();
         } else if (typeof generateProblem === "function") {
             generateProblem();
         }
