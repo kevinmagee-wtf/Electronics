@@ -1267,28 +1267,20 @@ function generateColorCodeProblem(ctx, canvas) {
     const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
     const tolColors = { 'gold': 5, 'silver': 10 };
 
-    // 2. UI Safety Checks
-    
+    // 2. UI Reset & Safety Checks
     const valGroup = document.getElementById('inputGroupColorVal');
     const namesGroup = document.getElementById('inputGroupColorNames');
-    const qText = document.getElementById('questionText');
-    const feedback = document.getElementById('feedback');
-
-    // FORCE CLEAR ALL COLOR CODE INPUTS SO PLACEHOLDERS SHOW
-    const colorInputs = ['inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
-    colorInputs.forEach(id => {
-        if (document.getElementById(id)) document.getElementById(id).value = '';
-    });
-
-    // THE RESET: Hide groups and clear text to prevent the "flip" from sticking
+    
+    // Hide both groups to prevent overlap
     if (valGroup) valGroup.style.display = 'none';
     if (namesGroup) namesGroup.style.display = 'none';
-    if (feedback) feedback.innerHTML = "";
-    
-    if (qText) {
-        qText.style.display = 'block';
-        qText.innerHTML = "Identify the resistance values or required colors below:";
-    }
+
+    // Clear old student answers so placeholders can show up!
+    const inputsToClear = ['inputResValue', 'inputResTol', 'inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
+    inputsToClear.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = ''; 
+    });
 
     // Clear Canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1296,12 +1288,12 @@ function generateColorCodeProblem(ctx, canvas) {
     // 3. Generate Random Values
     const b1 = Math.floor(Math.random() * 9) + 1; 
     const b2 = Math.floor(Math.random() * 10);    
-    const b3 = Math.floor(Math.random() * 7);     
+    const b3 = Math.floor(Math.random() * 7);      
     const tolKey = Math.random() > 0.5 ? 'gold' : 'silver';
     const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
     const toleranceValue = tolColors[tolKey];
 
-    // 4. Store answers for the grader
+    // 4. Store answers for grading
     if (typeof window.currentAnswers === 'undefined') window.currentAnswers = {};
     currentAnswers.resVal = resistanceValue;
     currentAnswers.resTol = toleranceValue;
@@ -1317,9 +1309,12 @@ function generateColorCodeProblem(ctx, canvas) {
 
     const qType = Math.floor(Math.random() * 2);
     let solTextStr = "";
+    
+    // Safely format the resistance value (e.g., 4700 -> 4.7k)
+    const formattedVal = (typeof formatResValue === "function") ? formatResValue(resistanceValue) : resistanceValue.toLocaleString();
 
     if (qType === 0) {
-        // TYPE 0: Visual Resistor -> Student enters Numbers
+        // TYPE 0: Visual Resistor -> Student enters Resistance and Tolerance NUMBER
         const drawBand = (x, color) => {
             ctx.fillStyle = (color === 'gold') ? '#FFD700' : (color === 'silver') ? '#C0C0C0' : color;
             ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
@@ -1331,7 +1326,8 @@ function generateColorCodeProblem(ctx, canvas) {
 
         if (valGroup) valGroup.style.display = 'block';
 
-        solTextStr = "<strong>Solution: " + resistanceValue.toLocaleString() + " Ω &plusmn; " + toleranceValue + "%</strong><br><br>";
+        // Generate Solution Logic for Help Button
+        solTextStr = "<strong>Solution: " + formattedVal + " Ω &plusmn; " + toleranceValue + "%</strong><br><br>";
         solTextStr += "<em>Logic:</em><br>";
         solTextStr += "Band 1 (" + resColors[b1].toUpperCase() + ") = " + b1 + "<br>";
         solTextStr += "Band 2 (" + resColors[b2].toUpperCase() + ") = " + b2 + "<br>";
@@ -1355,10 +1351,12 @@ function generateColorCodeProblem(ctx, canvas) {
         ctx.fillStyle = '#000';
         ctx.font = 'bold 28px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(resistanceValue.toLocaleString() + " Ω ± " + toleranceValue + "%", 300, 310);
+        ctx.fillText(`${formattedVal} Ω ± ${toleranceValue}%`, 300, 310);
 
-        if (namesGroup) namesGroup.style.display = 'flex';
+        // Uses 'flex' to keep the 2x2 grid looking perfect
+        if (namesGroup) namesGroup.style.display = 'flex'; 
 
+        // Generate Solution Logic for Help Button
         solTextStr = "<strong>Required Colours:</strong><br><br>";
         solTextStr += "1. " + resColors[b1].toUpperCase() + " (for digit " + b1 + ")<br>";
         solTextStr += "2. " + resColors[b2].toUpperCase() + " (for digit " + b2 + ")<br>";
@@ -1366,13 +1364,17 @@ function generateColorCodeProblem(ctx, canvas) {
         solTextStr += "4. " + tolKey.toUpperCase() + " (for &plusmn;" + toleranceValue + "%)";
     }
 
-    // 6. THE CRITICAL MISSING PIECE: Update the Solution Box
+    // 6. Push the solution text to the hidden div
     const solText = document.getElementById('solText');
-    if (solText) {
-        solText.innerHTML = solTextStr;
+    if (solText) solText.innerHTML = solTextStr;
+    
+    // 7. Ensure the main instruction text appears
+    const qText = document.getElementById('questionText');
+    if (qText) {
+        qText.style.display = 'block';
+        qText.innerHTML = "Identify the resistance values or required colors below:";
     }
 }
-
 
 function generateOscilloscopeProblem() {
     // 1. SELF-INITIALIZE CANVAS
