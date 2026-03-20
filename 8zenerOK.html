@@ -1278,24 +1278,24 @@ function generateColorCodeProblem(ctx, canvas) {
     const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
     const tolColors = { 'gold': 5, 'silver': 10 };
 
-    // 2. UI Safety Checks (Prevents the "null" error)
+    // 2. UI Safety Checks
     const valGroup = document.getElementById('inputGroupColorVal');
     const namesGroup = document.getElementById('inputGroupColorNames');
-    const qText = document.getElementById('questionText'); // Find the question box
+    const qText = document.getElementById('questionText');
+    const feedback = document.getElementById('feedback');
 
+    // THE RESET: Hide groups and clear text to prevent the "flip" from sticking
     if (valGroup) valGroup.style.display = 'none';
     if (namesGroup) namesGroup.style.display = 'none';
+    if (feedback) feedback.innerHTML = "";
     
-    // Only update qText if it actually exists in the HTML
     if (qText) {
         qText.style.display = 'block';
         qText.innerHTML = "Identify the resistance values or required colors below:";
     }
 
-    // Clear the canvas and reset feedback
+    // Clear Canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerHTML = "";
 
     // 3. Generate Random Values
     const b1 = Math.floor(Math.random() * 9) + 1; 
@@ -1305,7 +1305,8 @@ function generateColorCodeProblem(ctx, canvas) {
     const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
     const toleranceValue = tolColors[tolKey];
 
-    // 4. Store answers for the grader (MUST match these names)
+    // 4. Store answers for the grader
+    if (typeof window.currentAnswers === 'undefined') window.currentAnswers = {};
     currentAnswers.resVal = resistanceValue;
     currentAnswers.resTol = toleranceValue;
     currentAnswers.b1 = resColors[b1];
@@ -1368,6 +1369,13 @@ function generateColorCodeProblem(ctx, canvas) {
         solTextStr += "3. " + resColors[b3].toUpperCase() + " (for multiplier 10<sup>" + b3 + "</sup>)<br>";
         solTextStr += "4. " + tolKey.toUpperCase() + " (for &plusmn;" + toleranceValue + "%)";
     }
+
+    // 6. THE CRITICAL MISSING PIECE: Update the Solution Box
+    const solText = document.getElementById('solText');
+    if (solText) {
+        solText.innerHTML = solTextStr;
+    }
+}
 
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = solTextStr;
