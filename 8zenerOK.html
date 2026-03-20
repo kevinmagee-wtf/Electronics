@@ -2068,96 +2068,108 @@ function openModule(module) {
     }
 }
     
-function generateColorCodeProblem(ctx, canvas) {
-    // 1. Core Data Setup
-    const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
-    const tolColors = { 'gold': 5, 'silver': 10 };
+function switchTab(mode) {
+    currentMode = mode;
+    
+    // 1. Highlight active tab
+    document.querySelectorAll('.tab').forEach(t => {
+        t.classList.remove('active');
+        if (t.innerText && !t.innerText.includes('Home')) {
+             t.style.backgroundColor = ""; 
+             t.style.color = "";
+        }
+    });
 
-    // 2. UI RESET: Hide both potential input groups before starting
-    const valGroup = document.getElementById('inputGroupColorVal');
-    const namesGroup = document.getElementById('inputGroupColorNames');
-    if (valGroup) valGroup.style.display = 'none';
-    if (namesGroup) namesGroup.style.display = 'none';
-
-    // Clear the canvas and reset feedback
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerHTML = "";
-
-    // 3. Generate Random Values
-    const b1 = Math.floor(Math.random() * 9) + 1; 
-    const b2 = Math.floor(Math.random() * 10);    
-    const b3 = Math.floor(Math.random() * 7);     
-    const tolKey = Math.random() > 0.5 ? 'gold' : 'silver';
-    const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
-    const toleranceValue = tolColors[tolKey];
-
-    // 4. Store answers for the grader (MUST match these names)
-    currentAnswers.resVal = resistanceValue;
-    currentAnswers.resTol = toleranceValue;
-    currentAnswers.b1 = resColors[b1];
-    currentAnswers.b2 = resColors[b2];
-    currentAnswers.b3 = resColors[b3];
-    currentAnswers.tol = tolKey;
-
-    // 5. Draw Resistor Body
-    ctx.lineWidth = 4; ctx.strokeStyle = '#000';
-    ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke(); 
-    ctx.fillStyle = '#f4d3a6'; ctx.fillRect(200, 170, 200, 80); ctx.strokeRect(200, 170, 200, 80); 
-
-    const qType = Math.floor(Math.random() * 2);
-    let solTextStr = "";
-
-    if (qType === 0) {
-        // TYPE 0: Visual Resistor -> Student enters Numbers
-        const drawBand = (x, color) => {
-            ctx.fillStyle = (color === 'gold') ? '#FFD700' : (color === 'silver') ? '#C0C0C0' : color;
-            ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
-        };
-        drawBand(220, resColors[b1]);
-        drawBand(250, resColors[b2]);
-        drawBand(280, resColors[b3]);
-        drawBand(360, tolKey);
-
-        if (valGroup) valGroup.style.display = 'block';
-
-        solTextStr = "<strong>Solution: " + resistanceValue.toLocaleString() + " Ω &plusmn; " + toleranceValue + "%</strong><br><br>";
-        solTextStr += "<em>Logic:</em><br>";
-        solTextStr += "Band 1 (" + resColors[b1].toUpperCase() + ") = " + b1 + "<br>";
-        solTextStr += "Band 2 (" + resColors[b2].toUpperCase() + ") = " + b2 + "<br>";
-        solTextStr += "Band 3 (" + resColors[b3].toUpperCase() + ") = Multiplier 10<sup>" + b3 + "</sup><br>";
-        solTextStr += "Band 4 (" + tolKey.toUpperCase() + ") = &plusmn;" + toleranceValue + "%";
-    } else {
-        // TYPE 1: B&W Resistor -> Student enters Colour NAMES
-        const drawHiddenBand = (x, num) => {
-            ctx.fillStyle = '#ccc'; 
-            ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
-            ctx.fillStyle = '#000';
-            ctx.font = 'bold 22px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(num, x + 10, 160);
-        };
-        drawHiddenBand(220, "1");
-        drawHiddenBand(250, "2");
-        drawHiddenBand(280, "3");
-        drawHiddenBand(360, "4");
-
-        ctx.fillStyle = '#000';
-        ctx.font = 'bold 28px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(resistanceValue.toLocaleString() + " Ω ± " + toleranceValue + "%", 300, 310);
-
-        if (namesGroup) namesGroup.style.display = 'block';
-
-        solTextStr = "<strong>Required Colours:</strong><br><br>";
-        solTextStr += "1. " + resColors[b1].toUpperCase() + " (for digit " + b1 + ")<br>";
-        solTextStr += "2. " + resColors[b2].toUpperCase() + " (for digit " + b2 + ")<br>";
-        solTextStr += "3. " + resColors[b3].toUpperCase() + " (for multiplier 10<sup>" + b3 + "</sup>)<br>";
-        solTextStr += "4. " + tolKey.toUpperCase() + " (for &plusmn;" + toleranceValue + "%)";
+    const activeTab = document.getElementById('tab-' + mode);
+    if (activeTab) {
+        activeTab.classList.add('active');
+        activeTab.style.backgroundColor = "#333"; 
+        activeTab.style.color = "#fff";            
     }
 
-    const solText = document.getElementById('solText');
-    if (solText) solText.innerHTML = solTextStr;
+    // 2. Hide ALL specialized UI elements (Prevents UI Bleed)
+    const elementsToHide = [
+        'inputGroupV', 'inputGroupI', 'inputGroupR', 
+        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
+        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
+        'inputGroupAstable', 'inputGroupMonostable', 'inputGroupMarkSpace',
+        'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
+        'inputGroupSilicon', 'zenerOpenQuestions', 'zenerClosedQuestions', 
+        'instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction',
+        'grade9DividerBtn', 'grade9ResistorBtn', 'helpBtn'
+    ];
+
+    elementsToHide.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
+    // 3. Reset Subtitle
+    const subtitle = document.getElementById('moduleSubtitle');
+    if (subtitle) {
+        if (mode === 'home') {
+            subtitle.innerText = "Welcome to Electronics";
+        } else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) {
+            subtitle.innerText = "Module 1: Circuit Basics";
+        } else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) {
+            subtitle.innerText = "Module 3: Timing Circuits";
+        } else if (['silicon', 'zener'].includes(mode)) {
+            subtitle.innerText = "Module 8: Diodes";
+        }
+    }
+
+    // 4. Global Input Cleanup
+    const feedback = document.getElementById('feedback');
+    if (feedback) feedback.innerHTML = '';
+    const solutions = document.getElementById('solutions');
+    if (solutions) solutions.style.display = 'none';
+    
+    document.querySelectorAll('input').forEach(i => {
+        i.value = '';
+        i.style.backgroundColor = ''; 
+        if(i.type === 'radio') i.checked = false;
+    });
+
+    // 5. THE HOME FIX: Clear canvas and EXIT early
+    if (mode === 'home') {
+        const canvas = document.getElementById('circuitCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        const qText = document.getElementById('questionText');
+        if (qText) {
+            qText.innerHTML = "Select a module from the tabs above to begin.";
+            qText.style.display = 'block';
+        }
+        return; // This is the most important line! It stops the crash.
+    }
+
+    // 6. CALL GENERATORS SAFELY
+    if (mode === 'astable') {
+        if (typeof generateAstableProblem === "function") generateAstableProblem();
+    } else if (mode === 'monostable') {
+        if (typeof generateMonostableProblem === "function") generateMonostableProblem();
+    } else if (mode === 'oscilloscope') {
+        if (typeof generateOscilloscopeProblem === "function") generateOscilloscopeProblem();
+    } else if (mode === 'zener') {
+        const zGroup = document.getElementById('inputGroupZener');
+        if (zGroup) zGroup.style.display = 'inline-block';
+        if (typeof generateZenerProblem === "function") generateZenerProblem();
+    } else if (mode === 'silicon') {
+        const sGroup = document.getElementById('inputGroupSilicon');
+        if (sGroup) sGroup.style.display = 'inline-block';
+        if (typeof generateSiliconProblem === "function") generateSiliconProblem();
+    } else if (mode === 'colorcode') {
+        if (typeof generateColorCodeProblem === "function") generateColorCodeProblem();
+    } else {
+        // Fallback for Module 1
+        if (typeof generateProblem === "function") {
+            generateProblem();
+        } else if (mode === 'analysis') {
+    generateAnalysisProblem();
+}
+    }
 }
 
 function openDataSheet() {
