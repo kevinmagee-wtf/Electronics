@@ -2171,6 +2171,11 @@ function switchTab(mode) {
         if(i.type === 'radio') i.checked = false;
     });
 
+    // SAFE ZENER CLEANUP FIX ADDED HERE
+    if (typeof clearZenerInputs === "function") {
+        clearZenerInputs();
+    }
+
     // 5. THE CANVAS FIX: Find the canvas even if the ID is different
     const canvas = document.getElementById('circuitCanvas') || document.getElementById('resistorCanvas') || document.querySelector('canvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
@@ -2203,11 +2208,11 @@ function switchTab(mode) {
         if (document.getElementById('inputGroupSilicon')) document.getElementById('inputGroupSilicon').style.display = 'inline-block';
         if (typeof generateSiliconProblem === "function") generateSiliconProblem();
     } else {
-        // Module 1 Routing
-        if (mode === 'analysis' && typeof generateAnalysisProblem === "function") {
-            generateAnalysisProblem();
-        } else if (typeof hubController === "function") {
+        // Module 1 Routing - FIXED
+        if (typeof hubController === "function") {
             hubController(ctx, canvas);
+        } else {
+            console.error("Critical Error: hubController is missing!");
         }
     }
 }
@@ -2827,6 +2832,7 @@ function clearZenerInputs() {
     });
 }
 
+    
 // Master Switch on Load
 window.onload = function() {
     hideAllInputGroups(); 
