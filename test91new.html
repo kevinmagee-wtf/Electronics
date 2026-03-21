@@ -1887,77 +1887,56 @@ function clearZenerInputs() {
     });
 }
 function generateZenerProblem() {
+    // 0. RESET UI & STATE
     hideAllInputGroups();
+    currentMode = 'zener';
+    
     const canvas = document.getElementById('circuitCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    // --- 0. CONSISTENCY FIX: DEEP CLEAN CANVAS ---
+    // Clear Canvas Memory
     ctx.setTransform(1, 0, 0, 1, 0, 0); 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath(); // Reset path memory
-    
-    if (typeof resetAnswerBox === "function") hideAllInputGroups();
-    currentMode = 'zener';
+    ctx.beginPath();
+
     const solBox = document.getElementById('solText');
     if (solBox) solBox.style.display = "none";
 
-    // 1. RANDOM VARIABLES
-    const Vin = Math.floor(Math.random() * 10) + 12; // Adjusted Vin for better regulation scenarios
-    const Vz = (Math.floor(Math.random() * 41) + 40) / 10; // 4.0V - 8.0V
-    const Iz_min = Math.floor(Math.random() * 6) + 5; 
-    
-    // Values for potential regulation calculation
-    const R1 = (Math.floor(Math.random() * 10) + 10) * 10; // 100-200Ω
-    const RL = (Math.floor(Math.random() * 20) + 10) * 10; // 100-300Ω
+    // 1. BASIC GCSE MATH (No parallel resistance calculations)
+    const Vin = Math.floor(Math.random() * 10) + 6; // 6V - 15V
+    const Vz = (Math.floor(Math.random() * 41) + 20) / 10; // 2.0V - 6.0V
+    const Iz_min = Math.floor(Math.random() * 6) + 5; // 5mA - 10mA
+    const Ir_mA = Math.floor(Math.random() * 401) + 200; // 200mA - 600mA (Total Supply Current)
 
     const switchClosed = Math.random() > 0.5;
     currentZenerState = switchClosed ? "closed" : "open"; 
 
-    // 2. MATH CALCULATIONS (The "Regulation Test" Logic)
     if (typeof currentAnswers === "undefined") currentAnswers = {};
     
-    // Calculate what the voltage WOULD be without the Zener (Potential Divider)
-    const V_unregulated = Vin * (RL / (R1 + RL));
-    const isRegulating = V_unregulated > Vz;
-    
-    // Final Circuit values based on regulation state
-    const finalVL = isRegulating ? Vz : V_unregulated;
-    const finalIL = (finalVL / RL) * 1000; // in mA
-    const totalCurrent_mA = ((Vin - finalVL) / R1) * 1000;
-    const finalIZ = totalCurrent_mA - finalIL;
+    // Core GCSE Zener Logic
+    const IL_max = Ir_mA - Iz_min;
+    const VL_at_max = Vz;
+    const Pz_open_mW = Ir_mA * Vz; // When open, all current flows through Zener
 
-    // STORE EVERYTHING in currentAnswers for the checker and the Data Sheet
-    currentAnswers.Vin = Vin;
-    currentAnswers.Vz = Vz;
-    currentAnswers.R1 = R1;
-    currentAnswers.RL = RL;
-    currentAnswers.V_unregulated = parseFloat(V_unregulated.toFixed(2));
-    currentAnswers.isRegulating = isRegulating;
-    currentAnswers.Iz_min = Iz_min;
-    
-    // Target answers for validation
-    currentAnswers.targetIL = parseFloat(finalIL.toFixed(1));
-    currentAnswers.targetVL = parseFloat(finalVL.toFixed(1));
-    currentAnswers.targetIZ = parseFloat(finalIZ.toFixed(1));
-    currentAnswers.targetPZ = parseFloat((finalIZ * finalVL).toFixed(1));
+    // Save for the grader!
+    currentAnswers.targetIL = parseFloat(IL_max.toFixed(1));
+    currentAnswers.targetVL = parseFloat(VL_at_max.toFixed(1));
+    currentAnswers.targetIZ = parseFloat(Ir_mA.toFixed(1));
+    currentAnswers.targetPZ = parseFloat(Pz_open_mW.toFixed(1));
 
-    // 3. UI SETUP
+    // 2. UI SETUP (Unhide the specific Zener Questions)
     const zenerMainGroup = document.getElementById('inputGroupZener');
-    if(zenerMainGroup) zenerMainGroup.style.display = "block";
+    if (zenerMainGroup) zenerMainGroup.style.display = "block";
 
-    if (document.getElementById('zenerClosedQuestions')) document.getElementById('zenerClosedQuestions').style.display = "none";
-    if (document.getElementById('zenerOpenQuestions')) document.getElementById('zenerOpenQuestions').style.display = "none";
-    
     const closedGroup = document.getElementById('zenerClosedQuestions');
     const openGroup = document.getElementById('zenerOpenQuestions');
-    
     if (closedGroup && openGroup) {
         closedGroup.style.display = switchClosed ? "block" : "none";
         openGroup.style.display = switchClosed ? "none" : "block";
     }
 
-    // 4. DRAWING
+    // 3. DRAWING 
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.fillStyle = "black";
@@ -1970,88 +1949,96 @@ function generateZenerProblem() {
     ctx.fillText("0 V", 10, 365);
 
     const xReg = 180; 
-    const xLoad = 380;
     const yJunc = 220; 
-
-    // --- LEFT BRANCH (Series Resistor) ---
-    // Label with the R1 value so students can do the math
-    ctx.fillText(R1 + " Ω", xReg - 25, 135); 
-    drawLine(ctx, xReg, 60, xReg, 110); 
-    drawComponent(ctx, 'fixed', xReg, 135); 
-    drawLine(ctx, xReg, 160, xReg, 360); 
-
-    // Zener
-    drawHollowZenerUp(ctx, xReg, 290); 
-    ctx.fillText(Vz.toFixed(1) + " V", xReg - 65, 295);
-
-    // --- RIGHT BRANCH (LOAD & SWITCH) ---
     const switchStartX = 240;      
     const switchEndX = 290;        
     const loadX = 380;             
-    const pink = "#E64097"; // Abingdon Pink
+    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "black";
-    
+    // --- LEFT BRANCH (Total Current Arrow & Zener) ---
+    // Total Current Arrow + Label
+    ctx.font = "16px Arial";
+    ctx.fillText(Ir_mA + " mA", xReg - 75, 90); 
+    drawLine(ctx, xReg, 60, xReg, 110); 
+    drawArrowOnWire(ctx, xReg, 70, xReg, 90); // Arrow pointing down
+
+    // Series Resistor (No value text)
+    drawComponent(ctx, 'fixed', xReg, 135); 
+    drawLine(ctx, xReg, 160, xReg, 360); 
+
+    // Zener Diode
+    drawHollowZenerUp(ctx, xReg, 290); 
+    ctx.font = "16px Arial";
+    ctx.fillText(Vz.toFixed(1) + " V", xReg - 65, 295);
+
+    // --- MIDDLE (Bridge & Switch) ---
     drawLine(ctx, xReg, yJunc, switchStartX, yJunc); 
     drawNode(ctx, xReg, yJunc); 
-    drawLine(ctx, switchEndX, yJunc, loadX, yJunc); 
-
-    ctx.font = "bold 16px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("S", (switchStartX + switchEndX) / 2, yJunc + 25); 
-    ctx.textAlign = "left"; 
 
     ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI * 2); ctx.stroke(); 
     ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI * 2); ctx.stroke(); 
+    
+    // Switch S perfectly centered underneath
+    ctx.fillStyle = "black";
+    ctx.font = "bold 16px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("S", (switchStartX + switchEndX) / 2, yJunc + 25); 
+    ctx.textAlign = "left"; // Reset for other text
 
+    drawLine(ctx, switchEndX, yJunc, loadX, yJunc); 
+
+    // --- RIGHT BRANCH (LOAD Box without resistance value) ---
+    ctx.strokeStyle = "black"; ctx.fillStyle = "black";
+    drawLine(ctx, loadX, yJunc, loadX, yJunc + 30);
+    ctx.strokeRect(loadX - 30, yJunc + 30, 60, 45); 
+    ctx.font = "bold 14px Arial";
+    ctx.fillText("LOAD", loadX - 22, yJunc + 58); // Perfectly centered vertically!
+    drawLine(ctx, loadX, yJunc + 75, loadX, 360);
+    drawNode(ctx, loadX, 360);
+
+    // --- DYNAMIC PINK LABELS ---
     if (switchClosed) {
+        // Draw Closed Switch
         ctx.strokeStyle = "black";
         drawLine(ctx, switchStartX, yJunc, switchEndX, yJunc); 
-        ctx.strokeStyle = pink;
+
+        // Pink IL Label and Arrow
+        ctx.strokeStyle = "black";
+        drawArrowOnWire(ctx, switchEndX + 20, yJunc, switchEndX + 45, yJunc); 
+
         ctx.fillStyle = pink;
-        drawArrowOnWire(ctx, switchEndX + 20, yJunc, switchEndX + 50, yJunc);
-        ctx.font = "bold 16px Arial"; ctx.fillText("I", switchEndX + 45, yJunc - 15);
-        ctx.font = "bold 10px Arial"; ctx.fillText("LOAD", switchEndX + 52, yJunc - 10);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 85, yJunc - 15);
+        ctx.font = "bold 16px Arial"; ctx.fillText("I", switchEndX + 28, yJunc - 15);
+        ctx.font = "bold 10px Arial"; ctx.fillText("L", switchEndX + 34, yJunc - 10);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 44, yJunc - 15);
+        
+        // Pink VL Label
         ctx.font = "bold 16px Arial"; ctx.fillText("V", loadX + 40, yJunc + 55);
-        ctx.font = "bold 10px Arial"; ctx.fillText("LOAD", loadX + 52, yJunc + 60);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", loadX + 85, yJunc + 55);
+        ctx.font = "bold 10px Arial"; ctx.fillText("L", loadX + 52, yJunc + 60);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", loadX + 62, yJunc + 55);
     } else {
+        // Draw Open Switch
         ctx.strokeStyle = "black";
         drawLine(ctx, switchStartX, yJunc, switchEndX - 10, yJunc - 20); 
+
+        // Pink IZ Label and Arrow
         ctx.strokeStyle = pink;
         ctx.fillStyle = pink;
         drawArrowOnWire(ctx, xReg, 230, xReg, 255);
-        ctx.font = "bold 16px Arial"; ctx.fillText("I", xReg - 91, 255);
-        ctx.font = "bold 10px Arial"; ctx.fillText("ZENER", xReg - 85, 260);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 48, 255);
-        ctx.font = "bold 16px Arial"; ctx.fillText("P", xReg + 37, 298);
-        ctx.font = "bold 10px Arial"; ctx.fillText("ZENER", xReg + 44, 303);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 79, 298);
+
+        ctx.font = "bold 16px Arial"; ctx.fillText("I", xReg - 70, 255);
+        ctx.font = "bold 10px Arial"; ctx.fillText("Z", xReg - 64, 260);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 55, 255);
+        
+        // Pink PZ Label
+        ctx.font = "bold 16px Arial"; ctx.fillText("P", xReg + 35, 295);
+        ctx.font = "bold 10px Arial"; ctx.fillText("Z", xReg + 46, 300);
+        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 55, 295);
     }
-    
-    ctx.strokeStyle = "black";
+
+    // --- FOOTER ---
     ctx.fillStyle = "black";
-    drawComponent(ctx, 'fixed', loadX, yJunc + 55); // Use actual resistor drawing
-    ctx.fillText(RL + " Ω", loadX + 35, yJunc + 40);
-    drawLine(ctx, loadX, yJunc, loadX, yJunc + 30);
-    drawLine(ctx, loadX, yJunc + 80, loadX, 360);
-    drawNode(ctx, loadX, 360);
-
-    ctx.font = "bold 16px Arial";
+    ctx.font = "italic 16px Arial";
     ctx.fillText("Minimum Zener holding current = " + Iz_min + " mA", 70, 390);
-
-    // Reset Data Sheet area if it exists
-    const steps = document.getElementById('solutionSteps');
-    if (steps) steps.innerHTML = `<p class="text-gray-400 italic">Complete the problem to unlock the breakdown.</p>`;
-}
-//function silicon yet to be created. Placeholder only 
-    function generateSiliconProblem() {
-    const qText = document.getElementById('questionText');
-    if (qText) qText.innerHTML = "Silicon Diode module coming soon!";
-    const ctx = document.getElementById('circuitCanvas').getContext('2d');
-    ctx.clearRect(0, 0, 600, 450);
 }
 
 // ===========================================================================================================================      
