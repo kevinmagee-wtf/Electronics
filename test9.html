@@ -864,12 +864,15 @@ function generateGrade9Resistance() {
 // =======================================================
 //  Generates the Potential Divider Problem (4-Variables)
 // =======================================================
+
 function generateDividerProblem(ctx, canvas) {
     // 0. RESET UI & STATE
     hideAllInputGroups(); 
     currentMode = 'divider';
-    const inputBox = document.getElementById('inputV');
-    if (inputBox) inputBox.value = ""; // Force clear old input
+
+    // TURN ON ONLY THE V BOX
+    const groupV = document.getElementById('inputGroupV');
+    if (groupV) groupV.style.display = 'block';
 
     // Determine units visually
     const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
