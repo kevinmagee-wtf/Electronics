@@ -788,14 +788,23 @@ function generateResistanceProblem(ctx, canvas) {
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = logicHTML;
 }
-function generateGrade9Resistance() {
+
+    
+   function generateGrade9Resistance() {
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas.getContext('2d');
     
     // 0. RESET UI & STATE
-    hideAllInputGroups(); // Standardizes UI cleanup
+    hideAllInputGroups(); 
+    currentMode = 'resistance'; // ADDED: Tells the grader what to do!
+    
+    // BRING BACK THE RESISTANCE BOX
+    const groupR = document.getElementById('inputGroupR');
+    if (groupR) {
+        groupR.style.display = 'flex'; 
+    }
+
     const inputR = document.getElementById('inputR');
-    if (inputR) inputR.value = '';
 
     // Randomize the unit for the problem
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
