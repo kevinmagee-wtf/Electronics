@@ -2326,7 +2326,7 @@ function switchTab(mode) {
         'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
         'inputGroupSilicon', 'zenerOpenQuestions', 'zenerClosedQuestions', 
         'instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction',
-        'grade9DividerBtn', 'grade9ResistorBtn', 'helpBtn'
+        'grade9DividerBtn', 'grade9ResistorBtn', 'helpBtn', 'grade9ZenerBtn'
     ];
 
     elementsToHide.forEach(id => {
@@ -2383,6 +2383,7 @@ function switchTab(mode) {
         if (typeof generateOscilloscopeProblem === "function") generateOscilloscopeProblem();
     } else if (mode === 'zener') {
         if (document.getElementById('inputGroupZener')) document.getElementById('inputGroupZener').style.display = 'inline-block';
+        if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
         if (typeof generateZenerProblem === "function") generateZenerProblem();
     } else if (mode === 'colorcode') {
         if (typeof generateColorCodeProblem === "function" && ctx && canvas) {
