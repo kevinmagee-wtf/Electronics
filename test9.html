@@ -920,8 +920,12 @@ function generateDividerProblem(ctx, canvas) {
         currentAnswers.vUnit = expectedRUnit; 
     }
 
-    // Update Input Box Label and Placeholder
+// Update Input Box Label and Placeholder
     document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
+    
+    // Define inputBox by grabbing it from the HTML!
+    const inputBox = document.getElementById('inputV');
+    
     if (inputBox) {
         if (targetVar === 0 || targetVar === 1) {
             inputBox.placeholder = "e.g. 10 " + vUnit; 
