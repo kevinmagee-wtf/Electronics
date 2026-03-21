@@ -316,7 +316,7 @@
 
 
 
-                 <div id="inputGroupGrade9Zener" style="display: none;">
+                 <div id="inputGroupGrade9Zener" class="input-group" style="display: none;">
                     <div id="g9ZenerClosed" style="display: none; margin-bottom: 10px;">
                     <label><span style="color:#E64097; font-weight:bold;">Load Current (I<sub>L</sub>)</span> = <input type="number" id="g9_IL" placeholder="mA" style="width: 80px;"></label>
                     <label style="margin-left: 15px;"><span style="color:#E64097; font-weight:bold;">Zener Current (I<sub>Z</sub>)</span> = <input type="number" id="g9_IZ_closed" placeholder="mA" style="width: 80px;"></label>
@@ -2326,7 +2326,7 @@ function switchTab(mode) {
         'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
         'inputGroupSilicon', 'zenerOpenQuestions', 'zenerClosedQuestions', 
         'instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction',
-        'grade9DividerBtn', 'grade9ResistorBtn', 'helpBtn', 'grade9ZenerBtn'
+        'grade9DividerBtn', 'grade9ResistorBtn', 'helpBtn', 'grade9ZenerBtn', 'inputGroupGrade9Zener'
     ];
 
     elementsToHide.forEach(id => {
