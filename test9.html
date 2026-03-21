@@ -652,10 +652,16 @@ function drawArrowOnWire(ctx, fromx, fromy, tox, toy) {
 // FUNCTION 2. PROBLEM GENERATORS (THE CONTENT CREATORS) 
 // =========================================================================================================     
 
-// this function deals with adding resistances in series and parallel
-// this function deals with adding resistances in series and parallel
+// this function deals with adding resistances in series and parallel    
 function generateResistanceProblem(ctx, canvas) {
-    hideAllInputGroups(); // This now safely clears values and colors without killing placeholders
+       hideAllInputGroups(); 
+    currentMode = 'resistance'; // Make sure the grader knows what page we are on!
+    
+    // BRING BACK THE RESISTANCE BOX
+    const groupR = document.getElementById('inputGroupR');
+    if (groupR) {
+        groupR.style.display = 'flex'; // Unhides the box so you can see it!
+    }
     
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
     
