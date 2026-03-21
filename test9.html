@@ -2733,46 +2733,41 @@ function updateZenerSolution(isClosed) {
     }
 }
     
-/**
- * PART 1: The Master Reset
- * This hides the containers and resets the UI layout.
- */
+//The Master Reset. This hides the containers and resets the UI layout.
+
 function hideAllInputGroups() {
-    // 1. Hide every div that has the 'input-group' class
+    // 1. Reset all the grading locks (from our last fix!)
+    isCurrentProblemSolved = false;
+    hasCheckedCurrentProblem = false;
+    viewedSolution = false;
+    unitErrorMade = false;
+
+    // 2. Hide every div that has the 'input-group' class
     document.querySelectorAll('.input-group').forEach(el => el.style.display = 'none');
 
-    // 2. Clear common UI elements
-    // We use optional chaining (?.) to say "if this exists, do this" - it's very clean!
+    // 3. Clear common UI elements
     document.getElementById('feedback')?.replaceChildren();
     document.getElementById('solutions') && (document.getElementById('solutions').style.display = 'none');
     document.getElementById('solText')?.replaceChildren();
 
-    // 3. Hide and wipe Question Text
+    // 4. Hide and wipe Question Text
     const qText = document.getElementById('questionText');
     if (qText) {
         qText.style.display = 'none';
         qText.replaceChildren();
     }
 
-    // 4. Clear all instruction prompts in one go using a class
-    // (Add class="instruction-text" to your prompts in HTML)
+    // 5. Clear all instruction prompts in one go
     document.querySelectorAll('.instruction-text').forEach(p => p.replaceChildren());
 
-    // 5. Run the global input wiper
-    resetAnswerBox(); 
-}
-
-/**
- * PART 2: The Data Clearer
- * This specifically empties the values inside the input boxes.
- */
-function clearZenerInputs() {
-    const zenerIds = ['zenerQ_IL', 'zenerQ_VL', 'zenerQ_IZ', 'zenerQ_PZ'];
-    zenerIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.value = ''; 
-            el.style.backgroundColor = ''; // Resets the red/green status
+    // 6. THE ULTIMATE WIPER (Replaces clearZenerInputs and resetAnswerBox)
+    // This grabs EVERY text/number input on the entire page and resets it
+    document.querySelectorAll('input').forEach(input => {
+        if (input.type === 'text' || input.type === 'number') {
+            input.value = "";                     // Empties the text
+            input.style.borderColor = "#ccc";     // Resets border color
+            input.style.borderWidth = "1px";      // Resets border thickness
+            input.style.backgroundColor = "";     // Resets background color (covers Zener!)
         }
     });
 }
