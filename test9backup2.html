@@ -123,6 +123,15 @@
         border-color: #E64097 !important; /* Turns pink again when they start typing a new answer */
         outline: none;
 }
+        /* FORCE PLACEHOLDERS TO BE VISIBLE GREY */
+    input::placeholder {
+        color: #6c757d !important;
+        opacity: 1 !important;
+    }
+    input::-webkit-input-placeholder {
+        color: #6c757d !important;
+        opacity: 1 !important;
+    }
         b.feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
         
         .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
@@ -305,33 +314,40 @@
                         </div>
                     </div>
 
-                    <div class="input-group" id="inputGroupColorVal" style="display:none; text-align: center; width: 100%; margin-top: 15px;">
-                        <label for="inputResValue" style="font-weight: bold; font-size: 16px;">Resistance = </label>
-                        <input type="text" id="inputResValue" placeholder="e.g. 4700" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box; margin-right: 5px;">
-                        <span style="font-size: 18px; font-weight: bold;">Ω &plusmn;</span>
-                        <input type="text" id="inputResTol" placeholder="e.g. 5" style="height: 45px; width: 90px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box; margin-left: 5px;">
-                        <span style="font-size: 18px; font-weight: bold;">%</span>
-                    </div>          
-                            
-                    <div id="inputGroupColorNames" style="display:none; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 15px; margin-top: 15px;">
-                        <div class="input-group" style="margin: 0; text-align: center;">
-                            <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 1:</label>
-                            <input type="text" id="inputBand1" placeholder="e.g. blue" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
-                        </div>
-                        <div class="input-group" style="margin: 0; text-align: center;">
-                            <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 2:</label>
-                            <input type="text" id="inputBand2" placeholder="e.g. red" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
-                        </div>
-                        <div class="input-group" style="margin: 0; text-align: center;">
-                            <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 3:</label>
-                            <input type="text" id="inputBand3" placeholder="e.g. grey" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
-                        </div>
-                        <div class="input-group" style="margin: 0; text-align: center;">
-                            <label style="display: block; font-weight: bold; margin-bottom: 5px; font-size: 15px;">Band 4:</label>
-                            <input type="text" id="inputBandTol" placeholder="e.g. gold" style="height: 45px; width: 135px; font-size: 16px; padding: 10px; border: 2px solid #ccc; border-radius: 6px; text-align: center; outline-color: #E64097; box-sizing: border-box;">
-                        </div>
-                    </div>
+<div id="instructionPrompt" class="instruction-text" style="text-align: center; margin-bottom: 10px; font-size: 18px; display: none;"></div>
+                    
+<div class="input-group" id="inputGroupColorVal" style="display:none; text-align: center; width: 100%; margin-top: 15px;">
+    <input type="text" id="inputResValue" placeholder="e.g. 4700">
+    <span style="font-size: 18px; font-weight: bold;">Ω &plusmn;</span>
+    <input type="text" id="inputResTol" placeholder="e.g. 5" style="width: 90px;">
+    <span style="font-size: 18px; font-weight: bold;">%</span>
+</div>          
+        
+<div id="inputGroupColorNames" class="input-group" style="display:none; flex-direction: column; gap: 15px; margin-top: 15px; align-items: center;">
+    
+    <div style="display: flex; gap: 25px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="inputBand1" style="font-weight: bold; font-size: 16px; margin: 0;">Band 1:</label>
+            <input type="text" id="inputBand1" placeholder="e.g. red" style="width: 93px;">
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="inputBand2" style="font-weight: bold; font-size: 16px; margin: 0;">Band 2:</label>
+            <input type="text" id="inputBand2" placeholder="e.g. grey" style="width: 93px;">
+        </div>
+    </div>
 
+    <div style="display: flex; gap: 25px; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="inputBand3" style="font-weight: bold; font-size: 16px; margin: 0;">Band 3:</label>
+            <input type="text" id="inputBand3" placeholder="e.g. blue" style="width: 93px;">
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="inputBandTol" style="font-weight: bold; font-size: 16px; margin: 0;">Band 4:</label>
+            <input type="text" id="inputBandTol" placeholder="e.g. gold" style="width: 93px;">
+        </div>
+    </div>
+
+</div>
                 </div> <div style="margin-top: 20px;">
                     <button class="btn-check" onclick="checkAnswers()" style="padding: 10px 20px; background-color: #E64097; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Check Answer(s)</button>
                     <div id="feedback" class="feedback" style="margin-top: 15px; font-weight: bold; min-height: 1.2em;"></div>
@@ -410,6 +426,7 @@
         </div>
     </div>
 </div>
+<script>
 // SCRIPT STARTS NOW============================================================================      
 // GLOBAL VARIABLES
 // ================================================================================================  
@@ -462,15 +479,15 @@ function handleGenerateClick() {
     if (num >= 1000) return (num / 1000).toFixed(2).replace(/\.00$/, '') + 'k';
     return num.toString();
 }
-  function resetAnswerBox() {
+
+/* function resetAnswerBox() {
     // 1. Universal Clear: Find EVERY input box on the page and wipe it
     document.querySelectorAll('input').forEach(box => {
         box.value = "";             // Wipes the student's typing
         box.defaultValue = "";      // Clears browser "memory"
-        box.placeholder = "";       // Clears any placeholder hints
         box.style.backgroundColor = ""; // Removes the Red/Green "Correct/Wrong" colors
     });
-
+      
     // 2. Clear all feedback and solution text areas
     const feedback = document.getElementById('feedback');
     if (feedback) feedback.innerHTML = "";
@@ -490,7 +507,7 @@ function handleGenerateClick() {
     if (typeof clearZenerInputs === "function") {
         clearZenerInputs();
     }
-}
+} */
 
 
 // =======================================================================================================
@@ -635,25 +652,28 @@ function drawArrowOnWire(ctx, fromx, fromy, tox, toy) {
 // FUNCTION 2. PROBLEM GENERATORS (THE CONTENT CREATORS) 
 // =========================================================================================================     
 
-// this function deals with adding resistances in series and parallel
+// this function deals with adding resistances in series and parallel    
 function generateResistanceProblem(ctx, canvas) {
-    resetAnswerBox();
-    const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
-    const expectedUnitStr = rUnitVisual === 'k\u03A9' ? 'kohms' : 'ohms';
-
-    // --- UI CLEANUP ---
-    const inputBox = document.getElementById('inputR');
-    if (inputBox) {
-        inputBox.value = ""; //FORCE CLEAR AGAIN
-        inputBox.placeholder = "e.g. 10 " + rUnitVisual; 
+       hideAllInputGroups(); 
+    currentMode = 'resistance'; // Make sure the grader knows what page we are on!
+    
+    // BRING BACK THE RESISTANCE BOX
+    const groupR = document.getElementById('inputGroupR');
+    if (groupR) {
+        groupR.style.display = 'flex'; // Unhides the box so you can see it!
     }
+    
+    const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
+    
+    // --- UI CLEANUP ---
+    // OMITTED: Manual placeholder assignment and manual value clearing 
+    // (handled by hideAllInputGroups() and HTML defaults)
     
     const labelV = document.getElementById('labelV');
     if (labelV) {
         labelV.innerHTML = "<span style='color:" + brandPink + "'>Total Resistance</span> = ";
     }
 
-    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = brandBlack; 
     ctx.lineWidth = 2; 
@@ -691,7 +711,7 @@ function generateResistanceProblem(ctx, canvas) {
         ctx.fillText("R\u2082 = " + r2 + " " + rUnitVisual, 330, 260);
 
     } else if (scenario === 1) {
-        // --- SCENARIO 1: PARALLEL (Centered) ---
+        // --- SCENARIO 1: PARALLEL ---
         const pairs = [
             {r1: 10, r2: 10, req: 5}, {r1: 30, r2: 60, req: 20}, 
             {r1: 12, r2: 24, req: 8}, {r1: 40, r2: 40, req: 20},
@@ -726,7 +746,7 @@ function generateResistanceProblem(ctx, canvas) {
         logicHTML += "R<sub>Total</sub> = " + (pair.r1 * pair.r2) + " / " + (pair.r1 + pair.r2) + " = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
 
     } else {
-        // --- SCENARIO 2: SERIES-PARALLEL COMBINATION ---
+        // --- SCENARIO 2: SERIES-PARALLEL ---
         const sp = [
             {r1: 10, r2: 20, r3: 20, rp: 10, req: 20}, 
             {r1: 15, r2: 30, r3: 60, rp: 20, req: 35}, 
@@ -761,30 +781,30 @@ function generateResistanceProblem(ctx, canvas) {
         logicHTML += "R<sub>Total</sub> = R\u2081 + R<sub>p</sub> = " + s.r1 + " + " + s.rp + " = <strong>" + s.req + " " + rUnitVisual + "</strong>";
     }
 
-    // This matches the "normalized" units in our new parseInput
+    // Storage for the checker
     currentAnswers.rUnit = (rUnitVisual === 'k\u03A9') ? 'kohms' : 'ohms';
-    currentAnswers.rValue = rTotal; // e.g., 10
-    
+    currentAnswers.rValue = rTotal; 
     
     const solText = document.getElementById('solText');
-    if (solText) {
-        solText.innerHTML = logicHTML;
-
-    // This ensures that even after all the math is done, the box is 100% reset to an integer style.
-    if (inputBox) {
-        inputBox.placeholder = "e.g. 10 " + rUnitVisual; 
-    }
-    }
+    if (solText) solText.innerHTML = logicHTML;
 }
 
-function generateGrade9Resistance() {
+    
+   function generateGrade9Resistance() {
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas.getContext('2d');
     
     // 0. RESET UI & STATE
-    resetAnswerBox(); // Standardizes UI cleanup
+    hideAllInputGroups(); 
+    currentMode = 'resistance'; // ADDED: Tells the grader what to do!
+    
+    // BRING BACK THE RESISTANCE BOX
+    const groupR = document.getElementById('inputGroupR');
+    if (groupR) {
+        groupR.style.display = 'flex'; 
+    }
+
     const inputR = document.getElementById('inputR');
-    if (inputR) inputR.value = '';
 
     // Randomize the unit for the problem
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
@@ -859,12 +879,15 @@ function generateGrade9Resistance() {
 // =======================================================
 //  Generates the Potential Divider Problem (4-Variables)
 // =======================================================
+
 function generateDividerProblem(ctx, canvas) {
     // 0. RESET UI & STATE
-    resetAnswerBox(); 
+    hideAllInputGroups(); 
     currentMode = 'divider';
-    const inputBox = document.getElementById('inputV');
-    if (inputBox) inputBox.value = ""; // Force clear old input
+
+    // TURN ON ONLY THE V BOX
+    const groupV = document.getElementById('inputGroupV');
+    if (groupV) groupV.style.display = 'block';
 
     // Determine units visually
     const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
@@ -906,8 +929,12 @@ function generateDividerProblem(ctx, canvas) {
         currentAnswers.vUnit = expectedRUnit; 
     }
 
-    // Update Input Box Label and Placeholder
+// Update Input Box Label and Placeholder
     document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
+    
+    // Define inputBox by grabbing it from the HTML!
+    const inputBox = document.getElementById('inputV');
+    
     if (inputBox) {
         if (targetVar === 0 || targetVar === 1) {
             inputBox.placeholder = "e.g. 10 " + vUnit; 
@@ -1003,13 +1030,17 @@ function generateGrade9DividerProblem() {
     const ctx = canvas.getContext('2d');
 
     // 0. RESET UI & STATE
-    resetAnswerBox(); // Clears feedback/solutions
+    hideAllInputGroups(); // Clears feedback/solutions/borders
     currentMode = 'divider'; 
-    const inputBox = document.getElementById('inputV');
-    if (inputBox) {
-        inputBox.value = ""; // Clear old text
+    
+    // BRING BACK THE V INPUT BOX
+    const groupV = document.getElementById('inputGroupV');
+    if (groupV) {
+        groupV.style.display = 'flex'; // Unhides the box!
     }
 
+    const inputBox = document.getElementById('inputV');
+    
     // Update Question Text
     const qText = document.getElementById('questionText');
     if (qText) {
@@ -1119,14 +1150,21 @@ function generateGrade9DividerProblem() {
         solText.innerHTML = logicHTML;
     }
 }
+
 function generateAnalysisProblem(ctx, canvas) {
     // 0. RESET UI & STATE
-    resetAnswerBox(); 
+    hideAllInputGroups(); 
     currentMode = 'analysis';
+    
+    // TURN ON THE V AND I BOXES
+    const groupV = document.getElementById('inputGroupV');
+    const groupI = document.getElementById('inputGroupI');
+    if (groupV) groupV.style.display = 'block';
+    if (groupI) groupI.style.display = 'block';
+
+    
     const inputV = document.getElementById('inputV');
     const inputI = document.getElementById('inputI');
-    if (inputV) inputV.value = ""; 
-    if (inputI) inputI.value = "";
 
     // Determine units visually
     const vUnit = Math.random() < 0.5 ? 'V' : 'mV';
@@ -1253,38 +1291,25 @@ function generateAnalysisProblem(ctx, canvas) {
 }   
 
 function generateColorCodeProblem(ctx, canvas) {
-    // 1. Core Data Setup
+    // 1. UI Reset & Safety (The Heavy Lifting is done here now)
+    hideAllInputGroups(); // This hides EVERYTHING and calls hideAllInputGroups() to clear values
+    currentMode = 'colorcode';
+
+    // 2. Core Data Setup
     const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
     const tolColors = { 'gold': 5, 'silver': 10 };
-
-    // 2. UI Safety Checks
     const valGroup = document.getElementById('inputGroupColorVal');
     const namesGroup = document.getElementById('inputGroupColorNames');
-    const qText = document.getElementById('questionText');
-    const feedback = document.getElementById('feedback');
-
-    // THE RESET: Hide groups and clear text to prevent the "flip" from sticking
-    if (valGroup) valGroup.style.display = 'none';
-    if (namesGroup) namesGroup.style.display = 'none';
-    if (feedback) feedback.innerHTML = "";
-    
-    if (qText) {
-        qText.style.display = 'block';
-        qText.innerHTML = "Identify the resistance values or required colors below:";
-    }
-
-    // Clear Canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // 3. Generate Random Values
     const b1 = Math.floor(Math.random() * 9) + 1; 
     const b2 = Math.floor(Math.random() * 10);    
-    const b3 = Math.floor(Math.random() * 7);     
+    const b3 = Math.floor(Math.random() * 7);      
     const tolKey = Math.random() > 0.5 ? 'gold' : 'silver';
     const resistanceValue = (b1 * 10 + b2) * Math.pow(10, b3);
     const toleranceValue = tolColors[tolKey];
 
-    // 4. Store answers for the grader
+    // 4. Store answers for grading
     if (typeof window.currentAnswers === 'undefined') window.currentAnswers = {};
     currentAnswers.resVal = resistanceValue;
     currentAnswers.resTol = toleranceValue;
@@ -1293,16 +1318,18 @@ function generateColorCodeProblem(ctx, canvas) {
     currentAnswers.b3 = resColors[b3];
     currentAnswers.tol = tolKey;
 
-    // 5. Draw Resistor Body
+    // 5. Drawing Setup
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.lineWidth = 4; ctx.strokeStyle = '#000';
     ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke(); 
     ctx.fillStyle = '#f4d3a6'; ctx.fillRect(200, 170, 200, 80); ctx.strokeRect(200, 170, 200, 80); 
 
     const qType = Math.floor(Math.random() * 2);
     let solTextStr = "";
+    const formattedVal = (typeof formatResValue === "function") ? formatResValue(resistanceValue) : resistanceValue.toLocaleString();
 
     if (qType === 0) {
-        // TYPE 0: Visual Resistor -> Student enters Numbers
+        // TYPE 0: Visual Resistor -> Student enters Resistance and Tolerance NUMBER
         const drawBand = (x, color) => {
             ctx.fillStyle = (color === 'gold') ? '#FFD700' : (color === 'silver') ? '#C0C0C0' : color;
             ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
@@ -1312,22 +1339,23 @@ function generateColorCodeProblem(ctx, canvas) {
         drawBand(280, resColors[b3]);
         drawBand(360, tolKey);
 
+        // Turn ON the numbers group (hideAllInputGroups already turned it off)
         if (valGroup) valGroup.style.display = 'block';
 
-        solTextStr = "<strong>Solution: " + resistanceValue.toLocaleString() + " Ω &plusmn; " + toleranceValue + "%</strong><br><br>";
-        solTextStr += "<em>Logic:</em><br>";
-        solTextStr += "Band 1 (" + resColors[b1].toUpperCase() + ") = " + b1 + "<br>";
-        solTextStr += "Band 2 (" + resColors[b2].toUpperCase() + ") = " + b2 + "<br>";
-        solTextStr += "Band 3 (" + resColors[b3].toUpperCase() + ") = Multiplier 10<sup>" + b3 + "</sup><br>";
-        solTextStr += "Band 4 (" + tolKey.toUpperCase() + ") = &plusmn;" + toleranceValue + "%";
+        solTextStr = `<strong>Solution: ${formattedVal} Ω &plusmn; ${toleranceValue}%</strong><br><br>
+                      <em>Logic:</em><br>
+                      Band 1 (${resColors[b1].toUpperCase()}) = ${b1}<br>
+                      Band 2 (${resColors[b2].toUpperCase()}) = ${b2}<br>
+                      Band 3 (${resColors[b3].toUpperCase()}) = Multiplier 10<sup>${b3}</sup><br>
+                      Band 4 (${tolKey.toUpperCase()}) = &plusmn;${toleranceValue}%`;
+        
     } else {
         // TYPE 1: B&W Resistor -> Student enters Colour NAMES
         const drawHiddenBand = (x, num) => {
             ctx.fillStyle = '#ccc'; 
             ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
             ctx.fillStyle = '#000';
-            ctx.font = 'bold 22px Arial';
-            ctx.textAlign = 'center';
+            ctx.font = 'bold 22px Arial'; ctx.textAlign = 'center';
             ctx.fillText(num, x + 10, 160);
         };
         drawHiddenBand(220, "1");
@@ -1336,26 +1364,46 @@ function generateColorCodeProblem(ctx, canvas) {
         drawHiddenBand(360, "4");
 
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 28px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(resistanceValue.toLocaleString() + " Ω ± " + toleranceValue + "%", 300, 310);
+        ctx.font = 'bold 28px Arial'; ctx.textAlign = 'center';        
+        ctx.fillText(`${formattedVal} ± ${toleranceValue}%`, 300, 310);
 
-        if (namesGroup) namesGroup.style.display = 'flex';
+        // Turn ON the names group (hideAllInputGroups already turned it off)
+        if (namesGroup) namesGroup.style.display = 'flex'; 
 
-        solTextStr = "<strong>Required Colours:</strong><br><br>";
-        solTextStr += "1. " + resColors[b1].toUpperCase() + " (for digit " + b1 + ")<br>";
-        solTextStr += "2. " + resColors[b2].toUpperCase() + " (for digit " + b2 + ")<br>";
-        solTextStr += "3. " + resColors[b3].toUpperCase() + " (for multiplier 10<sup>" + b3 + "</sup>)<br>";
-        solTextStr += "4. " + tolKey.toUpperCase() + " (for &plusmn;" + toleranceValue + "%)";
+        solTextStr = `<strong>Required Colours:</strong><br><br>
+                      1. ${resColors[b1].toUpperCase()} (for digit ${b1})<br>
+                      2. ${resColors[b2].toUpperCase()} (for digit ${b2})<br>
+                      3. ${resColors[b3].toUpperCase()} (for multiplier 10<sup>${b3}</sup>)<br>
+                      4. ${tolKey.toUpperCase()} (for &plusmn;${toleranceValue}%)`;
     }
 
-    // 6. THE CRITICAL MISSING PIECE: Update the Solution Box
+    // 6. Push solution
     const solText = document.getElementById('solText');
-    if (solText) {
-        solText.innerHTML = solTextStr;
+    if (solText) solText.innerHTML = solTextStr;
+    
+    // 7. Dynamic Instruction Text
+    
+    // Clear and hide the top question text to keep the buttons aligned
+    const qText = document.getElementById('questionText');
+    if (qText) {
+        qText.innerHTML = "";
+        qText.style.display = 'none';
+    }
+
+    // Use the instruction prompt (which sits just above the input boxes)
+    const instruction = document.getElementById('instructionPrompt');
+    if (instruction) {
+        instruction.style.display = 'block'; // Make sure it's visible
+        
+        if (qType === 0) {
+            // They are calculating the value from the bands
+            instruction.innerHTML = "<strong>State the value of the resistor.</strong>";
+        } else {
+            // They are entering the colors based on the value
+            instruction.innerHTML = "<strong>Identify the resistor colour codes.</strong>";
+        }
     }
 }
-
 
 function generateOscilloscopeProblem() {
     // 1. SELF-INITIALIZE CANVAS
@@ -1365,7 +1413,6 @@ function generateOscilloscopeProblem() {
 
     // 2. FULL UI RESET
     hideAllInputGroups(); 
-    if (typeof resetAnswerBox === "function") resetAnswerBox();
     currentMode = 'oscilloscope';
 
     // REMOVED: The qText.style.display and qText.innerHTML lines that were here.
@@ -1487,7 +1534,7 @@ function generateAstableProblem() {
     hideAllInputGroups();
     const solBox = document.getElementById('solText');
     if (solBox) solBox.style.display = "none"; // Hide previous answer
-    if (typeof resetAnswerBox === "function") resetAnswerBox();
+    if (typeof resetAnswerBox === "function") hideAllInputGroups();
     
     // 2. SELF-INITIALIZE CANVAS
     const canvas = document.getElementById('circuitCanvas');
@@ -1685,9 +1732,9 @@ function generateMonostableProblem() {
     const ctx = canvas.getContext('2d');
     
     // 0. RESET UI & STATE
-    if (typeof resetAnswerBox === "function") resetAnswerBox();
+    // resetAnswerBox now safely handles input.value = "" and style resets
+    if (typeof resetAnswerBox === "function") hideAllInputGroups();
     currentMode = 'monostable';
-    document.getElementById('solText').style.display = "none"; // Hide old answer
 
     // 1. SETUP VARIABLES
     const R1_k = Math.floor(Math.random() * 173) + 47; 
@@ -1713,33 +1760,32 @@ function generateMonostableProblem() {
     if (monoGroup) monoGroup.style.display = "inline-block";
     
     const monoLabel = document.getElementById('labelMonostable');
-    const monoPrompt = document.getElementById('monostableInstruction');
     const inputMono = document.getElementById('inputMonostable');
 
-    if (monoPrompt) monoPrompt.innerHTML = "(Give answer to 1 d.p.)";
-    if (inputMono) inputMono.value = "";
+    // OMITTED: inputMono.value = "" (Handled by resetAnswerBox)
+    // OMITTED: Manual placeholder assignments (We can rely on a generic HTML placeholder 
+    // or keep them if you like the "dynamic" hint, but they aren't 'required' for the bug fix anymore)
 
-    // Coordination with checkAnswers()
     if (qType === 1) { // Calculating Time
         if (monoLabel) monoLabel.innerHTML = "T = ";
-        inputMono.placeholder = "e.g. " + roundedTime + " s";
+        inputMono.placeholder = "e.g. " + roundedTime + "s";
         currentAnswers.expectedT = roundedTime;
         currentAnswers.expectedUnit = "s";
     } else if (qType === 2) { // Calculating Resistance
         if (monoLabel) monoLabel.innerHTML = "R = ";
-        inputMono.placeholder = "e.g. " + R1_k + " k\u03a9";
+        inputMono.placeholder = "e.g. " + R1_k + "k\u03a9";
         currentAnswers.expectedT = R1_k;
         currentAnswers.expectedUnit = "k";
         rLabel = "R = ?";
     } else if (qType === 3) { // Calculating Capacitance
         if (monoLabel) monoLabel.innerHTML = "C = ";
-        inputMono.placeholder = "e.g. " + C_uF + " \u03bcF";
+        inputMono.placeholder = "e.g. " + C_uF + "\u03bcF";
         currentAnswers.expectedT = C_uF;
         currentAnswers.expectedUnit = "uf";
         cLabel = "C = ?";
     }
 
-    // 4. DRAWING HELPERS
+    // 4. DRAWING HELPERS (Kept for logic)
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     };
@@ -1754,7 +1800,7 @@ function generateMonostableProblem() {
         ctx.fillStyle = color; 
         ctx.font = "bold 14px Arial"; ctx.textAlign = "right";
         ctx.fillText(val, x - 20, y + 5);
-        ctx.fillStyle = "#000"; // Reset for next draw
+        ctx.fillStyle = "#000"; 
     };
     const drawCapacitor = (x, y, val, align="right", color="#000") => {
         ctx.strokeStyle = "#000";
@@ -1781,18 +1827,12 @@ function generateMonostableProblem() {
     // Timing Components
     const bX = 160;
     line(bX, 40, bX, 85); drawNode(bX, 40); 
-    
-    // Highlight R if it's the question
     drawResistorBox(bX, 110, rLabel, (qType === 2 ? "#E64097" : "#000"));
-
     line(bX, 135, bX, 285); drawNode(bX, 180); 
-    
-    // Highlight C if it's the question
     drawCapacitor(bX, 290, cLabel, "right", (qType === 3 ? "#E64097" : "#000"));
-
     line(bX, 295, bX, 360); drawNode(bX, 360); 
 
-    // Internal Pin Connections
+    // Pin Connections
     line(bX, 180, 220, 180); drawNode(220, 180); 
     line(220, 140, 220, 210); 
     line(220, 140, 260, 140); 
@@ -1801,12 +1841,11 @@ function generateMonostableProblem() {
     ctx.font = "14px Arial"; ctx.textAlign = "left";
     ctx.fillText("7", 265, 145);
     ctx.fillText("6", 265, 215);
-
     line(100, 240, 260, 240);
     ctx.fillText("2", 265, 245);
     ctx.textAlign = "center"; ctx.fillText("Trigger", 130, 235);
 
-    // Pins 4, 8, 1, 5
+    // Other Pins
     line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
     line(300, 80, 300, 120); ctx.fillText("4", 300, 135); 
     line(360, 80, 360, 120); ctx.fillText("8", 360, 135); 
@@ -1814,25 +1853,26 @@ function generateMonostableProblem() {
     line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
     drawCapacitor(360, 310, "10 nF", "left");
     line(360, 315, 360, 360); drawNode(360, 360);
-
     line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
-    // 6. Pulse Length label (Highlight if T is the question)
+    // 6. Pulse Length label
     ctx.font = "bold 18px Arial"; ctx.textAlign = "center";
     ctx.fillStyle = (qType === 1 ? "#E64097" : "#333");
     ctx.fillText(tLabel, 300, 410);
 
-    // 7. SOLUTION TEXT
+    // 7. PRE-CALCULATE SOLUTION (Displayed via toggle)
     const solElement = document.getElementById('solText');
     if (solElement) {
+        let solHTML = "";
         if (qType === 1) {
-            solElement.innerHTML = "<strong>Find T:</strong> T = 1.1 &times; R &times; C = 1.1 &times; " + R1_k + "k &times; " + C_uF + "&mu;F = <strong>" + roundedTime + " s</strong>";
+            solHTML = `<strong>Find T:</strong> T = 1.1 × R × C = 1.1 × ${R1_k}k × ${C_uF}μF = <strong>${roundedTime}s</strong>`;
         } else if (qType === 2) {
-            solElement.innerHTML = "<strong>Find R:</strong> R = T / (1.1 &times; C) = " + roundedTime + " / (1.1 &times; " + C_uF + "&mu;F) = <strong>" + R1_k + " k&Omega;</strong>";
+            solHTML = `<strong>Find R:</strong> R = T / (1.1 × C) = ${roundedTime} / (1.1 × ${C_uF}μF) = <strong>${R1_k}kΩ</strong>`;
         } else {
-            solElement.innerHTML = "<strong>Find C:</strong> C = T / (1.1 &times; R) = " + roundedTime + " / (1.1 &times; " + R1_k + "k) = <strong>" + C_uF + " &mu;F</strong>";
+            solHTML = `<strong>Find C:</strong> C = T / (1.1 × R) = ${roundedTime} / (1.1 × ${R1_k}k) = <strong>${C_uF}μF</strong>`;
         }
+        solElement.innerHTML = solHTML;
     }
 }
 
@@ -1857,7 +1897,7 @@ function generateZenerProblem() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath(); // Reset path memory
     
-    if (typeof resetAnswerBox === "function") resetAnswerBox();
+    if (typeof resetAnswerBox === "function") hideAllInputGroups();
     currentMode = 'zener';
     const solBox = document.getElementById('solText');
     if (solBox) solBox.style.display = "none";
@@ -2363,12 +2403,12 @@ function checkAnswers() {
             const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
             const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
             const b4 = document.getElementById('inputBandTol').value.toLowerCase().trim();
-            if (b1 === currentAnswers.b1 && b2 === currentAnswers.b2 && 
-                b3 === currentAnswers.b3 && b4 === currentAnswers.tol) {
-                results.push('correct');
-            } else {
-                results.push('wrong');
-            }
+            
+            // Push a result for EACH box individually so the array has exactly 4 items
+            results.push(b1 === currentAnswers.b1 ? 'correct' : 'wrong');
+            results.push(b2 === currentAnswers.b2 ? 'correct' : 'wrong');
+            results.push(b3 === currentAnswers.b3 ? 'correct' : 'wrong');
+            results.push(b4 === currentAnswers.tol ? 'correct' : 'wrong');
         }
     } 
     else if (currentMode === 'analysis') {
@@ -2724,69 +2764,41 @@ function updateZenerSolution(isClosed) {
     }
 }
     
-/**
- * PART 1: The Master Reset
- * This hides the containers and resets the UI layout.
- */
+//The Master Reset. This hides the containers and resets the UI layout.
+
 function hideAllInputGroups() {
-    const groups = [
-        'inputGroupV', 'inputGroupI', 'inputGroupR', 'oscilloscopeInputs',
-        'inputGroupMonostable', 'inputGroupAstable', 'inputGroupMarkSpace',
-        'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
-        'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
-        'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener'
-    ];
+    // 1. Reset all the grading locks (from our last fix!)
+    isCurrentProblemSolved = false;
+    hasCheckedCurrentProblem = false;
+    viewedSolution = false;
+    unitErrorMade = false;
 
-    // 1. Hide the main input wrappers
-    groups.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
+    // 2. Hide every div that has the 'input-group' class
+    document.querySelectorAll('.input-group').forEach(el => el.style.display = 'none');
 
-    // 2. Clear Feedback and Solution areas
-    const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerHTML = "";
+    // 3. Clear common UI elements
+    document.getElementById('feedback')?.replaceChildren();
+    document.getElementById('solutions') && (document.getElementById('solutions').style.display = 'none');
+    document.getElementById('solText')?.replaceChildren();
 
-    const solutions = document.getElementById('solutions');
-    const solText = document.getElementById('solText');
-    if (solutions) solutions.style.display = 'none';
-    if (solText) solText.innerHTML = "";
-
-    // 3. Wipe and hide the Question Text
+    // 4. Hide and wipe Question Text
     const qText = document.getElementById('questionText');
     if (qText) {
-        qText.innerHTML = "";      
-        qText.style.display = 'none'; 
+        qText.style.display = 'none';
+        qText.replaceChildren();
     }
 
-    // 4. Clear instruction prompts
-    const prompts = ['instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction'];
-    prompts.forEach(id => {
-        const p = document.getElementById(id);
-        if (p) p.innerHTML = "";
-    });
+    // 5. Clear all instruction prompts in one go
+    document.querySelectorAll('.instruction-text').forEach(p => p.replaceChildren());
 
-    // 5. Specifically hide Zener sub-sections
-    const zOpen = document.getElementById('zenerOpenQuestions');
-    const zClosed = document.getElementById('zenerClosedQuestions');
-    if (zOpen) zOpen.style.display = 'none';
-    if (zClosed) zClosed.style.display = 'none';
-
-    // 6. IMPORTANT: Always call the data clearer as well
-    clearZenerInputs();
-}
-
-/**
- * PART 2: The Data Clearer
- * This specifically empties the values inside the input boxes.
- */
-function clearZenerInputs() {
-    const zenerIds = ['zenerQ_IL', 'zenerQ_VL', 'zenerQ_IZ', 'zenerQ_PZ'];
-    zenerIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.value = ''; 
-            el.style.backgroundColor = ''; // Resets the red/green status
+    // 6. THE ULTIMATE WIPER (Replaces clearZenerInputs and resetAnswerBox)
+    // This grabs EVERY text/number input on the entire page and resets it
+    document.querySelectorAll('input').forEach(input => {
+        if (input.type === 'text' || input.type === 'number') {
+            input.value = "";                     // Empties the text
+            input.style.borderColor = "#ccc";     // Resets border color
+            input.style.borderWidth = "1px";      // Resets border thickness
+            input.style.backgroundColor = "";     // Resets background color (covers Zener!)
         }
     });
 }
