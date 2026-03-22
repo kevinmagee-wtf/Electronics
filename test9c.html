@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abingdon School - Electronics Quiz</title>
 <style>
-    /* ============================================================
+/* ============================================================
        1. GLOBAL STYLES & BACKGROUND
        ============================================================ */
     body { 
@@ -124,7 +124,7 @@
     }
     
     /* ============================================================
-       4. QUIZ INPUT GROUPS (THE FIX FOR JUMPING LABELS & LEAKS)
+       4. QUIZ INPUT GROUPS - REVERTED TO "NICE CSS BOX SIZE"
        ============================================================ */
     .input-area { 
         flex-grow: 1;
@@ -135,30 +135,28 @@
         gap: 12px;
     }
 
-    /* Core container behavior (REMOVED !important from display so JS can hide/show elements) */
     .input-group {
         display: flex; 
         flex-direction: row !important; 
         align-items: center !important;
         justify-content: center !important;
         width: 100% !important;
-        flex-wrap: nowrap !important; /* Forbids boxes jumping under labels */
+        flex-wrap: nowrap !important;
         margin: 5px 0;
     }
 
-    /* CRITICAL FIX: If JavaScript turns this "on" using 'block', force it back into a row layout */
     div.input-group[style*="display: block"], 
     div.input-group[style*="display:block"] {
         display: flex !important;
     }
 
-    /* Lock the Pink Labels so all Equals Signs perfectly align vertically */
+    /* Restored to elegant, smaller dimensions */
     .input-group label, 
     .input-group > span:first-child {
-        width: 140px !important;       
-        min-width: 140px !important;   
+        width: 120px !important;       
+        min-width: 120px !important;   
         text-align: right !important;  
-        font-size: 22px !important;    
+        font-size: 18px !important;    /* Shrunk back from 22px */
         font-weight: 800 !important;
         color: #E64097 !important;
         margin: 0 15px 0 0 !important; 
@@ -168,13 +166,12 @@
         flex-shrink: 0 !important;     
     }
 
-    /* COMPLEX OVERRIDES: Stop Zener & Color Code layouts from being forced side-by-side */
+    /* Complex Overrides */
     #inputGroupZener, #zenerClosedQuestions, #zenerOpenQuestions, #inputGroupGrade9Zener, #inputGroupColorNames {
         flex-direction: column !important;
         align-items: center !important;
     }
 
-    /* Reset the label styling for complex nested questions so they read normally */
     #inputGroupZener label, 
     #inputGroupGrade9Zener label,
     #inputGroupColorNames label,
@@ -183,20 +180,20 @@
         min-width: 0 !important;
         text-align: left !important;
         color: #333 !important;
-        font-size: 16px !important;
+        font-size: 15px !important;
         margin-bottom: 5px !important;
         display: block !important;
     }
 
-    /* Standardized Input Boxes */
+    /* Shrunk boxes back to 40px height */
     .quiz-section input[type="text"], 
     .quiz-section input[type="number"] { 
-        height: 48px !important; 
-        width: 130px !important;       
-        font-size: 18px !important;
+        height: 40px !important;       /* Shrunk back from 48px */
+        width: 110px !important;       /* Shrunk back from 130px */
+        font-size: 16px !important;    /* Shrunk back from 18px */
         border: 2px solid #ccc !important;
-        border-radius: 8px !important;
-        padding: 5px 12px !important;
+        border-radius: 6px !important;
+        padding: 5px 10px !important;
         text-align: center !important;
         outline: none !important;
         background: #fff !important;
@@ -205,13 +202,13 @@
     }
 
     .quiz-section select {
-        height: 48px !important;
-        width: 85px !important;
+        height: 40px !important;       /* Shrunk back from 48px */
+        width: 75px !important;        /* Shrunk back from 85px */
         margin-left: 10px !important;
         background-color: white !important;
         border: 2px solid #ccc !important;
-        border-radius: 8px !important;
-        font-size: 18px !important;
+        border-radius: 6px !important;
+        font-size: 16px !important;
         flex-shrink: 0 !important;
     }
 
@@ -227,7 +224,7 @@
     input::placeholder { color: #aaa; opacity: 1; font-style: italic; }
     
     /* ============================================================
-       5. BUTTON GHOSTING FIX & CONTROLS
+       5. BUTTONS & CONTROLS
        ============================================================ */
     .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
     .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
@@ -235,7 +232,6 @@
     button { padding: 12px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 6px; font-weight: bold; transition: all 0.2s; }
     button:active { transform: scale(0.98); }
     
-    /* Forced Opaque Colors to stop any ghosting transparency */
     .btn-download { background-color: #198754 !important; color: #ffffff !important; opacity: 1 !important; }
     .btn-secondary { background-color: #6c757d !important; color: #ffffff !important; opacity: 1 !important; }
     .btn-check { background-color: #E64097 !important; color: #ffffff !important; opacity: 1 !important; width: 100%; margin-top: 10px; }
