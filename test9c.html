@@ -546,45 +546,52 @@ function getSafePowerRating(power_mW) {
  */
 
 function validateScientificValue(userInput, correctValue, tolerance = 0) {
+    // 1. Clean the input
     let input = userInput.trim();
     
-    // 1. Strict Prefix Check: Reject Capital 'K'
+    // 2. Strict Prefix Check: Reject Capital 'K' (per your engineering rules)
     if (input.includes('K')) return false;
 
-    // 2. Strict Prefix Check: Reject lowercase 'm' ONLY if it isn't part of "ohm"
+    // 3. Strict Prefix Check: Reject lowercase 'm' ONLY if it isn't part of "ohm"
+    // This allows "ohms" but rejects "milli"
     if (input.includes('m') && !input.toLowerCase().includes('ohm')) {
         return false; 
     }
 
-    // 3. MANDATORY UNIT CHECK: Must contain Ω or some version of "ohm/ohms" (Any case)
+    // 4. MANDATORY UNIT CHECK: Must contain Ω or some version of "ohm/ohms"
     const hasUnit = /Ω|ohms?/i.test(input);
     if (!hasUnit) return false; 
 
-    // 4. Identify Multiplier
+    // 5. Identify Multiplier BEFORE stripping strings
     let multiplier = 1;
     if (input.toLowerCase().includes('k')) multiplier = 1000;
-    if (input.includes('M')) multiplier = 1000000; // Mega stays strictly Capital M
-
-    // 5. Extract the Number
-    // THE FIX: We remove the word "ohms" or "ohm" (case insensitive) FIRST.
-    // This prevents the 'm' or 'M' filters from breaking the word "ohms".
-    let numericString = input.replace(/ohms?/gi, ''); 
     
-    // Now that the word "ohms" is gone, we safely remove k, M, or Ω symbols
-    // We do NOT use the 'i' flag here so that 'M' doesn't accidentally 
-    // try to match a lowercase 'm' that isn't there anymore.
-    numericString = numericString.replace(/[kMΩ]/g, '').trim();
+    // Use a Regex that ensures 'M' is a prefix (usually near a number) 
+    // and not just a middle letter in "OHMS"
+    if (input.includes('M')) {
+        // Only treat as Mega if it's NOT part of the word OHMS
+        if (!/ohms?/i.test(input) || input.match(/\d\s?M/)) {
+            multiplier = 1000000;
+        }
+    }
+
+    // 6. EXTRACT THE NUMBER (The "Strip" Logic)
+    // STEP A: Remove the word "ohms" or "ohm" first (Case Insensitive)
+    let cleanString = input.replace(/ohms?/gi, '');
+    
+    // STEP B: Remove the symbols k, M, or Ω (Case Sensitive here to protect logic)
+    cleanString = cleanString.replace(/[kMΩ]/g, '').trim();
                              
-    let userNum = parseFloat(numericString);
+    let userNum = parseFloat(cleanString);
 
     if (isNaN(userNum)) return false;
 
-    // 6. Final Calculation
+    // 7. Final Calculation
     let userTotal = userNum * multiplier;
 
-    // 7. Tolerance Comparison
+    // 8. Tolerance Comparison
     if (tolerance === 0) {
-        // 0.1 buffer prevents rounding errors (e.g., 1200.000000002)
+        // 0.1 buffer handles floating point rounding errors
         return Math.abs(userTotal - correctValue) < 0.1;
     } else {
         return Math.abs(userTotal - correctValue) <= (correctValue * tolerance);
