@@ -1591,8 +1591,15 @@ function generateOscilloscopeProblem() {
 function generateAstableProblem() {
     // 1. UI RESET
     hideAllInputGroups();
+    
+    // FIX: Hide the master solutions container, NOT the text paragraph!
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none"; 
+    
+    // Failsafe: Make sure the text paragraph is visible if it got stuck hidden
     const solBox = document.getElementById('solText');
-    if (solBox) solBox.style.display = "none"; // Hide previous answer
+    if (solBox) solBox.style.display = "block"; 
+    
     if (typeof resetAnswerBox === "function") hideAllInputGroups();
     
     // 2. SELF-INITIALIZE CANVAS
@@ -1641,8 +1648,8 @@ function generateAstableProblem() {
         
         currentAnswers.astableValue = parseFloat(freq.toFixed(1)); 
         currentAnswers.astableTValue = parseFloat(period_ms.toFixed(1)); 
-        currentAnswers.astableUnit = "hz";   // Tells the judge to expect Hz
-        currentAnswers.astableTUnit = "ms";  // Tells the judge to expect ms
+        currentAnswers.astableUnit = "hz";   
+        currentAnswers.astableTUnit = "ms";  
     } else {
         if(groupRatio) groupRatio.style.display = "inline-block";
         if(groupStd) groupStd.style.display = "none";
@@ -1790,8 +1797,11 @@ function generateMonostableProblem() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
+    // FIX: Hide the container, not the text!
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none";
+    
     // 0. RESET UI & STATE
-    // resetAnswerBox now safely handles input.value = "" and style resets
     if (typeof resetAnswerBox === "function") hideAllInputGroups();
     currentMode = 'monostable';
 
@@ -1821,10 +1831,6 @@ function generateMonostableProblem() {
     const monoLabel = document.getElementById('labelMonostable');
     const inputMono = document.getElementById('inputMonostable');
 
-    // OMITTED: inputMono.value = "" (Handled by resetAnswerBox)
-    // OMITTED: Manual placeholder assignments (We can rely on a generic HTML placeholder 
-    // or keep them if you like the "dynamic" hint, but they aren't 'required' for the bug fix anymore)
-
     if (qType === 1) { // Calculating Time
         if (monoLabel) monoLabel.innerHTML = "T = ";
         inputMono.placeholder = "e.g. " + roundedTime + "s";
@@ -1844,7 +1850,7 @@ function generateMonostableProblem() {
         cLabel = "C = ?";
     }
 
-    // 4. DRAWING HELPERS (Kept for logic)
+    // 4. DRAWING HELPERS
     const line = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     };
@@ -1920,7 +1926,7 @@ function generateMonostableProblem() {
     ctx.fillStyle = (qType === 1 ? "#E64097" : "#333");
     ctx.fillText(tLabel, 300, 410);
 
-    // 7. PRE-CALCULATE SOLUTION (Displayed via toggle)
+    // 7. PRE-CALCULATE SOLUTION
     const solElement = document.getElementById('solText');
     if (solElement) {
         let solHTML = "";
