@@ -2649,11 +2649,20 @@ function hubController(ctx, canvas) {
     viewedSolution = false; 
     unitErrorMade = false; 
 
-    // 3. Clear text containers
+    // 3. Clear text containers and set default instructions
     const qText = document.getElementById('questionText');
     if (qText) {
-        qText.innerHTML = '';
-        qText.style.display = 'none'; // Keep hidden unless a module needs it
+        // Set Option 1 as the default instruction
+        qText.innerHTML = "<em>Enter your value followed by a standard unit (e.g., 5 A, 12 mV).</em>";
+        qText.style.display = 'block'; 
+        
+        // Hide it on pages that use Dropdowns or shouldn't have this specific prompt
+        if (currentMode === 'resistance' || currentMode === 'colorcode' || currentMode === 'astable' || currentMode === 'home') {
+            qText.style.display = 'none'; 
+        }
+        
+        // Note: The Grade 9 challenges will automatically overwrite this text 
+        // with their own "🏆 Grade 9 Challenge" prompts when their specific functions run!
     }
 
     // 4. ROUTER: Setup the UI for the specific mode
