@@ -5,9 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abingdon School - Electronics Quiz</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="data:,">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abingdon School - Electronics Quiz</title>
 <style>
     /* ============================================================
-       MASTER STYLES (ORIGINAL 290-LINE STRUCTURE)
+       1. GLOBAL STYLES & BACKGROUND
        ============================================================ */
     body { 
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -30,7 +37,9 @@
     .header p { margin-top: 5px; font-size: 18px; color: #555; }
     .header span { color: #E64097; font-weight: bold; }
     
-    /* NAVIGATION & TABS */
+    /* ============================================================
+       2. NAVIGATION & TAB BUTTONS
+       ============================================================ */
     .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
     
     #mainMenu {
@@ -77,94 +86,106 @@
         text-align: center;
     }
 
-    .tab:hover {
-        background-color: #cf3584;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
+    .tab:hover { background-color: #cf3584; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    .tab:focus-visible, button:focus-visible { outline: 3px solid #000; outline-offset: 3px; }
+    .tab.active { background-color: #000000; color: white; border-color: #000; }
     
-    .tab:focus-visible, button:focus-visible {
-        outline: 3px solid #000;
-        outline-offset: 3px;
-    }
-
-    .tab.active {
-        background-color: #000000;
-        color: white;
-        border-color: #000;
-    }
-    
-    /* MAIN LAYOUT */
+    /* ============================================================
+       3. MAIN APP LAYOUT (CANVAS + QUIZ AREA)
+       ============================================================ */
     .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
     .left-panel { flex: 1 1 300px; max-width: 650px; width: 100%; } 
     
     .circuit-container { 
-        border: 2px solid #eaeaea; padding: 15px; text-align: center; 
-        background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        height: 520px; display: flex; flex-direction: column; justify-content: center;
+        border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; 
+        border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); height: 520px; 
+        display: flex; flex-direction: column; justify-content: center;
     }
     
     canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
     
-    .right-panel { 
-        flex: 1 1 300px; display: flex; flex-direction: column; width: 100%; 
-        max-width: 500px; height: 520px;
-    }
+    .right-panel { flex: 1 1 300px; display: flex; flex-direction: column; width: 100%; max-width: 500px; height: 520px; }
     
     .quiz-section { 
-        background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; 
-        border: 1px solid #f2c7db; display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
+        background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; 
+        display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
     }
     
     .quiz-header { 
-        display: flex; justify-content: space-between; align-items: center; 
-        border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; 
+        display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; 
+        padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; 
     }
     
     .quiz-header h3 { margin: 0; font-size: 1.2rem; }
     
     .scoreboard { 
-        background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; 
-        border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; 
-        box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); 
+        background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; 
+        font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); 
     }
     
-    /* =======================================================
-       UPGRADED INPUT AREA - IRONCLAD SIDE-BY-SIDE
-       ======================================================= */
+    /* ============================================================
+       4. QUIZ INPUT GROUPS (THE FIX FOR JUMPING LABELS & LEAKS)
+       ============================================================ */
     .input-area { 
         flex-grow: 1;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap: 15px; 
-        width: 100%;
+        gap: 12px;
     }
 
+    /* Core container behavior (REMOVED !important from display so JS can hide/show elements) */
     .input-group {
-        display: flex !important;
-        flex-direction: row !important; /* Forces elements side-by-side */
+        display: flex; 
+        flex-direction: row !important; 
         align-items: center !important;
         justify-content: center !important;
         width: 100% !important;
-        flex-wrap: nowrap !important; /* CRITICAL FIX: FORBIDS WRAPPING OR JUMPING */
+        flex-wrap: nowrap !important; /* Forbids boxes jumping under labels */
         margin: 5px 0;
     }
 
-    /* Standardizes the Pink Labels so all Equals Signs align */
+    /* CRITICAL FIX: If JavaScript turns this "on" using 'block', force it back into a row layout */
+    div.input-group[style*="display: block"], 
+    div.input-group[style*="display:block"] {
+        display: flex !important;
+    }
+
+    /* Lock the Pink Labels so all Equals Signs perfectly align vertically */
     .input-group label, 
     .input-group > span:first-child {
         width: 140px !important;       
         min-width: 140px !important;   
         text-align: right !important;  
-        font-size: 24px !important;    
+        font-size: 22px !important;    
         font-weight: 800 !important;
         color: #E64097 !important;
         margin: 0 15px 0 0 !important; 
-        display: inline-block !important; 
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
         flex-shrink: 0 !important;     
-        line-height: 1 !important;
+    }
+
+    /* COMPLEX OVERRIDES: Stop Zener & Color Code layouts from being forced side-by-side */
+    #inputGroupZener, #zenerClosedQuestions, #zenerOpenQuestions, #inputGroupGrade9Zener, #inputGroupColorNames {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    /* Reset the label styling for complex nested questions so they read normally */
+    #inputGroupZener label, 
+    #inputGroupGrade9Zener label,
+    #inputGroupColorNames label,
+    #inputGroupZener .input-group label {
+        width: auto !important;
+        min-width: 0 !important;
+        text-align: left !important;
+        color: #333 !important;
+        font-size: 16px !important;
+        margin-bottom: 5px !important;
+        display: block !important;
     }
 
     /* Standardized Input Boxes */
@@ -181,10 +202,8 @@
         background: #fff !important;
         flex-shrink: 0 !important;     
         color: #333 !important;
-        opacity: 1 !important;
     }
 
-    /* Select Dropdown */
     .quiz-section select {
         height: 48px !important;
         width: 85px !important;
@@ -196,73 +215,38 @@
         flex-shrink: 0 !important;
     }
 
-    /* Complex Overrides: Prevents Zener & Colors from being crushed horizontally */
-    #inputGroupZener, 
-    #zenerClosedQuestions, 
-    #zenerOpenQuestions, 
-    #inputGroupGrade9Zener,
-    #inputGroupColorNames {
-        flex-direction: column !important; 
-        align-items: flex-start !important;
-    }
-
-    /* Fixes internal labels for Zener so they look normal */
-    #inputGroupZener label, 
-    #inputGroupGrade9Zener label,
-    #inputGroupColorNames label {
-        width: auto !important;
-        min-width: 0 !important;
-        text-align: left !important;
-        color: #333 !important;
-        font-size: 16px !important;
-        margin-bottom: 5px !important;
-        display: block !important;
-    }
-
-    /* Astable sub-group layout */
-    #inputGroupAstable {
-        flex-direction: column !important; 
-    }
-    #inputGroupAstable > div {
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 10px;
-        width: 100%;
-        justify-content: center;
-    }
-
     .quiz-section input:focus, .quiz-section select:focus {
         border-color: #E64097 !important; 
         box-shadow: 0 0 5px rgba(230, 64, 151, 0.4) !important;
     }
 
     .quiz-section input[type="number"]::-webkit-inner-spin-button, 
-    .quiz-section input[type="number"]::-webkit-outer-spin-button { 
-        -webkit-appearance: none; margin: 0; 
-    }
+    .quiz-section input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     .quiz-section input[type="number"] { -moz-appearance: textfield; }
 
     input::placeholder { color: #aaa; opacity: 1; font-style: italic; }
     
-    /* =======================================================
-       BUTTON GHOSTING FIXES
-       ======================================================= */
+    /* ============================================================
+       5. BUTTON GHOSTING FIX & CONTROLS
+       ============================================================ */
+    .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
     .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
     
     button { padding: 12px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 6px; font-weight: bold; transition: all 0.2s; }
     button:active { transform: scale(0.98); }
     
-    /* Forces vivid, fully opaque colors to prevent ghosting */
+    /* Forced Opaque Colors to stop any ghosting transparency */
     .btn-download { background-color: #198754 !important; color: #ffffff !important; opacity: 1 !important; }
     .btn-secondary { background-color: #6c757d !important; color: #ffffff !important; opacity: 1 !important; }
     .btn-check { background-color: #E64097 !important; color: #ffffff !important; opacity: 1 !important; width: 100%; margin-top: 10px; }
     .btn-check:hover { background-color: #cc2b81 !important; }
     .btn-black { background-color: #000000 !important; color: #ffffff !important; opacity: 1 !important; }
     
-    .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
     .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; }
 
-    /* MODALS */
+    /* ============================================================
+       6. MODALS
+       ============================================================ */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; border-top: 6px solid #E64097; }
     .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px;}
@@ -271,7 +255,9 @@
     .form-group input { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; }
     .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
     
-    /* MOBILE COMPATIBILITY */
+    /* ============================================================
+       7. MOBILE RESPONSIVENESS
+       ============================================================ */
     @media (max-width: 1050px) {
         .main-layout { flex-direction: column; align-items: center; width: 100%; }
         #circuitCanvas { width: 95vw; height: auto; max-width: 600px; }
@@ -334,25 +320,23 @@
         </div>
 
         <div class="right-panel">
-    <div class="quiz-section">
-        
-        <div class="quiz-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 15px; margin-bottom: 15px;">
-            
-            <div class="scoreboard" id="scoreDisplay" style="margin: 0;">Score: 0 / 0</div>
+            <div class="quiz-section">
+                
+                <div class="quiz-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 15px; margin-bottom: 15px;">
+                    <div class="scoreboard" id="scoreDisplay" style="margin: 0;">Score: 0 / 0</div>
 
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 120px;">
-                    ⬇️ Download
-                </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 120px;">
+                            ⬇️ Download
+                        </button>
+                        <button id="dataSheetBtn" class="btn-secondary" onclick="openDataSheet()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 120px;">
+                            📖 Data Sheet
+                        </button>
+                    </div>
+                </div>
         
-                <button id="dataSheetBtn" class="btn-secondary" onclick="openDataSheet()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 120px;">
-                    📖 Data Sheet
-                </button>
-            </div>
-            
-        </div>
-        
-        <div id="questionText" style="font-weight: bold; margin-bottom: 20px; color: #333; text-align: left; min-height: 24px;"></div>
+                <div id="questionText" style="font-weight: bold; margin-bottom: 20px; color: #333; text-align: left; min-height: 24px;"></div>
+                
                 <div class="input-area">
 
                     <div class="input-group" id="inputGroupV" style="display:none;">
@@ -382,11 +366,11 @@
                     </div>
                         
                     <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
-                        <div style="margin-bottom: 10px;">
+                        <div style="margin-bottom: 10px; display: flex; justify-content: center; align-items: center; width: 100%;">
                             <label id="labelAstable" for="inputAstable">Frequency = </label>
                             <input type="text" id="inputAstable" placeholder="e.g. 50 Hz">
                         </div>
-                        <div>
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
                             <label id="labelAstableT" for="inputAstableT">Time Period = </label>
                             <input type="text" id="inputAstableT" placeholder="e.g. 20 ms">
                         </div>
@@ -395,8 +379,8 @@
 
                     <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%;">
                         <div style="height: 55px; visibility: hidden;"></div> 
-                        <div style="margin-bottom: 10px;">
-                            <label for="inputMarkSpace" style="font-weight: bold;">Mark-Space Ratio = </label>
+                        <div style="margin-bottom: 10px; display: flex; justify-content: center; align-items: center; width: 100%;">
+                            <label for="inputMarkSpace" style="font-weight: bold;">Ratio = </label>
                             <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;">
                         </div>
                         <div id="ratioInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
@@ -419,13 +403,12 @@
                             <label id="labelOscFreq" for="inputOscFreq">Frequency = </label><input type="text" id="inputOscFreq">
                         </div>
                         <div class="input-group" id="inputGroupOscRatio" style="display:none;">
-                        <div class="input-spacer"></div> <label>Mark/Space Ratio = </label>
+                        <div class="input-spacer"></div> <label>Ratio = </label>
                             <input type="text" id="inputOscRatio" placeholder="e.g. 1/2">
                         </div>
                     </div>
 
                     <div id="inputGroupZener" class="input-group" style="display:none; text-align: left; width: 100%;">
-    
                         <div id="zenerClosedQuestions" class="input-group" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
                             <p style="margin-top:0; font-weight: bold; color: #333; margin-bottom: 15px;">Switch S is CLOSED. Calculate:</p>
                             <div style="margin-bottom: 15px;">
@@ -452,7 +435,6 @@
                     </div>
 
                     <div id="inputGroupGrade9Zener" class="input-group" style="display: none; margin-top: 15px;">
-                    
                         <div id="g9ZenerClosed" style="display: none;">
                             <div style="margin-bottom: 15px;">
                                 <label>Max Load Current (I<sub>L</sub>): </label>
@@ -485,11 +467,8 @@
                             <option value="kΩ">kΩ</option>
                             <option value="MΩ">MΩ</option>
                         </select>
-                        
                         <span style="font-size: 20px; font-weight: bold; margin: 0 5px;">±</span>
-                        
                         <input type="text" id="inputResTol" placeholder="Tol" style="width: 60px; padding: 8px; font-size: 16px;">
-                        
                         <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">%</span>
                     </div>
 
@@ -515,10 +494,8 @@
                             </div>
                         </div>
                     </div>
-                </div> 
-
-                <div style="margin-top: 20px;">
-                    <button class="btn-check" onclick="checkAnswers()">Check Answer(s)</button>
+                </div> <div style="margin-top: 20px;">
+                    <button class="btn-check" onclick="checkAnswers()" style="padding: 10px 20px; background-color: #E64097; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Check Answer(s)</button>
                     <div id="feedback" class="feedback" style="margin-top: 15px; font-weight: bold; min-height: 1.2em;"></div>
                 </div>
                     
