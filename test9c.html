@@ -116,9 +116,23 @@
     .btn-download:hover { background-color: #157347; }
     .btn-download:disabled { background-color: #6c757d; cursor: wait; }
     
-    .input-area { text-align: center; }
-    .input-spacer { height: 55px; visibility: hidden; display: block; }
-    .input-group { margin: 10px 0; font-size: 18px; font-weight: bold; display: inline-block; margin-right: 15px; }
+    /*  Standardise input area height so buttons stay locked in place */
+    .input-area { 
+        text-align: center; 
+        min-height: 160px; /* Adjust this if your Zener/Oscilloscope boxes need more room */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .input-spacer { height: 55px; visibility: hidden; display: none; /* Changed to none as flexbox handles spacing now */ }
+    
+    .input-group { 
+        margin: 6px 0; /* Slightly tighter margin so stacked boxes fit nicely */
+        font-size: 18px; 
+        font-weight: bold; 
+    }
     
     .quiz-section input[type="text"] { 
         font-size: 18px; 
@@ -1215,8 +1229,10 @@ function generateAnalysisProblem(ctx, canvas) {
     // TURN ON THE V AND I BOXES
     const groupV = document.getElementById('inputGroupV');
     const groupI = document.getElementById('inputGroupI');
-    if (groupV) groupV.style.display = 'inline-block';
-    if (groupI) groupI.style.display = 'inline-block';
+    
+    // FIX #2: Change to 'block' so they stack on separate lines
+    if (groupV) groupV.style.display = 'block'; 
+    if (groupI) groupI.style.display = 'block';
 
     const inputV = document.getElementById('inputV');
     const inputI = document.getElementById('inputI');
@@ -1270,14 +1286,14 @@ function generateAnalysisProblem(ctx, canvas) {
     if (labelV) labelV.innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
     if (labelI) labelI.innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.iNameHTML + "</span> = ";
     
-    // FIX DEVELOPER TRAP: Generic placeholders, clear previous text
+    // FIX #1: Change placeholders to integer values
     if (inputV) {
         inputV.value = "";
-        inputV.placeholder = "e.g. 5.5 " + vUnit;
+        inputV.placeholder = "e.g. 5 " + vUnit; 
     }
     if (inputI) {
         inputI.value = "";
-        inputI.placeholder = "e.g. 2.5 " + iUnit;
+        inputI.placeholder = "e.g. 2 " + iUnit; 
     }
 
     // Drawing Prep
