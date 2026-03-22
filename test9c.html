@@ -2931,63 +2931,70 @@ async function processSubmission() {
 function parseInput(str) {
     if (!str) return null;
 
-    // 1. Lowercase and remove all spaces
-    // This turns "100 Ohms" into "100ohms"
-    let cleanStr = str.toLowerCase().replace(/\s+/g, '');
+    // 1. Remove all spaces, but KEEP casing for symbol validation
+    let cleanStr = str.trim().replace(/\s+/g, '');
     
     // 2. Handle Ratios (e.g., 1/3 for Oscilloscope)
-    let strippedStr = cleanStr.replace(/[a-z]+$/, '');
-    if (/^\d+\/\d+$/.test(strippedStr)) {
-        let parts = strippedStr.split('/');
+    // We lowercase only for this check to ensure stability
+    let ratioCheck = cleanStr.toLowerCase().replace(/[a-z]+$/, '');
+    if (/^\d+\/\d+$/.test(ratioCheck)) {
+        let parts = ratioCheck.split('/');
         return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio' };
     }
 
     // 3. The "Smart" Unit Matcher
-    // We updated the second bracket to include the literal Ω and μ symbols
-    const match = cleanStr.match(/^(-?[\d\.]+)([a-z\u03a9\u03bcΩμ]+)$/);
+    // Removed .toLowerCase() from the regex to capture strict casing (A vs a, V vs v)
+    const match = cleanStr.match(/^(-?[\d\.]+)([a-zA-Z\u03a9\u03bcΩμ]+)$/);
     
     if (match) {
         let val = parseFloat(match[1]);
-        let rawUnit = match[2];
+        let rawUnit = match[2]; 
+        let lowerUnit = rawUnit.toLowerCase();
         let normalizedUnit = "";
 
         // RESISTANCE: kΩ, kohm, kohms, k, Ω, ohm, ohms, r
-        if (rawUnit.match(/^(k\u03a9|kΩ|kohm|kohms|k)$/)) {
-            normalizedUnit = "kohms";
-        } else if (rawUnit.match(/^(\u03a9|Ω|ohm|ohms|r)$/)) {
-            normalizedUnit = "ohms";
+        // Words (ohms) match regardless of case. Symbols (k, Ω) match exactly.
+        if (rawUnit === 'k' || rawUnit === 'kΩ' || lowerUnit.match(/^(kohm|kohms)$/)) {
+            normalizedUnit = "kΩ";
+        } else if (rawUnit === 'Ω' || rawUnit === 'r' || lowerUnit.match(/^(ohm|ohms)$/)) {
+            normalizedUnit = "Ω";
         } 
         
-        // VOLTAGE: v, volts, volt, mv, millivolts
-        else if (rawUnit.match(/^(mv|millivolts|millivolt)$/)) {
-            normalizedUnit = "mv";
-        } else if (rawUnit.match(/^(v|volts|volt)$/)) {
-            normalizedUnit = "v";
+        // VOLTAGE: V, volts, volt, mV, millivolts
+        // Strict: Must be "V" (cap) or "mV" (cap V). Words are lenient.
+        else if (rawUnit === 'mV' || lowerUnit.match(/^(millivolts|millivolt|mvolt|mvolts)$/)) {
+            normalizedUnit = "mV";
+        } else if (rawUnit === 'V' || lowerUnit.match(/^(volts|volt)$/)) {
+            normalizedUnit = "V";
         } 
         
-        // CURRENT: a, amps, amp, amperes, ma, milliamps, milliamp
-        else if (rawUnit.match(/^(ma|milliamps|milliamp)$/)) {
-            normalizedUnit = "ma";
-        } else if (rawUnit.match(/^(a|amps|amp|amperes)$/)) {
-            normalizedUnit = "a";
+        // CURRENT: A, amps, amp, amperes, mA, milliamps, mAmp
+        else if (rawUnit === 'mA' || lowerUnit.match(/^(milliamps|milliamp|mamp|mamps)$/)) {
+            normalizedUnit = "mA";
+        } else if (rawUnit === 'A' || lowerUnit.match(/^(amps|amp|amperes)$/)) {
+            normalizedUnit = "A";
         }
         
         // TIME (For Oscilloscope/Astable): s, sec, seconds, ms, milliseconds
-        else if (rawUnit.match(/^(ms|milliseconds|millisecond)$/)) {
+        else if (rawUnit === 'ms' || lowerUnit.match(/^(milliseconds|millisecond)$/)) {
             normalizedUnit = "ms";
-        } else if (rawUnit.match(/^(s|sec|secs|seconds|second)$/)) {
+        } else if (lowerUnit.match(/^(s|sec|secs|seconds|second)$/)) {
             normalizedUnit = "s";
+        }
+
+        // FREQUENCY
+        else if (rawUnit === 'Hz' || lowerUnit === 'hertz') {
+            normalizedUnit = "Hz";
         }
         
         else {
-            normalizedUnit = rawUnit; 
+            normalizedUnit = rawUnit; // Fallback to what they typed
         }
 
         return { val: val, unit: normalizedUnit };
     }
 
     // 4. Fallback for numbers only (e.g. user just types "100")
-    // This allows the checker to accept "100" as "100 ohms" if logic allows
     let finalVal = parseFloat(cleanStr);
     return { val: isNaN(finalVal) ? null : finalVal, unit: '' }; 
 }
@@ -2995,42 +3002,37 @@ function parseInput(str) {
 function validateMatch(parsedInput, expectedVal, expectedUnit) {
     
     // 1. BASIC VALIDATION
-    // If input is empty, non-existent, or the number couldn't be parsed
     if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
     
-    const targetUnit = expectedUnit.toLowerCase();
-    const userUnit = parsedInput.unit.toLowerCase();
-
     // 2. OSCILLOSCOPE RATIOS (e.g. 1/3)
-    // Ratios are unitless, so we only check the mathematical value
-    if (targetUnit === 'ratio') {
-        // Higher precision check for fractions (0.01)
+    if (expectedUnit === 'ratio') {
         return Math.abs(parsedInput.val - expectedVal) < 0.01 ? 'correct' : 'wrongval';
     }
     
     // 3. VALUE MATCHING
-    // Check if the number is within 0.05 of the target (handles rounding)
-    const valMatch = Math.abs(parsedInput.val - expectedVal) < 0.05;
+    // Precision fix: Check within 1% of target OR 0.01 absolute
+    const diff = Math.abs(parsedInput.val - expectedVal);
+    const valMatch = diff < (Math.abs(expectedVal) * 0.01) || diff < 0.01;
     
-    // 4. UNIT MATCHING (The "Smart" Check)
-    // Standard check: Does "kohms" match "kohms"?
+    // 4. UNIT MATCHING (Strict Casing)
+    // We no longer .toLowerCase() here because the parser already normalized the "Good" inputs
+    let userUnit = parsedInput.unit;
+    let targetUnit = expectedUnit; 
+
     let unitMatch = (userUnit === targetUnit);
     
-    // NEW: OHM LENIENCY
-    // If the problem expects "ohms", we accept the answer even if the user 
-    // left the unit blank (userUnit === ""), because Ohms is the base unit.
-    if (targetUnit === "ohms" && userUnit === "") {
+    // NEW: OHM LENIENCY / BASE UNIT LENIENCY
+    // If problem expects Ω (or ohms), accept blank
+    if ((targetUnit === "Ω" || targetUnit === "V" || targetUnit === "A") && userUnit === "") {
         unitMatch = true;
     }
 
     // 5. FINAL DECISION
-    // Both value and unit must be correct
     if (valMatch && unitMatch) return 'correct';
     
-    // Value is right, but the unit is missing or wrong (e.g. "10" instead of "10k")
+    // Value is right, but unit/casing is wrong (e.g., "v" vs "V" or "ma" vs "mA")
     if (valMatch && !unitMatch) return 'wrongunit';
     
-    // The number itself is just wrong
     return 'wrongval';
 }
 function updateScoreboard() {
