@@ -503,11 +503,13 @@ function handleGenerateClick() {
     if (currentMode === 'colorcode') {
         if (typeof generateColorCodeProblem === "function") generateColorCodeProblem(ctx, canvas);
     } else if (currentMode === 'zener') {
-        generateZenerProblem();
+        // Pass ctx and canvas here too for consistency
+        generateZenerProblem(ctx, canvas); 
     } else if (currentMode === 'silicon') {
-        generateSiliconProblem();
+        generateSiliconProblem(ctx, canvas);
     } else if (currentMode === 'analysis') {
-        generateAnalysisProblem();
+        // FIX: Pass the drawing tools into the function!
+        generateAnalysisProblem(ctx, canvas); 
     } else {
         // Handles Astable, Monostable, Oscilloscope
         hubController(ctx, canvas);
