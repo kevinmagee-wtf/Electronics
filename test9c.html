@@ -521,7 +521,7 @@ function handleGenerateClick() {
     if (val >= 1000000) return (val / 1000000) + " MΩ";
     if (val >= 1000) return (val / 1000) + " kΩ";
     return val + " Ω";
-}   
+}
 
     // Formatting helper to turn large numbers into k and M (e.g., 1000 -> 1k)
     function formatNum(num) {
@@ -1363,8 +1363,8 @@ function generateAnalysisProblem(ctx, canvas) {
 // Colour Code 
 // ======================================================
 function generateColorCodeProblem(ctx, canvas) {
-    // 1. UI Reset & Safety (The Heavy Lifting is done here now)
-    hideAllInputGroups(); // This hides EVERYTHING and calls hideAllInputGroups() to clear values
+    // 1. UI Reset & Safety
+    hideAllInputGroups(); 
     currentMode = 'colorcode';
 
     // 2. Core Data Setup
@@ -1398,10 +1398,12 @@ function generateColorCodeProblem(ctx, canvas) {
 
     const qType = Math.floor(Math.random() * 2);
     let solTextStr = "";
-    const formattedVal = (typeof formatResValue === "function") ? formatResValue(resistanceValue) : resistanceValue.toLocaleString();
+    
+    // formatResValue already includes the Ω symbol!
+    const formattedVal = (typeof formatResValue === "function") ? formatResValue(resistanceValue) : resistanceValue.toLocaleString() + " Ω";
 
     if (qType === 0) {
-        // TYPE 0: Visual Resistor -> Student enters Resistance and Tolerance NUMBER
+        // TYPE 0: Visual Resistor -> Student enters Resistance and Tolerance
         const drawBand = (x, color) => {
             ctx.fillStyle = (color === 'gold') ? '#FFD700' : (color === 'silver') ? '#C0C0C0' : color;
             ctx.fillRect(x, 170, 20, 80); ctx.strokeRect(x, 170, 20, 80);
@@ -1411,10 +1413,10 @@ function generateColorCodeProblem(ctx, canvas) {
         drawBand(280, resColors[b3]);
         drawBand(360, tolKey);
 
-        // Turn ON the numbers group (hideAllInputGroups already turned it off)
         if (valGroup) valGroup.style.display = 'block';
 
-        solTextStr = `<strong>Solution: ${formattedVal} Ω &plusmn; ${toleranceValue}%</strong><br><br>
+        // FIXED: Removed the manual "Ω" here because formattedVal already has it.
+        solTextStr = `<strong>Solution: ${formattedVal} &plusmn; ${toleranceValue}%</strong><br><br>
                       <em>Logic:</em><br>
                       Band 1 (${resColors[b1].toUpperCase()}) = ${b1}<br>
                       Band 2 (${resColors[b2].toUpperCase()}) = ${b2}<br>
@@ -1437,9 +1439,9 @@ function generateColorCodeProblem(ctx, canvas) {
 
         ctx.fillStyle = '#000';
         ctx.font = 'bold 28px Arial'; ctx.textAlign = 'center';        
+        // FIXED: Removed the manual "±" and formatting logic that might cause double symbols
         ctx.fillText(`${formattedVal} ± ${toleranceValue}%`, 300, 310);
 
-        // Turn ON the names group (hideAllInputGroups already turned it off)
         if (namesGroup) namesGroup.style.display = 'flex'; 
 
         solTextStr = `<strong>Required Colours:</strong><br><br>
@@ -1454,24 +1456,18 @@ function generateColorCodeProblem(ctx, canvas) {
     if (solText) solText.innerHTML = solTextStr;
     
     // 7. Dynamic Instruction Text
-    
-    // Clear and hide the top question text to keep the buttons aligned
     const qText = document.getElementById('questionText');
     if (qText) {
         qText.innerHTML = "";
         qText.style.display = 'none';
     }
 
-    // Use the instruction prompt (which sits just above the input boxes)
     const instruction = document.getElementById('instructionPrompt');
     if (instruction) {
-        instruction.style.display = 'block'; // Make sure it's visible
-        
+        instruction.style.display = 'block'; 
         if (qType === 0) {
-            // They are calculating the value from the bands
-            instruction.innerHTML = "<strong>State the value of the resistor.</strong>";
+            instruction.innerHTML = "<strong>State the value of the resistor (Include units e.g. Ω or Ohms).</strong>";
         } else {
-            // They are entering the colors based on the value
             instruction.innerHTML = "<strong>Identify the resistor colour codes.</strong>";
         }
     }
