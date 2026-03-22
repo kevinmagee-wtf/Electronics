@@ -95,34 +95,152 @@
         border-color: #000;
     }
     
-    .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+.main-layout { 
+        display: flex; 
+        gap: 20px; 
+        align-items: flex-start; 
+        flex-wrap: wrap; 
+        justify-content: center; 
+    }
     
-    /* FIX: Changed flex-basis from 550px to 300px to prevent mobile overflow */
-    .left-panel { flex: 1 1 300px; max-width: 650px; width: 100%; } 
-    .circuit-container { border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
+    /* FIX: Standardized height to 520px to prevent jumping between pages */
+    .left-panel { 
+        flex: 1 1 300px; 
+        max-width: 650px; 
+        width: 100%; 
+    } 
     
-    /* FIX: Prevent right panel from overflowing on mobile */
-    .right-panel { flex: 1 1 300px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 500px; }
+    .circuit-container { 
+        border: 2px solid #eaeaea; 
+        padding: 15px; 
+        text-align: center; 
+        background-color: #fff; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        height: 520px; 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
     
-    .quiz-section { background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; }
-    .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+    canvas { 
+        background-color: white; 
+        border-radius: 4px; 
+        max-width: 100%; 
+        height: auto; 
+    }
+    
+    /* FIX: Standardized height to 520px to match the circuit panel */
+    .right-panel { 
+        flex: 1 1 300px; 
+        display: flex; 
+        flex-direction: column; 
+        width: 100%; 
+        max-width: 500px; 
+        height: 520px;
+    }
+    
+    .quiz-section { 
+        background-color: #fdf4f8; 
+        padding: 15px 20px; 
+        border-radius: 8px; 
+        border: 1px solid #f2c7db; 
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        box-sizing: border-box;
+    }
+    
+    .quiz-header { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        border-bottom: 2px solid #f2c7db; 
+        padding-bottom: 10px; 
+        margin-bottom: 10px; 
+        flex-wrap: wrap; 
+        gap: 10px; 
+    }
+    
     .quiz-header h3 { margin: 0; font-size: 1.2rem; }
     
     .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-    .scoreboard { background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); }
-    .btn-download { background-color: #198754; font-size: 13px; padding: 8px 12px; margin: 0; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
+    
+    .scoreboard { 
+        background-color: #fff; 
+        padding: 6px 15px; 
+        border: 2px solid #E64097; 
+        border-radius: 6px; 
+        font-weight: bold; 
+        font-size: 16px; 
+        color: #E64097; 
+        box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); 
+    }
+    
+    .btn-download { 
+        background-color: #198754; 
+        font-size: 13px; 
+        padding: 8px 12px; 
+        margin: 0; 
+        border: none; 
+        border-radius: 4px; 
+        color: white; 
+        cursor: pointer; 
+        font-weight: bold; 
+        transition: background-color 0.2s; 
+    }
+    
     .btn-download:hover { background-color: #157347; }
     .btn-download:disabled { background-color: #6c757d; cursor: wait; }
     
-    /*  Standardise input area height so buttons stay locked in place */
+    /* Standardized input area - pulls everything tight and centered */
     .input-area { 
+        flex-grow: 1;
         text-align: center; 
-        min-height: 160px; /* Adjust this if your Zener/Oscilloscope boxes need more room */
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        gap: 5px;
+    }
+
+    /* Target the text/number boxes and dropdowns to look identical */
+    .quiz-section input[type="text"], 
+    .quiz-section input[type="number"],
+    .quiz-section select { 
+        height: 42px; 
+        font-size: 18px;
+        border: 2px solid #ccc;
+        border-radius: 6px;
+        padding: 5px;
+        box-sizing: border-box;
+        text-align: center;
+        width: 110px;
+    }
+
+    .quiz-section select {
+        width: 80px;
+        margin-left: 5px;
+        background-color: white;
+    }
+
+    /* Fixed width for labels to fix RTOTAL gap */
+    .input-group label, 
+    .input-group span:first-child {
+        width: 85px;
+        text-align: left;
+        display: inline-block;
+        font-size: 18px;
+        white-space: nowrap;
+    }
+
+    /* Container for each label+input row */
+    .input-group {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 5px 0;
     }
     
     .input-spacer { height: 55px; visibility: hidden; display: none; /* Changed to none as flexbox handles spacing now */ }
