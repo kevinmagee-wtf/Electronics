@@ -2718,16 +2718,16 @@ function checkAnswers() {
     let results = [];
     
     if (currentMode === 'analysis') {
-        // Updated to strict casing targets
-        results.push(validateMatch(parseInput(document.getElementById('inputV').value), currentAnswers.vValue, 'V'));
+        // FIXED: Using 'mV' and 'mA' instead of 'v' and 'a'
+        results.push(validateMatch(parseInput(document.getElementById('inputV').value), currentAnswers.vValue, 'mV'));
         results.push(validateMatch(parseInput(document.getElementById('inputI').value), currentAnswers.iValue, 'mA'));
 
     } else if (currentMode === 'divider') {
-        // Updated to strict casing targets
+        // FIXED: Using 'V' for Volts
         results.push(validateMatch(parseInput(document.getElementById('inputV').value), currentAnswers.vValue, 'V'));
 
     } else if (currentMode === 'resistance') {
-        // Updated to strict Ω symbol
+        // FIXED: Using 'Ω' symbol
         results.push(validateMatch(parseInput(document.getElementById('inputR').value), currentAnswers.rValue, 'Ω'));
 
     } else if (currentMode === 'oscilloscope') {
@@ -2826,109 +2826,6 @@ function checkAnswers() {
     }
 
     if (typeof updateScoreboard === "function") updateScoreboard();
-}
-    
-async function processSubmission() {
-    const studentName = document.getElementById('studentNameInput').value.trim();
-    const teacherName = document.getElementById('teacherSelect').value;
-
-    if (!studentName) { alert("Please enter your name."); return; }
-    if (!teacherName) { alert("Please select your teacher."); return; }
-
-    // Map the technical mode name to a readable topic string
-    const topicMap = {
-        'analysis': 'Circuit Analysis',
-        'divider': 'Potential Divider',
-        'resistance': 'Total Resistance',
-        'oscilloscope': 'Oscilloscopes',
-        'astable': 'Astable 555 Timer'
-    };
-    const currentTopic = topicMap[currentMode] || 'Unknown Topic';
-
-    closeModal();
-
-    // 1. Loading State
-    const downloadBtn = document.getElementById('downloadBtn');
-    const originalText = downloadBtn.innerHTML;
-    downloadBtn.innerHTML = "&#8987; Submitting..."; 
-    downloadBtn.disabled = true;
-
-    // 2. Generate Certificate Image
-    const certCanvas = document.createElement('canvas');
-    certCanvas.width = 600; certCanvas.height = 420;
-    const certCtx = certCanvas.getContext('2d');
-
-    certCtx.fillStyle = "#fdf4f8"; certCtx.fillRect(0, 0, certCanvas.width, certCanvas.height);
-    certCtx.strokeStyle = brandPink; certCtx.lineWidth = 12; certCtx.strokeRect(6, 6, 588, 408);
-    certCtx.strokeStyle = brandBlack; certCtx.lineWidth = 2; certCtx.strokeRect(18, 18, 564, 384);
-
-    certCtx.textAlign = "center";
-    certCtx.fillStyle = brandBlack; certCtx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
-    certCtx.fillText("ABINGDON ELECTRONICS", 300, 80);
-
-    certCtx.fillStyle = brandPink; certCtx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
-    certCtx.fillText("Basics Knowledge Check", 300, 120);
-
-    certCtx.beginPath(); certCtx.moveTo(150, 145); certCtx.lineTo(450, 145); certCtx.lineWidth = 2; certCtx.stroke();
-
-    certCtx.fillStyle = brandBlack; certCtx.font = "28px 'Segoe UI', Arial, sans-serif";
-    certCtx.fillText("Student: " + studentName, 300, 190);
-    
-    certCtx.fillStyle = "#555"; certCtx.font = "20px 'Segoe UI', Arial, sans-serif";
-    certCtx.fillText("Topic: " + currentTopic, 300, 225);
-
-    certCtx.fillStyle = brandPink; certCtx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
-    certCtx.fillText(problemsCorrect + " / " + problemsAttempted, 300, 305);
-    
-    certCtx.fillStyle = brandBlack; certCtx.font = "20px 'Segoe UI', Arial, sans-serif";
-    certCtx.fillText("Questions Answered Correctly", 300, 335);
-
-    const today = new Date().toLocaleDateString('en-GB'); 
-    certCtx.fillStyle = "#666"; certCtx.font = "16px 'Segoe UI', Arial, sans-serif";
-    certCtx.fillText("Completed on: " + today + " | Teacher: " + teacherName, 300, 380);
-
-    const imageURI = certCanvas.toDataURL("image/png");
-    const downloadLink = document.createElement('a');
-    const safeName = studentName.replace(/[^a-zA-Z0-9]/g, '_');
-    downloadLink.download = "Electronics_Score_" + safeName + ".png"; 
-    downloadLink.href = imageURI;
-    downloadLink.click();
-
-    // 3. Send Data to Google Sheets
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxrHYNKqWSa3BMJNSqS99KQkd7ME1zrTy_ba1RlmhShEzpTuPw6Tg7l9rIpLqC3Ki9f/exec'; 
-    
-    const formData = new URLSearchParams();
-    formData.append('name', studentName);
-    formData.append('teacher', teacherName);
-    formData.append('topic', currentTopic);
-    formData.append('correct', problemsCorrect);
-    formData.append('attempted', problemsAttempted);
-
-    try {
-        await fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' });
-        console.log('Score submitted successfully.');
-        alert("Score submitted to " + teacherName + " and certificate downloaded!");
-    } catch (error) {
-        console.error('Error submitting score!', error.message);
-        alert("Certificate downloaded! (Note: Could not connect to Google Sheets to send score to teacher.)");
-    } finally {
-        // 4. Reset Everything
-        downloadBtn.innerHTML = originalText;
-        downloadBtn.disabled = false;
-
-        problemsAttempted = 0;
-        problemsCorrect = 0;
-        if (typeof updateScoreboard === "function") updateScoreboard();
-
-        // RE-FETCH CANVAS TOOLS BEFORE CALLING HUB
-        const canvas = document.getElementById('circuitCanvas');
-        const ctx = canvas ? canvas.getContext('2d') : null;
-
-        // CALL THE NEW HUB CONTROLLER
-        if (typeof hubController === "function") {
-            hubController(ctx, canvas);
-        }
-    }
 }
  
 function parseInput(str) {
