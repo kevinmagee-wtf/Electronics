@@ -1947,7 +1947,9 @@ function generateZenerProblem() {
     ctx.beginPath();
 
     const solBox = document.getElementById('solText');
-    if (solBox) solBox.style.display = "none";
+    const solContainer = document.getElementById('solutions');
+    // Hide the solutions box when generating a new problem!
+    if (solContainer) solContainer.style.display = "none"; 
 
     // 1. BASIC GCSE MATH (No parallel resistance calculations)
     const Vin = Math.floor(Math.random() * 10) + 6; // 6V - 15V
@@ -1998,7 +2000,7 @@ function generateZenerProblem() {
     const yJunc = 220; 
     const switchStartX = 240;      
     const switchEndX = 290;        
-    const loadX = 380;             
+    const loadX = 380;              
     const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
     // --- LEFT BRANCH (Total Current Arrow & Zener) ---
@@ -2085,6 +2087,31 @@ function generateZenerProblem() {
     ctx.fillStyle = "black";
     ctx.font = "italic 16px Arial";
     ctx.fillText("Minimum Zener holding current = " + Iz_min + " mA", 70, 390);
+
+    // --- 4. BUILD THE SOLUTION TEXT ---
+    if (solBox) {
+        if (switchClosed) {
+            solBox.innerHTML = `
+                <strong>1. Max Load Current (I<sub>L</sub>):</strong><br>
+                Subtract minimum Zener holding current from the total supply current.<br>
+                I<sub>L</sub> = ${Ir_mA} mA - ${Iz_min} mA = <strong>${currentAnswers.targetIL} mA</strong><br><br>
+                
+                <strong>2. Load Voltage (V<sub>L</sub>):</strong><br>
+                The Zener diode locks the voltage in parallel.<br>
+                V<sub>L</sub> = V<sub>Z</sub> = <strong>${currentAnswers.targetVL} V</strong>
+            `;
+        } else {
+            solBox.innerHTML = `
+                <strong>1. Zener Current (I<sub>Z</sub>):</strong><br>
+                With the switch open, all supply current goes through the Zener.<br>
+                I<sub>Z</sub> = I<sub>TOTAL</sub> = <strong>${currentAnswers.targetIZ} mA</strong><br><br>
+                
+                <strong>2. Zener Power (P<sub>Z</sub>):</strong><br>
+                Power = Current &times; Voltage.<br>
+                P<sub>Z</sub> = ${currentAnswers.targetIZ} mA &times; ${currentAnswers.targetVL} V = <strong>${currentAnswers.targetPZ} mW</strong>
+            `;
+        }
+    }
 }
 
 function generateGrade9ZenerProblem() {
@@ -2100,6 +2127,11 @@ function generateGrade9ZenerProblem() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
 
+    const solText = document.getElementById('solText');
+    const solContainer = document.getElementById('solutions');
+    // Hide the solutions box when generating a new problem!
+    if (solContainer) solContainer.style.display = "none";
+
     // 1. GENERATE MATH (Ensuring regulation)
     let Vin, Vz, R1, RL, V_unregulated;
     do {
@@ -2111,6 +2143,7 @@ function generateGrade9ZenerProblem() {
     } while (V_unregulated <= Vz + 1);
 
     const switchClosed = Math.random() > 0.5;
+    currentZenerState = switchClosed ? "closed" : "open"; 
     
     // Core Calculations
     const Vr1 = Vin - Vz;
@@ -2119,7 +2152,6 @@ function generateGrade9ZenerProblem() {
     let IL_mA = 0, IZ_mA = 0, PZ_mW = 0, safeRating = 0;
     
     const qText = document.getElementById('questionText');
-    const solText = document.getElementById('solText');
     const g9Group = document.getElementById('inputGroupGrade9Zener');
     const g9Closed = document.getElementById('g9ZenerClosed');
     const g9Open = document.getElementById('g9ZenerOpen');
@@ -2157,7 +2189,12 @@ function generateGrade9ZenerProblem() {
     } else {
         IZ_mA = IT_mA; 
         PZ_mW = IZ_mA * Vz;
-        safeRating = getSafePowerRating(PZ_mW);
+        // Verify you have the getSafePowerRating() function in your code!
+        if (typeof getSafePowerRating === "function") {
+            safeRating = getSafePowerRating(PZ_mW);
+        } else {
+            safeRating = 0; // Fallback just in case
+        }
 
         if (g9Closed) g9Closed.style.display = "none";
         if (g9Open) g9Open.style.display = "block";
@@ -2194,7 +2231,7 @@ function generateGrade9ZenerProblem() {
     ctx.fillText("0 V", 10, 365);
 
     const xReg = 180; const yJunc = 220; 
-    const switchStartX = 240; const switchEndX = 290; const loadX = 380;             
+    const switchStartX = 240; const switchEndX = 290; const loadX = 380;              
     const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
     // --- LEFT BRANCH (Show R1!) ---
@@ -2259,6 +2296,7 @@ function generateGrade9ZenerProblem() {
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 55, 295);
     }
 }
+    
 // ===========================================================================================================================      
 // FUNCTION 3. NAVIGATION and UI (Traffic Control) 
 // ===========================================================================================================================      
