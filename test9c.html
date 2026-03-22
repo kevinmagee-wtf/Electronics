@@ -331,13 +331,13 @@
         </div>
     </div>
 
-    <div id="g9ZenerOpen" style="display: none;">
+   <div id="g9ZenerOpen" style="display: none;">
         <div style="margin-bottom: 15px;">
             <label>Max Zener Power (P<sub>Z</sub>): </label>
             <input type="text" id="g9PZ" placeholder="e.g. 150.0 mW">
         </div>
         <div style="margin-bottom: 15px;">
-            <label>Minimum Safe Rating: </label>
+            <label>Minimum P<sub>Z</sub> Rating (1 s.f.): </label>
             <input type="text" id="g9Rating" placeholder="e.g. 200 mW">
         </div>
     </div>
@@ -2211,7 +2211,7 @@ function generateGrade9ZenerProblem() {
         logicHTML += "P<sub>Z</sub> = I<sub>Z</sub> &times; V<sub>Z</sub> = " + IT_mA.toFixed(1) + " &times; " + Vz.toFixed(1) + " = <strong>" + PZ_mW.toFixed(1) + " mW</strong><br><br>";
         logicHTML += "<em>Step 3:</em> Determine safe Power Rating.<br>";
         logicHTML += "To avoid blowing the component, we round the power <em>up</em> to 1 significant figure.<br>";
-        logicHTML += "Minimum Rating = <strong>" + safeRating + " mW</strong>";
+        logicHTML += "Minimum P<sub>Z</sub> Rating (1 s.f.) = <strong>" + safeRating + " mW</strong>";
 
         // Save answers for grader
         if (typeof currentAnswers === "undefined") currentAnswers = {};
@@ -2235,7 +2235,7 @@ function generateGrade9ZenerProblem() {
     const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
     // --- LEFT BRANCH (Show R1!) ---
-    ctx.fillText(R1 + " Ω", xReg - 55, 140); 
+    ctx.fillText(R1 + " Ω", xReg - 75, 140); 
     drawLine(ctx, xReg, 60, xReg, 110); 
     drawComponent(ctx, 'fixed', xReg, 135); 
     drawLine(ctx, xReg, 160, xReg, 360); 
