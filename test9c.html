@@ -357,12 +357,14 @@
 <div id="instructionPrompt" class="instruction-text" style="text-align: center; margin-bottom: 10px; font-size: 18px; display: none;"></div>
                     
 <div class="input-group" id="inputGroupColorVal" style="display:none; text-align: center; width: 100%; margin-top: 15px;">
-    <input type="text" id="inputResValue" placeholder="e.g. 4700">
-    <span style="font-size: 18px; font-weight: bold;">Ω &plusmn;</span>
-    <input type="text" id="inputResTol" placeholder="e.g. 5" style="width: 90px;">
-    <span style="font-size: 18px; font-weight: bold;">%</span>
-</div>          
-        
+    <input type="text" id="inputResValue" placeholder="e.g. 520 Ohms or 1.2k" style="width: 180px;">
+    
+    <span style="font-size: 18px; font-weight: bold; margin: 0 5px;">&plusmn;</span>
+    
+    <input type="text" id="inputResTol" placeholder="e.g. 5" style="width: 70px;">
+    
+    <span style="font-size: 18px; font-weight: bold; margin-left: 5px;">%</span>
+</div> 
 <div id="inputGroupColorNames" class="input-group" style="display:none; flex-direction: column; gap: 15px; margin-top: 15px; align-items: center;">
     
     <div style="display: flex; gap: 25px; align-items: center;">
@@ -535,34 +537,45 @@ function getSafePowerRating(power_mW) {
     const firstDigit = Math.ceil(power_mW / mag);
     return firstDigit * mag;
 }
-/* function resetAnswerBox() {
-    // 1. Universal Clear: Find EVERY input box on the page and wipe it
-    document.querySelectorAll('input').forEach(box => {
-        box.value = "";             // Wipes the student's typing
-        box.defaultValue = "";      // Clears browser "memory"
-        box.style.backgroundColor = ""; // Removes the Red/Green "Correct/Wrong" colors
-    });
-      
-    // 2. Clear all feedback and solution text areas
-    const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerHTML = "";
+
+
+/**
+ * @param {string} userInput - What the student typed (e.g. "520 Ohms")
+ * @param {number} correctValue - The raw numerical answer (e.g. 520)
+ * @param {number} tolerance - 0 for exact, or a decimal (e.g. 0.02 for 2%)
+ */
+
+    function validateScientificValue(userInput, correctValue, tolerance = 0) {
+    let input = userInput.trim();
     
-    const solText = document.getElementById('solText');
-    if (solText) solText.innerHTML = "";
+    // 1. Strict Prefix Check (Reject K and m)
+    if (input.includes('K') || input.includes('m')) return false;
 
-    // 3. Hide panels that shouldn't be visible yet
-    const solutions = document.getElementById('solutions');
-    if (solutions) solutions.style.display = "none";
+    // 2. Identify Multiplier
+    let multiplier = 1;
+    if (input.includes('k')) multiplier = 1000;
+    if (input.includes('M')) multiplier = 1000000;
 
-    // 4. Wipe the Question Text (Crucial for switching between Colour Code and Math)
-    const qText = document.getElementById('questionText');
-    if (qText) qText.innerHTML = "";
+    // 3. Extract the Number (Remove units: ohm, Ω, k, M)
+    let numericString = input.replace(/[kM]|ohms?|Ω/gi, '').trim();
+    let userNum = parseFloat(numericString);
 
-    // 5. Specifically clear Zener inputs if that function exists
-    if (typeof clearZenerInputs === "function") {
-        clearZenerInputs();
+    if (isNaN(userNum)) return false;
+
+    // 4. Calculate Absolute Value
+    let userTotal = userNum * multiplier;
+
+    // 5. Apply Tolerance Logic
+    if (tolerance === 0) {
+        // Zero Tolerance: Must be exactly the same
+        return userTotal === correctValue;
+    } else {
+        // Sig Fig / Percentage Tolerance: Check if within range
+        let diff = Math.abs(userTotal - correctValue);
+        let allowedDiff = correctValue * tolerance;
+        return diff <= allowedDiff;
     }
-} */
+}
 
 
 // =======================================================================================================
@@ -2635,7 +2648,6 @@ function checkAnswers() {
     else if (currentMode === 'monostable') {
         activeInputs = ['inputMonostable'];
     }
-    // --- ZENER INPUT IDENTIFICATION ---
     else if (currentMode === 'zener') {
         if (currentZenerState === "closed") {
             activeInputs = ['zenerQ_IL', 'zenerQ_VL'];
@@ -2643,7 +2655,6 @@ function checkAnswers() {
             activeInputs = ['zenerQ_IZ', 'zenerQ_PZ'];
         }
     }
-    // --- GRADE 9 ZENER INPUT IDENTIFICATION ---
     else if (currentMode === 'grade9zener') {
         if (currentZenerState === "closed") {
             activeInputs = ['g9IL', 'g9IZ'];
@@ -2673,28 +2684,27 @@ function checkAnswers() {
 
     // 3. Grade the inputs
     let results = [];
-    const tolerance = 0.2;
+    const generalTolerance = 0.2; // For basic voltage/current math
     
     if (currentMode === 'zener') {
         if (currentZenerState === "closed") {
             const valIL = parseFloat(document.getElementById('zenerQ_IL').value);
             const valVL = parseFloat(document.getElementById('zenerQ_VL').value);
-            results.push(Math.abs(valIL - currentAnswers.targetIL) <= tolerance ? 'correct' : 'wrong');
-            results.push(Math.abs(valVL - currentAnswers.targetVL) <= tolerance ? 'correct' : 'wrong');
+            results.push(Math.abs(valIL - currentAnswers.targetIL) <= generalTolerance ? 'correct' : 'wrong');
+            results.push(Math.abs(valVL - currentAnswers.targetVL) <= generalTolerance ? 'correct' : 'wrong');
         } else {
             const valIZ = parseFloat(document.getElementById('zenerQ_IZ').value);
             const valPZ = parseFloat(document.getElementById('zenerQ_PZ').value);
-            results.push(Math.abs(valIZ - currentAnswers.targetIZ) <= tolerance ? 'correct' : 'wrong');
+            results.push(Math.abs(valIZ - currentAnswers.targetIZ) <= generalTolerance ? 'correct' : 'wrong');
             results.push(Math.abs(valPZ - currentAnswers.targetPZ) <= 0.5 ? 'correct' : 'wrong');
         }
     } 
-    // --- GRADE 9 ZENER MATH ---
     else if (currentMode === 'grade9zener') {
         if (currentZenerState === "closed") {
             const valIL = parseFloat(document.getElementById('g9IL').value);
             const valIZ = parseFloat(document.getElementById('g9IZ').value);
-            results.push(Math.abs(valIL - currentAnswers.targetIL) <= tolerance ? 'correct' : 'wrong');
-            results.push(Math.abs(valIZ - currentAnswers.targetIZ) <= tolerance ? 'correct' : 'wrong');
+            results.push(Math.abs(valIL - currentAnswers.targetIL) <= generalTolerance ? 'correct' : 'wrong');
+            results.push(Math.abs(valIZ - currentAnswers.targetIZ) <= generalTolerance ? 'correct' : 'wrong');
         } else {
             const valPZ = parseFloat(document.getElementById('g9PZ').value);
             const valRating = parseFloat(document.getElementById('g9Rating').value);
@@ -2705,20 +2715,20 @@ function checkAnswers() {
     else if (currentMode === 'colorcode') {
         const valGroup = document.getElementById('inputGroupColorVal');
         if (valGroup && valGroup.style.display !== 'none') {
-            const userRes = parseInput(document.getElementById('inputResValue').value);
+            // NEW: Use validateScientificValue for Resistance with ZERO tolerance
+            const userResStr = document.getElementById('inputResValue').value;
+            const isResCorrect = validateScientificValue(userResStr, currentAnswers.resVal, 0);
+            results.push(isResCorrect ? 'correct' : 'wrong');
+
+            // Tolerance check (Percentage number)
             const userTol = parseFloat(document.getElementById('inputResTol').value);
-            if (userRes && Math.abs(userRes.val - currentAnswers.resVal) < (currentAnswers.resVal * 0.01)) {
-                results.push('correct');
-            } else {
-                results.push('wrong');
-            }
             results.push(userTol === currentAnswers.resTol ? 'correct' : 'wrong');
         } else {
+            // Band Names check
             const b1 = document.getElementById('inputBand1').value.toLowerCase().trim();
             const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
             const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
             const b4 = document.getElementById('inputBandTol').value.toLowerCase().trim();
-            
             results.push(b1 === currentAnswers.b1 ? 'correct' : 'wrong');
             results.push(b2 === currentAnswers.b2 ? 'correct' : 'wrong');
             results.push(b3 === currentAnswers.b3 ? 'correct' : 'wrong');
@@ -2746,15 +2756,20 @@ function checkAnswers() {
         }
     } else if (currentMode === 'astable') {
         if (currentAnswers.astableQType === 0) {
-            results.push(validateMatch(parseInput(document.getElementById('inputAstable').value), currentAnswers.astableValue, currentAnswers.astableUnit));
-            results.push(validateMatch(parseInput(document.getElementById('inputAstableT').value), currentAnswers.astableTValue, currentAnswers.astableTUnit));
+            // NEW: Use validateScientificValue for calculations (1% tolerance)
+            const userFStr = document.getElementById('inputAstable').value;
+            const userTStr = document.getElementById('inputAstableT').value;
+            results.push(validateScientificValue(userFStr, currentAnswers.astableValue, 0.01) ? 'correct' : 'wrong');
+            results.push(validateScientificValue(userTStr, currentAnswers.astableTValue, 0.01) ? 'correct' : 'wrong');
         } else {
             const userRatio = document.getElementById('inputMarkSpace').value.trim();
             results.push(userRatio === currentAnswers.astableRatio ? 'correct' : 'wrong');
         }
     } 
     else if (currentMode === 'monostable') {
-        results.push(validateMatch(parseInput(document.getElementById('inputMonostable').value), currentAnswers.expectedT, currentAnswers.expectedUnit));
+        // NEW: Use validateScientificValue for calculated monostable (1% tolerance)
+        const userMonoStr = document.getElementById('inputMonostable').value;
+        results.push(validateScientificValue(userMonoStr, currentAnswers.expectedT, 0.01) ? 'correct' : 'wrong');
     }
 
     // 4. Final Scoring and Universal Border Feedback
@@ -2778,12 +2793,13 @@ function checkAnswers() {
         }
         if (helpBtn) helpBtn.style.display = 'none';
         
-        // Auto-show solution on success
         const solBox = document.getElementById('solutions');
         if (solBox) solBox.style.display = 'block';
 
     } else {
         if (helpBtn) helpBtn.style.display = 'block';
+        // Note: 'nounit' and 'wrongunit' originate from your older validateMatch function. 
+        // validateScientificValue returns false (wrong) for prefix errors.
         if (results.includes('nounit')) {
             unitErrorMade = true;
             feedback.innerHTML = "<span style='color: #fd7e14;'>Don't forget your units! (Mark lost)</span>";
