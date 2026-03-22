@@ -216,15 +216,17 @@
                 
                 <div id="questionText" style="font-weight: bold; margin-bottom: 15px; color: #333; min-height: 45px; border-bottom: 1px solid #f2c7db; padding-bottom: 10px;"></div>
                 
-                <div class="quiz-header">
-                    <div class="score-container" style="width: 100%; justify-content: flex-end;">
-                        <button class="btn-secondary" style="margin: 0; padding: 8px 12px; font-size: 13px; width: auto;" onclick="openDataSheet()">📖 Data Sheet</button>
-                        
+               <div class="quiz-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    
+                    <div></div>
+
+                    <div class="score-container" style="display: flex; gap: 10px; align-items: center;">
+                        <button id="dataSheetBtn" class="btn-secondary" style="margin: 0; padding: 8px 12px; font-size: 13px;" onclick="openDataSheet()">📖 Data Sheet</button>
                         <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
                         <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
                     </div>
                 </div>
-                
+                  
                 <div class="input-area">
 
                     <div class="input-group" id="inputGroupV" style="display:none;">
