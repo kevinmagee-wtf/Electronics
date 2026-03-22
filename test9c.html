@@ -548,35 +548,35 @@ function getSafePowerRating(power_mW) {
     function validateScientificValue(userInput, correctValue, tolerance = 0) {
     let input = userInput.trim();
     
-    // 1. Strict Prefix Check (Reject K and m)
-    if (input.includes('K') || input.includes('m')) return false;
+    // 1. Strict Prefix Check (Reject Capital K and lowercase m for milli)
+    if (input.includes('K')) return false;
+    if (input.includes('m') && !input.toLowerCase().includes('ohm')) return false;
 
-    // 2. FORCE UNIT CHECK: 
-    // This regex checks if the string contains k, M, Ω, or any version of "ohm"
-    const hasUnit = /[kMΩ]|ohms?/i.test(input);
-    if (!hasUnit) return false; // Reject if no unit or prefix is present
+    // 2. MANDATORY UNIT CHECK:
+    // This regex looks specifically for the symbol Ω or the word "ohm"
+    const hasUnit = /Ω|ohms?/i.test(input);
+    if (!hasUnit) return false; // Reject "1.2k" because it lacks Ω or Ohm
 
     // 3. Identify Multiplier
     let multiplier = 1;
     if (input.includes('k')) multiplier = 1000;
     if (input.includes('M')) multiplier = 1000000;
 
-    // 4. Extract the Number (Remove units to calculate)
-    let numericString = input.replace(/[kM]|ohms?|Ω/gi, '').trim();
+    // 4. Extract the Number
+    // Strip everything except numbers and decimal points
+    let numericString = input.replace(/[kMΩ]|ohms?/gi, '').trim();
     let userNum = parseFloat(numericString);
 
     if (isNaN(userNum)) return false;
 
-    // 5. Calculate Absolute Value
+    // 5. Final Calculation
     let userTotal = userNum * multiplier;
 
-    // 6. Apply Tolerance Logic
+    // 6. Tolerance Comparison
     if (tolerance === 0) {
-        return userTotal === correctValue;
+        return Math.abs(userTotal - correctValue) < 0.1;
     } else {
-        let diff = Math.abs(userTotal - correctValue);
-        let allowedDiff = correctValue * tolerance;
-        return diff <= allowedDiff;
+        return Math.abs(userTotal - correctValue) <= (correctValue * tolerance);
     }
 }
 
@@ -2714,11 +2714,13 @@ function checkAnswers() {
     else if (currentMode === 'colorcode') {
         const valGroup = document.getElementById('inputGroupColorVal');
         if (valGroup && valGroup.style.display !== 'none') {
-            const userResStr = document.getElementById('inputResValue').value;
+            const userResStr = document.getElementById('inputResValue').value.trim();
             
-            // Check if they forgot the unit entirely
-            const hasUnit = /[kMΩ]|ohms?/i.test(userResStr);
-            if (!hasUnit) {
+            // STRICT UNIT CHECK: Must contain Ω or some form of "ohm"
+            const hasActualUnit = /Ω|ohms?/i.test(userResStr);
+            
+            if (!hasActualUnit) {
+                // Fails if user typed "520" or "1.2k" without the Ω/Ohm unit
                 results.push('missingunit');
             } else {
                 const isResCorrect = validateScientificValue(userResStr, currentAnswers.resVal, 0);
@@ -2801,6 +2803,7 @@ function checkAnswers() {
         if (helpBtn) helpBtn.style.display = 'block';
         
         if (results.includes('missingunit')) {
+            unitErrorMade = true;
             feedback.innerHTML = "<span style='color: #fd7e14;'>You must include the unit (e.g., Ω or Ohms)!</span>";
         } else if (results.includes('nounit')) {
             unitErrorMade = true;
