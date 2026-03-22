@@ -29,6 +29,7 @@
     
     .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
     
+    /* Home Page Grid & Menus */
     #mainMenu {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
@@ -151,11 +152,12 @@
         border-bottom: 2px solid #f2c7db; 
         padding-bottom: 10px; 
         margin-bottom: 10px; 
-        flex-wrap: wrap; 
-        gap: 10px; 
+        width: 100%;
     }
     
     .quiz-header h3 { margin: 0; font-size: 1.2rem; }
+    
+    .score-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
     
     .scoreboard { 
         background-color: #fff; 
@@ -165,79 +167,93 @@
         font-weight: bold; 
         font-size: 16px; 
         color: #E64097; 
-        box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); 
     }
     
-    /* INPUT AREA - FORCES SIDE-BY-SIDE */
+    .btn-download { 
+        background-color: #198754; 
+        font-size: 13px; 
+        padding: 8px 12px; 
+        border: none; 
+        border-radius: 4px; 
+        color: white; 
+        cursor: pointer; 
+        font-weight: bold; 
+    }
+    
+    /* INPUT AREA - RE-INTEGRATED SIDE-BY-SIDE LOGIC */
     .input-area { 
         flex-grow: 1;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
     }
 
     .input-group {
         display: flex;
-        flex-direction: row; /* Force horizontal layout */
+        flex-direction: row; 
         align-items: center;
-        justify-content: center;
-        width: 100%;
-        flex-wrap: nowrap; /* Prevent wrapping boxes under labels */
+        justify-content: flex-start;
+        width: 320px; /* Width to fit label + box + unit dropdown */
+        margin: 5px auto;
     }
 
+    /* Pink Labels - Fixed width for vertical alignment of equals signs */
     .input-group label, 
     .input-group > span:first-child {
-        width: 135px; /* Fixed width to align all boxes vertically */
+        width: 110px;
         display: flex;
         justify-content: flex-end; 
         align-items: center;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: bold;
         color: #E64097;
-        margin-right: 15px;
+        margin-right: 10px;
         white-space: nowrap;
-        text-align: right;
     }
 
-    /* Standardized height and sizing for all inputs/selects */
+    /* Number/Text Box Style */
     .quiz-section input[type="text"], 
-    .quiz-section input[type="number"],
-    .quiz-section select { 
-        height: 48px; 
+    .quiz-section input[type="number"] { 
+        height: 45px; 
+        width: 110px;
         font-size: 18px;
         border: 2px solid #ccc;
-        border-radius: 8px;
-        padding: 5px 12px;
+        border-radius: 6px;
+        padding: 5px;
         box-sizing: border-box;
         text-align: center;
         outline: none;
-        width: 130px;
-        flex-shrink: 0; /* Stop browser from squashing boxes */
     }
 
+    .quiz-section input:focus { border-color: #E64097; }
+
+    /* Unit Dropdown Style - Matches the box */
     .quiz-section select {
-        width: 85px;
-        margin-left: 10px;
+        height: 45px;
+        width: 80px;
+        margin-left: 8px;
+        font-size: 18px;
+        border: 2px solid #ccc;
+        border-radius: 6px;
         background-color: white;
+        cursor: pointer;
+        outline: none;
     }
 
-    .quiz-section input:focus, .quiz-section select:focus {
-        border-color: #E64097; 
-        box-shadow: 0 0 5px rgba(230, 64, 151, 0.2);
-    }
+    .quiz-section select:focus { border-color: #E64097; }
 
-    /* Hide number arrows */
+    /* Remove arrows from number inputs */
     .quiz-section input[type="number"]::-webkit-inner-spin-button, 
     .quiz-section input[type="number"]::-webkit-outer-spin-button { 
         -webkit-appearance: none; margin: 0; 
     }
     .quiz-section input[type="number"] { -moz-appearance: textfield; }
 
+    /* Placeholder styling */
     input::placeholder { color: #aaa; opacity: 1; font-style: italic; }
     
-    /* FEEDBACK & CONTROLS */
     .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
     
     .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
@@ -248,18 +264,28 @@
     .btn-check { background-color: #E64097; width: 100%; margin-top: 10px; }
     .btn-check:hover { background-color: #cc2b81; }
     .btn-black { background-color: #000000; }
+    .btn-secondary { background-color: #6c757d; }
     
-    .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; }
+    .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .solutions h3 { margin-top: 0; color: #E64097; font-size: 1.1rem; }
 
+    /* RESTORED Modal Styles */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-top: 6px solid #E64097; }
+    .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px;}
+    .form-group { margin-bottom: 15px; text-align: left; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; text-align: left; width: auto; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; font-size: 16px; }
+    .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
+    
     /* MOBILE COMPATIBILITY */
     @media (max-width: 1050px) {
         .main-layout { flex-direction: column; align-items: center; width: 100%; }
         #circuitCanvas { width: 95vw; height: auto; max-width: 600px; }
         .left-panel, .right-panel { height: auto; width: 95vw; max-width: 600px; }
         .right-panel { margin-top: 20px; }
-        .quiz-section { min-height: 400px; padding-bottom: 25px; }
     }
-    </style>
+</style>
 </head>
 
 <body>      
