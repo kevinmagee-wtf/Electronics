@@ -2690,31 +2690,18 @@ function checkAnswers() {
         if (currentAnswers.astableQType === 0) activeInputs = ['inputAstable', 'inputAstableT'];
         else activeInputs = ['inputMarkSpace'];
     }
-    else if (currentMode === 'monostable') {
-        activeInputs = ['inputMonostable'];
-    }
+    else if (currentMode === 'monostable') activeInputs = ['inputMonostable'];
     else if (currentMode === 'zener') {
-        if (currentZenerState === "closed") {
-            activeInputs = ['zenerQ_IL', 'zenerQ_VL'];
-        } else {
-            activeInputs = ['zenerQ_IZ', 'zenerQ_PZ'];
-        }
+        activeInputs = (currentZenerState === "closed") ? ['zenerQ_IL', 'zenerQ_VL'] : ['zenerQ_IZ', 'zenerQ_PZ'];
     }
     else if (currentMode === 'grade9zener') {
-        if (currentZenerState === "closed") {
-            activeInputs = ['g9IL', 'g9IZ'];
-        } else {
-            activeInputs = ['g9PZ', 'g9Rating'];
-        }
+        activeInputs = (currentZenerState === "closed") ? ['g9IL', 'g9IZ'] : ['g9PZ', 'g9Rating'];
     }
 
     // 3. Check for empty boxes
-    let hasEmptyBox = false;
-    activeInputs.forEach(id => {
+    let hasEmptyBox = activeInputs.some(id => {
         const el = document.getElementById(id);
-        if (!el || el.value.trim() === '') {
-            hasEmptyBox = true;
-        }
+        return !el || el.value.trim() === '';
     });
 
     if (hasEmptyBox) {
@@ -2722,7 +2709,6 @@ function checkAnswers() {
         return; 
     }
     
-    // Increment attempts on the first click
     if (!hasCheckedCurrentProblem) { 
         problemsAttempted++; 
         hasCheckedCurrentProblem = true; 
@@ -2739,7 +2725,6 @@ function checkAnswers() {
         results.push(validateMatch(parseInput(document.getElementById('inputV').value), currentAnswers.vValue, 'v'));
 
     } else if (currentMode === 'resistance') {
-        // This now uses the 'ohms' target which accepts "100", "100 ohms", or "100Ω"
         results.push(validateMatch(parseInput(document.getElementById('inputR').value), currentAnswers.rValue, 'ohms'));
 
     } else if (currentMode === 'oscilloscope') {
@@ -2774,42 +2759,30 @@ function checkAnswers() {
             const userTol = parseFloat(document.getElementById('inputResTol').value);
             results.push(userTol === currentAnswers.resTol ? 'correct' : 'wrongval');
         } else {
-            const b1 = document.getElementById('inputBand1').value.toLowerCase().trim();
-            const b2 = document.getElementById('inputBand2').value.toLowerCase().trim();
-            const b3 = document.getElementById('inputBand3').value.toLowerCase().trim();
-            const b4 = document.getElementById('inputBandTol').value.toLowerCase().trim();
-            results.push(b1 === currentAnswers.b1 ? 'correct' : 'wrong');
-            results.push(b2 === currentAnswers.b2 ? 'correct' : 'wrong');
-            results.push(b3 === currentAnswers.b3 ? 'correct' : 'wrong');
-            results.push(b4 === currentAnswers.tol ? 'correct' : 'wrong');
+            const bands = ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
+            const answers = [currentAnswers.b1, currentAnswers.b2, currentAnswers.b3, currentAnswers.tol];
+            bands.forEach((id, i) => {
+                results.push(document.getElementById(id).value.toLowerCase().trim() === answers[i] ? 'correct' : 'wrong');
+            });
         }
 
     } else if (currentMode === 'zener' || currentMode === 'grade9zener') {
-        // Zener modules use specialized logic - keeping standard parseFloat for these for now
-        const generalTolerance = 0.2;
+        const tol = 0.2;
         if (currentMode === 'zener') {
             if (currentZenerState === "closed") {
-                const valIL = parseFloat(document.getElementById('zenerQ_IL').value);
-                const valVL = parseFloat(document.getElementById('zenerQ_VL').value);
-                results.push(Math.abs(valIL - currentAnswers.targetIL) <= generalTolerance ? 'correct' : 'wrongval');
-                results.push(Math.abs(valVL - currentAnswers.targetVL) <= generalTolerance ? 'correct' : 'wrongval');
+                results.push(Math.abs(parseFloat(document.getElementById('zenerQ_IL').value) - currentAnswers.targetIL) <= tol ? 'correct' : 'wrongval');
+                results.push(Math.abs(parseFloat(document.getElementById('zenerQ_VL').value) - currentAnswers.targetVL) <= tol ? 'correct' : 'wrongval');
             } else {
-                const valIZ = parseFloat(document.getElementById('zenerQ_IZ').value);
-                const valPZ = parseFloat(document.getElementById('zenerQ_PZ').value);
-                results.push(Math.abs(valIZ - currentAnswers.targetIZ) <= generalTolerance ? 'correct' : 'wrongval');
-                results.push(Math.abs(valPZ - currentAnswers.targetPZ) <= 0.5 ? 'correct' : 'wrongval');
+                results.push(Math.abs(parseFloat(document.getElementById('zenerQ_IZ').value) - currentAnswers.targetIZ) <= tol ? 'correct' : 'wrongval');
+                results.push(Math.abs(parseFloat(document.getElementById('zenerQ_PZ').value) - currentAnswers.targetPZ) <= 0.5 ? 'correct' : 'wrongval');
             }
         } else {
             if (currentZenerState === "closed") {
-                const valIL = parseFloat(document.getElementById('g9IL').value);
-                const valIZ = parseFloat(document.getElementById('g9IZ').value);
-                results.push(Math.abs(valIL - currentAnswers.targetIL) <= generalTolerance ? 'correct' : 'wrongval');
-                results.push(Math.abs(valIZ - currentAnswers.targetIZ) <= generalTolerance ? 'correct' : 'wrongval');
+                results.push(Math.abs(parseFloat(document.getElementById('g9IL').value) - currentAnswers.targetIL) <= tol ? 'correct' : 'wrongval');
+                results.push(Math.abs(parseFloat(document.getElementById('g9IZ').value) - currentAnswers.targetIZ) <= tol ? 'correct' : 'wrongval');
             } else {
-                const valPZ = parseFloat(document.getElementById('g9PZ').value);
-                const valRating = parseFloat(document.getElementById('g9Rating').value);
-                results.push(Math.abs(valPZ - currentAnswers.targetPZ) <= 0.5 ? 'correct' : 'wrongval');
-                results.push(valRating === currentAnswers.targetRating ? 'correct' : 'wrongval');
+                results.push(Math.abs(parseFloat(document.getElementById('g9PZ').value) - currentAnswers.targetPZ) <= 0.5 ? 'correct' : 'wrongval');
+                results.push(parseFloat(document.getElementById('g9Rating').value) === currentAnswers.targetRating ? 'correct' : 'wrongval');
             }
         }
     }
@@ -2835,13 +2808,10 @@ function checkAnswers() {
             feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed).</span>";
         }
         if (helpBtn) helpBtn.style.display = 'none';
-        
-        const solBox = document.getElementById('solutions');
-        if (solBox) solBox.style.display = 'block';
+        if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'block';
 
     } else {
         if (helpBtn) helpBtn.style.display = 'block';
-        
         if (results.includes('wrongunit')) {
             unitErrorMade = true;
             feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost)</span>";
