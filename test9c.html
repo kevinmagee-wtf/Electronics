@@ -120,19 +120,19 @@
             box-sizing: border-box; /* Ensures padding doesn't break the width */
 }
         input[type="text"]:focus {
-        border-color: #E64097 !important; /* Turns pink again when they start typing a new answer */
-        outline: none;
+            border-color: #E64097 !important; /* Turns pink again when they start typing a new answer */
+            outline: none;
 }
         /* FORCE PLACEHOLDERS TO BE VISIBLE GREY */
-    input::placeholder {
-        color: #6c757d !important;
-        opacity: 1 !important;
+        input::placeholder {
+            color: #6c757d !important;
+            opacity: 1 !important;
     }
-    input::-webkit-input-placeholder {
-        color: #6c757d !important;
-        opacity: 1 !important;
+        input::-webkit-input-placeholder {
+            color: #6c757d !important;
+            opacity: 1 !important;
     }
-        b.feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
+        .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
         
         .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 4px; font-weight: bold; transition: background-color 0.2s, transform 0.1s;}
@@ -289,30 +289,32 @@
                     </div>
 
                     <div id="inputGroupZener" class="input-group" style="display:none; text-align: left; width: 100%;">
-                        <div id="zenerClosedQuestions" class="input-group" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
-                            <p style="margin-top:0; font-weight: bold; color: #333; margin-bottom: 15px;">Switch S is CLOSED. Calculate:</p>
-                            <div style="margin-bottom: 15px;">
-                                <label for="zenerQ_IL" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">1. Max Load Current (I<sub>L</sub>):</label>
-                                <input type="text" id="zenerQ_IL" placeholder="e.g. 15.2 mA" style="width: 100%; max-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                            <div style="margin-bottom: 15px;">
-                                <label for="zenerQ_VL" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">2. Load Voltage (V<sub>L</sub>):</label>
-                                <input type="text" id="zenerQ_VL" placeholder="e.g. 12.0 V" style="width: 100%; max-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                        </div>
+    
+    <div id="zenerClosedQuestions" class="input-group" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
+        <p style="margin-top:0; font-weight: bold; color: #333; margin-bottom: 15px;">Switch S is CLOSED. Calculate:</p>
+        <div style="margin-bottom: 15px;">
+            <label for="zenerQ_IL" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">1. Max Load Current (I<sub>L</sub>):</label>
+            <input type="text" id="zenerQ_IL" placeholder="e.g. 15.2 mA">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="zenerQ_VL" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">2. Load Voltage (V<sub>L</sub>):</label>
+            <input type="text" id="zenerQ_VL" placeholder="e.g. 12.0 V">
+        </div>
+    </div>
 
-                        <div id="zenerOpenQuestions" class="input-group" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
-                            <p style="margin-top:0; font-weight: bold; color: #333; margin-bottom: 15px;">Switch S is OPEN. Calculate:</p>
-                            <div style="margin-bottom: 15px;">
-                                <label for="zenerQ_IZ" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">1. Zener Current (I<sub>Z</sub>):</label>
-                                <input type="text" id="zenerQ_IZ" placeholder="e.g. 24.5 mA" style="width: 100%; max-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                            <div style="margin-bottom: 15px;">
-                                <label for="zenerQ_PZ" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">2. Zener Power (P<sub>Z</sub>):</label>
-                                <input type="text" id="zenerQ_PZ" placeholder="e.g. 150.0 mW" style="width: 100%; max-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                        </div>
-                    </div>
+    <div id="zenerOpenQuestions" class="input-group" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
+        <p style="margin-top:0; font-weight: bold; color: #333; margin-bottom: 15px;">Switch S is OPEN. Calculate:</p>
+        <div style="margin-bottom: 15px;">
+            <label for="zenerQ_IZ" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">1. Zener Current (I<sub>Z</sub>):</label>
+            <input type="text" id="zenerQ_IZ" placeholder="e.g. 24.5 mA">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="zenerQ_PZ" style="display: block; margin-bottom: 5px; font-size: 0.9em; color: #555;">2. Zener Power (P<sub>Z</sub>):</label>
+            <input type="text" id="zenerQ_PZ" placeholder="e.g. 150.0 mW">
+        </div>
+    </div>
+    
+</div>
 
 
 
@@ -321,22 +323,22 @@
     <div id="g9ZenerClosed" style="display: none;">
         <div style="margin-bottom: 15px;">
             <label>Max Load Current (I<sub>L</sub>): </label>
-            <input type="number" id="g9IL" step="0.1" style="width: 80px; padding: 5px;"> mA
+            <input type="text" id="g9IL" placeholder="e.g. 15.2 mA">
         </div>
-        <div>
+        <div style="margin-bottom: 15px;">
             <label>Zener Current (I<sub>Z</sub>): </label>
-            <input type="number" id="g9IZ" step="0.1" style="width: 80px; padding: 5px;"> mA
+            <input type="text" id="g9IZ" placeholder="e.g. 24.5 mA">
         </div>
     </div>
 
     <div id="g9ZenerOpen" style="display: none;">
         <div style="margin-bottom: 15px;">
             <label>Max Zener Power (P<sub>Z</sub>): </label>
-            <input type="number" id="g9PZ" step="0.1" style="width: 80px; padding: 5px;"> mW
+            <input type="text" id="g9PZ" placeholder="e.g. 150.0 mW">
         </div>
-        <div>
+        <div style="margin-bottom: 15px;">
             <label>Minimum Safe Rating: </label>
-            <input type="number" id="g9Rating" step="10" style="width: 80px; padding: 5px;"> mW
+            <input type="text" id="g9Rating" placeholder="e.g. 200 mW">
         </div>
     </div>
     
@@ -400,8 +402,11 @@
                     <p id="solText"></p>
                 </div>
 
-            </div> </div> </div> </div> <div id="submissionModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
+            </div> </div> </div> </div> 
+    
+        <div id="submissionModal" class="modal-overlay" style="display: none;">
+    
+        <div class="modal-content">
         <h3>Submit Your Score</h3>
         <div class="form-group">
             <label for="studentNameInput">Your Name:</label>
