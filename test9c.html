@@ -1358,7 +1358,7 @@ function generateAnalysisProblem(ctx, canvas) {
         drawResistor(ctx, 300, 295); drawLine(ctx, 300, 320, 300, 360); 
 
         ctx.fillStyle = brandBlack; ctx.fillText("R\u2081", 160, 150);
-        ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack; ctx.fillText(vLabels[0], 80, 150); 
+        ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack; ctx.fillText(vLabels[0], 70, 150); 
         ctx.fillStyle = unknownIIndex === 0 ? brandPink : brandBlack; ctx.fillText(iLabels[0], 215, 100);
         ctx.fillStyle = brandBlack; ctx.fillText("R\u2082", 365, 150); 
         ctx.fillStyle = unknownVIndex === 1 ? brandPink : brandBlack; ctx.fillText(vLabels[1], 435, 150); 
@@ -1376,7 +1376,7 @@ function generateAnalysisProblem(ctx, canvas) {
         ctx.fillStyle = unknownVIndex === 2 ? brandPink : brandBlack; ctx.fillText(vLabels[2], 335, 130); 
         ctx.fillStyle = unknownIIndex === 2 ? brandPink : brandBlack; ctx.fillText(iLabels[2], 315, 90);
         ctx.fillStyle = brandBlack; ctx.fillText("R\u2081", 160, 280);
-        ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack; ctx.fillText(vLabels[0], 80, 280); 
+        ctx.fillStyle = unknownVIndex === 0 ? brandPink : brandBlack; ctx.fillText(vLabels[0], 70, 280); 
         ctx.fillStyle = unknownIIndex === 0 ? brandPink : brandBlack; ctx.fillText(iLabels[0], 215, 230);
         ctx.fillStyle = brandBlack; ctx.fillText("R\u2082", 365, 280); 
         ctx.fillStyle = unknownVIndex === 1 ? brandPink : brandBlack; ctx.fillText(vLabels[1], 435, 280); 
@@ -3054,6 +3054,10 @@ function parseInput(str) {
 }
 
 function validateMatch(parsedInput, expectedVal, expectedUnit) {
+    console.log("DEBUG CHECK:");
+    console.log("User typed:", parsedInput.val, parsedInput.unit);
+    console.log("Computer wants:", expectedVal, expectedUnit);
+    
     // 1. BASIC VALIDATION
     // If input is empty, non-existent, or the number couldn't be parsed
     if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
