@@ -2572,54 +2572,61 @@ function closeModal() {
 // ===============================================================================================================      
     
 function hubController(ctx, canvas) {
-    // 1. Force Canvas Resolution
+    // 1. Force Canvas Resolution & Clear
     canvas.width = 600;
     canvas.height = 420;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 2. Full UI Reset
-    // This clears all input groups, hides the solution box, 
-    // and hides the questionText container completely.
+    // 2. Full UI Reset (The "Master Wipe")
+    // This handles all state and hides all groups BEFORE we pick the new mode
     hideAllInputGroups(); 
     
+    // Reset grading flags for the new problem
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
     viewedSolution = false; 
     unitErrorMade = false; 
 
-    // 3. Clear the question text content just in case
+    // 3. Clear text containers
     const qText = document.getElementById('questionText');
-    if (qText) qText.innerHTML = '';
+    if (qText) {
+        qText.innerHTML = '';
+        qText.style.display = 'none'; // Keep hidden unless a module needs it
+    }
 
-    // 4. ROUTER: Open module inputs silently (No text instructions)
+    // 4. ROUTER: Setup the UI for the specific mode
     if (currentMode === 'analysis') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        document.getElementById('inputGroupI').style.display = 'inline-block';
+        // Show the groups here
+        const groupV = document.getElementById('inputGroupV');
+        const groupI = document.getElementById('inputGroupI');
+        if (groupV) groupV.style.display = 'inline-block';
+        if (groupI) groupI.style.display = 'inline-block';
+        
+        // Call generator (Make sure to remove hideAllInputGroups() from inside this function!)
         generateAnalysisProblem(ctx, canvas);
 
     } else if (currentMode === 'divider') {
-        document.getElementById('inputGroupV').style.display = 'inline-block';
-        const g9 = document.getElementById('grade9DividerBtn');
-        if (g9) g9.style.display = 'inline-block';
+        if (document.getElementById('inputGroupV')) document.getElementById('inputGroupV').style.display = 'inline-block';
+        if (document.getElementById('grade9DividerBtn')) document.getElementById('grade9DividerBtn').style.display = 'inline-block';
         generateDividerProblem(ctx, canvas);
 
     } else if (currentMode === 'resistance') {
-        document.getElementById('inputGroupR').style.display = 'inline-block';
-        const g9 = document.getElementById('grade9ResistorBtn');
-        if (g9) g9.style.display = 'inline-block';
+        if (document.getElementById('inputGroupR')) document.getElementById('inputGroupR').style.display = 'inline-block';
+        if (document.getElementById('grade9ResistorBtn')) document.getElementById('grade9ResistorBtn').style.display = 'inline-block';
+        // Small timeout helps some browsers render the canvas instructions correctly
         setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
 
     } else if (currentMode === 'oscilloscope') {
-        // Show the wrapper so the oscilloscope inputs appear, but no text
         const oscWrapper = document.getElementById('oscilloscopeInputs');
         if (oscWrapper) oscWrapper.style.display = 'block';
         generateOscilloscopeProblem(ctx, canvas);
 
     } else if (currentMode === 'astable') {
-        // Astable generator handles its own specific inputs
+        // This module usually manages its own complex inputs
         generateAstableProblem(ctx, canvas);
 
     } else if (currentMode === 'monostable') {
-        document.getElementById('inputGroupMonostable').style.display = 'inline-block';
+        if (document.getElementById('inputGroupMonostable')) document.getElementById('inputGroupMonostable').style.display = 'inline-block';
         generateMonostableProblem(ctx, canvas);
 
     } else if (currentMode === 'colorcode') {
@@ -2628,15 +2635,18 @@ function hubController(ctx, canvas) {
     } else if (currentMode === 'zener') {
         if (document.getElementById('inputGroupZener')) document.getElementById('inputGroupZener').style.display = 'inline-block';
         if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
-        generateZenerProblem();
+        generateZenerProblem(ctx, canvas); // Pass ctx/canvas for consistency
 
     } else if (currentMode === 'grade9zener') {
-        generateGrade9ZenerProblem();
+        generateGrade9ZenerProblem(ctx, canvas);
 
     } else if (currentMode === 'silicon') {
         if (document.getElementById('inputGroupSilicon')) document.getElementById('inputGroupSilicon').style.display = 'inline-block';
-        generateSiliconProblem();
+        generateSiliconProblem(ctx, canvas);
     }
+
+    // Always ensure scoreboard is synced after a route change
+    if (typeof updateScoreboard === "function") updateScoreboard();
 }
     
 // =======================================================================================================  
