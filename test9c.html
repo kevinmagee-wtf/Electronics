@@ -316,16 +316,35 @@
 
 
 
-                 <div id="inputGroupGrade9Zener" class="input-group" style="display: none;">
-                    <div id="g9ZenerClosed" style="display: none; margin-bottom: 10px;">
-                    <label><span style="color:#E64097; font-weight:bold;">Load Current (I<sub>L</sub>)</span> = <input type="number" id="g9_IL" placeholder="mA" style="width: 80px;"></label>
-                    <label style="margin-left: 15px;"><span style="color:#E64097; font-weight:bold;">Zener Current (I<sub>Z</sub>)</span> = <input type="number" id="g9_IZ_closed" placeholder="mA" style="width: 80px;"></label>
-                </div>
-                <div id="g9ZenerOpen" style="display: none; margin-bottom: 10px;">
-                    <label><span style="color:#E64097; font-weight:bold;">Max Zener Power (P<sub>Z</sub>)</span> = <input type="number" id="g9_PZ" placeholder="mW" style="width: 80px;"></label>
-                    <label style="margin-left: 15px;"><span style="color:#E64097; font-weight:bold;">Min Rating (1 sig fig)</span> = <input type="number" id="g9_Rating" placeholder="mW" style="width: 80px;"></label>
-                </div>
-            </div>
+    <div id="inputGroupGrade9Zener" class="input-group" style="display: none; margin-top: 15px;">
+    
+    <div id="g9ZenerClosed" style="display: none;">
+        <div style="margin-bottom: 15px;">
+            <label>Max Load Current (I<sub>L</sub>): </label>
+            <input type="number" id="g9IL" step="0.1" style="width: 80px; padding: 5px;"> mA
+        </div>
+        <div>
+            <label>Zener Current (I<sub>Z</sub>): </label>
+            <input type="number" id="g9IZ" step="0.1" style="width: 80px; padding: 5px;"> mA
+        </div>
+    </div>
+
+    <div id="g9ZenerOpen" style="display: none;">
+        <div style="margin-bottom: 15px;">
+            <label>Max Zener Power (P<sub>Z</sub>): </label>
+            <input type="number" id="g9PZ" step="0.1" style="width: 80px; padding: 5px;"> mW
+        </div>
+        <div>
+            <label>Minimum Safe Rating: </label>
+            <input type="number" id="g9Rating" step="10" style="width: 80px; padding: 5px;"> mW
+        </div>
+    </div>
+    
+    <div style="margin-top: 15px;">
+        <button class="btn" onclick="checkGrade9Zener()">Check Answers</button>
+    </div>
+
+</div>
 
                     
 <div id="instructionPrompt" class="instruction-text" style="text-align: center; margin-bottom: 10px; font-size: 18px; display: none;"></div>
