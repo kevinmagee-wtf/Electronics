@@ -216,16 +216,21 @@
                 
                 <div id="questionText" style="font-weight: bold; margin-bottom: 15px; color: #333; min-height: 45px; border-bottom: 1px solid #f2c7db; padding-bottom: 10px;"></div>
                 
-               <div class="quiz-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+               <div class="quiz-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
     
-                    <div></div>
+                    <div class="scoreboard" id="scoreDisplay" style="margin: 0;">Score: 0 / 0</div>
 
-                    <div class="score-container" style="display: flex; gap: 10px; align-items: center;">
-                        <button id="dataSheetBtn" class="btn-secondary" style="margin: 0; padding: 8px 12px; font-size: 13px;" onclick="openDataSheet()">📖 Data Sheet</button>
-                        <div class="scoreboard" id="scoreDisplay">Score: 0 / 0</div>
-                        <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()">&#11015; Download</button>
-                    </div>
-                </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 130px;">
+                            &#11015; Download
+                        </button>
+        
+        <button id="dataSheetBtn" class="btn-secondary" onclick="openDataSheet()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 130px;">
+            📖 Data Sheet
+        </button>
+    </div>
+    
+</div>
                   
                 <div class="input-area">
 
