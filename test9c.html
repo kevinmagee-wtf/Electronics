@@ -545,53 +545,55 @@ function getSafePowerRating(power_mW) {
  * @param {number} tolerance - 0 for exact, or a decimal (e.g. 0.02 for 2%)
  */
 
-function validateScientificValue(userInput, correctValue, tolerance = 0) {
-    // 1. Clean the input
+function validateScientificValue(userInput, correctValue, tolerance = 0, unitSymbol = 'Ω') {
     let input = userInput.trim();
     
-    // 2. Strict Prefix Check: Reject Capital 'K' (per your engineering rules)
+    // 1. Strict Prefix Check: Reject Capital 'K'
     if (input.includes('K')) return false;
 
-    // 3. Strict Prefix Check: Reject lowercase 'm' ONLY if it isn't part of "ohm"
-    // This allows "ohms" but rejects "milli"
-    if (input.includes('m') && !input.toLowerCase().includes('ohm')) {
+    // 2. Map unit symbols to their full word counterparts
+    const unitNames = {
+        'Ω': 'ohms?',
+        'v': 'volts?',
+        'a': 'amps?',
+        'w': 'watts?',
+        'hz': 'hertz',
+        's': 'seconds?',
+        'f': 'farads?'
+    };
+    
+    const unitWord = unitNames[unitSymbol.toLowerCase()] || 'ohms?';
+
+    // 3. Strict Prefix Check: Reject lowercase 'm' ONLY if it isn't part of the unit word
+    // This allows "ohms" or "amps" but rejects "milli"
+    if (input.includes('m') && !input.toLowerCase().includes(unitWord.replace('?',''))) {
         return false; 
     }
 
-    // 4. MANDATORY UNIT CHECK: Must contain Ω or some version of "ohm/ohms"
-    const hasUnit = /Ω|ohms?/i.test(input);
-    if (!hasUnit) return false; 
+    // 4. MANDATORY UNIT CHECK: Must contain the symbol or the unit word
+    const unitRegex = new RegExp(`${unitSymbol}|${unitWord}`, 'i');
+    if (!unitRegex.test(input)) return false; 
 
-    // 5. Identify Multiplier BEFORE stripping strings
+    // 5. Identify Multiplier
     let multiplier = 1;
     if (input.toLowerCase().includes('k')) multiplier = 1000;
-    
-    // Use a Regex that ensures 'M' is a prefix (usually near a number) 
-    // and not just a middle letter in "OHMS"
-    if (input.includes('M')) {
-        // Only treat as Mega if it's NOT part of the word OHMS
-        if (!/ohms?/i.test(input) || input.match(/\d\s?M/)) {
-            multiplier = 1000000;
-        }
-    }
+    if (input.includes('M')) multiplier = 1000000;
 
-    // 6. EXTRACT THE NUMBER (The "Strip" Logic)
-    // STEP A: Remove the word "ohms" or "ohm" first (Case Insensitive)
-    let cleanString = input.replace(/ohms?/gi, '');
+    // 6. EXTRACT THE NUMBER
+    // Step A: Remove the long word first (e.g., "Ohms") to protect the 'm' or 's' inside it
+    let cleanString = input.replace(new RegExp(unitWord, 'gi'), '');
     
-    // STEP B: Remove the symbols k, M, or Ω (Case Sensitive here to protect logic)
-    cleanString = cleanString.replace(/[kMΩ]/g, '').trim();
+    // Step B: Remove the single symbols (k, M, V, A, Ω etc.)
+    // We escape the unitSymbol in case it's a special character
+    const escapedSymbol = unitSymbol.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    cleanString = cleanString.replace(new RegExp(`[kM${escapedSymbol}]`, 'g'), '').trim();
                              
     let userNum = parseFloat(cleanString);
-
     if (isNaN(userNum)) return false;
 
-    // 7. Final Calculation
+    // 7. Final Calculation & Tolerance
     let userTotal = userNum * multiplier;
-
-    // 8. Tolerance Comparison
     if (tolerance === 0) {
-        // 0.1 buffer handles floating point rounding errors
         return Math.abs(userTotal - correctValue) < 0.1;
     } else {
         return Math.abs(userTotal - correctValue) <= (correctValue * tolerance);
