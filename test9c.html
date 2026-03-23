@@ -284,28 +284,23 @@
 /* ============================================================
        7. MOBILE RESPONSIVENESS
        ============================================================ */
-    @media (max-width: 700px) {
-        .main-layout { flex-direction: column; align-items: center; width: 100%; }
-        #circuitCanvas { width: 95vw; height: auto; max-width: 600px; }
-        
-        /* Consolidate panels for phone screens */
-        .left-panel, .right-panel { 
-            width: 95vw; 
-            max-width: 600px; 
-            height: auto !important; /* Allow height to be flexible on small phones */
-        }
-
-        .right-panel { margin-top: 20px; }
-
-        .quiz-section { 
-            height: auto !important; /* Stop forcing 100% height on phones */
-            min-height: 300px; 
-        }
-
-        .controls {
-            margin-top: 25px; /* Use a fixed gap on phones instead of 'auto' */
-        }  
+    @media (max-width: 740px) {
+    .main-layout { flex-direction: column; align-items: center; width: 100%; }
+    
+    .left-panel, .right-panel { 
+        width: 95vw; 
+        max-width: 600px; 
+        height: auto !important; /* Let it be flexible ONLY on phones */
     }
+    .quiz-section { 
+        height: auto !important; 
+    }
+    .input-area {
+        min-height: 0; /* Remove the reserved space on small phones to save screen room */
+    }
+    .right-panel { margin-top: 20px; }
+    .controls { margin-top: 20px; }  
+}
 </style>
 </head>
 
