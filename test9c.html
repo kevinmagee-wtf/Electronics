@@ -261,7 +261,16 @@
         #circuitCanvas { width: 95vw; height: auto; max-width: 600px; }
         .left-panel, .right-panel { height: auto; width: 95vw; max-width: 600px; }
         .right-panel { margin-top: 20px; }
-        .quiz-section { min-height: 400px; padding-bottom: 25px; }
+       .quiz-section { 
+            background-color: #fdf4f8; 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            border: 1px solid #f2c7db; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; /* Force it to take up all 420px */
+            box-sizing: border-box;
+}
         .right-panel { height: auto;      /* On phones, the box wraps tight to the buttons */
         margin-top: 20px; 
     }
