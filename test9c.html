@@ -780,7 +780,37 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
             ctx.quadraticCurveTo(x, y, x + radius, y); ctx.closePath(); ctx.fill(); ctx.stroke();
 }
 
+// Smart Label Helper: Automatically makes numbers into large subscripts!
+function drawLabel(ctx, text, x, y, baseSize = 18) {
+    ctx.fillStyle = "#000000";
+    
+    // This splits the text into letters and numbers (e.g. "R1" becomes "R" and "1")
+    const match = text.match(/^([a-zA-Z]+)(.*)$/);
 
+    if (match && match[2] !== "") {
+        const letters = match[1]; // e.g., "R"
+        const subscript = match[2]; // e.g., "1"
+
+        // 1. Draw the main letter
+        ctx.font = `bold ${baseSize}px Arial`;
+        ctx.fillText(letters, x, y);
+
+        // 2. Measure how wide the letter is so we know where to put the subscript
+        const letterWidth = ctx.measureText(letters).width;
+
+        // 3. Draw the subscript at 80% of the normal size (much bigger than default!)
+        const subSize = Math.floor(baseSize * 0.8);
+        ctx.font = `bold ${subSize}px Arial`;
+        
+        // Push it to the right of the letter, and drop it down slightly
+        ctx.fillText(subscript, x + letterWidth + 1, y + (baseSize * 0.3));
+        
+    } else {
+        // If it's just normal text (like "V"), draw it normally
+        ctx.font = `bold ${baseSize}px Arial`;
+        ctx.fillText(text, x, y);
+    }
+}
 
  // GCSE Style Zener - Pointed UP
 function drawHollowZenerUp(ctx, x, y) {
