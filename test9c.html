@@ -182,12 +182,20 @@
         white-space: nowrap !important; /* Prevents text from breaking onto two lines */
     }
 
-    /* Complex Overrides (Zener, Colors, etc.) */
-    #inputGroupZener, #zenerClosedQuestions, #zenerOpenQuestions, #inputGroupGrade9Zener, #inputGroupColorNames {
-        flex-direction: column !important;
-        align-items: flex-start !important; 
-    }
-
+   /* Complex Overrides (Zener, Colors, etc.) */
+#inputGroupZener, 
+#zenerClosedQuestions, 
+#zenerOpenQuestions, 
+#inputGroupGrade9Zener, 
+#inputGroupColorNames {
+    display: flex !important;           /* Ensure flex is active */
+    flex-direction: column !important;
+    align-items: flex-start !important; 
+    
+    /* THE FIX: Reserve the same amount of space as the other questions */
+    min-height: 140px !important;       
+    width: 100% !important;
+}
     #inputGroupZener label, 
     #inputGroupGrade9Zener label,
     #inputGroupColorNames label,
