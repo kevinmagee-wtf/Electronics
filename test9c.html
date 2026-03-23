@@ -110,7 +110,7 @@
     flex-direction: column; 
     width: 100%; 
     max-width: 500px; 
-    height: 440px !important; /* Increased slightly to accommodate 3 rows + buttons comfortably */
+    height: 500px !important; /* Increased to 500px to fit all buttons */
 }
     
     .quiz-section { 
@@ -122,7 +122,6 @@
     flex-direction: column; 
     height: 100%; 
     box-sizing: border-box;
-    overflow: hidden; /* Prevents internal items from pushing the box larger */
 }
     
     .quiz-header { 
@@ -145,10 +144,10 @@
     flex-direction: column;
     justify-content: flex-start; 
     align-items: flex-start;     
-    gap: 10px;                   
+    gap: 8px;                   
     margin-top: 5px;
-    /* MAGIC FIX: This reserves space for 3 rows so the buttons never move */
-    min-height: 160px; 
+    /* This reserves space for up to 3 rows so buttons stay fixed */
+    min-height: 140px; 
 }
 
     .input-group {
@@ -247,7 +246,7 @@
     .feedback { 
     font-size: 16px; 
     margin: 5px 0; 
-    min-height: 30px; /* Reserves space for the correct/incorrect message */
+    min-height: 24px; /* Space for the "Correct/Incorrect" text */
     text-align: center; 
     font-weight: bold;
 }
@@ -255,16 +254,24 @@
     text-align: center; 
     display: flex; 
     flex-direction: column; 
-    gap: 10px; 
-    margin-top: auto; /* Glues the buttons to the very bottom floor */
-    } /* This keeps buttons at the bottom of the 380px box */
+    gap: 8px; 
+    margin-top: auto; /* Pushes buttons to the floor of the 500px box */
+    padding-bottom: 5px;
+}
     
     button { padding: 12px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 6px; font-weight: bold; transition: all 0.2s; }
     button:active { transform: scale(0.98); }
     
     .btn-download { background-color: #198754 !important; color: #ffffff !important; opacity: 1 !important; }
     .btn-secondary { background-color: #6c757d !important; color: #ffffff !important; opacity: 1 !important; }
-    .btn-check { background-color: #E64097 !important; color: #ffffff !important; opacity: 1 !important; width: 100%; margin-top: 10px; }
+    .btn-check { 
+    background-color: #E64097 !important; 
+    color: #ffffff !important; 
+    opacity: 1 !important; 
+    width: 100%; 
+    /* Change 10px to 0px to save vertical space */
+    margin-top: 0px !important; 
+}
     .btn-check:hover { background-color: #cc2b81 !important; }
     .btn-black { background-color: #000000 !important; color: #ffffff !important; opacity: 1 !important; }
     
