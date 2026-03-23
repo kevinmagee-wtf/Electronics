@@ -3,7 +3,7 @@
 <head>
     <link rel="icon" href="data:,">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="vcheckiewport" content="width=device-width, initial-scale=1.0">
     <title>Abingdon School - Electronics Quiz</title>
 <!DOCTYPE html>
 <html lang="en">
@@ -494,7 +494,7 @@
                         </div>
                     </div>
                 </div> <div style="margin-top: 20px;">
-                    <button class="btn-check" onclick="checkAnswers()" style="padding: 10px 20px; background-color: #E64097; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Check Answer(s)</button>
+                   <button id="checkBtn" class="btn-check" onclick="checkAnswers()" style="padding: 10px 20px; background-color: #E64097; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Check Answer(s)</button>
                     <div id="feedback" class="feedback" style="margin-top: 15px; font-weight: bold; min-height: 1.2em;"></div>
                 </div>
                     
@@ -618,6 +618,10 @@ function handleGenerateClick() {
         helpBtn.innerText = "Need Help? (Show Solution)";
     }
 
+    // NEW UPGRADE: Bring back the Check Answer button for the new problem!
+    const checkBtn = document.getElementById('checkBtn');
+    if (checkBtn) checkBtn.style.display = 'block'; // Or 'inline-block' depending on your CSS layout
+
     // Clear any "Correct/Incorrect" feedback from the last problem
     const feedback = document.getElementById('feedback');
     if (feedback) feedback.innerText = "";
@@ -643,18 +647,19 @@ function handleGenerateClick() {
         hubController(ctx, canvas);
     }
 }
+
 // ==================================================================================================================
 // FUNCTION 0: SMALL UTILITIES (HELPERS)   
 // ==================================================================================================================
     
-    function formatResValue(val) {
+function formatResValue(val) {
     if (val >= 1000000) return (val / 1000000) + " MΩ";
     if (val >= 1000) return (val / 1000) + " kΩ";
     return val + " Ω";
 }
 
-    // Formatting helper to turn large numbers into k and M (e.g., 1000 -> 1k)
-    function formatNum(num) {
+// Formatting helper to turn large numbers into k and M (e.g., 1000 -> 1k)
+function formatNum(num) {
     if (num >= 1000000) return (num / 1000000).toFixed(2).replace(/\.00$/, '') + 'M';
     if (num >= 1000) return (num / 1000).toFixed(2).replace(/\.00$/, '') + 'k';
     return num.toString();
@@ -667,6 +672,7 @@ function getSafePowerRating(power_mW) {
     const firstDigit = Math.ceil(power_mW / mag);
     return firstDigit * mag;
 }
+
 function showUnitInstruction() {
     const qText = document.getElementById('questionText');
     if (qText) {
@@ -3208,6 +3214,10 @@ function toggleSolutions() {
         // Hide the help button once the solution is showing
         const helpBtn = document.getElementById('helpBtn');
         if (helpBtn) helpBtn.style.display = 'none';
+        
+        // NEW UPGRADE: Hide the Check Answer button because they peeked!
+        const checkBtn = document.getElementById('checkBtn');
+        if (checkBtn) checkBtn.style.display = 'none';
         
     } else { 
         sol.style.display = 'none'; 
