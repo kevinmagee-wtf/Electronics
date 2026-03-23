@@ -104,12 +104,26 @@
     
     canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
     
-    .right-panel { flex: 1 1 300px; display: flex; flex-direction: column; width: 100%; max-width: 500px; height: 400px; } /* Fixed height for stability */
+    .right-panel { 
+    flex: 1 1 300px; 
+    display: flex; 
+    flex-direction: column; 
+    width: 100%; 
+    max-width: 500px; 
+    height: 440px !important; /* Increased slightly to accommodate 3 rows + buttons comfortably */
+}
     
     .quiz-section { 
-        background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; 
-        display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
-    }
+    background-color: #fdf4f8; 
+    padding: 15px 20px; 
+    border-radius: 8px; 
+    border: 1px solid #f2c7db; 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+    box-sizing: border-box;
+    overflow: hidden; /* Prevents internal items from pushing the box larger */
+}
     
     .quiz-header { 
         display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; 
@@ -127,13 +141,15 @@
        4. QUIZ INPUT GROUPS - SHRUNK & TIGHTLY LEFT-ALIGNED
        ============================================================ */
     .input-area { 
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start; 
-        align-items: flex-start;     
-        gap: 10px;                   
-        margin-top: 5px;
-    }
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    align-items: flex-start;     
+    gap: 10px;                   
+    margin-top: 5px;
+    /* MAGIC FIX: This reserves space for 3 rows so the buttons never move */
+    min-height: 160px; 
+}
 
     .input-group {
         display: flex; 
@@ -228,8 +244,20 @@
     /* ============================================================
        5. BUTTONS & CONTROLS
        ============================================================ */
-    .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
-    .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; margin-top: auto; } /* This keeps buttons at the bottom of the 380px box */
+    .feedback { 
+    font-size: 16px; 
+    margin: 5px 0; 
+    min-height: 30px; /* Reserves space for the correct/incorrect message */
+    text-align: center; 
+    font-weight: bold;
+}
+    .controls { 
+    text-align: center; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    margin-top: auto; /* Glues the buttons to the very bottom floor */
+    } /* This keeps buttons at the bottom of the 380px box */
     
     button { padding: 12px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 6px; font-weight: bold; transition: all 0.2s; }
     button:active { transform: scale(0.98); }
