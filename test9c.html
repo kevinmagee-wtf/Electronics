@@ -601,6 +601,30 @@ let currentAnswers = {};
 
 /* --- 2. MAIN CONTROLLER --- */
 function handleGenerateClick() {
+    // ==========================================
+    // 1. RESET SCORING & UI FOR THE NEW PROBLEM
+    // ==========================================
+    canEarnPoints = true;      // Student can earn points again
+    viewedSolution = false;    // Reset the peek flag
+    
+    // Hide the solution box
+    const sol = document.getElementById('solutions');
+    if (sol) sol.style.display = 'none';
+    
+    // Bring back the Help Button (since it hides when clicked)
+    const helpBtn = document.getElementById('helpBtn');
+    if (helpBtn) {
+        helpBtn.style.display = 'block'; 
+        helpBtn.innerText = "Need Help? (Show Solution)";
+    }
+
+    // Clear any "Correct/Incorrect" feedback from the last problem
+    const feedback = document.getElementById('feedback');
+    if (feedback) feedback.innerText = "";
+
+    // ==========================================
+    // 2. GENERATE THE NEW PROBLEM
+    // ==========================================
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
 
@@ -2847,7 +2871,7 @@ function checkAnswers() {
         activeInputs = (currentZenerState === "closed") ? ['g9IL', 'g9IZ'] : ['g9PZ', 'g9Rating'];
     }
 
-    // 3. Check for empty boxes
+    // 3. Check for empty boxes (Protects them from losing points if they accidentally click Check early!)
     let hasEmptyBox = activeInputs.some(id => !document.getElementById(id) || document.getElementById(id).value.trim() === '');
     if (hasEmptyBox) {
         feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
@@ -2938,7 +2962,9 @@ function checkAnswers() {
          }
     }
 
-    // 5. Final Feedback and Scoring
+    // ========================================================
+    // 5. UPGRADED Final Feedback and Scoring
+    // ========================================================
     activeInputs.forEach((id, index) => {
         const el = document.getElementById(id);
         if (el) {
@@ -2948,24 +2974,48 @@ function checkAnswers() {
     });
 
     if (results.every(r => r === 'correct')) {
+        // SUCCESS PATH
         isCurrentProblemSolved = true;
-        feedback.innerHTML = viewedSolution ? "<span style='color: #E64097;'>Correct! (Solution viewed).</span>" : 
-                           (unitErrorMade ? "<span style='color: #fd7e14;'>Correct! (No point awarded due to earlier unit error).</span>" : 
-                           "<span style='color: #198754;'>Correct! Great job!</span>");
-        if (!viewedSolution && !unitErrorMade) problemsCorrect++;
+        
+        if (canEarnPoints) {
+            feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
+            problemsCorrect++; // Award the point!
+        } else if (viewedSolution) {
+            feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed, 0 points).</span>";
+        } else if (unitErrorMade) {
+            feedback.innerHTML = "<span style='color: #fd7e14;'>Correct! (Unit fixed, 0 points).</span>";
+        } else {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Correct! (Took multiple tries, 0 points).</span>";
+        }
+        
+        canEarnPoints = false; // Lock out points so they can't double-score
+        
+        // Hide the help button because they are done
         if (helpBtn) helpBtn.style.display = 'none';
-        if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'block';
+        
+        // Note: We intentionally DO NOT show the solutions div here to keep the UX fast!
+
     } else {
-        if (helpBtn) helpBtn.style.display = 'block';
+        // FAILURE PATH
+        canEarnPoints = false; // ONE-SHOT RULE: They missed their shot!
+        
         if (results.includes('wrongunit')) {
             unitErrorMade = true;
-            feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost)</span>";
+            feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost). See solution.</span>";
         } else {
             feedback.innerHTML = results.some(r => r === 'correct') ? 
-                               "<span style='color: #dc3545;'>One is right, one is wrong. Check logic!</span>" : 
-                               "<span style='color: #dc3545;'>Incorrect. Check your math and units!</span>";
+                               "<span style='color: #dc3545;'>One is right, one is wrong. (Mark lost). See solution.</span>" : 
+                               "<span style='color: #dc3545;'>Incorrect. (Mark lost). See solution below.</span>";
         }
+
+        // Force the solution box open to help them learn
+        const solDiv = document.getElementById('solutions');
+        if (solDiv) solDiv.style.display = 'block';
+        
+        // Hide the help button since the solution is now automatically showing
+        if (helpBtn) helpBtn.style.display = 'none';
     }
+    
     if (typeof updateScoreboard === "function") updateScoreboard();
 }
     
@@ -3148,12 +3198,17 @@ function toggleSolutions() {
     if (!sol) return;
     
     if (sol.style.display === 'none' || sol.style.display === '') {
+        // Show the solution box
         sol.style.display = 'block'; 
-        viewedSolution = true;
         
-        // FIX: Hide the help button once the solution is showing
+        // Update both flags!
+        viewedSolution = true;
+        canEarnPoints = false; // NEW: They lose the ability to score points for this problem
+        
+        // Hide the help button once the solution is showing
         const helpBtn = document.getElementById('helpBtn');
         if (helpBtn) helpBtn.style.display = 'none';
+        
     } else { 
         sol.style.display = 'none'; 
     }
