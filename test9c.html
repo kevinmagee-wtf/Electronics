@@ -684,6 +684,17 @@ function showUnitInstruction() {
         qText.style.display = 'block';
     }
 }
+    
+// Used exclusively when asking for Ohms (Resistance)  
+function showOhmUnitInstruction() {
+    const qText = document.getElementById('questionText');
+    if (qText) {
+        qText.style.minHeight = "60px"; // Reserves space so the buttons don't jump
+        qText.innerHTML = `<div style="font-size: 18px; line-height: 1.2;">Enter the value with or without a prefix<br>
+                           <em style="font-size: 15px; color: #666; font-weight: normal;">(e.g., 520, 83k, or 6.1M).</em></div>`;
+        qText.style.display = 'block';
+    }
+}
 
 // =======================================================================================================
 // FUNCTION 1: DRAWING Helpers
