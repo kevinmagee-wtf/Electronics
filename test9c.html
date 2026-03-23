@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abingdon School - Electronics Quiz</title>
 <style>
-/* ============================================================
+    /* ============================================================
        1. GLOBAL STYLES & BACKGROUND
        ============================================================ */
     body { 
@@ -105,25 +105,24 @@
     canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
     
     .right-panel { 
-    flex: 1 1 300px; 
-    display: flex; 
-    flex-direction: column; 
-    width: 100%; 
-    max-width: 500px; 
-    height: 680px !important; /* <--- INCREASED TO 680px */
-}
-
-.quiz-section { 
-    background-color: #fdf4f8; 
-    padding: 15px 20px; 
-    border-radius: 8px; 
-    border: 1px solid #f2c7db; 
-    display: flex; 
-    flex-direction: column; 
-    height: 100%; 
-    box-sizing: border-box;
-    overflow: hidden; /* This is the outer 'frame' that must not move */
-}
+        flex: 1 1 300px; 
+        display: flex; 
+        flex-direction: column; 
+        width: 100%; 
+        max-width: 500px; 
+        /* Back to letting the box grow naturally! */
+    }
+    
+    .quiz-section { 
+        background-color: #fdf4f8; 
+        padding: 15px 20px; 
+        border-radius: 8px; 
+        border: 1px solid #f2c7db; 
+        display: flex; 
+        flex-direction: column; 
+        min-height: 520px; /* Matches the circuit diagram height as a base */
+        box-sizing: border-box;
+    }
     
     .quiz-header { 
         display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; 
@@ -138,26 +137,16 @@
     }
     
     /* ============================================================
-       4. QUIZ INPUT GROUPS & STABILITY LOCKS
+       4. QUIZ INPUT GROUPS - SHRUNK & TIGHTLY LEFT-ALIGNED
        ============================================================ */
-    .quiz-section p {
-        min-height: 48px; /* Stabilizes the instruction sentence area */
-        margin-bottom: 10px;
+    .input-area { 
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; 
+        align-items: flex-start;     
+        gap: 10px;                   
+        margin-top: 5px;
     }
-
-    /* This is the magic fix: It lets extra Zener text scroll while buttons stay put */
-.input-area { 
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; 
-    align-items: flex-start;     
-    gap: 10px;                   
-    margin-top: 5px;
-    flex: 1;                /* Takes up all available space between header and buttons */
-    overflow-y: auto;       /* Adds a scrollbar ONLY if the Zener questions are too long */
-    padding-right: 5px;     /* Space for the scrollbar */
-    min-height: 180px;      /* Reserved space so buttons stay down on simple questions */
-}
 
     .input-group {
         display: flex; 
@@ -174,7 +163,6 @@
         display: flex !important;
     }
 
-    /* Tighter labels for alignment */
     .input-group label, 
     .input-group > span:first-child {
         width: 65px !important;
@@ -191,7 +179,7 @@
         white-space: nowrap !important;
     }
 
-    /* Complex Overrides (Zener, Colors, Grade 9) */
+    /* Complex Overrides */
     #inputGroupZener, 
     #zenerClosedQuestions, 
     #zenerOpenQuestions, 
@@ -200,7 +188,6 @@
         display: flex !important;
         flex-direction: column !important;
         align-items: flex-start !important; 
-        min-height: 180px !important; /* Larger reserved space for taller questions */
         width: 100% !important;
     }
 
@@ -217,7 +204,6 @@
         display: block !important;
     }
 
-    /* Input and Select Styles */
     .quiz-section input[type="text"], 
     .quiz-section input[type="number"] { 
         height: 36px !important;       
@@ -258,25 +244,16 @@
     /* ============================================================
        5. BUTTONS & CONTROLS
        ============================================================ */
-    /* --- Updated Section 5: Fixed Bottom Controls --- */
-.feedback { 
-    font-size: 16px; 
-    margin: 8px 0; 
-    min-height: 24px; 
-    text-align: center; 
-    font-weight: bold;
-}
-
-.controls { 
-    text-align: center; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-    margin-top: 0;          /* Removed 'auto' to keep it locked to the bottom of the scroll area */
-    padding-top: 10px;
-    border-top: 1px solid #f2c7db; /* Adds a nice divider between questions and buttons */
-    background-color: #fdf4f8;     /* Matches background so buttons look 'anchored' */
-}
+    .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
+    
+    .controls { 
+        text-align: center; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 10px; 
+        margin-top: auto; /* Pushes buttons safely to the bottom */
+        padding-top: 10px;
+    }
     
     button { padding: 12px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 6px; font-weight: bold; transition: all 0.2s; }
     button:active { transform: scale(0.98); }
@@ -289,7 +266,6 @@
         color: #ffffff !important; 
         opacity: 1 !important; 
         width: 100%; 
-        margin-top: 0px !important; 
     }
     .btn-check:hover { background-color: #cc2b81 !important; }
     
@@ -297,7 +273,7 @@
         background-color: #000000 !important; 
         color: #ffffff !important; 
         opacity: 1 !important; 
-        flex: 1; /* Allow sharing space with Grade 9 button */
+        flex: 1;
     }
 
     .btn-grade9 {
@@ -309,7 +285,6 @@
         white-space: nowrap;
     }
 
-    /* Container for New Problem + Grade 9 button */
     .action-row {
         display: flex;
         gap: 10px;
@@ -332,22 +307,11 @@
     /* ============================================================
        7. MOBILE RESPONSIVENESS
        ============================================================ */
-    @media (max-width: 740px) {
+    @media (max-width: 768px) {
         .main-layout { flex-direction: column; align-items: center; width: 100%; }
-        
-        .left-panel, .right-panel { 
-            width: 95vw; 
-            max-width: 600px; 
-            height: auto !important; 
-        }
-        .quiz-section { 
-            height: auto !important; 
-        }
-        .input-area, #inputGroupColorNames, #inputGroupGrade9Zener {
-            min-height: 0 !important; 
-        }
+        #circuitCanvas { width: 95vw; height: auto; max-width: 600px; }
+        .left-panel, .right-panel { width: 95vw; max-width: 600px; }
         .right-panel { margin-top: 20px; }
-        .controls { margin-top: 20px; }  
     }
 </style>
 </head>
