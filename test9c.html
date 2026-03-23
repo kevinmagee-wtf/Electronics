@@ -3016,11 +3016,18 @@ function checkAnswers() {
             results.push(validateMatch(parseInput(inputStr), currentAnswers.vValue, targetUnit));
         }
 
-    } else if (currentMode === 'resistance') {
-        // HYBRID: Pull value from input + unit from dropdown
-        const rVal = document.getElementById('inputR').value;
-        const rUnit = document.getElementById('unitR').value;
-        results.push(validateMatch(parseInput(rVal, rUnit), currentAnswers.rValue, currentAnswers.rTargetUnit || 'Ω'));
+   } else if (currentMode === 'resistance') {
+        // HYBRID OHMS GRADING: Pull string from input and attach 'Ω' behind the scenes
+        let inputStr = document.getElementById('inputR').value.trim();
+        let cleanStr = inputStr.replace(/\s+/g, ''); // Removes accidental spaces (e.g. "1.2 k" -> "1.2k")
+            
+        // Append Ω if the student didn't somehow paste/type it themselves
+        if (cleanStr !== "" && !cleanStr.includes("Ω") && !cleanStr.toLowerCase().includes("ohm")) {
+            cleanStr += "Ω";
+        }
+        
+        // Now pass the combined string (e.g. "1.2kΩ") into your standard parser
+        results.push(validateMatch(parseInput(cleanStr), currentAnswers.rValue, currentAnswers.rTargetUnit || 'Ω'));
 
     } else if (currentMode === 'oscilloscope') {
         results.push(validateMatch(parseInput(document.getElementById('inputOscAmp').value), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
