@@ -1277,6 +1277,10 @@ function generateGrade9Resistance() {
 //  Generates the Potential Divider Problem (4-Variables)
 // =======================================================
 
+// =======================================================
+//  Generates the Potential Divider Problem (4-Variables)
+// =======================================================
+
 function generateDividerProblem(ctx, canvas) {
     // 0. RESET UI & STATE
     hideAllInputGroups(); 
@@ -1329,12 +1333,18 @@ function generateDividerProblem(ctx, canvas) {
     document.getElementById('labelV').innerHTML = "<span style='color:" + brandPink + "'>" + currentAnswers.vNameHTML + "</span> = ";
     
     const inputBox = document.getElementById('inputV');
+    const unitSpan = document.getElementById('unitSymbolV'); // Grab the new unit span
+
     if (inputBox) {
         inputBox.value = ""; 
         if (targetVar === 0 || targetVar === 1) {
+            // VOLTAGE MODE: Student must type the unit inside the box
             inputBox.placeholder = "e.g. 5 " + vUnit; 
+            if (unitSpan) unitSpan.innerHTML = ""; // Ensure outside symbol is cleared
         } else {
-            inputBox.placeholder = "e.g. 12 " + expectedRUnit; 
+            // OHMS MODE: Unit is outside the box, student types prefixes
+            inputBox.placeholder = "e.g. 1.2k or 560"; 
+            if (unitSpan) unitSpan.innerHTML = "&Omega;"; // Set the Omega symbol
         }
     }
 
@@ -1426,7 +1436,17 @@ function generateDividerProblem(ctx, canvas) {
         }
         solText.innerHTML = logicHTML;
     }
-    showUnitInstruction();
+    
+    // 5. INSTRUCTION ROUTING (NEW!)
+    if (targetVar === 0 || targetVar === 1) {
+        showUnitInstruction(); // Standard instructions for Voltage
+    } else {
+        if (typeof showOhmUnitInstruction === "function") {
+            showOhmUnitInstruction(); // New prefix instructions for Ohms
+        } else {
+            showUnitInstruction(); // Fallback just in case
+        }
+    }
 }
 
 // ======================================================
@@ -2951,9 +2971,29 @@ function checkAnswers() {
         results.push(validateMatch(parseInput(document.getElementById('inputI').value), currentAnswers.iValue, 'mA'));
 
     } else if (currentMode === 'divider') {
-        let targetUnit = currentAnswers.vValue < 1 ? 'mV' : 'V';
-        if (currentAnswers.vUnit) targetUnit = currentAnswers.vUnit; 
-        results.push(validateMatch(parseInput(document.getElementById('inputV').value), currentAnswers.vValue, targetUnit));
+        // ====================================================================
+        // HYBRID DIVIDER GRADING: Handles both Volts (inside) and Ohms (outside)
+        // ====================================================================
+        let inputStr = document.getElementById('inputV').value.trim();
+        const symbolV = document.getElementById('unitSymbolV');
+        
+        // If the problem asks for Ohms, the unit is outside. We append "Ω" to trick the parser!
+        if (symbolV && symbolV.innerHTML.includes("Ω")) {
+            // Remove spaces so "1.2 k" becomes "1.2k"
+            let cleanStr = inputStr.replace(/\s+/g, '');
+            
+            // Append Ω if the student didn't somehow paste it themselves
+            if (cleanStr !== "" && !cleanStr.includes("Ω") && !cleanStr.toLowerCase().includes("ohm")) {
+                cleanStr += "Ω";
+            }
+            results.push(validateMatch(parseInput(cleanStr), currentAnswers.vValue, currentAnswers.vUnit));
+            
+        } else {
+            // Standard Voltage mode (Student types the unit inside the box)
+            let targetUnit = currentAnswers.vValue < 1 ? 'mV' : 'V';
+            if (currentAnswers.vUnit) targetUnit = currentAnswers.vUnit; 
+            results.push(validateMatch(parseInput(inputStr), currentAnswers.vValue, targetUnit));
+        }
 
     } else if (currentMode === 'resistance') {
         // HYBRID: Pull value from input + unit from dropdown
@@ -3052,8 +3092,6 @@ function checkAnswers() {
         
         // Hide the help button because they are done
         if (helpBtn) helpBtn.style.display = 'none';
-        
-        // Note: We intentionally DO NOT show the solutions div here to keep the UX fast!
 
     } else {
         // FAILURE PATH
@@ -3366,6 +3404,12 @@ function hideAllInputGroups() {
             select.selectedIndex = 0; // Resets back to the first option (e.g. 'Ω' or 'V')
         }
     });
+
+    // 8. CLEAR EXTERNAL UNIT SYMBOLS (Prevents "Ghosting" across pages)
+    const symbolV = document.getElementById('unitSymbolV');
+    const symbolI = document.getElementById('unitSymbolI');
+    if (symbolV) symbolV.innerHTML = "";
+    if (symbolI) symbolI.innerHTML = "";
 }
 
 // Master Switch on Load
