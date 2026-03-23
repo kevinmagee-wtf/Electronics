@@ -104,7 +104,7 @@
     
     canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
     
-    .right-panel { flex: 1 1 300px; display: flex; flex-direction: column; width: 100%; max-width: 500px; height: 400px; }
+    .right-panel { flex: 1 1 300px; display: flex; flex-direction: column; width: 100%; max-width: 500px; height: 400px; } /* Fixed height for stability */
     
     .quiz-section { 
         background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; 
@@ -256,11 +256,19 @@
     /* ============================================================
        7. MOBILE RESPONSIVENESS
        ============================================================ */
-    @media (max-width: 1050px) {
+    @media (max-width: 700px) {
         .main-layout { flex-direction: column; align-items: center; width: 100%; }
         #circuitCanvas { width: 95vw; height: auto; max-width: 600px; }
-        .left-panel, .right-panel { height: auto; width: 95vw; max-width: 600px; }
-        .right-panel { margin-top: 20px; }
+        /* Consolidate the right-panel here */
+        .left-panel, .right-panel { 
+        width: 95vw; 
+        max-width: 600px; 
+        height: auto; /* It's okay to jump on a small phone screen */
+        }
+
+        .right-panel { 
+        margin-top: 20px; 
+    }
        .quiz-section { 
             background-color: #fdf4f8; 
             padding: 15px 20px; 
