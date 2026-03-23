@@ -352,12 +352,10 @@
 
                     <div class="input-group" id="inputGroupR" style="display:none; align-items: center; gap: 5px;">
                         <label id="labelR" for="inputR">R<sub>TOTAL</sub> = </label>
-                        <input type="number" id="inputR" placeholder="Value" style="height: 45px; width: 100px; font-size: 18px; padding: 10px;">
-                        <select id="unitR" style="height: 45px; font-size: 18px; border-radius: 4px; border: 1px solid #ccc;">
-                            <option value="Ω">Ω</option>
-                            <option value="kΩ">kΩ</option>
-                            <option value="MΩ">MΩ</option>
-                        </select>
+    
+                        <input type="text" id="inputR" placeholder="e.g. 1.2k" style="height: 45px; width: 120px; font-size: 18px; padding: 10px;">
+    
+                        <span id="unitSymbolR" style="font-size: 20px; font-weight: bold; margin-left: 5px; color: #333;">&Omega;</span>
                     </div>
 
                     <div class="input-group" id="inputGroupMonostable" style="display:none;">
@@ -1048,15 +1046,15 @@ function generateAnalysisProblem(ctx, canvas) {
 // Total Resistance Problem
 // ======================================================
 // this function deals with adding resistances in series and parallel  
+// this function deals with adding resistances in series and parallel  
 function generateResistanceProblem(ctx, canvas) {
     // 1. CLEAR PREVIOUS STATE
     hideAllInputGroups(); 
     currentMode = 'resistance'; // Flags the grader to use the resistance logic
 
     // 2. SET THE CONCISE INSTRUCTION TEXT
-    const qText = document.getElementById('questionText');
-    if (qText) {
-        qText.innerText = "Calculate the total resistance and select the correct unit.";
+    if (typeof showOhmUnitInstruction === "function") {
+        showOhmUnitInstruction(); // Standardized instruction for Ohms!
     }
 
     // 3. SHOW AND RESET THE INPUT BOX
@@ -1066,15 +1064,26 @@ function generateResistanceProblem(ctx, canvas) {
     }
     
     const inputR = document.getElementById('inputR');
+    const unitSpan = document.getElementById('unitSymbolR'); // The new external unit span
+    const oldDropdown = document.getElementById('unitR');    // The old dropdown
+    
     if (inputR) {
-        inputR.placeholder = "Value"; 
+        inputR.placeholder = "e.g. 560 or 1.2k"; // Updated prefix hint
         inputR.value = "";             
+    }
+    
+    if (unitSpan) {
+        unitSpan.innerHTML = "&Omega;"; // Set the Omega symbol outside the box
+    }
+    
+    if (oldDropdown) {
+        oldDropdown.style.display = 'none'; // Hide the old dropdown to clean up the UI
     }
     
     // 4. SET THE PINK LABEL
     const labelV = document.getElementById('labelV');
     if (labelV) {
-        labelV.innerHTML = "Total R ="; 
+        labelV.innerHTML = "<span style='color:" + brandPink + "'>R<sub>TOTAL</sub></span> = "; 
     }
 
     // 5. PREPARE CANVAS AND RANDOMIZE UNIT
@@ -1198,7 +1207,6 @@ function generateResistanceProblem(ctx, canvas) {
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = logicHTML;
 }
-
     
 function generateGrade9Resistance() {
     const canvas = document.getElementById('circuitCanvas');
