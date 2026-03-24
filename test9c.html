@@ -2969,6 +2969,9 @@ function hubController(ctx, canvas) {
     } else if (currentMode === 'grade9zener') {
         // ADDED: Explicitly unhide the Grade 9 group for UI consistency
         if (document.getElementById('inputGroupGrade9Zener')) document.getElementById('inputGroupGrade9Zener').style.display = 'inline-block';
+        // THE FIX: Unhide the Grade 9 button so it remains visible while in this mode!
+        if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
+        
         generateGrade9ZenerProblem(ctx, canvas);
 
     } else if (currentMode === 'silicon') {
