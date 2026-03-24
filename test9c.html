@@ -459,12 +459,16 @@
 
                     <div id="instructionPrompt" class="instruction-text" style="text-align: center; margin-bottom: 10px; font-size: 18px; display: none;"></div>
                         
-                    <div class="input-group" id="inputGroupColorVal" style="display:none; text-align: center; width: 100%; margin-top: 15px; align-items: center; justify-content: center; gap: 5px;">
+                    <div class="input-group" id="inputGroupColorVal" style="display: none; justify-content: center; align-items: center; gap: 5px; margin-top: 15px; width: 100%;">
+    
                         <input type="number" id="inputResValue" placeholder="e.g. 4700" style="width: 120px; text-align: center;" />
                         <span style="font-weight:bold; font-size: 1.2em;">Ω</span>
+                        
                         <span style="margin: 0 10px; font-weight:bold; font-size: 1.2em;">&plusmn;</span>
+                        
                         <input type="number" id="inputResTol" placeholder="e.g. 5" style="width: 80px; text-align: center;" />
                         <span style="font-weight:bold; font-size: 1.2em;">%</span>
+                    
                     </div>
                         <input type="number" id="inputResValue" placeholder="Value" style="width: 100px; padding: 8px; font-size: 16px;">
                         <select id="unitResColor" style="padding: 8px; font-size: 16px; border-radius: 4px;">
@@ -3432,6 +3436,10 @@ function hideAllInputGroups() {
 
     // 2. Hide every div that has the 'input-group' class
     document.querySelectorAll('.input-group').forEach(el => el.style.display = 'none');
+
+    // 2b. BULLETPROOF FIX: Explicitly hide the color code groups just in case the HTML class is missing
+    if (document.getElementById('inputGroupColorVal')) document.getElementById('inputGroupColorVal').style.display = 'none';
+    if (document.getElementById('inputGroupColorNames')) document.getElementById('inputGroupColorNames').style.display = 'none';
 
     // 3. Clear common UI elements
     if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = "";
