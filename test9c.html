@@ -1748,20 +1748,36 @@ function generateColorCodeProblem(ctx, canvas) {
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = solTextStr;
     
-    // 7. Dynamic Instruction Text
+   // 7. Dynamic Instruction Text
     const qText = document.getElementById('questionText');
-    if (qText) {
-        qText.innerHTML = "";
-        qText.style.display = 'none';
-    }
-
     const instruction = document.getElementById('instructionPrompt');
-    if (instruction) {
-        instruction.style.display = 'block'; 
-        if (qType === 0) {
-            // Instruction updated to reflect dropdown UI
-            instruction.innerHTML = "<strong>State the value of the resistor (Select unit from the dropdown).</strong>";
-        } else {
+
+    if (qType === 0) {
+        // TYPE 0: Student enters Resistance Value
+        
+        // 1. Call your central function to show the "e.g., 520, 83k" text in qText
+        if (typeof showOhmUnitInstruction === 'function') {
+            showOhmUnitInstruction();
+        }
+        
+        // 2. Add the main instruction
+        if (instruction) {
+            instruction.style.display = 'block';
+            instruction.innerHTML = "<strong>State the value and tolerance of the resistor.</strong>";
+        }
+
+    } else {
+        // TYPE 1: Student enters Colour Names
+        
+        // 1. Hide the Ohm instructions since they are guessing colours here
+        if (qText) {
+            qText.innerHTML = "";
+            qText.style.display = 'none';
+        }
+        
+        // 2. Add the colour instruction
+        if (instruction) {
+            instruction.style.display = 'block';
             instruction.innerHTML = "<strong>Identify the resistor colour codes.</strong>";
         }
     }
