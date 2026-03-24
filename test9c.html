@@ -654,6 +654,15 @@ function handleGenerateClick() {
     if (feedback) feedback.innerText = "";
 
     // ==========================================
+    // ---> THE FIX: ESCAPE THE GRADE 9 LOOP <---
+    // ==========================================
+    // If the student is in Grade 9 mode, kick them back to standard mode 
+    // when they ask for a new problem!
+    if (currentMode === 'grade9zener') {
+        currentMode = 'zener';
+    }
+
+    // ==========================================
     // 2. GENERATE THE NEW PROBLEM
     // ==========================================
     const canvas = document.getElementById('circuitCanvas');
@@ -674,7 +683,6 @@ function handleGenerateClick() {
         hubController(ctx, canvas);
     }
 }
-
 // ==================================================================================================================
 // FUNCTION 0: SMALL UTILITIES (HELPERS)   
 // ==================================================================================================================
