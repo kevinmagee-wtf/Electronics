@@ -2301,6 +2301,9 @@ function generateZenerProblem() {
     currentMode = 'zener';
     clearZenerInputs(); // Ensure inputs are wiped
     
+    // ---> THE FIX: Turn the Grade 9 button back on after the wipe! <---
+    if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
+    
     const canvas = document.getElementById('circuitCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -2493,6 +2496,10 @@ function generateGrade9ZenerProblem() {
     // 0. RESET UI & STATE
     hideAllInputGroups();
     currentMode = 'grade9zener';
+    
+    // ---> THE FIX: Turn the UI back on after the generator's wipe <---
+    if (document.getElementById('inputGroupGrade9Zener')) document.getElementById('inputGroupGrade9Zener').style.display = 'block';
+    if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
     
     // Clear Grade 9 Inputs
     const ids = ['g9IL', 'g9IZ', 'g9PZ', 'g9Rating'];
