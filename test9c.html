@@ -3586,73 +3586,65 @@ function checkAnswers() {
     let results = [];
     
     if (currentMode === 'analysis') {
-        results.push(validateMatch(parseInput(document.getElementById('inputV').value), currentAnswers.vValue, 'mV'));
-        results.push(validateMatch(parseInput(document.getElementById('inputI').value), currentAnswers.iValue, 'mA'));
+        // Wrapped the .value in acceptSpaces()
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputV').value)), currentAnswers.vValue, 'mV'));
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputI').value)), currentAnswers.iValue, 'mA'));
 
     } else if (currentMode === 'divider') {
-        // ====================================================================
-        // HYBRID DIVIDER GRADING: Handles both Volts (inside) and Ohms (outside)
-        // ====================================================================
-        let inputStr = document.getElementById('inputV').value.trim();
+        let inputStr = document.getElementById('inputV').value;
         const symbolV = document.getElementById('unitSymbolV');
         
-        // If the problem asks for Ohms, the unit is outside. We append "Ω" to trick the parser!
         if (symbolV && symbolV.innerHTML.includes("Ω")) {
-            // Remove spaces so "1.2 k" becomes "1.2k"
-            let cleanStr = inputStr.replace(/\s+/g, '');
+            // Clean spaces using your new helper function!
+            let cleanStr = acceptSpaces(inputStr);
             
-            // Append Ω if the student didn't somehow paste it themselves
             if (cleanStr !== "" && !cleanStr.includes("Ω") && !cleanStr.toLowerCase().includes("ohm")) {
                 cleanStr += "Ω";
             }
             results.push(validateMatch(parseInput(cleanStr), currentAnswers.vValue, currentAnswers.vUnit));
             
         } else {
-            // Standard Voltage mode (Student types the unit inside the box)
             let targetUnit = currentAnswers.vValue < 1 ? 'mV' : 'V';
             if (currentAnswers.vUnit) targetUnit = currentAnswers.vUnit; 
-            results.push(validateMatch(parseInput(inputStr), currentAnswers.vValue, targetUnit));
+            results.push(validateMatch(parseInput(acceptSpaces(inputStr)), currentAnswers.vValue, targetUnit));
         }
 
    } else if (currentMode === 'resistance') {
-        // HYBRID OHMS GRADING: Pull string from input and attach 'Ω' behind the scenes
-        let inputStr = document.getElementById('inputR').value.trim();
-        let cleanStr = inputStr.replace(/\s+/g, ''); // Removes accidental spaces (e.g. "1.2 k" -> "1.2k")
+        let inputStr = document.getElementById('inputR').value;
+        let cleanStr = acceptSpaces(inputStr); // Clean spaces using your new helper function!
             
-        // Append Ω if the student didn't somehow paste/type it themselves
         if (cleanStr !== "" && !cleanStr.includes("Ω") && !cleanStr.toLowerCase().includes("ohm")) {
             cleanStr += "Ω";
         }
-        
-        // Now pass the combined string (e.g. "1.2kΩ") into your standard parser
         results.push(validateMatch(parseInput(cleanStr), currentAnswers.rValue, currentAnswers.rTargetUnit || 'Ω'));
 
     } else if (currentMode === 'oscilloscope') {
-        results.push(validateMatch(parseInput(document.getElementById('inputOscAmp').value), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscAmp').value)), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
+        
         if (currentAnswers.oscQType === 1) {
-            results.push(validateMatch(parseInput(document.getElementById('inputOscMark').value), currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
-            results.push(validateMatch(parseInput(document.getElementById('inputOscSpace').value), currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscMark').value)), currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscSpace').value)), currentAnswers.oscSpaceValue, currentAnswers.oscSpaceUnit));
         } else if (currentAnswers.oscQType === 2) {
-            results.push(validateMatch(parseInput(document.getElementById('inputOscPeriod').value), currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
-            results.push(validateMatch(parseInput(document.getElementById('inputOscFreq').value), currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscPeriod').value)), currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscFreq').value)), currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
         } else {
-            const userRatio = document.getElementById('inputOscRatio').value.trim();
-            results.push(userRatio === currentAnswers.oscRatioValue ? 'correct' : 'wrongval');
+            // Updated exact match for Ratios to ignore spaces on both sides!
+            const userRatio = document.getElementById('inputOscRatio').value;
+            results.push(acceptSpaces(userRatio) === acceptSpaces(currentAnswers.oscRatioValue) ? 'correct' : 'wrongval');
         }
 
     } else if (currentMode === 'astable') {
         if (currentAnswers.astableQType === 0) {
-            // FIX: Use dynamically generated units from the ASTABLE generator for complete safety
-            results.push(validateMatch(parseInput(document.getElementById('inputAstable').value), currentAnswers.astableValue, currentAnswers.astableUnit || 'Hz'));
-            results.push(validateMatch(parseInput(document.getElementById('inputAstableT').value), currentAnswers.astableTValue, currentAnswers.astableTUnit || 'ms'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputAstable').value)), currentAnswers.astableValue, currentAnswers.astableUnit || 'Hz'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputAstableT').value)), currentAnswers.astableTValue, currentAnswers.astableTUnit || 'ms'));
         } else {
-            const userRatio = document.getElementById('inputMarkSpace').value.trim();
-            results.push(userRatio === currentAnswers.astableRatio ? 'correct' : 'wrongval');
+            // Updated exact match for Ratios to ignore spaces!
+            const userRatio = document.getElementById('inputMarkSpace').value;
+            results.push(acceptSpaces(userRatio) === acceptSpaces(currentAnswers.astableRatio) ? 'correct' : 'wrongval');
         }
 
     } else if (currentMode === 'monostable') {
-        // CRITICAL FIX: Monostable can ask for 's', 'kΩ', or 'μF'. Using the dynamic unit fixes the bug!
-        results.push(validateMatch(parseInput(document.getElementById('inputMonostable').value), currentAnswers.expectedT, currentAnswers.expectedUnit));
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputMonostable').value)), currentAnswers.expectedT, currentAnswers.expectedUnit));
 
     } else if (currentMode === 'colorcode') {
         if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
@@ -3660,9 +3652,10 @@ function checkAnswers() {
             const resUnit = document.getElementById('unitResColor').value;
             const resTol = document.getElementById('inputResTol').value;
             
-            results.push(validateMatch(parseInput(resVal, resUnit), currentAnswers.resVal, currentAnswers.rTargetUnit || 'Ω'));
-            results.push(validateMatch(parseInput(resTol), currentAnswers.resTol, '%'));
+            results.push(validateMatch(parseInput(acceptSpaces(resVal), acceptSpaces(resUnit)), currentAnswers.resVal, currentAnswers.rTargetUnit || 'Ω'));
+            results.push(validateMatch(parseInput(acceptSpaces(resTol)), currentAnswers.resTol, '%'));
         } else {
+            // I left the text inputs for colors alone here, because "light blue" shouldn't become "lightblue" if your answer key has a space!
             ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'].forEach((id, i) => {
                 const ans = [currentAnswers.b1, currentAnswers.b2, currentAnswers.b3, currentAnswers.tol];
                 results.push(document.getElementById(id).value.toLowerCase().trim() === ans[i] ? 'correct' : 'wrong');
@@ -3671,26 +3664,24 @@ function checkAnswers() {
     } else if (currentMode === 'zener' || currentMode === 'grade9zener') {
          if (currentMode === 'zener') {
             if (currentZenerState === "closed") {
-                results.push(validateMatch(parseInput(document.getElementById('zenerQ_IL').value), currentAnswers.iL, 'mA'));
-                results.push(validateMatch(parseInput(document.getElementById('zenerQ_VL').value), currentAnswers.vL, 'V'));
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('zenerQ_IL').value)), currentAnswers.iL, 'mA'));
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('zenerQ_VL').value)), currentAnswers.vL, 'V'));
             } else {
-                results.push(validateMatch(parseInput(document.getElementById('zenerQ_IZ').value), currentAnswers.iZ, 'mA'));
-                results.push(validateMatch(parseInput(document.getElementById('zenerQ_PZ').value), currentAnswers.pZ, 'mW'));
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('zenerQ_IZ').value)), currentAnswers.iZ, 'mA'));
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('zenerQ_PZ').value)), currentAnswers.pZ, 'mW'));
             }
          } else { // Grade 9 Zener
             if (currentZenerState === "closed") {
-                results.push(validateMatch(parseInput(document.getElementById('g9IL').value), currentAnswers.iL, 'mA'));
-                results.push(validateMatch(parseInput(document.getElementById('g9IZ').value), currentAnswers.iZ, 'mA'));
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9IL').value)), currentAnswers.iL, 'mA'));
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9IZ').value)), currentAnswers.iZ, 'mA'));
             } else {
-                results.push(validateMatch(parseInput(document.getElementById('g9PZ').value), currentAnswers.pZ, 'mW'));
-                results.push(validateMatch(parseInput(document.getElementById('g9Rating').value), currentAnswers.rating, 'mW'));
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9PZ').value)), currentAnswers.pZ, 'mW'));
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9Rating').value)), currentAnswers.rating, 'mW'));
             }
          }
     }
 
-    // ========================================================
     // 5. UPGRADED Final Feedback and Scoring
-    // ========================================================
     activeInputs.forEach((id, index) => {
         const el = document.getElementById(id);
         if (el) {
@@ -3741,9 +3732,7 @@ function checkAnswers() {
         if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
     }
     
-    // ==========================================
     // HIDE BOTH BUTTONS AFTER CHECKING (UPDATED IDs)
-    // ==========================================
     const checkansBtn = document.getElementById('checkansBtn');
     if (checkansBtn) checkansBtn.style.display = 'none';
     if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
