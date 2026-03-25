@@ -3829,6 +3829,29 @@ function updateScoreboard() {
     if (scoreDisplay) scoreDisplay.innerText = "Score: " + problemsCorrect + " / " + problemsAttempted;
 }
 
+function resetScore() {
+    // 1. Reset all your score tracking variables to 0
+    if (typeof problemsCorrect !== 'undefined') problemsCorrect = 0;
+    if (typeof problemsAttempted !== 'undefined') problemsAttempted = 0;
+    if (typeof currentScore !== 'undefined') currentScore = 0;
+    if (typeof totalAttempts !== 'undefined') totalAttempts = 0;
+
+    // 2. Update the visual scoreboard
+    if (typeof updateScoreboard === "function") {
+        updateScoreboard(); // If you have a dedicated update function, run it!
+    } else {
+        // Fallback: manually force the text to 0/0
+        const scoreDisplay = document.getElementById("scoreDisplay");
+        if (scoreDisplay) scoreDisplay.innerText = "Score: 0 / 0";
+    }
+
+    // 3. Give the student a friendly confirmation message
+    const feedback = document.getElementById('feedback');
+    if (feedback) {
+        feedback.innerHTML = "<span style='color: #198754; font-weight: bold;'>Score reset! You've got this!</span>";
+    }
+}
+    
 function provideHint() {
     if (isCurrentProblemSolved) return;
     viewedSolution = true;
