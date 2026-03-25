@@ -3047,18 +3047,24 @@ function drop(ev) {
 }
 
 function generateIPOProblem(ctx, canvas) {
-    // 1. Setup Canvas Visually
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#333";
-    ctx.font = "bold 24px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Electronic Systems: IPO", canvas.width / 2, 40);
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "#666";
-    ctx.fillText("Sort all components into the correct categories below.", canvas.width / 2, 70);
-    ctx.textAlign = "left"; // Reset for other modules
+    // 1. Wipe everything clean first
+    hideAllInputGroups();
 
-    // 2. Select 6 random components
+    // 2. Hide the normal circuit drawing and show the new Workstation
+    document.getElementById("circuitContainer").style.display = "none";
+    document.getElementById("canvasIPOWorkstation").style.display = "block";
+    
+    // 3. Show the Sidebar Bank
+    const ipoGroup = document.getElementById("inputGroupIPOSort");
+    ipoGroup.style.display = "flex"; // Flex keeps it centered in the sidebar
+    document.getElementById('checkBtn').style.display = 'inline-block';
+
+    // 4. Update the question text (Moved from canvas to HTML!)
+    const qText = document.getElementById("questionText");
+    qText.style.display = "block";
+    qText.innerHTML = "Electronic Systems: IPO <br><span style='font-size: 0.9em; color: #666; font-weight: normal;'>Sort all components from the right into the correct categories below.</span>";
+
+    // 5. Select 6 random components (Your exact logic!)
     const allComps = Object.keys(ipoDictionary);
     const selectedComps = [];
     while (selectedComps.length < 6) {
@@ -3066,7 +3072,7 @@ function generateIPOProblem(ctx, canvas) {
         if (!selectedComps.includes(r)) selectedComps.push(r);
     }
 
-    // 3. Reset UI & Answer Key
+    // 6. Reset UI & Answer Key
     const bank = document.getElementById('ipoBank');
     bank.innerHTML = '';
     document.getElementById('zone-input').innerHTML = '';
@@ -3074,22 +3080,37 @@ function generateIPOProblem(ctx, canvas) {
     document.getElementById('zone-output').innerHTML = '';
     currentIPOAnswerKey = {};
 
-    // 4. Populate Bank
+    // 7. Populate Bank
     selectedComps.forEach((comp, idx) => {
         let div = document.createElement('div');
         div.id = 'ipo-item-' + idx;
-        div.className = 'ipo-item';
+        div.className = 'ipo-item'; // Kept your class!
         div.draggable = true;
         div.ondragstart = drag;
         div.innerText = comp;
+        
+        // --- NEW: CSS to make them look like wide "pills" for the sidebar ---
+        div.style.padding = "10px 15px";
+        div.style.background = "#fff";
+        div.style.border = "2px solid #6c757d";
+        div.style.borderRadius = "20px";
+        div.style.cursor = "grab";
+        div.style.fontWeight = "bold";
+        div.style.textAlign = "center";
+        div.style.width = "90%"; // Fits nicely in the sidebar
+        div.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+        div.style.transition = "transform 0.1s ease";
+        div.style.margin = "5px 0";
+
+        // Add a nice hover effect
+        div.onmouseenter = () => div.style.transform = "scale(1.02)";
+        div.onmouseleave = () => div.style.transform = "scale(1)";
+
         bank.appendChild(div);
 
+        // Your exact grading logic intact!
         currentIPOAnswerKey[div.id] = ipoDictionary[comp];
     });
-
-    // 5. Unhide elements
-    document.getElementById('inputGroupIPOSort').style.display = 'block';
-    document.getElementById('checkBtn').style.display = 'inline-block';
 }
     
 // ===========================================================================================================================      
@@ -3428,8 +3449,12 @@ function checkAnswers() {
             
             if (placedZone === currentIPOAnswerKey[id]) {
                 el.style.backgroundColor = "#28a745"; // Green for correct
+                el.style.color = "#fff";              // NEW: Make text white for contrast
+                el.style.borderColor = "#28a745";     // NEW: Match border to background
             } else {
                 el.style.backgroundColor = "#dc3545"; // Red for wrong
+                el.style.color = "#fff";              // NEW: Make text white for contrast
+                el.style.borderColor = "#dc3545";     // NEW: Match border to background
                 allCorrect = false;
             }
         }
@@ -3916,6 +3941,10 @@ function hideAllInputGroups() {
 
     // ---> NEW ADDITIONS FOR IPO SORT (SYSTEMS) <---
     if (document.getElementById('inputGroupIPOSort')) document.getElementById('inputGroupIPOSort').style.display = 'none';
+    
+    // NEW WORKSTATION TOGGLES: Hide the big IPO workstation, and guarantee the circuit canvas comes back!
+    if (document.getElementById('canvasIPOWorkstation')) document.getElementById('canvasIPOWorkstation').style.display = 'none';
+    if (document.getElementById('circuitContainer')) document.getElementById('circuitContainer').style.display = 'block';
 
     // 3. Clear common UI elements
     if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = "";
