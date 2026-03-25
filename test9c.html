@@ -799,7 +799,7 @@
                     SUBMISSION & FEEDBACK SECTION              
                  ========================================== -->
                 <div style="margin-top: 20px;">
-                   <button id="checkBtn" class="btn-check" onclick="checkAnswers()" style="padding: 10px 20px; background-color: #E64097; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Check Answer(s)</button>
+                   <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="padding: 10px 20px; background-color: #E64097; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Check Answer(s)</button>
                     <div id="feedback" class="feedback" style="margin-top: 15px; font-weight: bold; min-height: 1.2em;"></div>
                 </div>
                     
@@ -963,8 +963,8 @@ function handleGenerateClick() {
     }
 
     // NEW UPGRADE: Bring back the Check Answer button for the new problem!
-    const checkBtn = document.getElementById('checkBtn');
-    if (checkBtn) checkBtn.style.display = 'block'; // Or 'inline-block' depending on your CSS layout
+    const checkansBtn = document.getElementById('checkansBtn');
+    if (checkansBtn) checkansBtn.style.display = 'block'; // Or 'inline-block' depending on your CSS layout
 
     // Clear any "Correct/Incorrect" feedback from the last problem
     const feedback = document.getElementById('feedback');
@@ -3057,7 +3057,7 @@ function generateIPOProblem(ctx, canvas) {
     // 3. Show the Sidebar Bank
     const ipoGroup = document.getElementById("inputGroupIPOSort");
     ipoGroup.style.display = "flex"; 
-    document.getElementById('checkBtn').style.display = 'inline-block';
+    document.getElementById('checkansBtn').style.display = 'inline-block';
 
     // 4. Update the top question text
     const qText = document.getElementById("questionText");
@@ -3489,7 +3489,7 @@ function checkAnswers() {
             feedback.innerHTML = "<span style='color: #dc3545;'>Some components are in the wrong place. Try moving the red ones!</span>";
         }
         
-        if (allCorrect && document.getElementById('checkBtn')) document.getElementById('checkBtn').style.display = 'none';
+        if (allCorrect && document.getElementById('checkansBtn')) document.getElementById('checkansBtn').style.display = 'none';
         if (typeof updateScoreboard === "function") updateScoreboard();
         return; // Stop here so it doesn't run the rest of the text-box checker
     }
@@ -3693,9 +3693,9 @@ function checkAnswers() {
     // ==========================================
     // THE MISSING FIX: HIDE THE CHECK BUTTON
     // ==========================================
-    const checkBtn = document.getElementById('checkBtn');
-    if (checkBtn) {
-        checkBtn.style.display = 'none';
+    const checkansBtn = document.getElementById('checkansBtn');
+    if (checkansBtn) {
+        checkansBtn.style.display = 'none';
     }
     
     if (typeof updateScoreboard === "function") updateScoreboard();
@@ -3916,8 +3916,8 @@ function toggleSolutions() {
         if (helpBtn) helpBtn.style.display = 'none';
         
         // NEW UPGRADE: Hide the Check Answer button because they peeked!
-        const checkBtn = document.getElementById('checkBtn');
-        if (checkBtn) checkBtn.style.display = 'none';
+        const checkansBtn = document.getElementById('checkansBtn');
+        if (checkansBtn) checkansBtn.style.display = 'none';
         
     } else { 
         sol.style.display = 'none'; 
