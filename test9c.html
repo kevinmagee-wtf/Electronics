@@ -3104,9 +3104,11 @@ function generateIPOProblem(ctx, canvas) {
     // 4. Update the top question text
     const qText = document.getElementById("questionText");
     qText.style.display = "block";
-    qText.innerHTML = "<strong>Drag components from below over onto the main canvas.</strong>";
-    qText.innerHTML = "ipads: Press and hold for a second before moving.";
-    qText.style.textAlign = "leftr";
+    
+    // First sentence is strong (bold), second sentence is em (italic)!
+    qText.innerHTML = "<strong>Drag components from below over onto the main canvas.</strong><br><em>iPads: Press and hold for a second before moving.</em>";
+    
+    qText.style.textAlign = "left"; 
     qText.style.fontSize = "1.2em"; 
     qText.style.color = "#444";
 
