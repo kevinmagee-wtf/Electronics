@@ -846,7 +846,7 @@
 
     <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 15px;">
     <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="flex: 3; margin: 0; padding: 10px 5px;">Check Answers</button>
-    <button id="showsolutionsBtn" class="btn-red" onclick="toggleSolutions()" style="flex: 1; margin: 0; padding: 10px 5px;">❓ Help</button></button>
+    <button id="showsolutionsBtn" class="btn-red" onclick="toggleSolutions()" style="flex: 1; margin: 0; padding: 10px 5px;">🛟 Help</button></button>
 </div>
 
     <div id="feedback" style="font-weight: bold; margin-bottom: 15px; text-align: center; min-height: 24px;"></div>
@@ -989,7 +989,7 @@ function handleGenerateClick() {
     const showsolutionsBtn = document.getElementById('showsolutionsBtn');
     if (showsolutionsBtn) {
         showsolutionsBtn.style.display = 'block'; 
-        showsolutionsBtn.innerText = "❓ Help</button>"; // <-- Updated to match the new icon and text!
+        showsolutionsBtn.innerText = "🛟 Help</button>"; // <-- Updated to match the new icon and text!
     }
 
     // Bring back the Check Answer button for the new problem
