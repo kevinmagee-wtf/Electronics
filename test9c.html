@@ -3056,12 +3056,12 @@ function generateIPOProblem(ctx, canvas) {
     ipoGroup.style.display = "flex"; 
     document.getElementById('checkBtn').style.display = 'inline-block';
 
-    // 4. Update the top question text (Replaces obsolete text with your bold instruction!)
+    // 4. Update the top question text
     const qText = document.getElementById("questionText");
     qText.style.display = "block";
     qText.innerHTML = "<strong>Drag components from this bank onto the main canvas.</strong>";
     qText.style.textAlign = "center";
-    qText.style.fontSize = "1.2em"; // Makes it nice and readable
+    qText.style.fontSize = "1.2em"; 
     qText.style.color = "#444";
 
     // 5. Select 6 random components
@@ -3072,9 +3072,20 @@ function generateIPOProblem(ctx, canvas) {
         if (!selectedComps.includes(r)) selectedComps.push(r);
     }
 
-    // 6. Reset UI & Answer Key
+    // 6. Reset UI, Answer Key, AND Fix the Bank Layout
     const bank = document.getElementById('ipoBank');
     bank.innerHTML = '';
+    
+    // ---> DYNAMICALLY STRIP THE GREY BOX & MAKE A 2-COLUMN GRID <---
+    bank.style.background = "transparent";       // Removes grey background
+    bank.style.border = "none";                  // Removes grey border
+    bank.style.boxShadow = "none";               // Removes the inset shadow
+    bank.style.display = "grid";                 // Switches to a grid layout
+    bank.style.gridTemplateColumns = "repeat(2, 1fr)"; // Creates 2 equal columns!
+    bank.style.gap = "10px";                     // Adds space between pills
+    bank.style.justifyItems = "center";          // Centers pills in their columns
+    bank.style.minHeight = "150px";              // Keeps an invisible drop zone just in case they drag an item back!
+
     document.getElementById('zone-input').innerHTML = '';
     document.getElementById('zone-process').innerHTML = '';
     document.getElementById('zone-output').innerHTML = '';
@@ -3089,26 +3100,26 @@ function generateIPOProblem(ctx, canvas) {
         div.ondragstart = drag;
         div.innerText = comp;
         
-        // --- UPDATED CSS: Blue pills, white text, strictly contained! ---
-        div.style.padding = "10px 15px";
-        div.style.background = "#3b82f6"; // Nice primary blue!
-        div.style.color = "#ffffff";      // White text so we can read it!
-        div.style.border = "none";        // Removes the clashing border
+        // --- CSS: Blue pills, white text, strictly contained! ---
+        div.style.padding = "10px 5px";   // Slightly less side padding to fit 2 columns
+        div.style.background = "#3b82f6"; 
+        div.style.color = "#ffffff";      
+        div.style.border = "none";        
         div.style.borderRadius = "20px";
         div.style.cursor = "grab";
         div.style.fontWeight = "bold";
         div.style.textAlign = "center";
+        div.style.fontSize = "0.9em";     // Slightly smaller text to prevent wrapping
         
-        // Size fixes to stop border overlap:
-        div.style.width = "100%";         // Take up available space...
-        div.style.maxWidth = "160px";     // ...but stop before it overflows!
-        div.style.boxSizing = "border-box"; // Keeps padding INSIDE the width!
+        // Size fixes
+        div.style.width = "100%";         
+        div.style.maxWidth = "140px";     
+        div.style.boxSizing = "border-box"; 
         
         div.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
         div.style.transition = "transform 0.1s ease";
-        div.style.margin = "6px 0"; // Slight gap between pills
 
-        // Add a nice hover effect
+        // Hover effect
         div.onmouseenter = () => div.style.transform = "scale(1.05)";
         div.onmouseleave = () => div.style.transform = "scale(1)";
 
