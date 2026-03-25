@@ -3,17 +3,11 @@
 <head>
     <link rel="icon" href="data:,">
     <meta charset="UTF-8">
-    <meta name="vcheckiewporft" content="width=device-width, initial-scale=1.0">
-    <title>Abingdon School - Electronics Quiz</title>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="icon" href="data:,">
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abingdon School - Electronics Quiz</title>
+    
 <style>
-/* ============================================================
+    /* ============================================================
        1. GLOBAL STYLES & BACKGROUND
        ============================================================ */
     body { 
@@ -32,15 +26,37 @@
         background-position: 0 0, -1px -1px, -1px -1px;
     }
    
-    .header { text-align: center; margin-bottom: 15px; }
-    .header h1 { color: #000; margin-bottom: 0px; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; }
-    .header p { margin-top: 5px; font-size: 18px; color: #555; }
-    .header span { color: #E64097; font-weight: bold; }
+    .header { 
+        text-align: center; 
+        margin-bottom: 15px; 
+    }
+    .header h1 { 
+        color: #000; 
+        margin-bottom: 0px; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        font-size: 28px; 
+    }
+    .header p { 
+        margin-top: 5px; 
+        font-size: 18px; 
+        color: #555; 
+    }
+    .header span { 
+        color: #E64097; 
+        font-weight: bold; 
+    }
     
     /* ============================================================
        2. NAVIGATION & TAB BUTTONS
        ============================================================ */
-    .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+    .tabs { 
+        display: flex; 
+        justify-content: center; 
+        gap: 15px; 
+        margin-bottom: 25px; 
+        flex-wrap: wrap; 
+    }
     
     #mainMenu {
         display: grid;
@@ -86,45 +102,106 @@
         text-align: center;
     }
 
-    .tab:hover { background-color: #cf3584; transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-    .tab:focus-visible, button:focus-visible { outline: 3px solid #000; outline-offset: 3px; }
-    .tab.active { background-color: #000000; color: white; border-color: #000; }
+    .tab:hover { 
+        background-color: #cf3584; 
+        transform: translateY(-3px); 
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15); 
+    }
+    .tab:focus-visible, button:focus-visible { 
+        outline: 3px solid #000; 
+        outline-offset: 3px; 
+    }
+    .tab.active { 
+        background-color: #000000; 
+        color: white; 
+        border-color: #000; 
+    }
     
     /* ============================================================
        3. MAIN APP LAYOUT (CANVAS + QUIZ AREA)
        ============================================================ */
-    .main-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
-    .left-panel { flex: 1 1 300px; max-width: 650px; width: 100%; } 
+    .main-layout { 
+        display: flex; 
+        gap: 20px; 
+        align-items: flex-start; 
+        flex-wrap: wrap; 
+        justify-content: center; 
+    }
+    .left-panel { 
+        flex: 1 1 300px; 
+        max-width: 650px; 
+        width: 100%; 
+    } 
     
     .circuit-container { 
-        border: 2px solid #eaeaea; padding: 15px; text-align: center; background-color: #fff; 
-        border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); height: 520px; 
-        display: flex; flex-direction: column; justify-content: center;
+        border: 2px solid #eaeaea; 
+        padding: 15px; 
+        text-align: center; 
+        background-color: #fff; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+        height: 520px; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center;
     }
     
-    canvas { background-color: white; border-radius: 4px; max-width: 100%; height: auto; }
+    canvas { 
+        background-color: white; 
+        border-radius: 4px; 
+        max-width: 100%; 
+        height: auto; 
+    }
     
-    .right-panel { flex: 1 1 300px; display: flex; flex-direction: column; width: 100%; max-width: 500px; height: 520px; }
+    .right-panel { 
+        flex: 1 1 300px; 
+        display: flex; 
+        flex-direction: column; 
+        width: 100%; 
+        max-width: 500px; 
+        height: 520px; 
+    }
     
     .quiz-section { 
-        background-color: #fdf4f8; padding: 15px 20px; border-radius: 8px; border: 1px solid #f2c7db; 
-        display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
+        background-color: #fdf4f8; 
+        padding: 15px 20px; 
+        border-radius: 8px; 
+        border: 1px solid #f2c7db; 
+        display: flex; 
+        flex-direction: column; 
+        height: 100%; 
+        box-sizing: border-box;
     }
     
     .quiz-header { 
-        display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f2c7db; 
-        padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        border-bottom: 2px solid #f2c7db; 
+        padding-bottom: 10px; 
+        margin-bottom: 10px; 
+        flex-wrap: wrap; 
+        gap: 10px; 
     }
     
-    .quiz-header h3 { margin: 0; font-size: 1.2rem; }
+    .quiz-header h3 { 
+        margin: 0; 
+        font-size: 1.2rem; 
+    }
     
     .scoreboard { 
-        background-color: #fff; padding: 6px 15px; border: 2px solid #E64097; border-radius: 6px; 
-        font-weight: bold; font-size: 16px; color: #E64097; box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); 
+        background-color: #fff; 
+        padding: 6px 15px; 
+        border: 2px solid #E64097; 
+        border-radius: 6px; 
+        font-weight: bold; 
+        font-size: 16px; 
+        color: #E64097; 
+        box-shadow: 0 2px 4px rgba(230, 64, 151, 0.1); 
     }
     
-/* ============================================================
-       4. QUIZ INPUT GROUPS - SHRUNK & TIGHTLY LEFT-ALIGNED
+    /* ============================================================
+       4. QUIZ INPUT GROUPS
        ============================================================ */
     .input-area { 
         flex-grow: 1;
@@ -151,24 +228,23 @@
         display: flex !important;
     }
 
-    /* Tighter labels to pull boxes left, right-aligned to hug the boxes */
     .input-group label, 
     .input-group > span:first-child {
-        width: 65px !important;        /* SHRUNK from 80px to pull the boxes further left */
+        width: 65px !important;        
         min-width: 65px !important;   
-        text-align: right !important;  /* RIGHT-aligns the text so the "=" sign hugs the box */
-        font-size: 16px !important;    
+        text-align: right !important;  
+        font-size: 16px !important;  
         font-weight: 800 !important;
         color: #E64097 !important;
-        margin: 0 8px 0 0 !important;  /* Smaller gap between text and box */
+        margin: 0 8px 0 0 !important;  
         display: flex !important;
-        justify-content: flex-end !important; /* Pushes text against the box */
+        justify-content: flex-end !important; 
         align-items: center !important;
         flex-shrink: 0 !important;
-        white-space: nowrap !important; /* Prevents text from breaking onto two lines */
+        white-space: nowrap !important; 
     }
 
-    /* Complex Overrides (Zener, Colors, etc.) */
+    /* Complex Overrides */
     #inputGroupZener, #zenerClosedQuestions, #zenerOpenQuestions, #inputGroupGrade9Zener, #inputGroupColorNames {
         flex-direction: column !important;
         align-items: flex-start !important; 
@@ -221,18 +297,50 @@
     }
 
     .quiz-section input[type="number"]::-webkit-inner-spin-button, 
-    .quiz-section input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-    .quiz-section input[type="number"] { -moz-appearance: textfield; }
+    .quiz-section input[type="number"]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    
+    .quiz-section input[type="number"] { 
+        -moz-appearance: textfield; 
+    }
 
-    input::placeholder { color: #aaa; opacity: 1; font-style: italic; }
+    input::placeholder { 
+        color: #aaa; 
+        opacity: 1; 
+        font-style: italic; 
+    }
     
     /* ============================================================
        5. BUTTONS & CONTROLS
        ============================================================ */
-    .feedback { font-size: 16px; margin-top: 10px; min-height: 24px; text-align: center; font-weight: bold;}
-    .controls { text-align: center; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+    .feedback { 
+        font-size: 16px; 
+        margin-top: 10px; 
+        min-height: 24px; 
+        text-align: center; 
+        font-weight: bold;
+    }
     
-    button { padding: 12px 20px; font-size: 16px; cursor: pointer; color: white; border: none; border-radius: 6px; font-weight: bold; transition: all 0.2s; }
+    .controls { 
+        text-align: center; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 10px; 
+        margin-top: auto; 
+    }
+    
+    button { 
+        padding: 12px 20px; 
+        font-size: 16px; 
+        cursor: pointer; 
+        color: white; 
+        border: none; 
+        border-radius: 6px; 
+        font-weight: bold; 
+        transition: all 0.2s; 
+    }
     button:active { transform: scale(0.98); }
     
     .btn-download { background-color: #198754 !important; color: #ffffff !important; opacity: 1 !important; }
@@ -241,30 +349,155 @@
     .btn-check:hover { background-color: #cc2b81 !important; }
     .btn-black { background-color: #000000 !important; color: #ffffff !important; opacity: 1 !important; }
     
-    .solutions { padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; border-radius: 0 5px 5px 0; display: none; text-align: left; }
+    .solutions { 
+        padding: 15px; 
+        background-color: #f8f9fa; 
+        border-left: 4px solid #E64097; 
+        border-radius: 0 5px 5px 0; 
+        display: none; 
+        text-align: left; 
+    }
 
     /* ============================================================
-       6. MODALS
+       6. IPO DRAG & DROP STYLES
        ============================================================ */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 90%; max-width: 420px; border-top: 6px solid #E64097; }
-    .modal-content h3 { margin-top: 0; color: #E64097; text-align: center; font-size: 1.4rem; margin-bottom: 20px;}
-    .form-group { margin-bottom: 15px; text-align: left; }
-    .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; text-align: left; width: auto; }
-    .form-group input { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #eaeaea; border-radius: 6px; }
-    .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; }
+    .ipo-containers { 
+        display: flex; 
+        justify-content: space-between; 
+        margin-top: 15px; 
+        gap: 10px; 
+    }
+    .ipo-box { 
+        flex: 1; 
+        background: #f8f9fa; 
+        border: 2px solid #ccc; 
+        border-radius: 8px; 
+        padding: 10px; 
+        text-align: center; 
+    }
+    .ipo-zone { 
+        min-height: 120px; 
+        background: #fff; 
+        border: 2px dashed #aaa; 
+        border-radius: 5px; 
+        padding: 10px; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 8px; 
+        transition: background 0.2s; 
+    }
+    .ipo-zone:hover { 
+        background: #e9ecef; 
+    }
+    #ipoBank { 
+        flex-direction: row; 
+        flex-wrap: wrap; 
+        justify-content: center; 
+        min-height: 60px; 
+        margin-bottom: 15px; 
+        background: #e2e3e5; 
+        border-style: solid; 
+    }
+    .ipo-item { 
+        background: #0d6efd; 
+        color: white; 
+        padding: 8px 15px; 
+        border-radius: 20px; 
+        cursor: grab; 
+        font-weight: bold; 
+        user-select: none; 
+        font-size: 14px; 
+        text-align: center; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+    }
+    .ipo-item:active { 
+        cursor: grabbing; 
+    }
+
+    /* ============================================================
+       7. MODALS
+       ============================================================ */
+    .modal-overlay { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0,0,0,0.6); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 1000; 
+    }
+    .modal-content { 
+        background: #fff; 
+        padding: 25px; 
+        border-radius: 8px; 
+        width: 90%; 
+        max-width: 420px; 
+        border-top: 6px solid #E64097; 
+    }
+    .modal-content h3 { 
+        margin-top: 0; 
+        color: #E64097; 
+        text-align: center; 
+        font-size: 1.4rem; 
+        margin-bottom: 20px;
+    }
+    .form-group { 
+        margin-bottom: 15px; 
+        text-align: left; 
+    }
+    .form-group label { 
+        display: block; 
+        font-weight: bold; 
+        margin-bottom: 6px; 
+        color: #333; 
+        text-align: left; 
+        width: auto; 
+    }
+    .form-group input { 
+        width: 100%; 
+        padding: 10px; 
+        box-sizing: border-box; 
+        border: 2px solid #eaeaea; 
+        border-radius: 6px; 
+    }
+    .modal-actions { 
+        display: flex; 
+        justify-content: space-between; 
+        gap: 10px; 
+        margin-top: 25px; 
+    }
     
     /* ============================================================
-       7. MOBILE RESPONSIVENESS
+       8. MOBILE RESPONSIVENESS
        ============================================================ */
     @media (max-width: 1050px) {
-        .main-layout { flex-direction: column; align-items: center; width: 100%; }
-        #circuitCanvas { width: 95vw; height: auto; max-width: 600px; }
-        .left-panel, .right-panel { height: auto; width: 95vw; max-width: 600px; }
-        .right-panel { margin-top: 20px; }
-        .quiz-section { min-height: 400px; padding-bottom: 25px; }
+        .main-layout { 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%; 
+        }
+        #circuitCanvas { 
+            width: 95vw; 
+            height: auto; 
+            max-width: 600px; 
+        }
+        .left-panel, .right-panel { 
+            height: auto; 
+            width: 95vw; 
+            max-width: 600px; 
+        }
+        .right-panel { 
+            margin-top: 20px; 
+        }
+        .quiz-section { 
+            min-height: 400px; 
+            padding-bottom: 25px; 
+        }
     }
-    </style>
+</style>
 </head>
 
 <body>      
