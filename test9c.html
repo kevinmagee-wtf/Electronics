@@ -799,29 +799,20 @@
                     SUBMISSION & FEEDBACK SECTION              
                  ========================================== -->
                     <div style="margin-top: 20px;">
-                    
-                        <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 15px;">
-                            <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="flex: 1; margin: 0; padding: 10px 5px;">Check Answers</button>
-                            <button id="showsolutionsBtn" class="btn-black" onclick="toggleSolutions()" style="flex: 1; margin: 0; padding: 10px 5px;">Need Help? (Show Solution)</button>
-                        </div>
-                    
-                        <div id="feedback" style="font-weight: bold; margin-bottom: 15px; text-align: center; min-height: 24px;"></div>
-                    
-                        <div class="controls" style="padding-top: 15px; border-top: 1px solid #e0e0e0; margin-bottom: 20px;">
-                            <div style="display: flex; gap: 10px; width: 100%;">
-                                <button class="btn-black" onclick="handleGenerateClick()" style="flex: 1; margin: 0; padding: 10px 5px;">New Problem</button>
-                                <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0; padding: 10px 5px;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge</button>
-                                <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0; padding: 10px 5px;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge</button>
-                                <button id="grade9ZenerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0; padding: 10px 5px;" onclick="generateGrade9ZenerProblem()">🏆 Grade 9 Challenge</button>
-                            </div>
-                        </div>
-                    
-                        <div id="solutions" class="solutions" style="display:none; margin-top: 20px;">
-                            <h3>Step-by-Step Logic</h3>
-                            <p id="solText"></p>
-                        </div>
-                    
-                    </div>
+
+    <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 15px;">
+        <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="flex: 1; margin: 0; padding: 10px 5px;">Check Answers</button>
+        <button id="showsolutionsBtn" class="btn-black" onclick="toggleSolutions()" style="background-color: #6f42c1; border-color: #6f42c1; color: #fff; flex: 1; margin: 0; padding: 10px 5px;">Show Solutions</button>
+    </div>
+
+    <div id="feedback" style="font-weight: bold; margin-bottom: 15px; text-align: center; min-height: 24px;"></div>
+
+    <div class="controls" style="padding-top: 15px; border-top: 1px solid #e0e0e0; margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; width: 100%;">
+            <button class="btn-black" onclick="handleGenerateClick()" style="flex: 1; margin: 0; padding: 10px 5px;">New Problem</button>
+            <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0; padding: 10px 5px;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge</button>
+            <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0; padding: 10px 5px;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge</button>
+            <button id="grade9ZenerBtn" class="btn-check
         </div> 
     </div> 
 </div> 
@@ -958,7 +949,7 @@ function handleGenerateClick() {
     const showsolutionsBtn = document.getElementById('showsolutionsBtn');
     if (showsolutionsBtn) {
         showsolutionsBtn.style.display = 'block'; 
-        showsolutionsBtn.innerText = "Need Help? (Show Solution)";
+        showsolutionsBtn.innerText = "Show Solution";
     }
 
     // Bring back the Check Answer button for the new problem
