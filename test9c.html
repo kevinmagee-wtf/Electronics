@@ -1638,10 +1638,6 @@ function generateGrade9Resistance() {
 //  Generates the Potential Divider Problem (4-Variables)
 // =======================================================
 
-// =======================================================
-//  Generates the Potential Divider Problem (4-Variables)
-// =======================================================
-
 function generateDividerProblem(ctx, canvas) {
     // 0. RESET UI & STATE
     hideAllInputGroups(); 
@@ -3011,6 +3007,77 @@ function generateGrade9ZenerProblem() {
         ctx.font = "bold 10px Arial"; ctx.fillText("Z", xReg + 46, 300);
         ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 55, 295);
     }
+}
+
+// ==========================================
+// IPO SORT GENERATOR & LOGIC
+// ==========================================
+const ipoDictionary = {
+    "LDR": "input", "Thermistor": "input", "Switch": "input", "Microphone": "input", "Photodiode": "input",
+    "Microcontroller": "process", "Logic Gate": "process", "Op-Amp": "process", "555 Timer": "process", "Counter": "process",
+    "LED": "output", "Motor": "output", "Buzzer": "output", "Relay": "output", "Speaker": "output", "7-Seg Display": "output"
+};
+
+let currentIPOAnswerKey = {};
+
+// HTML5 Drag and Drop Handlers
+function allowDrop(ev) { ev.preventDefault(); }
+function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+function drop(ev) {
+    ev.preventDefault();
+    if (isCurrentProblemSolved) return; // Lock if already solved
+    let data = ev.dataTransfer.getData("text");
+    let targetZone = ev.target.closest('.ipo-zone');
+    if (targetZone) {
+        targetZone.appendChild(document.getElementById(data));
+        document.getElementById(data).style.backgroundColor = "#0d6efd"; // Reset color on move
+    }
+}
+
+function generateIPOProblem(ctx, canvas) {
+    // 1. Setup Canvas Visually
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 24px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Electronic Systems: IPO", canvas.width / 2, 40);
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#666";
+    ctx.fillText("Sort all components into the correct categories below.", canvas.width / 2, 70);
+    ctx.textAlign = "left"; // Reset for other modules
+
+    // 2. Select 6 random components
+    const allComps = Object.keys(ipoDictionary);
+    const selectedComps = [];
+    while (selectedComps.length < 6) {
+        let r = allComps[Math.floor(Math.random() * allComps.length)];
+        if (!selectedComps.includes(r)) selectedComps.push(r);
+    }
+
+    // 3. Reset UI & Answer Key
+    const bank = document.getElementById('ipoBank');
+    bank.innerHTML = '';
+    document.getElementById('zone-input').innerHTML = '';
+    document.getElementById('zone-process').innerHTML = '';
+    document.getElementById('zone-output').innerHTML = '';
+    currentIPOAnswerKey = {};
+
+    // 4. Populate Bank
+    selectedComps.forEach((comp, idx) => {
+        let div = document.createElement('div');
+        div.id = 'ipo-item-' + idx;
+        div.className = 'ipo-item';
+        div.draggable = true;
+        div.ondragstart = drag;
+        div.innerText = comp;
+        bank.appendChild(div);
+
+        currentIPOAnswerKey[div.id] = ipoDictionary[comp];
+    });
+
+    // 5. Unhide elements
+    document.getElementById('inputGroupIPOSort').style.display = 'block';
+    document.getElementById('checkBtn').style.display = 'inline-block';
 }
     
 // ===========================================================================================================================      
