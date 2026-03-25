@@ -3131,8 +3131,11 @@ function generateIPOProblem(ctx, canvas) {
     
     qText.style.textAlign = "left"; 
     qText.style.fontSize = "1.2em"; 
-    qText.style.color = "#444"; // This sets the color for the main bold text
+    qText.style.color = "#444"; 
 
+    // ---> NEW LINE TO SHRINK THE GAP <---
+    qText.style.marginBottom = "0px";
+    
     // 5. Select 6 random components
     const allComps = Object.keys(ipoDictionary);
     const selectedComps = [];
