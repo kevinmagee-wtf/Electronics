@@ -725,9 +725,6 @@
 
                      <!-- IPO Sort Drag & Drop Module -->
                     <div id="inputGroupIPOSort" class="input-group" style="display:none; flex-direction: column; width: 100%; margin-top: 15px;">
-                        <div style="font-weight: bold; color: #444; margin-bottom: 15px; text-align: center; font-size: 1em;">
-                            Drag components from this bank onto the main canvas.
-                        </div>
                         <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" 
                               style="min-height: 250px; background: #f1f3f5; border: 2px solid #ced4da; border-radius: 8px; display: flex; flex-direction: column; align-items: center; padding: 15px; gap: 10px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
                         </div>
@@ -3056,15 +3053,18 @@ function generateIPOProblem(ctx, canvas) {
     
     // 3. Show the Sidebar Bank
     const ipoGroup = document.getElementById("inputGroupIPOSort");
-    ipoGroup.style.display = "flex"; // Flex keeps it centered in the sidebar
+    ipoGroup.style.display = "flex"; 
     document.getElementById('checkBtn').style.display = 'inline-block';
 
-    // 4. Update the question text (Moved from canvas to HTML!)
+    // 4. Update the top question text (Replaces obsolete text with your bold instruction!)
     const qText = document.getElementById("questionText");
     qText.style.display = "block";
-    qText.innerHTML = "Electronic Systems: IPO <br><span style='font-size: 0.9em; color: #666; font-weight: normal;'>Sort all components from the right into the correct categories below.</span>";
+    qText.innerHTML = "<strong>Drag components from this bank onto the main canvas.</strong>";
+    qText.style.textAlign = "center";
+    qText.style.fontSize = "1.2em"; // Makes it nice and readable
+    qText.style.color = "#444";
 
-    // 5. Select 6 random components (Your exact logic!)
+    // 5. Select 6 random components
     const allComps = Object.keys(ipoDictionary);
     const selectedComps = [];
     while (selectedComps.length < 6) {
@@ -3084,31 +3084,36 @@ function generateIPOProblem(ctx, canvas) {
     selectedComps.forEach((comp, idx) => {
         let div = document.createElement('div');
         div.id = 'ipo-item-' + idx;
-        div.className = 'ipo-item'; // Kept your class!
+        div.className = 'ipo-item'; 
         div.draggable = true;
         div.ondragstart = drag;
         div.innerText = comp;
         
-        // --- NEW: CSS to make them look like wide "pills" for the sidebar ---
+        // --- UPDATED CSS: Blue pills, white text, strictly contained! ---
         div.style.padding = "10px 15px";
-        div.style.background = "#fff";
-        div.style.border = "2px solid #6c757d";
+        div.style.background = "#3b82f6"; // Nice primary blue!
+        div.style.color = "#ffffff";      // White text so we can read it!
+        div.style.border = "none";        // Removes the clashing border
         div.style.borderRadius = "20px";
         div.style.cursor = "grab";
         div.style.fontWeight = "bold";
         div.style.textAlign = "center";
-        div.style.width = "90%"; // Fits nicely in the sidebar
-        div.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+        
+        // Size fixes to stop border overlap:
+        div.style.width = "100%";         // Take up available space...
+        div.style.maxWidth = "160px";     // ...but stop before it overflows!
+        div.style.boxSizing = "border-box"; // Keeps padding INSIDE the width!
+        
+        div.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
         div.style.transition = "transform 0.1s ease";
-        div.style.margin = "5px 0";
+        div.style.margin = "6px 0"; // Slight gap between pills
 
         // Add a nice hover effect
-        div.onmouseenter = () => div.style.transform = "scale(1.02)";
+        div.onmouseenter = () => div.style.transform = "scale(1.05)";
         div.onmouseleave = () => div.style.transform = "scale(1)";
 
         bank.appendChild(div);
 
-        // Your exact grading logic intact!
         currentIPOAnswerKey[div.id] = ipoDictionary[comp];
     });
 }
