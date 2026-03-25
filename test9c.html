@@ -2025,11 +2025,14 @@ function generateColorCodeProblem(ctx, canvas) {
         targetVal = resistanceValueRaw / 1000;
         targetUnit = "kΩ";
     }
+    
+    // UPGRADE: Strip weird floating-point artifacts (e.g., 4.700000001 -> 4.7)
+    targetVal = parseFloat(targetVal.toFixed(2));
 
     // 4. Store answers for grading (using the scaled values!)
     if (typeof window.currentAnswers === 'undefined') window.currentAnswers = {};
     currentAnswers.resVal = targetVal;
-    currentAnswers.rTargetUnit = targetUnit; // Now dynamically sets 'Ω', 'kΩ', or 'MΩ'
+    currentAnswers.rTargetUnit = targetUnit; // Dynamically sets 'Ω', 'kΩ', or 'MΩ'
     currentAnswers.resTol = toleranceValue;
     currentAnswers.b1 = resColors[b1];
     currentAnswers.b2 = resColors[b2];
@@ -2071,7 +2074,7 @@ function generateColorCodeProblem(ctx, canvas) {
         drawBand(280, resColors[b3]);
         drawBand(360, tolKey);
 
-        if (valGroup) valGroup.style.display = 'flex'; // Changed to flex to support your new HTML layout
+        if (valGroup) valGroup.style.display = 'flex'; 
 
         solTextStr = `<strong>Solution: ${formattedVal} &plusmn; ${toleranceValue}%</strong><br><br>
                       <em>Logic:</em><br>
@@ -2116,29 +2119,18 @@ function generateColorCodeProblem(ctx, canvas) {
     const instruction = document.getElementById('instructionPrompt');
 
     if (qType === 0) {
-        // TYPE 0: Student enters Resistance Value
-        
-        // 1. Call your central function to show the "e.g., 520, 83k" text in qText
         if (typeof showOhmUnitInstruction === 'function') {
             showOhmUnitInstruction();
         }
-        
-        // 2. Add the main instruction
         if (instruction) {
             instruction.style.display = 'block';
             instruction.innerHTML = "<strong>State the value and tolerance of the resistor.</strong>";
         }
-
     } else {
-        // TYPE 1: Student enters Colour Names
-        
-        // 1. Hide the Ohm instructions since they are guessing colours here
         if (qText) {
             qText.innerHTML = "";
             qText.style.display = 'none';
         }
-        
-        // 2. Add the colour instruction
         if (instruction) {
             instruction.style.display = 'block';
             instruction.innerHTML = "<strong>Identify the resistor colour codes.</strong>";
@@ -2156,14 +2148,10 @@ function generateOscilloscopeProblem() {
     hideAllInputGroups(); 
     currentMode = 'oscilloscope';
 
-    // Clear and reset the specific oscilloscope input fields
     const ids = ['inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio'];
     ids.forEach(id => {
         const el = document.getElementById(id);
-        if (el) {
-            el.value = ""; // Clear old answers
-            el.placeholder = ""; 
-        }
+        if (el) { el.value = ""; el.placeholder = ""; }
     });
 
     // 3. DRAW BACKGROUND & GRID (OSCILLOSCOPE SCREEN)
@@ -2198,17 +2186,17 @@ function generateOscilloscopeProblem() {
     let frequency = (tBaseUnit === 'ms') ? (1000 / periodTime) : (1 / periodTime);
     let freq_rounded = parseFloat(frequency.toFixed(1));
 
-    // Store answers for the checker (STRICT CASING FIX)
+    // Store answers for the checker
     currentAnswers.oscAmpValue = amplitude; 
-    currentAnswers.oscAmpUnit = vGainUnit; // Removed .toLowerCase()
+    currentAnswers.oscAmpUnit = vGainUnit; 
     currentAnswers.oscMarkValue = markDivs * tBase; 
-    currentAnswers.oscMarkUnit = tBaseUnit; // Removed .toLowerCase()
+    currentAnswers.oscMarkUnit = tBaseUnit; 
     currentAnswers.oscSpaceValue = spaceDivs * tBase; 
-    currentAnswers.oscSpaceUnit = tBaseUnit; // Removed .toLowerCase()
+    currentAnswers.oscSpaceUnit = tBaseUnit; 
     currentAnswers.oscPeriodValue = periodTime; 
-    currentAnswers.oscPeriodUnit = tBaseUnit; // Removed .toLowerCase()
+    currentAnswers.oscPeriodUnit = tBaseUnit; 
     currentAnswers.oscFreqValue = freq_rounded; 
-    currentAnswers.oscFreqUnit = 'Hz'; // Strict capital H, lowercase z
+    currentAnswers.oscFreqUnit = 'Hz'; 
     currentAnswers.oscRatioValue = markDivs + "/" + spaceDivs;
 
     // 5. DRAW SETTINGS & WAVEFORM
@@ -2239,7 +2227,6 @@ function generateOscilloscopeProblem() {
     const qType = Math.floor(Math.random() * 3) + 1;
     currentAnswers.oscQType = qType;
 
-    // Always show Amplitude input (DEVELOPER TRAP FIX)
     document.getElementById('inputGroupOscAmp').style.display = "inline-block";
     document.getElementById('inputOscAmp').placeholder = "e.g. 5 " + vGainUnit;
 
@@ -2248,17 +2235,20 @@ function generateOscilloscopeProblem() {
     if (qType === 1) {
         document.getElementById('inputGroupOscMark').style.display = "inline-block";
         document.getElementById('inputGroupOscSpace').style.display = "inline-block";
-        // Developer Trap fix:
         document.getElementById('inputOscMark').placeholder = "e.g. 10 " + tBaseUnit;
         document.getElementById('inputOscSpace').placeholder = "e.g. 5 " + tBaseUnit;
-        solTextStr += "<strong>Mark:</strong> " + markDivs + " divs &times; " + tBase + tBaseUnit + " = " + (markDivs*tBase) + tBaseUnit;
+        solTextStr += "<strong>Mark:</strong> " + markDivs + " divs &times; " + tBase + tBaseUnit + " = " + (markDivs*tBase) + tBaseUnit + "<br>";
+        solTextStr += "<strong>Space:</strong> " + spaceDivs + " divs &times; " + tBase + tBaseUnit + " = " + (spaceDivs*tBase) + tBaseUnit;
     } else if (qType === 2) {
         document.getElementById('inputGroupOscPeriod').style.display = "inline-block";
         document.getElementById('inputGroupOscFreq').style.display = "inline-block";
-        // Developer Trap fix:
         document.getElementById('inputOscPeriod').placeholder = "e.g. 20 " + tBaseUnit;
         document.getElementById('inputOscFreq').placeholder = "e.g. 50 Hz";
-        solTextStr += "<strong>Period:</strong> " + (markDivs+spaceDivs) + " divs &times; " + tBase + tBaseUnit + " = " + periodTime + tBaseUnit;
+        solTextStr += "<strong>Period (T):</strong> " + (markDivs+spaceDivs) + " divs &times; " + tBase + tBaseUnit + " = " + periodTime + tBaseUnit + "<br>";
+        
+        // UPGRADE: Added Frequency logic so students aren't left guessing!
+        let fLogic = tBaseUnit === 'ms' ? `1000 / ${periodTime} ms` : `1 / ${periodTime} s`;
+        solTextStr += `<strong>Frequency (f):</strong> ${fLogic} = <strong>${freq_rounded} Hz</strong>`;
     } else {
         document.getElementById('inputGroupOscRatio').style.display = "block";
         document.getElementById('inputOscRatio').placeholder = "e.g. 1/2"; 
@@ -2268,22 +2258,18 @@ function generateOscilloscopeProblem() {
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = solTextStr;
     
-    showUnitInstruction();
+    if (typeof showUnitInstruction === 'function') showUnitInstruction();
 }
  
 function generateAstableProblem() {
     // 1. UI RESET
     hideAllInputGroups();
     
-    // FIX: Hide the master solutions container, NOT the text paragraph!
     const solContainer = document.getElementById('solutions');
     if (solContainer) solContainer.style.display = "none"; 
     
-    // Failsafe: Make sure the text paragraph is visible if it got stuck hidden
     const solBox = document.getElementById('solText');
     if (solBox) solBox.style.display = "block"; 
-    
-    if (typeof resetAnswerBox === "function") hideAllInputGroups();
     
     // 2. SELF-INITIALIZE CANVAS
     const canvas = document.getElementById('circuitCanvas');
@@ -2299,7 +2285,7 @@ function generateAstableProblem() {
     const ratioPrompt = document.getElementById('ratioInstruction');
     
     [inputAstable, inputAstableT, inputMarkSpace].forEach(el => { 
-        if(el) { el.value = ""; el.placeholder = ""; } // Cleared
+        if(el) { el.value = ""; el.placeholder = ""; } 
     });
     [astablePrompt, ratioPrompt].forEach(el => { if(el) el.innerHTML = ""; });
 
@@ -2322,7 +2308,6 @@ function generateAstableProblem() {
     const qType = Math.floor(Math.random() * 2);
     currentAnswers.astableQType = qType;
 
-    // Toggle Input Groups
     const groupStd = document.getElementById('inputGroupAstable');
     const groupRatio = document.getElementById('inputGroupMarkSpace');
 
@@ -2333,10 +2318,9 @@ function generateAstableProblem() {
         
         currentAnswers.astableValue = parseFloat(freq.toFixed(1)); 
         currentAnswers.astableTValue = parseFloat(period_ms.toFixed(1)); 
-        currentAnswers.astableUnit = "Hz";   // STRICT CASING FIX
-        currentAnswers.astableTUnit = "ms";  // STRICT CASING FIX
+        currentAnswers.astableUnit = "Hz";  
+        currentAnswers.astableTUnit = "ms";  
 
-        // Generic placeholders
         if(inputAstable) inputAstable.placeholder = "e.g. 50 Hz";
         if(inputAstableT) inputAstableT.placeholder = "e.g. 20 ms";
 
@@ -2346,11 +2330,10 @@ function generateAstableProblem() {
         if(ratioPrompt) ratioPrompt.innerHTML = "(Simplified fraction, e.g. 2/1)";
         
         currentAnswers.astableRatio = ratioString;
-
         if(inputMarkSpace) inputMarkSpace.placeholder = "e.g. 2/1";
     }
 
-    // 6. DRAWING HELPERS (Kept your logic)
+    // 6. DRAWING HELPERS
     const line = (x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
     const drawNode = (x, y) => { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); };
     const drawResistorBox = (x, y, val) => {
@@ -2363,7 +2346,7 @@ function generateAstableProblem() {
         ctx.fillText(val, align === "right" ? x - 25 : x + 25, y + 5);
     };
 
-    // 7. DRAWING THE CIRCUIT (Your layout)
+    // 7. DRAWING THE CIRCUIT
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.fillStyle = "#000";
 
@@ -2386,7 +2369,7 @@ function generateAstableProblem() {
     line(220, 180, 260, 180); ctx.fillText("6", 265, 185); 
     line(220, 240, 260, 240); ctx.fillText("2", 265, 245); 
 
-    // Static Pins & Output (Your existing logic)
+    // Static Pins & Output 
     line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
     line(300, 80, 300, 120); ctx.textAlign = "center"; ctx.fillText("8", 300, 135);
     line(360, 80, 360, 120); ctx.fillText("4", 360, 135);
@@ -2397,16 +2380,15 @@ function generateAstableProblem() {
     line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
     ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
 
-    // 8. Update Solution Text with Formula and Working
+    // 8. Update Solution Text
     if (solBox) {
         let solHTML = "";
         if (qType === 0) {
-            // Working for Frequency and Period
-            solHTML = `<strong>Formula:</strong> f = 1.44 / ((R1 + 2R2) × C)<br>`;
+            // UPGRADE: Added the period (T) logic alongside frequency.
+            solHTML = `<strong>Formula:</strong> f = 1.44 / ((R1 + 2R2) × C) &nbsp;|&nbsp; T = 1 / f<br>`;
             solHTML += `<strong>Working:</strong> f = 1.44 / ((${R1/1000}k + 2×${R2/1000}k) × ${C_uF}μF)<br>`;
             solHTML += `<strong>Results:</strong> f = <strong>${freq.toFixed(1)} Hz</strong>, T = <strong>${period_ms.toFixed(1)} ms</strong>`;
         } else {
-            // Working for Mark-Space Ratio
             solHTML = `<strong>Formula:</strong> Ratio = (R1 + R2) : R2<br>`;
             solHTML += `<strong>Working:</strong> (${R1/1000}k + ${R2/1000}k) : ${R2/1000}k = ${num/1000}k : ${den/1000}k<br>`;
             solHTML += `<strong>Simplified Ratio:</strong> <strong>${ratioString}</strong>`;
@@ -2417,17 +2399,21 @@ function generateAstableProblem() {
     
 function drawMonostable(ctx, R, C, rUnit, cUnit) {
     ctx.clearRect(0, 0, 600, 420);
-    ctx.strokeStyle = brandBlack;
+    
+    // UPGRADE: Added a quick fallback for brandBlack in case it isn't defined
+    const color = typeof brandBlack !== 'undefined' ? brandBlack : '#000';
+    
+    ctx.strokeStyle = color;
     ctx.lineWidth = 2;
     ctx.font = "bold 16px Arial";
-    ctx.fillStyle = brandBlack;
+    ctx.fillStyle = color;
 
     // 1. Draw the 555 Chip (Centered)
     const chipX = 250, chipY = 150, w = 120, h = 160;
     ctx.strokeRect(chipX, chipY, w, h);
     ctx.fillText("555", chipX + 45, chipY + 85);
 
-    // 2. Pin Labels (Standard Monostable Layout)
+    // 2. Pin Labels 
     ctx.font = "12px Arial";
     ctx.fillText("8", chipX + 30, chipY + 15); // VCC
     ctx.fillText("4", chipX + 80, chipY + 15); // Reset
@@ -2438,44 +2424,40 @@ function drawMonostable(ctx, R, C, rUnit, cUnit) {
     ctx.fillText("6", chipX + 5, chipY + 70); // THR
 
     // 3. Power Rails
-    // Top Rail (VCC)
     ctx.beginPath();
-    ctx.moveTo(chipX + 35, chipY); ctx.lineTo(chipX + 35, chipY - 50); // Pin 8 up
-    ctx.moveTo(chipX + 85, chipY); ctx.lineTo(chipX + 85, chipY - 50); // Pin 4 up
-    ctx.moveTo(150, chipY - 50); ctx.lineTo(400, chipY - 50); // Horizontal Rail
+    ctx.moveTo(chipX + 35, chipY); ctx.lineTo(chipX + 35, chipY - 50); 
+    ctx.moveTo(chipX + 85, chipY); ctx.lineTo(chipX + 85, chipY - 50); 
+    ctx.moveTo(150, chipY - 50); ctx.lineTo(400, chipY - 50); 
     ctx.stroke();
     ctx.fillText("+Vcc", 410, chipY - 45);
 
-    // Bottom Rail (GND)
     ctx.beginPath();
-    ctx.moveTo(chipX + 60, chipY + h); ctx.lineTo(chipX + 60, chipY + h + 40); // Pin 1 down
-    ctx.moveTo(150, chipY + h + 40); ctx.lineTo(400, chipY + h + 40); // Horizontal Rail
+    ctx.moveTo(chipX + 60, chipY + h); ctx.lineTo(chipX + 60, chipY + h + 40); 
+    ctx.moveTo(150, chipY + h + 40); ctx.lineTo(400, chipY + h + 40); 
     ctx.stroke();
     ctx.fillText("0V", 410, chipY + h + 45);
 
-    // 4. External Components (R and C)
-    // Resistor R1 from VCC to Pin 7
-    drawResistor(ctx, 200, chipY - 20); 
+    // 4. External Components (Assumes drawResistor is in global scope)
+    if (typeof drawResistor === 'function') {
+        drawResistor(ctx, 200, chipY - 20); 
+    }
+    
     ctx.beginPath();
-    ctx.moveTo(200, chipY - 50); ctx.lineTo(200, chipY - 40); // To Rail
-    ctx.moveTo(200, chipY + 10); ctx.lineTo(200, chipY + 40); // To Pin 7 line
-    ctx.lineTo(chipX, chipY + 40); // Into Pin 7
+    ctx.moveTo(200, chipY - 50); ctx.lineTo(200, chipY - 40); 
+    ctx.moveTo(200, chipY + 10); ctx.lineTo(200, chipY + 40); 
+    ctx.lineTo(chipX, chipY + 40); 
     ctx.stroke();
     ctx.font = "bold 14px Arial";
     ctx.fillText("R = " + R + rUnit, 110, chipY - 5);
 
-    // Join Pin 6 to Pin 7 (Threshold to Discharge)
     ctx.beginPath();
     ctx.moveTo(chipX, chipY + 70); ctx.lineTo(200, chipY + 70); ctx.lineTo(200, chipY + 40);
     ctx.stroke();
 
-    // Capacitor C1 from Pin 6 junction to GND
     ctx.beginPath();
-    ctx.moveTo(200, chipY + 70); ctx.lineTo(200, chipY + 100); // Wire down
-    // Capacitor Plates
+    ctx.moveTo(200, chipY + 70); ctx.lineTo(200, chipY + 100); 
     ctx.moveTo(185, 100 + chipY); ctx.lineTo(215, 100 + chipY);
     ctx.moveTo(185, 108 + chipY); ctx.lineTo(215, 108 + chipY);
-    // To Ground
     ctx.moveTo(200, 108 + chipY); ctx.lineTo(200, chipY + h + 40);
     ctx.stroke();
     ctx.fillText("C = " + C + cUnit, 110, chipY + 110);
@@ -2504,7 +2486,6 @@ function generateMonostableProblem() {
     if (solContainer) solContainer.style.display = "none";
     
     // 0. RESET UI & STATE
-    if (typeof resetAnswerBox === "function") hideAllInputGroups();
     currentMode = 'monostable';
 
     // 1. SETUP VARIABLES
@@ -2538,20 +2519,28 @@ function generateMonostableProblem() {
 
     if (qType === 1) { // Calculating Time
         if (monoLabel) monoLabel.innerHTML = "T = ";
-        if (inputMono) inputMono.placeholder = "e.g. 5.5 s"; // Generic Placeholder
+        if (inputMono) inputMono.placeholder = "e.g. 5.5 s"; 
         currentAnswers.expectedT = roundedTime;
-        currentAnswers.expectedUnit = "s"; // Strict casing
+        currentAnswers.expectedUnit = "s"; 
     } else if (qType === 2) { // Calculating Resistance
         if (monoLabel) monoLabel.innerHTML = "R = ";
-        if (inputMono) inputMono.placeholder = "e.g. 100 kΩ"; // Generic Placeholder
-        currentAnswers.expectedT = R1_k;
-        currentAnswers.expectedUnit = "kΩ"; // Strict casing
+        if (inputMono) inputMono.placeholder = "e.g. 100 kΩ"; 
+        
+        // FIX: Calculate expected R based on the rounded time shown to the student
+        const expectedR = roundedTime / (1.1 * C_farads * 1000); 
+        currentAnswers.expectedT = parseFloat(expectedR.toFixed(1));
+        
+        currentAnswers.expectedUnit = "kΩ"; 
         rLabel = "R = ?";
     } else if (qType === 3) { // Calculating Capacitance
         if (monoLabel) monoLabel.innerHTML = "C = ";
-        if (inputMono) inputMono.placeholder = "e.g. 47 μF"; // Generic Placeholder
-        currentAnswers.expectedT = C_uF;
-        currentAnswers.expectedUnit = "μF"; // Strict casing
+        if (inputMono) inputMono.placeholder = "e.g. 47 μF"; 
+        
+        // FIX: Calculate expected C based on the rounded time shown to the student
+        const expectedC = (roundedTime / (1.1 * R1_ohms)) * 1000000;
+        currentAnswers.expectedT = parseFloat(expectedC.toFixed(1));
+        
+        currentAnswers.expectedUnit = "μF"; 
         cLabel = "C = ?";
     }
 
@@ -2631,16 +2620,16 @@ function generateMonostableProblem() {
     ctx.fillStyle = (qType === 1 ? "#E64097" : "#333");
     ctx.fillText(tLabel, 300, 410);
 
-    // 7. PRE-CALCULATE SOLUTION
+    // 7. PRE-CALCULATE SOLUTION (Updated to match the expected answer)
     const solElement = document.getElementById('solText');
     if (solElement) {
         let solHTML = "";
         if (qType === 1) {
-            solHTML = `<strong>Find T:</strong> T = 1.1 × R × C = 1.1 × ${R1_k}k × ${C_uF}μF = <strong>${roundedTime} s</strong>`;
+            solHTML = `<strong>Find T:</strong> T = 1.1 × R × C = 1.1 × ${R1_k}k × ${C_uF}μF = <strong>${currentAnswers.expectedT} s</strong>`;
         } else if (qType === 2) {
-            solHTML = `<strong>Find R:</strong> R = T / (1.1 × C) = ${roundedTime} / (1.1 × ${C_uF}μF) = <strong>${R1_k} kΩ</strong>`;
+            solHTML = `<strong>Find R:</strong> R = T / (1.1 × C) = ${roundedTime} / (1.1 × ${C_uF}μF) = <strong>${currentAnswers.expectedT} kΩ</strong>`;
         } else {
-            solHTML = `<strong>Find C:</strong> C = T / (1.1 × R) = ${roundedTime} / (1.1 × ${R1_k}k) = <strong>${C_uF} μF</strong>`;
+            solHTML = `<strong>Find C:</strong> C = T / (1.1 × R) = ${roundedTime} / (1.1 × ${R1_k}k) = <strong>${currentAnswers.expectedT} μF</strong>`;
         }
         solElement.innerHTML = solHTML;
     }
@@ -3187,28 +3176,17 @@ function goHome() {
     document.getElementById('menuBasics').style.display = 'none';
     document.getElementById('menuTiming').style.display = 'none';
     document.getElementById('menuDiodes').style.display = 'none';
-    if (document.getElementById('menuSystems')) document.getElementById('menuSystems').style.display = 'none'; // ADDED FOR IPO
+    if (document.getElementById('menuSystems')) document.getElementById('menuSystems').style.display = 'none'; 
     document.getElementById('menuPlaceholder').style.display = 'none';
 
     // 2. Show the main 8-button grid
     document.getElementById('mainMenu').style.display = 'grid';
 
-    // --- FIX STARTS HERE ---
-    // 3. Specifically hide the Zener input groups so they don't stay visible
-    const zenerGroup = document.getElementById('inputGroupZener');
-    if (zenerGroup) zenerGroup.style.display = 'none';
-    
-    const zenerOpen = document.getElementById('zenerOpenQuestions');
-    if (zenerOpen) zenerOpen.style.display = 'none';
-    
-    const zenerClosed = document.getElementById('zenerClosedQuestions');
-    if (zenerClosed) zenerClosed.style.display = 'none';
-    
-    // Also clear any values left in the boxes
+    // 3. FULL UI WIPE (Replaces all the manual Zener hiding!)
+    if (typeof hideAllInputGroups === "function") hideAllInputGroups(); 
     if (typeof clearZenerInputs === "function") clearZenerInputs(); 
-    // --- FIX ENDS HERE ---
 
-    // Reset subtitles/branding if needed
+    // 4. Reset subtitles/branding
     document.getElementById('moduleSubtitle').innerText = "Mastering the GCSE Course";
 }
 
@@ -3246,6 +3224,10 @@ function openModule(module) {
 }
 
 //switchTab runs when you click the navigation menu at the very top of the page    
+// =======================================================================================================
+// TAB SWITCHER & GLOBAL CLEANUP
+// =======================================================================================================
+
 function switchTab(mode) {
     currentMode = mode;
     
@@ -3262,11 +3244,10 @@ function switchTab(mode) {
     if (activeTab) {
         activeTab.classList.add('active');
         activeTab.style.backgroundColor = "#333"; 
-        activeTab.style.color = "#fff";             
+        activeTab.style.color = "#fff";              
     }
 
     // 2. SAFE HIDE: Loop through elements and only hide them if they exist
-    // FIX: Added g9ZenerClosed and g9ZenerOpen to prevent UI ghosting
     const elementsToHide = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -3294,7 +3275,7 @@ function switchTab(mode) {
         else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
         else if (mode === 'iposort') subtitle.innerText = "Module 7: Systems"; // ADDED FOR IPO SORT
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
-        else if (['silicon', 'zener'].includes(mode)) subtitle.innerText = "Module 8: Diodes";
+        else if (['silicon', 'zener', 'grade9zener'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; // Included grade9zener!
     }
 
     // 4. Global Cleanup
@@ -3308,7 +3289,7 @@ function switchTab(mode) {
         if(i.type === 'radio') i.checked = false;
     });
 
-    // FIX: Reset all dropdown menus to their default (first) option
+    // Reset all dropdown menus to their default (first) option
     document.querySelectorAll('select').forEach(s => {
         // Prevent clearing the teacher selection modal
         if (s.id !== 'teacherSelect') {
@@ -3316,7 +3297,7 @@ function switchTab(mode) {
         }
     });
 
-    // SAFE ZENER CLEANUP FIX ADDED HERE
+    // SAFE ZENER CLEANUP FIX
     if (typeof clearZenerInputs === "function") {
         clearZenerInputs();
     }
@@ -3335,33 +3316,18 @@ function switchTab(mode) {
         return; 
     }
 
-    // 6. CALL GENERATORS SAFELY
-    if (mode === 'astable') {
-        if (typeof generateAstableProblem === "function") generateAstableProblem();
-    } else if (mode === 'monostable') {
-        if (typeof generateMonostableProblem === "function") generateMonostableProblem();
-    } else if (mode === 'oscilloscope') {
-        if (typeof generateOscilloscopeProblem === "function") generateOscilloscopeProblem();
-    } else if (mode === 'zener') {
-        if (document.getElementById('inputGroupZener')) document.getElementById('inputGroupZener').style.display = 'inline-block';
-        if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
-        if (typeof generateZenerProblem === "function") generateZenerProblem();
-    } else if (mode === 'colorcode') {
-        if (typeof generateColorCodeProblem === "function" && ctx && canvas) {
-            generateColorCodeProblem(ctx, canvas);
-        }
-    } else if (mode === 'silicon') {
-        if (document.getElementById('inputGroupSilicon')) document.getElementById('inputGroupSilicon').style.display = 'inline-block';
-        if (typeof generateSiliconProblem === "function") generateSiliconProblem();
+    // 6. ROUTE TO MASTER CONTROLLER
+    // Much cleaner! Let hubController do all the routing so we don't accidentally forget ctx/canvas!
+    if (typeof hubController === "function") {
+        hubController(ctx, canvas);
     } else {
-        // Module 1 & 2 Routing - FIXED
-        if (typeof hubController === "function") {
-            hubController(ctx, canvas);
-        } else {
-            console.error("Critical Error: hubController is missing!");
-        }
+        console.error("Critical Error: hubController is missing!");
     }
 }
+
+// =======================================================================================================
+// MODAL CONTROLLERS
+// =======================================================================================================
 
 function openDataSheet() {
     const modal = document.getElementById('dataSheetModal');
@@ -3393,7 +3359,6 @@ function closeModal() {
 // ===============================================================================================================      
 // MASTER PROBLEM GENERATOR (The "Traffic Cop")
 // ===============================================================================================================      
-    
 function hubController(ctx, canvas) {
     // 1. Force Canvas Resolution & Clear
     canvas.width = 600;
@@ -3402,8 +3367,12 @@ function hubController(ctx, canvas) {
 
     // 2. Full UI Reset (The "Master Wipe")
     // This handles all state and hides all groups BEFORE we pick the new mode
-    hideAllInputGroups(); 
+    if (typeof hideAllInputGroups === "function") hideAllInputGroups(); 
     
+    // ---> THE FIX: Reset the workspaces so normal circuits don't vanish! <---
+    if (document.getElementById("circuitContainer")) document.getElementById("circuitContainer").style.display = "block";
+    if (document.getElementById("canvasIPOWorkstation")) document.getElementById("canvasIPOWorkstation").style.display = "none";
+
     // Reset grading flags for the new problem
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
@@ -3423,57 +3392,41 @@ function hubController(ctx, canvas) {
         const groupI = document.getElementById('inputGroupI');
         if (groupV) groupV.style.display = 'inline-block';
         if (groupI) groupI.style.display = 'inline-block';
-        
-        generateAnalysisProblem(ctx, canvas);
+        if (typeof generateAnalysisProblem === "function") generateAnalysisProblem(ctx, canvas);
 
     } else if (currentMode === 'divider') {
         if (document.getElementById('inputGroupV')) document.getElementById('inputGroupV').style.display = 'inline-block';
         if (document.getElementById('grade9DividerBtn')) document.getElementById('grade9DividerBtn').style.display = 'inline-block';
-        generateDividerProblem(ctx, canvas);
+        if (typeof generateDividerProblem === "function") generateDividerProblem(ctx, canvas);
 
     } else if (currentMode === 'resistance') {
         if (document.getElementById('inputGroupR')) document.getElementById('inputGroupR').style.display = 'inline-block';
         if (document.getElementById('grade9ResistorBtn')) document.getElementById('grade9ResistorBtn').style.display = 'inline-block';
         // Small timeout helps some browsers render the canvas instructions correctly
-        setTimeout(() => { generateResistanceProblem(ctx, canvas); }, 20);
+        setTimeout(() => { if (typeof generateResistanceProblem === "function") generateResistanceProblem(ctx, canvas); }, 20);
 
     } else if (currentMode === 'oscilloscope') {
         const oscWrapper = document.getElementById('oscilloscopeInputs');
         if (oscWrapper) oscWrapper.style.display = 'block';
-        generateOscilloscopeProblem(ctx, canvas);
+        if (typeof generateOscilloscopeProblem === "function") generateOscilloscopeProblem(ctx, canvas);
 
     } else if (currentMode === 'astable') {
-        generateAstableProblem(ctx, canvas);
+        if (typeof generateAstableProblem === "function") generateAstableProblem(ctx, canvas);
 
     } else if (currentMode === 'monostable') {
         if (document.getElementById('inputGroupMonostable')) document.getElementById('inputGroupMonostable').style.display = 'inline-block';
-        generateMonostableProblem(ctx, canvas);
+        if (typeof generateMonostableProblem === "function") generateMonostableProblem(ctx, canvas);
 
     } else if (currentMode === 'colorcode') {
-        generateColorCodeProblem(ctx, canvas);
+        if (typeof generateColorCodeProblem === "function") generateColorCodeProblem(ctx, canvas);
         
     } else if (currentMode === 'zener') {
         if (document.getElementById('inputGroupZener')) document.getElementById('inputGroupZener').style.display = 'inline-block';
         if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
-        generateZenerProblem(ctx, canvas); 
+        if (typeof generateZenerProblem === "function") generateZenerProblem(ctx, canvas); 
 
     } else if (currentMode === 'grade9zener') {
-        // ADDED: Explicitly unhide the Grade 9 group for UI consistency
-        if (document.getElementById('inputGroupGrade9Zener')) document.getElementById('inputGroupGrade9Zener').style.display = 'inline-block';
-        // THE FIX: Unhide the Grade 9 button so it remains visible while in this mode!
-        if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
-        
-        generateGrade9ZenerProblem(ctx, canvas);
-
-    } else if (currentMode === 'silicon') {
-        if (document.getElementById('inputGroupSilicon')) document.getElementById('inputGroupSilicon').style.display = 'inline-block';
-        generateSiliconProblem(ctx, canvas);
-    }
-}
-    
-// =======================================================================================================  
-// FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
-// =======================================================================================================   
+        if (document.getElementById
     
 // =======================================================================================================  
 // FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
@@ -3491,7 +3444,7 @@ function checkAnswers() {
     // =======================================================
     if (currentMode === 'iposort') {
         const bank = document.getElementById('ipoBank');
-        if (bank.children.length > 0) {
+        if (bank && bank.children.length > 0) {
             feedback.innerHTML = "<span style='color: #dc3545;'>Please drag all items out of the bank first!</span>";
             return;
         }
@@ -3504,16 +3457,18 @@ function checkAnswers() {
         let allCorrect = true;
         for (let id in currentIPOAnswerKey) {
             let el = document.getElementById(id);
+            if (!el) continue;
+            
             let placedZone = el.closest('.ipo-zone').getAttribute('data-type');
             
             if (placedZone === currentIPOAnswerKey[id]) {
                 el.style.backgroundColor = "#28a745"; // Green for correct
-                el.style.color = "#fff";              // NEW: Make text white for contrast
-                el.style.borderColor = "#28a745";     // NEW: Match border to background
+                el.style.color = "#fff";              // Make text white for contrast
+                el.style.borderColor = "#28a745";     // Match border to background
             } else {
                 el.style.backgroundColor = "#dc3545"; // Red for wrong
-                el.style.color = "#fff";              // NEW: Make text white for contrast
-                el.style.borderColor = "#dc3545";     // NEW: Match border to background
+                el.style.color = "#fff";              // Make text white for contrast
+                el.style.borderColor = "#dc3545";     // Match border to background
                 allCorrect = false;
             }
         }
@@ -3535,7 +3490,6 @@ function checkAnswers() {
             // FAILURE
             canEarnPoints = false; // Mark lost for not getting it first try
             
-            // Your custom feedback!
             feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. Move the red boxes to the correct zones and try again!</span>";
             
             // Ensure the solutions box stays closed
@@ -3562,8 +3516,10 @@ function checkAnswers() {
         else activeInputs.push('inputOscRatio');
     }
     else if (currentMode === 'colorcode') {
-        const valGroup = document.getElementById('inputGroupColorVal');
-        activeInputs = (valGroup && valGroup.style.display !== 'none') ? ['inputResValue', 'inputResTol'] : ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
+        // UPGRADE: Relies on the state flag you set in generation, rather than CSS checking!
+        activeInputs = (window.colorCodeSubMode === 'colorToValue') 
+            ? ['inputResValue', 'inputResTol'] 
+            : ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
     }
     else if (currentMode === 'astable') {
         activeInputs = (currentAnswers.astableQType === 0) ? ['inputAstable', 'inputAstableT'] : ['inputMarkSpace'];
@@ -3577,7 +3533,8 @@ function checkAnswers() {
     }
 
     // 3. Check for empty boxes (Protects them from losing points if they accidentally click Check early!)
-    let hasEmptyBox = activeInputs.some(id => !document.getElementById(id) || document.getElementById(id).value.trim() === '');
+    // UPGRADE: Used optional chaining (?.) for a cleaner, safer null-check
+    let hasEmptyBox = activeInputs.some(id => !document.getElementById(id) || document.getElementById(id)?.value.trim() === '');
     if (hasEmptyBox) {
         feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
         return; 
@@ -3592,7 +3549,6 @@ function checkAnswers() {
     let results = [];
     
     if (currentMode === 'analysis') {
-        // Wrapped the .value in acceptSpaces()
         results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputV').value)), currentAnswers.vValue, 'mV'));
         results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputI').value)), currentAnswers.iValue, 'mA'));
 
@@ -3601,14 +3557,11 @@ function checkAnswers() {
         const symbolV = document.getElementById('unitSymbolV');
         
         if (symbolV && symbolV.innerHTML.includes("Ω")) {
-            // Clean spaces using your new helper function!
             let cleanStr = acceptSpaces(inputStr);
-            
             if (cleanStr !== "" && !cleanStr.includes("Ω") && !cleanStr.toLowerCase().includes("ohm")) {
                 cleanStr += "Ω";
             }
             results.push(validateMatch(parseInput(cleanStr), currentAnswers.vValue, currentAnswers.vUnit));
-            
         } else {
             let targetUnit = currentAnswers.vValue < 1 ? 'mV' : 'V';
             if (currentAnswers.vUnit) targetUnit = currentAnswers.vUnit; 
@@ -3617,7 +3570,7 @@ function checkAnswers() {
 
    } else if (currentMode === 'resistance') {
         let inputStr = document.getElementById('inputR').value;
-        let cleanStr = acceptSpaces(inputStr); // Clean spaces using your new helper function!
+        let cleanStr = acceptSpaces(inputStr); 
             
         if (cleanStr !== "" && !cleanStr.includes("Ω") && !cleanStr.toLowerCase().includes("ohm")) {
             cleanStr += "Ω";
@@ -3634,7 +3587,6 @@ function checkAnswers() {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscPeriod').value)), currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscFreq').value)), currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
         } else {
-            // Updated exact match for Ratios to ignore spaces on both sides!
             const userRatio = document.getElementById('inputOscRatio').value;
             results.push(acceptSpaces(userRatio) === acceptSpaces(currentAnswers.oscRatioValue) ? 'correct' : 'wrongval');
         }
@@ -3644,7 +3596,6 @@ function checkAnswers() {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputAstable').value)), currentAnswers.astableValue, currentAnswers.astableUnit || 'Hz'));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputAstableT').value)), currentAnswers.astableTValue, currentAnswers.astableTUnit || 'ms'));
         } else {
-            // Updated exact match for Ratios to ignore spaces!
             const userRatio = document.getElementById('inputMarkSpace').value;
             results.push(acceptSpaces(userRatio) === acceptSpaces(currentAnswers.astableRatio) ? 'correct' : 'wrongval');
         }
@@ -3653,7 +3604,7 @@ function checkAnswers() {
         results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputMonostable').value)), currentAnswers.expectedT, currentAnswers.expectedUnit));
 
     } else if (currentMode === 'colorcode') {
-        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
+        if (window.colorCodeSubMode === 'colorToValue') {
             const resVal = document.getElementById('inputResValue').value;
             const resUnit = document.getElementById('unitResColor').value;
             const resTol = document.getElementById('inputResTol').value;
@@ -3661,7 +3612,6 @@ function checkAnswers() {
             results.push(validateMatch(parseInput(acceptSpaces(resVal), acceptSpaces(resUnit)), currentAnswers.resVal, currentAnswers.rTargetUnit || 'Ω'));
             results.push(validateMatch(parseInput(acceptSpaces(resTol)), currentAnswers.resTol, '%'));
         } else {
-            // I left the text inputs for colors alone here, because "light blue" shouldn't become "lightblue" if your answer key has a space!
             ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'].forEach((id, i) => {
                 const ans = [currentAnswers.b1, currentAnswers.b2, currentAnswers.b3, currentAnswers.tol];
                 results.push(document.getElementById(id).value.toLowerCase().trim() === ans[i] ? 'correct' : 'wrong');
@@ -3676,7 +3626,7 @@ function checkAnswers() {
                 results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('zenerQ_IZ').value)), currentAnswers.iZ, 'mA'));
                 results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('zenerQ_PZ').value)), currentAnswers.pZ, 'mW'));
             }
-         } else { // Grade 9 Zener
+         } else { 
             if (currentZenerState === "closed") {
                 results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9IL').value)), currentAnswers.iL, 'mA'));
                 results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9IZ').value)), currentAnswers.iZ, 'mA'));
@@ -3687,7 +3637,7 @@ function checkAnswers() {
          }
     }
 
-    // 5. UPGRADED Final Feedback and Scoring
+    // 5. Final Feedback and Scoring
     activeInputs.forEach((id, index) => {
         const el = document.getElementById(id);
         if (el) {
@@ -3702,7 +3652,7 @@ function checkAnswers() {
         
         if (canEarnPoints) {
             feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
-            problemsCorrect++; // Award the point!
+            problemsCorrect++; 
         } else if (viewedSolution) {
             feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed, 0 points).</span>";
         } else if (unitErrorMade) {
@@ -3711,37 +3661,36 @@ function checkAnswers() {
             feedback.innerHTML = "<span style='color: #dc3545;'>Correct! (Took multiple tries, 0 points).</span>";
         }
         
-        canEarnPoints = false; // Lock out points so they can't double-score
+        canEarnPoints = false; 
         
-        // Hide the help button because they are done
         if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
 
     } else {
         // FAILURE PATH
-        canEarnPoints = false; // ONE-SHOT RULE: They missed their shot!
+        canEarnPoints = false; 
+        
+        // UPGRADE: Dynamic feedback based on EXACTLY how many boxes they got right!
+        const correctCount = results.filter(r => r === 'correct').length;
         
         if (results.includes('wrongunit')) {
             unitErrorMade = true;
             feedback.innerHTML = "<span style='color: #fd7e14;'>Number is right, units are wrong! (Mark lost). See solution.</span>";
+        } else if (correctCount > 0) {
+            feedback.innerHTML = `<span style='color: #dc3545;'>Partially correct (${correctCount}/${results.length}). (Mark lost). See solution.</span>`;
         } else {
-            feedback.innerHTML = results.some(r => r === 'correct') ? 
-                               "<span style='color: #dc3545;'>One is right, one is wrong. (Mark lost). See solution.</span>" : 
-                               "<span style='color: #dc3545;'>Incorrect. (Mark lost). See solution below.</span>";
+            feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect. (Mark lost). See solution below.</span>";
         }
 
-        // Force the solution box open to help them learn
         const solDiv = document.getElementById('solutions');
         if (solDiv) solDiv.style.display = 'block';
         if (typeof viewedSolution !== 'undefined') viewedSolution = true;
         
-        // Hide the help button since the solution is now automatically showing
         if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
     }
     
-    // HIDE BOTH BUTTONS AFTER CHECKING (UPDATED IDs)
+    // HIDE CHECK BUTTON ON ANY TEXT-INPUT RESULT
     const checkansBtn = document.getElementById('checkansBtn');
     if (checkansBtn) checkansBtn.style.display = 'none';
-    if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
     
     if (typeof updateScoreboard === "function") updateScoreboard();
 }
@@ -3755,7 +3704,7 @@ function checkAnswers() {
 function parseInput(str, dropdownUnit = null) {
     if (!str && str !== 0) return null;
 
-    // 1. Remove all spaces, but KEEP casing for symbol validation
+    // 1. Remove all spaces
     let cleanStr = str.toString().trim().replace(/\s+/g, '');
     
     // 2. NEW HYBRID LOGIC: If a dropdown unit is provided, use it immediately
@@ -3765,7 +3714,6 @@ function parseInput(str, dropdownUnit = null) {
     }
 
     // 3. Handle Ratios (e.g., 1/3 for Oscilloscope)
-    // We lowercase only for this check to ensure stability
     let ratioCheck = cleanStr.toLowerCase().replace(/[a-z]+$/, '');
     if (/^\d+\/\d+$/.test(ratioCheck)) {
         let parts = ratioCheck.split('/');
@@ -3789,24 +3737,16 @@ function parseInput(str, dropdownUnit = null) {
         } 
         
         // VOLTAGE: V, volts, volt, mV, millivolts
-        else if (lowerUnit.match(/^(millivolts|millivolt|mvolt|mvolts)$/)) {
+        else if (lowerUnit.match(/^(millivolts|millivolt|mvolt|mvolts)$/) || rawUnit === 'mV') {
             normalizedUnit = "mV"; 
-        } else if (rawUnit === 'mV') {
-            normalizedUnit = "mV"; 
-        } else if (lowerUnit.match(/^(volts|volt)$/)) {
-            normalizedUnit = "V"; 
-        } else if (rawUnit === 'V') {
+        } else if (lowerUnit.match(/^(volts|volt)$/) || rawUnit === 'V') {
             normalizedUnit = "V"; 
         }
         
         // CURRENT: A, amps, amp, amperes, mA, milliamps, mAmp
-        else if (lowerUnit.match(/^(milliamps|milliamp|mamp|mamps)$/)) {
+        else if (lowerUnit.match(/^(milliamps|milliamp|mamp|mamps)$/) || rawUnit === 'mA') {
             normalizedUnit = "mA"; 
-        } else if (rawUnit === 'mA') {
-            normalizedUnit = "mA"; 
-        } else if (lowerUnit.match(/^(amps|amp|amperes)$/)) {
-            normalizedUnit = "A"; 
-        } else if (rawUnit === 'A') {
+        } else if (lowerUnit.match(/^(amps|amp|amperes)$/) || rawUnit === 'A') {
             normalizedUnit = "A"; 
         }
         
@@ -3817,9 +3757,9 @@ function parseInput(str, dropdownUnit = null) {
             normalizedUnit = "s";
         }
 
-        // FREQUENCY
+        // FREQUENCY: Standardized to "Hz" regardless of user input casing
         else if (lowerUnit.match(/^(hertz|hz)$/)) {
-            normalizedUnit = (rawUnit === 'hz') ? 'hz' : 'Hz';
+            normalizedUnit = 'Hz'; 
         }
         else {
             normalizedUnit = rawUnit; 
@@ -3828,7 +3768,7 @@ function parseInput(str, dropdownUnit = null) {
         return { val: val, unit: normalizedUnit };
     }
 
-    // 5. Fallback for numbers only (e.g. user just types "100")
+    // 5. Fallback for numbers only
     let finalVal = parseFloat(cleanStr);
     return { val: isNaN(finalVal) ? null : finalVal, unit: '' }; 
 }
@@ -3899,44 +3839,63 @@ function resetScore() {
     
 function provideHint() {
     if (isCurrentProblemSolved) return;
+    
+    // Flag that they used help (prevents points)
     viewedSolution = true;
+    canEarnPoints = false; 
+
     const feedback = document.getElementById('feedback');
+    if (!feedback) return;
 
     if (currentMode === 'colorcode') {
         let helpText = "";
-        // If they are looking at colors and need the number value
-        if (document.getElementById('inputGroupColorVal').style.display !== 'none') {
+        
+        // UPGRADE: Use the state variable instead of checking DOM styles
+        if (window.colorCodeSubMode === 'colorToValue') {
             helpText = `
-                <div style="text-align:left; background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px;">
-                    <b>Resistor Guide:</b><br>
-                    • Band 1 (${currentAnswers.b1.toUpperCase()}): 1st Digit<br>
-                    • Band 2 (${currentAnswers.b2.toUpperCase()}): 2nd Digit<br>
-                    • Band 3 (${currentAnswers.b3.toUpperCase()}): Multiplier (number of zeros)<br>
-                    • Band 4 (${currentAnswers.tol.toUpperCase()}): Tolerance (Gold=5%, Silver=10%)
+                <div style="text-align:left; background:#fff3cd; padding:15px; border:1px solid #ffeeba; border-radius:8px; line-height:1.5;">
+                    <strong style="color: #856404;">Resistor Guide:</strong><br>
+                    • <b>Band 1</b> (${currentAnswers.b1.toUpperCase()}): 1st Significant Digit<br>
+                    • <b>Band 2</b> (${currentAnswers.b2.toUpperCase()}): 2nd Significant Digit<br>
+                    • <b>Band 3</b> (${currentAnswers.b3.toUpperCase()}): Multiplier (Number of zeros)<br>
+                    • <b>Band 4</b> (${currentAnswers.tol.toUpperCase()}): Tolerance (Gold=5%, Silver=10%)
                 </div>`;
-        } 
-        // If they are looking at a number and need to name the colors
-        else {
-            // FIX: Uses the dynamically scaled values matching the dropdown UI
+        } else {
             const displayVal = currentAnswers.resVal + " " + (currentAnswers.rTargetUnit || "Ω");
             helpText = `
-                <div style="text-align:left; background:#fff3cd; padding:10px; border:1px solid #ffeeba; border-radius:5px;">
-                    <b>Colour Guide for ${displayVal}:</b><br>
-                    • 1st & 2nd Digit: Match the numbers to colours.<br>
-                    • 3rd Digit (Multiplier): How many zeros follow the first two numbers?<br>
-                    • 4th Digit: Gold is 5%, Silver is 10%.<br>
-                    <small>(0:Blk, 1:Brn, 2:Red, 3:Org, 4:Yel, 5:Grn, 6:Blu, 7:Pur, 8:Gry, 9:Whi)</small>
+                <div style="text-align:left; background:#fff3cd; padding:15px; border:1px solid #ffeeba; border-radius:8px; line-height:1.5;">
+                    <strong style="color: #856404;">Colour Guide for ${displayVal}:</strong><br>
+                    • <b>Digits:</b> Match the first two numbers to their colours.<br>
+                    • <b>Multiplier:</b> How many zeros follow the first two numbers?<br>
+                    • <b>Tolerance:</b> Gold is 5%, Silver is 10%.<br>
+                    <hr style="border: 0; border-top: 1px solid #ffeeba;">
+                    <small>Code: 0:Blk, 1:Brn, 2:Red, 3:Org, 4:Yel, 5:Grn, 6:Blu, 7:Pur, 8:Gry, 9:Whi</small>
                 </div>`;
         }
         feedback.innerHTML = helpText;
-    } 
-    else if (currentMode === 'oscilloscope') {
-        feedback.innerHTML = "<b>Hint:</b> Amplitude is vertical height from center. Period is horizontal width of one cycle. Use f = 1 / T.";
-    } 
-    else if (currentMode === 'astable') {
-        feedback.innerHTML = "<b>Hint:</b> f = 1.44 / ((R1 + 2R2)C). Mark/Space ratio is (R1+R2) : R2.";
+
+    } else if (currentMode === 'oscilloscope') {
+        feedback.innerHTML = `<div style="background:#e7f3ff; padding:10px; border-radius:5px; border:1px solid #b3d7ff;">
+            <b>Hint:</b> <i>Amplitude</i> is the vertical height from the center line to the peak. 
+            <i>Period (T)</i> is the horizontal time for one full cycle. Use $f = 1 / T$.
+        </div>`;
+
+    } else if (currentMode === 'astable') {
+        feedback.innerHTML = `<div style="background:#e7f3ff; padding:10px; border-radius:5px; border:1px solid #b3d7ff;">
+            <b>Hint:</b> Use the 555 formula: $f = 1.44 / ((R_1 + 2R_2)C)$. 
+            The Mark/Space ratio is $(R_1 + R_2) : R_2$.
+        </div>`;
+
+    } else if (currentMode === 'zener' || currentMode === 'grade9zener') {
+        feedback.innerHTML = `<div style="background:#e7f3ff; padding:10px; border-radius:5px; border:1px solid #b3d7ff;">
+            <b>Hint:</b> If the Zener is "Open", no current flows through it ($I_z = 0$). 
+            If "Closed", the load voltage $V_L$ is clamped to the Zener voltage $V_z$.
+        </div>`;
+
     } else {
-        feedback.innerHTML = "<b>Hint:</b> Check your Ohm's Law (V=IR) or Potential Divider formula.";
+        feedback.innerHTML = `<div style="background:#e7f3ff; padding:10px; border-radius:5px; border:1px solid #b3d7ff;">
+            <b>Hint:</b> Use Ohm's Law ($V = I \times R$) or the Potential Divider: $V_{out} = V_{in} \times \frac{R_2}{R_1 + R_2}$.
+        </div>`;
     }
     
     // Hide the help button after it's clicked
