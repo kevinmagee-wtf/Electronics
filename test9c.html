@@ -726,22 +726,37 @@
                     <div class="input-group" id="inputGroupOscRatio" style="display:none;"><label>Ratio = </label><input type="text" id="inputOscRatio" placeholder="e.g. 1/2"></div>
                 </div>
 
-                <div id="inputGroupZener" class="input-group" style="display:none; width: 100%;">
+                <div id="inputGroupZener" class="input-group" style="display:none; width: 100% !important;">
     
-    <div id="zenerClosedQuestions" style="display:none; padding: 0; margin-bottom: 10px;">
-        <p style="font-weight: bold; margin-bottom: 12px; color: #333; font-size: 1.1em;">Switch S is CLOSED:</p>
+    <div id="zenerClosedQuestions" style="display:none; padding: 0 !important; margin-bottom: 10px !important;">
+        <p style="font-weight: bold !important; margin-bottom: 12px !important; color: #333 !important; font-size: 1.2em !important;">Switch S is CLOSED:</p>
         
         <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-            <label for="zenerQ_IL" style="flex: 1; color: #E64097; font-weight: bold; font-size: 1.1em;">Max I<sub>L</sub>:</label>
-            <input type="text" id="zenerQ_IL" placeholder="e.g. 10 mA" style="flex: 2; padding: 10px; font-size: 1.1em;">
+            <label for="zenerQ_IL" style="flex: 1; color: #E64097 !important; font-weight: bold !important; font-size: 1.3em !important;">Max I<sub>L</sub>:</label>
+            <input type="text" id="zenerQ_IL" placeholder="e.g. 15.5 mA" style="flex: 2; padding: 10px !important; font-size: 1.1em !important;">
         </div>
         
         <div style="display: flex; align-items: center; gap: 10px;">
-            <label for="zenerQ_VL" style="flex: 1; color: #E64097; font-weight: bold; font-size: 1.1em;">Load V<sub>L</sub>:</label>
-            <input type="text" id="zenerQ_VL" placeholder="e.g. 5.1 V" style="flex: 2; padding: 10px; font-size: 1.1em;">
+            <label for="zenerQ_VL" style="flex: 1; color: #E64097 !important; font-weight: bold !important; font-size: 1.3em !important;">Load V<sub>L</sub>:</label>
+            <input type="text" id="zenerQ_VL" placeholder="e.g. 4.5 V" style="flex: 2; padding: 10px !important; font-size: 1.1em !important;">
         </div>
     </div>
     
+    <div id="zenerOpenQuestions" style="display:none; padding: 0 !important; margin-bottom: 10px !important;">
+        <p style="font-weight: bold !important; margin-bottom: 12px !important; color: #333 !important; font-size: 1.2em !important;">Switch S is OPEN:</p>
+        
+        <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <label for="zenerQ_IZ" style="flex: 1; color: #E64097 !important; font-weight: bold !important; font-size: 1.3em !important;">Zener I<sub>Z</sub>:</label>
+            <input type="text" id="zenerQ_IZ" placeholder="e.g. 200 mA" style="flex: 2; padding: 10px !important; font-size: 1.1em !important;">
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="zenerQ_PZ" style="flex: 1; color: #E64097 !important; font-weight: bold !important; font-size: 1.3em !important;">Zener P<sub>Z</sub>:</label>
+            <input type="text" id="zenerQ_PZ" placeholder="e.g. 50 mW" style="flex: 2; padding: 10px !important; font-size: 1.1em !important;">
+        </div>
+    </div>
+</div>
+                
     <div id="zenerOpenQuestions" style="display:none; padding: 0; margin-bottom: 10px;">
         <p style="font-weight: bold; margin-bottom: 12px; color: #333; font-size: 1.1em;">Switch S is OPEN:</p>
         
