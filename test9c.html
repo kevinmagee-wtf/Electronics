@@ -663,17 +663,17 @@
             <div id="scoreDisplay" class="scoreboard" style="margin: 0; flex: 1.5; text-align: center;">Score: 0 / 0</div>
             <div style="display: flex; gap: 10px; flex: 2;">
                 <button id="resetBtn" onclick="resetScore()" style="background-color: #f97316; color: white; border: none; border-radius: 5px; margin: 0; padding: 8px 10px; font-size: 14px; width: 100%; cursor: pointer;">🔄 Reset</button>
-                <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 100%;">⬇️ Submit</button>
+                <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 100%;">⬇️ Submit Score</button>
             </div>
         </div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
             <button id="dataSheetBtn" class="btn-secondary" onclick="openDataSheet()" style="margin: 0; padding: 10px; font-size: 14px; flex: 1;">📖 Data Sheet</button>
             <button id="showsolutionsBtn" class="btn-red" onclick="toggleSolutions()" style="margin: 0; padding: 10px; font-size: 14px; flex: 1;">🛟 Help</button>
         </div>
 
         <div style="flex: 0 1 auto; overflow-y: auto; padding-right: 5px;">
-            <div id="questionText" style="font-weight: bold; margin-bottom: 10px; color: #333; text-align: left; min-height: 24px;"></div>
+            <div id="questionText" style="font-weight: bold; margin-bottom: 20px; color: #333; text-align: left; min-height: 24px;"></div>
                 
             <div class="input-area" id="inputArea">
                 <div class="input-group" id="inputGroupV" style="display:none; align-items: center; margin-bottom: 10px;">
@@ -690,21 +690,55 @@
                     <label id="labelMonostable" for="inputMonostable">T = </label><input type="text" id="inputMonostable" style="width: 140px;" placeholder="e.g. 1.5 s"><div id="monostableInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;"></div>
                 </div>
                 <div class="input-group" id="inputGroupAstable" style="display:none; text-align: center; width: 100%;">
-                    <div style="margin-bottom: 10px; display: flex; justify-content: center; align-items: center;"><label id="labelAstable" for="inputAstable">Freq = </label><input type="text" id="inputAstable" placeholder="e.g. 50 Hz"></div>
-                    <div style="display: flex; justify-content: center; align-items: center;"><label id="labelAstableT" for="inputAstableT">T = </label><input type="text" id="inputAstableT" placeholder="e.g. 20 ms"></div>
+                    <div style="margin-bottom: 10px; display: flex; justify-content: center; align-items: center;"><label id="labelAstable" for="inputAstable">Frequency = </label><input type="text" id="inputAstable" placeholder="e.g. 50 Hz"></div>
+                    <div style="display: flex; justify-content: center; align-items: center;"><label id="labelAstableT" for="inputAstableT">Time Period = </label><input type="text" id="inputAstableT" placeholder="e.g. 20 ms"></div>
+                </div>
+                <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%;">
+                    <div style="margin-bottom: 10px; display: flex; justify-content: center; align-items: center;"><label for="inputMarkSpace" style="font-weight: bold;">Ratio = </label><input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;"></div>
                 </div>
 
-                <div id="inputGroupIPOSort" style="display:none; width: 100%; margin-top: 5px;">
-                    <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" 
-                         style="min-height: 120px; background: #f1f3f5; border: 2px solid #ced4da; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; padding: 10px; gap: 8px; overflow-y: auto;">
-                    </div>
+                <div id="oscilloscopeInputs" style="display:none; flex-direction: column; gap: 8px;">
+                    <div class="input-group" id="inputGroupOscAmp" style="display:none;"><label id="labelOscAmp">Amplitude = </label><input type="text" id="inputOscAmp"></div>
+                    <div class="input-group" id="inputGroupOscMark" style="display:none;"><label id="labelOscMark">Mark Time = </label><input type="text" id="inputOscMark"></div>
+                    <div class="input-group" id="inputGroupOscSpace" style="display:none;"><label id="labelOscSpace">Space Time = </label><input type="text" id="inputOscSpace"></div>
+                    <div class="input-group" id="inputGroupOscPeriod" style="display:none;"><label id="labelOscPeriod">Time Period = </label><input type="text" id="inputOscPeriod"></div>
+                    <div class="input-group" id="inputGroupOscFreq" style="display:none;"><label id="labelOscFreq">Frequency = </label><input type="text" id="inputOscFreq"></div>
+                    <div class="input-group" id="inputGroupOscRatio" style="display:none;"><label>Ratio = </label><input type="text" id="inputOscRatio" placeholder="e.g. 1/2"></div>
                 </div>
 
                 <div id="inputGroupZener" class="input-group" style="display:none; width: 100%;">
-                    <div id="zenerClosedQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 15px;">
-                        <p style="font-weight: bold; margin-bottom: 10px;">Switch S CLOSED:</p>
-                        <div style="margin-bottom: 10px;"><label for="zenerQ_IL">Max I<sub>L</sub>:</label><input type="text" id="zenerQ_IL"></div>
-                        <div><label for="zenerQ_VL">Load V<sub>L</sub>:</label><input type="text" id="zenerQ_VL"></div>
+                    <div id="zenerClosedQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
+                        <p style="font-weight: bold; margin-bottom: 15px;">Switch S is CLOSED:</p>
+                        <div style="margin-bottom: 15px;"><label for="zenerQ_IL">1. Max I<sub>L</sub>:</label><input type="text" id="zenerQ_IL"></div>
+                        <div><label for="zenerQ_VL">2. Load V<sub>L</sub>:</label><input type="text" id="zenerQ_VL"></div>
+                    </div>
+                    <div id="zenerOpenQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px;">
+                        <p style="font-weight: bold; margin-bottom: 15px;">Switch S is OPEN:</p>
+                        <div style="margin-bottom: 15px;"><label for="zenerQ_IZ">1. Zener I<sub>Z</sub>:</label><input type="text" id="zenerQ_IZ"></div>
+                        <div><label for="zenerQ_PZ">2. Zener P<sub>Z</sub>:</label><input type="text" id="zenerQ_PZ"></div>
+                    </div>
+                </div>
+
+                <div id="inputGroupIPOSort" style="display:none; width: 100%; margin-top: 15px;">
+                    <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" 
+                         style="min-height: 140px; background: #f1f3f5; border: 2px solid #ced4da; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; padding: 10px; gap: 8px; overflow-y: auto;">
+                    </div>
+                </div>
+
+                <div class="input-group" id="inputGroupColorVal" style="display: none; justify-content: center; align-items: center; gap: 5px; margin-top: 15px;">
+                    <input type="number" id="inputResValue" placeholder="value" style="width: 120px;">
+                    <span style="font-weight:bold; font-size: 1.2em;">Ω ±</span>
+                    <input type="number" id="inputResTol" placeholder="tol" style="width: 80px;">
+                    <span style="font-weight:bold; font-size: 1.2em;">%</span>
+                </div>
+                <div id="inputGroupColorNames" style="display:none; flex-direction: column; gap: 15px; margin-top: 15px; align-items: center;">
+                    <div style="display: flex; gap: 20px;">
+                        <div><label>Band 1:</label><input type="text" id="inputBand1" style="width: 90px;"></div>
+                        <div><label>Band 2:</label><input type="text" id="inputBand2" style="width: 90px;"></div>
+                    </div>
+                    <div style="display: flex; gap: 20px;">
+                        <div><label>Band 3:</label><input type="text" id="inputBand3" style="width: 90px;"></div>
+                        <div><label>Band 4:</label><input type="text" id="inputBandTol" style="width: 90px;"></div>
                     </div>
                 </div>
 
@@ -712,7 +746,7 @@
             </div>
         </div>
 
-        <div style="margin-top: 10px; padding-top: 0;">
+        <div style="margin-top: 10px; padding-top: 0; border-top: none;">
             <div id="feedback" style="font-weight: bold; margin-bottom: 8px; text-align: center; min-height: 20px;"></div>
             <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="width: 100%; margin-bottom: 8px; padding: 12px; font-size: 18px;">🎯 Check Answers</button>
             <div style="display: flex; gap: 8px; width: 100%;">
@@ -727,7 +761,6 @@
             <h4 style="margin-top: 0; color: #E64097; margin-bottom: 5px;">Step-by-Step Logic:</h4>
             <p id="solText" style="margin: 0; color: #333; line-height: 1.4; font-size: 0.95em;"></p>
         </div>
-
     </div>
 </div>
     
