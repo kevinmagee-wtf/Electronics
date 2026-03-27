@@ -1978,6 +1978,13 @@ function generateColorCodeProblem(ctx, canvas) {
     hideAllInputGroups(); 
     currentMode = 'colorcode';
 
+    // THE FIX: Ensure the check button is visible
+    const checkBtn = document.getElementById('checkansBtn');
+    if (checkBtn) checkBtn.style.display = 'inline-block';
+
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none";
+
     // 2. Core Data Setup
     const resColors = ['black', 'brown', 'red', 'orange', 'yellow', 'green', 'blue', 'violet', 'grey', 'white'];
     const tolColors = { 'gold': 5, 'silver': 10 };
@@ -2004,27 +2011,28 @@ function generateColorCodeProblem(ctx, canvas) {
         targetUnit = "kΩ";
     }
     
-    // UPGRADE: Strip weird floating-point artifacts (e.g., 4.700000001 -> 4.7)
+    // UPGRADE: Strip weird floating-point artifacts
     targetVal = parseFloat(targetVal.toFixed(2));
 
-    // 4. Store answers for grading (using the scaled values!)
+    // 4. Store answers for grading
     if (typeof window.currentAnswers === 'undefined') window.currentAnswers = {};
     currentAnswers.resVal = targetVal;
-    currentAnswers.rTargetUnit = targetUnit; // Dynamically sets 'Ω', 'kΩ', or 'MΩ'
+    currentAnswers.rTargetUnit = targetUnit; 
     currentAnswers.resTol = toleranceValue;
     currentAnswers.b1 = resColors[b1];
     currentAnswers.b2 = resColors[b2];
     currentAnswers.b3 = resColors[b3];
     currentAnswers.tol = tolKey;
 
-    // Reset Box Values
+    // Reset Box Values & Background Colors
     const inputResValue = document.getElementById('inputResValue');
     const inputResTol = document.getElementById('inputResTol');
-    if (inputResValue) { inputResValue.value = ""; inputResValue.placeholder = "value"; }
-    if (inputResTol) { inputResTol.value = ""; inputResTol.placeholder = "value"; }
+    if (inputResValue) { inputResValue.value = ""; inputResValue.placeholder = "value"; inputResValue.style.backgroundColor = ""; }
+    if (inputResTol) { inputResTol.value = ""; inputResTol.placeholder = "value"; inputResTol.style.backgroundColor = ""; }
+    
     ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) { el.value = ""; el.placeholder = "colour"; }
+        if (el) { el.value = ""; el.placeholder = "colour"; el.style.backgroundColor = ""; }
     });
 
     // 5. Drawing Setup
@@ -2053,6 +2061,7 @@ function generateColorCodeProblem(ctx, canvas) {
         drawBand(360, tolKey);
 
         if (valGroup) valGroup.style.display = 'flex'; 
+        if (namesGroup) namesGroup.style.display = 'none'; // Ensure other group is hidden
 
         solTextStr = `<strong>Solution: ${formattedVal} &plusmn; ${toleranceValue}%</strong><br><br>
                       <em>Logic:</em><br>
@@ -2080,6 +2089,7 @@ function generateColorCodeProblem(ctx, canvas) {
         ctx.fillText(`${formattedVal} ± ${toleranceValue}%`, 300, 310);
 
         if (namesGroup) namesGroup.style.display = 'flex'; 
+        if (valGroup) valGroup.style.display = 'none'; // Ensure other group is hidden
 
         solTextStr = `<strong>Required Colours:</strong><br><br>
                       1. ${resColors[b1].toUpperCase()} (for digit ${b1})<br>
@@ -2092,19 +2102,19 @@ function generateColorCodeProblem(ctx, canvas) {
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = solTextStr;
     
-   // 7. Dynamic Instruction Text
+   // 7. Dynamic Instruction Text & Visibility Fix
     const qText = document.getElementById('questionText');
     const instruction = document.getElementById('instructionPrompt');
+
+    if (qText) qText.style.display = 'block'; 
 
     if (qType === 0) {
         if (typeof showOhmUnitInstruction === 'function') {
             showOhmUnitInstruction();
         }
         
-        // ---> NEW: UNHIDE AND SET THE MAIN QUESTION TEXT <---
         if (qText) {
             qText.innerHTML = "Determine the resistance value and tolerance from the colour bands shown.";
-            qText.style.display = 'block'; 
         }
         
         if (instruction) {
@@ -2112,11 +2122,8 @@ function generateColorCodeProblem(ctx, canvas) {
             instruction.innerHTML = "<strong>State the value and tolerance of the resistor.</strong>";
         }
     } else {
-        
-        // ---> NEW: UNHIDE AND SET THE MAIN QUESTION TEXT <---
         if (qText) {
             qText.innerHTML = "Determine the required colour bands for the given resistance value and tolerance.";
-            qText.style.display = 'block'; // Changed from 'none' so it actually shows up!
         }
         
         if (instruction) {
@@ -2136,10 +2143,24 @@ function generateOscilloscopeProblem() {
     hideAllInputGroups(); 
     currentMode = 'oscilloscope';
 
+    // THE FIX: Ensure the main container and check button are visible
+    const scopeWrapper = document.getElementById('oscilloscopeInputs');
+    if (scopeWrapper) scopeWrapper.style.display = "block";
+    
+    const checkBtn = document.getElementById('checkansBtn');
+    if (checkBtn) checkBtn.style.display = 'inline-block';
+
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none";
+
     const ids = ['inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio'];
     ids.forEach(id => {
         const el = document.getElementById(id);
-        if (el) { el.value = ""; el.placeholder = ""; }
+        if (el) { 
+            el.value = ""; 
+            el.placeholder = ""; 
+            el.style.backgroundColor = ""; // Reset colors
+        }
     });
 
     // 3. DRAW BACKGROUND & GRID (OSCILLOSCOPE SCREEN)
@@ -2162,6 +2183,8 @@ function generateOscilloscopeProblem() {
     ctx.beginPath(); ctx.moveTo(220, 20); ctx.lineTo(220, 340); ctx.stroke(); 
 
     // 4. SETUP VARIABLES & MATH
+    if (typeof currentAnswers === "undefined") currentAnswers = {}; // Initialize safety
+
     let vGainUnit = Math.random() < 0.5 ? 'V' : 'mV';
     let tBaseUnit = Math.random() < 0.5 ? 'ms' : 's';
     let ampDivs = Math.floor(Math.random() * 3) + 1; 
@@ -2208,12 +2231,15 @@ function generateOscilloscopeProblem() {
     }
     ctx.stroke();
 
-    // 6. SHOW RELEVANT INPUTS & TURN ON WRAPPER
-    const oscWrapper = document.getElementById('oscilloscopeInputs');
-    if (oscWrapper) oscWrapper.style.display = "block";
-
+    // 6. QUESTION TYPE UI LOGIC
     const qType = Math.floor(Math.random() * 3) + 1;
     currentAnswers.oscQType = qType;
+
+    // Ensure groups are hidden before showing the relevant ones
+    ['inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "none";
+    });
 
     document.getElementById('inputGroupOscAmp').style.display = "inline-block";
     document.getElementById('inputOscAmp').placeholder = "e.g. 5 " + vGainUnit;
@@ -2233,8 +2259,6 @@ function generateOscilloscopeProblem() {
         document.getElementById('inputOscPeriod').placeholder = "e.g. 20 " + tBaseUnit;
         document.getElementById('inputOscFreq').placeholder = "e.g. 50 Hz";
         solTextStr += "<strong>Period (T):</strong> " + (markDivs+spaceDivs) + " divs &times; " + tBase + tBaseUnit + " = " + periodTime + tBaseUnit + "<br>";
-        
-        // UPGRADE: Added Frequency logic so students aren't left guessing!
         let fLogic = tBaseUnit === 'ms' ? `1000 / ${periodTime} ms` : `1 / ${periodTime} s`;
         solTextStr += `<strong>Frequency (f):</strong> ${fLogic} = <strong>${freq_rounded} Hz</strong>`;
     } else {
@@ -2248,7 +2272,7 @@ function generateOscilloscopeProblem() {
     
     if (typeof showUnitInstruction === 'function') showUnitInstruction();
 
-    // ---> NEW: 7. UNHIDE AND SET THE QUESTION TEXT <---
+    // 7. UNHIDE AND SET THE QUESTION TEXT
     const qText = document.getElementById('questionText');
     if (qText) {
         if (qType === 1) {
@@ -2258,7 +2282,7 @@ function generateOscilloscopeProblem() {
         } else {
             qText.innerHTML = "Calculate the Amplitude and the Mark-to-Space ratio of the waveform.";
         }
-        qText.style.display = 'block'; // THIS brings the text back!
+        qText.style.display = 'block'; 
     }
 }
  
@@ -2266,6 +2290,13 @@ function generateAstableProblem() {
     // 1. UI RESET
     hideAllInputGroups();
     
+    // ---> THE FIX: Turn the main containers back on after the wipe <---
+    const mainGroup = document.getElementById('inputGroupAstableMain'); 
+    if (mainGroup) mainGroup.style.display = 'block';
+    
+    const checkBtn = document.getElementById('checkansBtn');
+    if (checkBtn) checkBtn.style.display = 'inline-block';
+
     const solContainer = document.getElementById('solutions');
     if (solContainer) solContainer.style.display = "none"; 
     
@@ -2286,7 +2317,7 @@ function generateAstableProblem() {
     const ratioPrompt = document.getElementById('ratioInstruction');
     
     [inputAstable, inputAstableT, inputMarkSpace].forEach(el => { 
-        if(el) { el.value = ""; el.placeholder = ""; } 
+        if(el) { el.value = ""; el.placeholder = ""; el.style.backgroundColor = ""; } 
     });
     [astablePrompt, ratioPrompt].forEach(el => { if(el) el.innerHTML = ""; });
 
@@ -2307,13 +2338,14 @@ function generateAstableProblem() {
 
     // 5. CHOOSE QUESTION TYPE
     const qType = Math.floor(Math.random() * 2);
+    if (typeof currentAnswers === "undefined") currentAnswers = {};
     currentAnswers.astableQType = qType;
 
     const groupStd = document.getElementById('inputGroupAstable');
     const groupRatio = document.getElementById('inputGroupMarkSpace');
 
     if (qType === 0) {
-        if(groupStd) groupStd.style.display = "inline-block";
+        if(groupStd) groupStd.style.display = "block";
         if(groupRatio) groupRatio.style.display = "none";
         if(astablePrompt) astablePrompt.innerHTML = "(Give answer to 1 d.p.)";
         
@@ -2326,7 +2358,7 @@ function generateAstableProblem() {
         if(inputAstableT) inputAstableT.placeholder = "e.g. 20 ms";
 
     } else {
-        if(groupRatio) groupRatio.style.display = "inline-block";
+        if(groupRatio) groupRatio.style.display = "block";
         if(groupStd) groupStd.style.display = "none";
         if(ratioPrompt) ratioPrompt.innerHTML = "(Simplified fraction, e.g. 2/1)";
         
@@ -2385,7 +2417,6 @@ function generateAstableProblem() {
     if (solBox) {
         let solHTML = "";
         if (qType === 0) {
-            // UPGRADE: Added the period (T) logic alongside frequency.
             solHTML = `<strong>Formula:</strong> f = 1.44 / ((R1 + 2R2) × C) &nbsp;|&nbsp; T = 1 / f<br>`;
             solHTML += `<strong>Working:</strong> f = 1.44 / ((${R1/1000}k + 2×${R2/1000}k) × ${C_uF}μF)<br>`;
             solHTML += `<strong>Results:</strong> f = <strong>${freq.toFixed(1)} Hz</strong>, T = <strong>${period_ms.toFixed(1)} ms</strong>`;
@@ -2397,7 +2428,7 @@ function generateAstableProblem() {
         solBox.innerHTML = solHTML;
     }
 
-    // ---> NEW: 9. UNHIDE AND SET THE QUESTION TEXT <---
+    // 9. UNHIDE AND SET THE QUESTION TEXT
     const qText = document.getElementById('questionText');
     if (qText) {
         if (qType === 0) {
@@ -2405,7 +2436,7 @@ function generateAstableProblem() {
         } else {
             qText.innerHTML = "Determine the Mark-to-Space ratio of the output waveform.";
         }
-        qText.style.display = 'block'; // THIS brings the text back!
+        qText.style.display = 'block'; 
     }
 }
     
