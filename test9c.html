@@ -410,63 +410,86 @@
     /* ============================================================
        6. IPO DRAG & DROP STYLES
        ============================================================ */
-    .ipo-containers { 
-        display: flex; 
-        justify-content: space-between; 
-        margin-top: 15px; 
-        gap: 10px; 
-    }
-    .ipo-box { 
-        flex: 1; 
-        background: #f8f9fa; 
-        border: 2px solid #ccc; 
-        border-radius: 8px; 
-        padding: 10px; 
-        text-align: center; 
-    }
-    .ipo-zone { 
-        min-height: 120px; 
-        background: #fff; 
-        border: 2px dashed #aaa; 
-        border-radius: 5px; 
-        padding: 10px; 
-        display: flex; 
-        flex-direction: column; 
-        gap: 8px; 
-        transition: background 0.2s; 
-    }
-    .ipo-zone:hover { 
-        background: #e9ecef; 
-    }
-    #ipoBank { 
-    flex-direction: row; 
-    flex-wrap: wrap; 
-    justify-content: center; 
-    min-height: 60px; 
-    
-    /* ADD THIS LINE: */
-    margin-top: 5px;   /* Try 0px or even -10px if you want it very close */
-    
-    margin-bottom: 15px; 
-    background: #e2e3e5; 
-    border-style: solid; 
-}
-    .ipo-item { 
-        background: #0d6efd; 
-        color: white; 
-        padding: 8px 15px; 
-        border-radius: 20px; 
-        cursor: grab; 
-        font-weight: bold; 
-        user-select: none; 
-        font-size: 14px; 
-        text-align: center; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-    }
-    .ipo-item:active { 
-        cursor: grabbing; 
-    }
 
+/* The outer containers for Input, Process, Output */
+.ipo-containers { 
+    display: flex; 
+    justify-content: space-between; 
+    margin-top: 15px; 
+    gap: 10px; 
+}
+
+/* The individual boxes (Labels + Zones) */
+.ipo-box { 
+    flex: 1; 
+    background: #f8f9fa; 
+    border: 2px solid #ccc; 
+    border-radius: 8px; 
+    padding: 10px; 
+    text-align: center; 
+}
+
+/* The drop targets inside the boxes */
+.ipo-zone { 
+    min-height: 120px; 
+    background: #fff; 
+    border: 2px dashed #aaa; 
+    border-radius: 5px; 
+    padding: 10px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+    transition: background 0.2s; 
+}
+
+.ipo-zone:hover { 
+    background: #e9ecef; 
+}
+
+/* THE BANK: Updated to 3-column / 2-row Grid */
+#ipoBank { 
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important; 
+    grid-template-rows: repeat(2, auto) !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    min-height: 120px !important;
+    align-content: start !important;
+    background: #e2e3e5; 
+    border: 2px solid #ced4da; 
+    border-radius: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+/* DRAGGABLE ITEMS: Shared styles for .ipo-item and .ipo-component */
+.ipo-item, #ipoBank .ipo-component { 
+    background: #0d6efd; 
+    color: white; 
+    font-weight: bold; 
+    text-align: center;
+    border-radius: 20px; 
+    cursor: grab; 
+    user-select: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    
+    /* Grid-Safe Sizing */
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    
+    /* Text Handling */
+    font-size: 11px !important; 
+    padding: 8px 2px !important;
+    white-space: nowrap !important; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ipo-item:active { 
+    cursor: grabbing; 
+}
     /* ============================================================
        7. MODALS
        ============================================================ */
@@ -649,32 +672,6 @@
            RIGHT PANEL: Quiz & Interaction Interface  
            ==========================================  -->
 <div class="right-panel">
-    <style>
-        /* FORCE 3 COLUMNS / 2 ROWS FOR IPO */
-        #ipoBank {
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important; 
-            grid-template-rows: repeat(2, auto) !important;
-            gap: 8px !important;
-            padding: 10px !important;
-            min-height: 120px !important;
-            align-content: start !important;
-        }
-
-        #ipoBank .ipo-component {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
-            text-align: center;
-            font-size: 11px !important;
-            padding: 8px 2px !important;
-            white-space: nowrap !important;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    </style>
-
     <div class="quiz-section" style="display: flex; flex-direction: column; height: 100%; min-height: 650px; box-sizing: border-box; padding: 15px;">
         
         <div class="quiz-header" style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 15px; margin-bottom: 15px;">
@@ -685,72 +682,73 @@
             </div>
         </div>
 
-        <div style="flex: 0 0 auto; display: flex; gap: 10px; margin-bottom: 20px;">
+        <div style="flex: 0 0 auto; display: flex; gap: 10px; margin-bottom: 15px;">
             <button id="dataSheetBtn" class="btn-secondary" onclick="openDataSheet()" style="margin: 0; padding: 10px; font-size: 14px; flex: 1;">📖 Data Sheet</button>
             <button id="showsolutionsBtn" class="btn-red" onclick="toggleSolutions()" style="margin: 0; padding: 10px; font-size: 14px; flex: 1;">🛟 Help</button>
         </div>
 
         <div id="scrollableArea" style="flex: 1; overflow-y: auto; padding-right: 5px; min-height: 0;">
-            <div id="questionText" style="font-weight: bold; margin-bottom: 20px; color: #333; text-align: left; min-height: 24px;"></div>
+            <div id="questionText" style="font-weight: bold; margin-bottom: 15px; color: #333; text-align: left; min-height: 24px;"></div>
                 
             <div class="input-area" id="inputArea">
                 <div class="input-group" id="inputGroupV" style="display:none; align-items: center; margin-bottom: 10px;">
-                    <label id="labelV" for="inputV" style="min-width: 80px; font-weight: bold; font-size: 1.1em;"></label>
+                    <label id="labelV" style="min-width: 80px; font-weight: bold; font-size: 1.1em;"></label>
                     <input type="text" id="inputV" placeholder="e.g. 10 mV" style="width: 140px; height: 38px; margin-left: 5px;">
                 </div>
                 <div class="input-group" id="inputGroupI" style="display:none; align-items: center; margin-bottom: 10px;">
-                    <label id="labelI" for="inputI" style="min-width: 80px; font-weight: bold; font-size: 1.1em;"></label>
+                    <label id="labelI" style="min-width: 80px; font-weight: bold; font-size: 1.1em;"></label>
                     <input type="text" id="inputI" placeholder="e.g. 5 mA" style="width: 140px; height: 38px; margin-left: 5px;">
                 </div>
 
-                <div id="inputGroupZener" class="input-group" style="display:none; width: 100%;">
+                <div id="inputGroupZener" style="display:none; width: 100%;">
                     <div id="zenerClosedQuestions" style="display:none; margin-bottom: 10px;">
                         <p style="font-weight: bold; margin-bottom: 8px; font-size: 1.1em;">Switch S is CLOSED:</p>
                         <div style="margin-bottom: 6px; display: flex; align-items: center;">
-                            <label style="color: #E64097 !important; font-weight: bold !important; font-size: 1.1em !important; min-width: 80px;">I<sub>L</sub> =</label>
-                            <input type="text" id="zenerQ_IL" placeholder="e.g. 15.5 mA" style="width: 140px; height: 38px; padding: 8px; margin-left: 5px;">
+                            <label style="color: #E64097 !important; font-weight: bold; font-size: 1.1em; min-width: 80px;">I<sub>L</sub> =</label>
+                            <input type="text" id="zenerQ_IL" placeholder="e.g. 15.5 mA" style="width: 140px; height: 38px; margin-left: 5px;">
                         </div>
                         <div style="display: flex; align-items: center;">
-                            <label style="color: #E64097 !important; font-weight: bold !important; font-size: 1.1em !important; min-width: 80px;">V<sub>L</sub> =</label>
-                            <input type="text" id="zenerQ_VL" placeholder="e.g. 4.5 V" style="width: 140px; height: 38px; padding: 8px; margin-left: 5px;">
+                            <label style="color: #E64097 !important; font-weight: bold; font-size: 1.1em; min-width: 80px;">V<sub>L</sub> =</label>
+                            <input type="text" id="zenerQ_VL" placeholder="e.g. 4.5 V" style="width: 140px; height: 38px; margin-left: 5px;">
                         </div>
                     </div>
                     <div id="zenerOpenQuestions" style="display:none;">
                         <p style="font-weight: bold; margin-bottom: 8px; font-size: 1.1em;">Switch S is OPEN:</p>
                         <div style="margin-bottom: 6px; display: flex; align-items: center;">
-                            <label style="color: #E64097 !important; font-weight: bold !important; font-size: 1.1em !important; min-width: 80px;">I<sub>Z</sub> =</label>
-                            <input type="text" id="zenerQ_IZ" placeholder="e.g. 200 mA" style="width: 140px; height: 38px; padding: 8px; margin-left: 5px;">
+                            <label style="color: #E64097 !important; font-weight: bold; font-size: 1.1em; min-width: 80px;">I<sub>Z</sub> =</label>
+                            <input type="text" id="zenerQ_IZ" placeholder="e.g. 200 mA" style="width: 140px; height: 38px; margin-left: 5px;">
                         </div>
                         <div style="display: flex; align-items: center;">
-                            <label style="color: #E64097 !important; font-weight: bold !important; font-size: 1.1em !important; min-width: 80px;">P<sub>Z</sub> =</label>
-                            <input type="text" id="zenerQ_PZ" placeholder="e.g. 50 mW" style="width: 140px; height: 38px; padding: 8px; margin-left: 5px;">
+                            <label style="color: #E64097 !important; font-weight: bold; font-size: 1.1em; min-width: 80px;">P<sub>Z</sub> =</label>
+                            <input type="text" id="zenerQ_PZ" placeholder="e.g. 50 mW" style="width: 140px; height: 38px; margin-left: 5px;">
                         </div>
                     </div>
                 </div>
 
                 <div id="inputGroupIPOSort" style="display:none; width: 100%; margin-top: 15px;">
-                    <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" style="background: #f1f3f5; border: 2px solid #ced4da; border-radius: 8px;"></div>
+                    <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        </div>
                 </div>
 
                 <div id="inputGroupColorVal" style="display: none; justify-content: center; align-items: center; gap: 5px; margin-top: 15px;">
-                    <input type="number" id="inputResValue" placeholder="value" style="width: 120px;">
+                    <input type="number" id="inputResValue" placeholder="value" style="width: 110px;">
                     <span style="font-weight:bold; font-size: 1.2em;">Ω ±</span>
-                    <input type="number" id="inputResTol" placeholder="tol" style="width: 80px;">
+                    <input type="number" id="inputResTol" placeholder="tol" style="width: 70px;">
                     <span style="font-weight:bold; font-size: 1.2em;">%</span>
                 </div>
             </div>
         </div>
 
         <div style="flex: 0 0 auto; margin-top: auto; padding-top: 10px; border-top: 1px solid #eee;">
-            <div id="feedback" style="font-weight: bold; margin-bottom: 6px; text-align: center; min-height: 20px;"></div>
+            <div id="feedback" style="font-weight: bold; margin-bottom: 8px; text-align: center; min-height: 20px;"></div>
             
-            <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="width: 100%; margin-bottom: 8px; padding: 12px; font-size: 18px;">🎯 Check Answers</button>
+            <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="width: 100%; margin-bottom: 10px; padding: 12px; font-size: 18px;">🎯 Check Answers</button>
             
             <div style="display: flex; gap: 8px; width: 100%;">
                 <button class="btn-black" onclick="handleGenerateClick()" style="flex: 1; padding: 10px 5px;">➕ New Problem</button>
-                <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; padding: 10px 5px;" onclick="generateGrade9DividerProblem()">🚀 Grade 9</button>
-                <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; padding: 10px 5px;" onclick="generateGrade9Resistance()">🚀 Grade 9</button>
-                <button id="grade9ZenerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; padding: 10px 5px;" onclick="generateGrade9ZenerProblem()">🚀 Grade 9</button>
+                <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1;" onclick="generateGrade9DividerProblem()">🚀 Grade 9</button>
+                <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1;" onclick="generateGrade9Resistance()">🚀 Grade 9</button>
+                <button id="grade9ZenerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1;" onclick="generateGrade9ZenerProblem()">🚀 Grade 9</button>
             </div>
 
             <div id="solutions" class="solutions" style="display: none; margin-top: 10px; padding: 12px; background-color: #f8f9fa; border-left: 4px solid #E64097;">
