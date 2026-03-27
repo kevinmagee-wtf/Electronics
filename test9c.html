@@ -650,25 +650,28 @@
            ==========================================  -->
 <div class="right-panel">
     <style>
-        /* Force IPO buttons into a 3-column, 2-row grid */
-        #ipoBank .ipo-component {
-            width: calc(33.33% - 10px) !important; /* Forces exactly 3 per row */
-            margin: 0 !important;
-            box-sizing: border-box !important;
-            text-align: center;
-            font-size: 13px; /* Slightly smaller text to ensure they fit side-by-side */
-            padding: 8px 2px;
-        }
-        
-        #ipoBank {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            justify-content: center !important;
-            gap: 8px !important;
-            align-content: flex-start !important;
-            min-height: 120px;
-        }
-    </style>
+    /* Force IPO buttons into 2 rows of 3 columns */
+    #ipoBank .ipo-component {
+        width: calc(31% - 5px) !important; /* Forces exactly 3 per row */
+        min-width: 85px !important;       /* Prevents them from getting too squashed */
+        margin: 2px !important;
+        box-sizing: border-box !important;
+        text-align: center;
+        font-size: 12px !important;       /* Smaller text ensures long words fit in 3 columns */
+        padding: 6px 2px !important;
+        display: inline-block;
+    }
+    
+    #ipoBank {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        align-content: flex-start !important;
+        gap: 6px !important;
+        min-height: 110px !important;
+        padding: 8px !important;
+    }
+</style>
 
     <div class="quiz-section" style="display: flex; flex-direction: column; height: 100%; min-height: 600px; box-sizing: border-box;">
         
