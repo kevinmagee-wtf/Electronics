@@ -630,13 +630,14 @@
     MAIN APPLICATION AREA                      
     ========================================== -->
     
-<div id="contentArea" style="display:none;">
-    <div class="main-layout">
+        <div id="contentArea" style="display:none;">
+            <div class="main-layout">
         
     <!--    ==========================================
             LEFT PANEL: Circuit Visuals                
             ========================================== -->
-       <div class="left-panel">
+        
+    <div class="left-panel">
             
             <div class="circuit-container" id="circuitContainer">
                 <canvas id="circuitCanvas" width="600" height="450"></canvas>
@@ -700,6 +701,11 @@
                     <input type="text" id="inputI" placeholder="e.g. 5 mA" style="width: 130px; height: 36px; margin-left: 5px;">
                 </div>
 
+                <div class="input-group" id="inputGroupMonostable" style="display:none; align-items: center; margin-bottom: 8px;">
+                    <label id="labelMonostable" style="min-width: 60px; font-weight: bold; font-size: 1.1em; color: #E64097 !important;"></label>
+                    <input type="text" id="inputMonostable" style="width: 130px; height: 36px; margin-left: 5px;">
+                </div>
+
                 <div id="inputGroupZener" style="display:none; width: 100%;">
                     <div id="zenerClosedQuestions" style="display:none; margin-bottom: 8px;">
                         <p style="font-weight: bold; margin-bottom: 5px; font-size: 1em;">Switch S is CLOSED:</p>
@@ -721,6 +727,31 @@
                         <div style="display: flex; align-items: center;">
                             <label style="color: #E64097 !important; font-weight: bold; min-width: 60px; font-size: 1.1em;">P<sub>Z</sub> =</label>
                             <input type="text" id="zenerQ_PZ" placeholder="e.g. 50 mW" style="width: 130px; height: 36px; margin-left: 5px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="inputGroupGrade9Zener" style="display:none; width: 100%;">
+                    <div id="g9ZenerClosed" style="display:none; margin-bottom: 8px;">
+                        <p style="font-weight: bold; margin-bottom: 5px; font-size: 1em;">Grade 9 - Switch S is CLOSED:</p>
+                        <div style="margin-bottom: 4px; display: flex; align-items: center;">
+                            <label style="color: #E64097 !important; font-weight: bold; min-width: 80px; font-size: 1em;">Max I<sub>L</sub>:</label>
+                            <input type="text" id="g9IL" style="width: 130px; height: 36px; margin-left: 5px;">
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <label style="color: #E64097 !important; font-weight: bold; min-width: 80px; font-size: 1em;">I<sub>Z</sub> =</label>
+                            <input type="text" id="g9IZ" style="width: 130px; height: 36px; margin-left: 5px;">
+                        </div>
+                    </div>
+                    <div id="g9ZenerOpen" style="display:none;">
+                        <p style="font-weight: bold; margin-bottom: 5px; font-size: 1em;">Grade 9 - Switch S is OPEN:</p>
+                        <div style="margin-bottom: 4px; display: flex; align-items: center;">
+                            <label style="color: #E64097 !important; font-weight: bold; min-width: 80px; font-size: 1em;">Max P<sub>Z</sub>:</label>
+                            <input type="text" id="g9PZ" style="width: 130px; height: 36px; margin-left: 5px;">
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <label style="color: #E64097 !important; font-weight: bold; min-width: 80px; font-size: 1em;">Safe Rating:</label>
+                            <input type="text" id="g9Rating" style="width: 130px; height: 36px; margin-left: 5px;">
                         </div>
                     </div>
                 </div>
