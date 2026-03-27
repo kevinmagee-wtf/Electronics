@@ -691,9 +691,9 @@
             </div>
         </div>
 
-        <div id="questionText" style="font-weight: bold; margin-bottom: 5px; color: #333; text-align: left; min-height: 24px;"></div>
+        <div id="questionText" style="font-weight: bold; margin-bottom: 20px; color: #333; text-align: left; min-height: 24px;"></div>
         
-        <div id="instructionPrompt" class="instruction-text" style="text-align: left; margin-bottom: 15px; font-size: 14px; color: #666; font-style: italic; display: none;"></div>
+        <div id="instructionPrompt" class="instruction-text" style="color: #666; font-style: italic; margin-bottom: 15px; display: none;"></div>
         
         <div class="input-area">
 
@@ -751,8 +751,7 @@
 
             <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%; margin-top: 10px;">
                 <label for="inputMarkSpace" style="font-weight: bold;">Ratio = </label>
-                <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;">
-                <div id="ratioInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
+                <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
 
             <div id="oscilloscopeInputs" style="display:none;">
@@ -812,14 +811,14 @@
                 <input type="number" id="inputResTol" placeholder="Tol" style="width: 60px;"> %
             </div>
 
-            <div id="inputGroupColorNames" class="input-group" style="display:none; flex-direction: column; gap: 15px; margin-top: 15px; align-items: center;">
-                <div style="display: flex; gap: 20px; align-items: center;">
-                    <label for="inputBand1" style="font-weight: bold;">Band 1:</label> <input type="text" id="inputBand1" style="width: 90px;" placeholder="e.g. red">
-                    <label for="inputBand2" style="font-weight: bold;">Band 2:</label> <input type="text" id="inputBand2" style="width: 90px;" placeholder="e.g. grey">
+            <div id="inputGroupColorNames" class="input-group" style="display:none; flex-direction: column; gap: 10px; margin-top: 15px; align-items: center;">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <label for="inputBand1" style="font-weight: bold;">Band 1:</label> <input type="text" id="inputBand1" style="width: 80px; padding: 4px;" placeholder="e.g. red">
+                    <label for="inputBand2" style="font-weight: bold;">Band 2:</label> <input type="text" id="inputBand2" style="width: 80px; padding: 4px;" placeholder="e.g. grey">
                 </div>
-                <div style="display: flex; gap: 20px; align-items: center;">
-                    <label for="inputBand3" style="font-weight: bold;">Band 3:</label> <input type="text" id="inputBand3" style="width: 90px;" placeholder="e.g. blue">
-                    <label for="inputBandTol" style="font-weight: bold;">Band 4:</label> <input type="text" id="inputBandTol" style="width: 90px;" placeholder="e.g. gold">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <label for="inputBand3" style="font-weight: bold;">Band 3:</label> <input type="text" id="inputBand3" style="width: 80px; padding: 4px;" placeholder="e.g. blue">
+                    <label for="inputBandTol" style="font-weight: bold;">Band 4:</label> <input type="text" id="inputBandTol" style="width: 80px; padding: 4px;" placeholder="e.g. gold">
                 </div>
             </div>
 
