@@ -673,203 +673,158 @@
            RIGHT PANEL: Quiz & Interaction Interface  
            ==========================================  -->
 <div class="right-panel">
-    <div class="quiz-section" style="background-color: #fffafc; padding: 20px; border-radius: 8px; border: 1px solid #f4cedc; min-height: 100%;">
+    <div class="quiz-section">
         
-        <div style="margin-bottom: 15px;">
-            <div id="scoreDisplay" style="display: inline-block; border: 2px solid #E64097; color: #E64097; background-color: white; font-weight: bold; font-size: 1.2em; padding: 8px 20px; border-radius: 6px; margin-bottom: 15px;">
-                Score: 0 / 0
-            </div>
-            
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button id="downloadBtn" onclick="openSubmissionModal()" style="background-color: #448b54; color: white; border: none; border-radius: 4px; padding: 8px 15px; font-weight: bold; font-size: 0.9em; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+        <div class="quiz-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 15px; margin-bottom: 15px;">
+            <div class="scoreboard" id="scoreDisplay" style="margin: 0;">Score: 0 / 0</div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 120px;">
                     ⬇️ Download
                 </button>
-                <button id="dataSheetBtn" onclick="openDataSheet()" style="background-color: #6c757d; color: white; border: none; border-radius: 4px; padding: 8px 15px; font-weight: bold; font-size: 0.9em; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <button id="dataSheetBtn" class="btn-secondary" onclick="openDataSheet()" style="margin: 0; padding: 8px 10px; font-size: 14px; width: 120px;">
                     📖 Data Sheet
                 </button>
-                <button id="resetBtn" onclick="resetScore()" style="background-color: #f58231; color: white; border: none; border-radius: 4px; padding: 8px 15px; font-weight: bold; font-size: 0.9em; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <button id="resetBtn" onclick="resetScore()" style="background-color: #f97316; color: white; border: none; border-radius: 5px; margin: 0; padding: 8px 10px; font-size: 14px; width: 120px; cursor: pointer;">
                     🔄 Reset
                 </button>
             </div>
         </div>
 
-        <hr style="border: none; border-top: 2px solid #f4c0d6; margin-bottom: 15px;">
-
-        <div id="questionText" style="font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 5px;"></div>
-        <div id="instructionPrompt" style="color: #666; font-style: italic; margin-bottom: 25px; font-size: 0.95em;"></div>
+        <div id="questionText" style="font-weight: bold; margin-bottom: 20px; color: #333; text-align: left; min-height: 24px;"></div>
         
-        <div class="input-area" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
+        <div class="input-area">
 
-            <div class="input-group" id="inputGroupV" style="display:none; align-items: center; gap: 10px;">
-                <label id="labelV" for="inputV" style="color: #E64097; font-weight: bold; font-size: 1.1em; width: 80px; text-align: right;">V<sub>supply</sub>=</label>
-                <input type="text" id="inputV" placeholder="e.g. 5 V" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px 12px; font-style: italic; width: 120px;">
+            <div class="input-group" id="inputGroupV" style="display:none; align-items: center; margin-bottom: 10px;">
+                <label id="labelV" for="inputV">V = </label>
+                <input type="text" id="inputV" placeholder="e.g. 10 mV">
+                <span id="unitSymbolV" style="font-size: 20px; font-weight: bold; margin-left: 8px; color: #333;"></span>
             </div>
 
-            <div class="input-group" id="inputGroupI" style="display:none; align-items: center; gap: 10px;">
-                <label id="labelI" for="inputI" style="color: #E64097; font-weight: bold; font-size: 1.1em; width: 80px; text-align: right;">I<sub>1</sub>=</label>
-                <input type="text" id="inputI" placeholder="e.g. 2 mA" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px 12px; font-style: italic; width: 120px;">
+            <div class="input-group" id="inputGroupI" style="display:none; align-items: center;">
+                <label id="labelI" for="inputI">I = </label>
+                <input type="text" id="inputI" placeholder="e.g. 5 mA">
+                <span id="unitSymbolI" style="font-size: 20px; font-weight: bold; margin-left: 8px; color: #333;"></span>
             </div>
 
-            <div class="input-group" id="inputGroupR" style="display:none; align-items: center; gap: 10px;">
-                <label id="labelR" for="inputR" style="color: #E64097; font-weight: bold; font-size: 1.1em; width: 80px; text-align: right;">R<sub>T</sub>=</label>
-                <input type="text" id="inputR" placeholder="e.g. 1.2 k" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px 12px; font-style: italic; width: 120px;">
-                <span id="unitSymbolR" style="font-size: 1.1em; font-weight: bold; color: #E64097;">&Omega;</span>
+            <div class="input-group" id="inputGroupR" style="display:none; align-items: center; gap: 5px;">
+                <label id="labelR" for="inputR">R<sub style="position: relative; top: 6px; font-size: 0.7em;">TOTAL</sub> = </label>
+                <input type="text" id="inputR" placeholder="e.g. 1.2k" style="height: 45px; width: 120px; font-size: 18px; padding: 10px;">
+                <span id="unitSymbolR" style="font-size: 20px; font-weight: bold; margin-left: 5px; color: #333;">&Omega;</span>
             </div>
 
-            <div id="inputGroupZener" class="input-group" style="display:none; text-align: left; width: 100%;">
-                <div id="zenerClosedQuestions" style="display:none; margin-bottom: 10px;">
-                    <div style="display: flex; align-items: center; margin-bottom: 15px; gap: 10px;">
-                        <label for="zenerQ_IL" style="color: #E64097; font-weight: bold; margin: 0; width: 160px; text-align: right;">Max Load Current (I<sub>L</sub>) =</label>
-                        <input type="text" id="zenerQ_IL" placeholder="e.g. 15.2 mA" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <label for="zenerQ_VL" style="color: #E64097; font-weight: bold; margin: 0; width: 160px; text-align: right;">Load Voltage (V<sub>L</sub>) =</label>
-                        <input type="text" id="zenerQ_VL" placeholder="e.g. 12.0 V" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
-                    </div>
-                </div>
-
-                <div id="zenerOpenQuestions" style="display:none;">
-                    <div style="display: flex; align-items: center; margin-bottom: 15px; gap: 10px;">
-                        <label for="zenerQ_IZ" style="color: #E64097; font-weight: bold; margin: 0; width: 160px; text-align: right;">Zener Current (I<sub>Z</sub>) =</label>
-                        <input type="text" id="zenerQ_IZ" placeholder="e.g. 24.5 mA" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <label for="zenerQ_PZ" style="color: #E64097; font-weight: bold; margin: 0; width: 160px; text-align: right;">Zener Power (P<sub>Z</sub>) =</label>
-                        <input type="text" id="zenerQ_PZ" placeholder="e.g. 150.0 mW" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-group" id="inputGroupColorVal" style="display: none; align-items: center; gap: 8px;">
-                <input type="number" id="inputResValue" placeholder="value" style="width: 100px; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 8px;" />
-                <span style="font-weight:bold; font-size: 1.2em; color: #E64097;">Ω</span>
-                <span style="margin: 0 5px; font-weight:bold; font-size: 1.2em; color: #E64097;">&plusmn;</span>
-                <input type="number" id="inputResTol" placeholder="tol" style="width: 70px; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 8px;" />
-                <span style="font-weight:bold; font-size: 1.2em; color: #E64097;">%</span>
-            </div>
-
-            <div id="inputGroupColorNames" class="input-group" style="display:none; flex-direction: column; gap: 15px;">
-                <div style="display: flex; gap: 20px; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <label for="inputBand1" style="color: #E64097; font-weight: bold; width: 65px; text-align: right;">Band 1:</label>
-                        <input type="text" id="inputBand1" placeholder="e.g. red" style="width: 90px; border: 1px solid #ccc; border-radius: 4px; padding: 6px;">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <label for="inputBand2" style="color: #E64097; font-weight: bold; width: 65px; text-align: right;">Band 2:</label>
-                        <input type="text" id="inputBand2" placeholder="e.g. grey" style="width: 90px; border: 1px solid #ccc; border-radius: 4px; padding: 6px;">
-                    </div>
-                </div>
-                <div style="display: flex; gap: 20px; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <label for="inputBand3" style="color: #E64097; font-weight: bold; width: 65px; text-align: right;">Band 3:</label>
-                        <input type="text" id="inputBand3" placeholder="e.g. blue" style="width: 90px; border: 1px solid #ccc; border-radius: 4px; padding: 6px;">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <label for="inputBandTol" style="color: #E64097; font-weight: bold; width: 65px; text-align: right;">Band 4:</label>
-                        <input type="text" id="inputBandTol" placeholder="e.g. gold" style="width: 90px; border: 1px solid #ccc; border-radius: 4px; padding: 6px;">
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-group" id="inputGroupMonostable" style="display:none; align-items: center; gap: 10px;">
-                <label id="labelMonostable" for="inputMonostable" style="color: #E64097; font-weight: bold; width: 80px; text-align: right;">T = </label>
-                <input type="text" id="inputMonostable" style="width: 120px; border: 1px solid #ccc; border-radius: 4px; padding: 8px;" placeholder="e.g. 1.5 s">
+            <div class="input-group" id="inputGroupMonostable" style="display:none;">
+                <label id="labelMonostable" for="inputMonostable">T = </label>
+                <input type="text" id="inputMonostable" style="width: 140px;" placeholder="e.g. 1.5 s">
+                <div id="monostableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;"></div>
             </div>
                 
-            <div class="input-group" id="inputGroupAstable" style="display:none; flex-direction: column; gap: 10px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <label id="labelAstable" for="inputAstable" style="color: #E64097; font-weight: bold; width: 100px; text-align: right;">Frequency = </label>
-                    <input type="text" id="inputAstable" placeholder="e.g. 50 Hz" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
+            <div class="input-group" id="inputGroupAstable" style="display:none; flex-direction: column; gap: 10px; width: 100%;">
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <label for="inputAstable">Freq = </label>
+                        <input type="text" id="inputAstable" placeholder="e.g. 50 Hz" style="width: 100px;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <label for="inputAstableT">T = </label>
+                        <input type="text" id="inputAstableT" placeholder="e.g. 20 ms" style="width: 100px;">
+                    </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <label id="labelAstableT" for="inputAstableT" style="color: #E64097; font-weight: bold; width: 100px; text-align: right;">Period = </label>
-                    <input type="text" id="inputAstableT" placeholder="e.g. 20 ms" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <label for="inputAstableMark">Mark = </label>
+                        <input type="text" id="inputAstableMark" placeholder="High time" style="width: 100px;">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <label for="inputAstableSpace">Space = </label>
+                        <input type="text" id="inputAstableSpace" placeholder="Low time" style="width: 100px;">
+                    </div>
                 </div>
-                <div id="advancedAstable" style="display:none; gap:10px; flex-wrap: wrap; margin-top: 5px;">
-                     <input type="text" id="inputAstableMark" placeholder="Mark" style="width: 80px; border: 1px solid #ccc; border-radius: 4px; padding: 6px;">
-                     <input type="text" id="inputAstableSpace" placeholder="Space" style="width: 80px; border: 1px solid #ccc; border-radius: 4px; padding: 6px;">
-                     <input type="text" id="inputAstableDuty" placeholder="Duty %" style="width: 80px; border: 1px solid #ccc; border-radius: 4px; padding: 6px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    <label for="inputAstableDuty">Duty Cycle = </label>
+                    <input type="text" id="inputAstableDuty" placeholder="e.g. 60%" style="width: 80px;">
+                </div>
+                <div id="astableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; text-align: center;"></div>
+            </div>
+
+            <div id="oscilloscopeInputs" style="display:none;">
+                <div class="input-group" id="inputGroupOscAmp" style="display:none;"><label>V Peak-to-Peak = </label><input type="text" id="inputOscAmp"></div>
+                <div class="input-group" id="inputGroupOscMark" style="display:none;"><label>Mark Time = </label><input type="text" id="inputOscMark"></div>
+                <div class="input-group" id="inputGroupOscSpace" style="display:none;"><label>Space Time = </label><input type="text" id="inputOscSpace"></div>
+                <div class="input-group" id="inputGroupOscPeriod" style="display:none;"><label>Time Period = </label><input type="text" id="inputOscPeriod"></div>
+                <div class="input-group" id="inputGroupOscFreq" style="display:none;"><label>Frequency = </label><input type="text" id="inputOscFreq"></div>
+            </div>
+
+            <div id="inputGroupZener" class="input-group" style="display:none; flex-direction: column;">
+                <div id="zenerClosedQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
+                    <p style="font-weight: bold;">Switch CLOSED:</p>
+                    <label>1. Max Load Current (I<sub>L</sub>):</label> <input type="text" id="zenerQ_IL" placeholder="mA"><br><br>
+                    <label>2. Load Voltage (V<sub>L</sub>):</label> <input type="text" id="zenerQ_VL" placeholder="V">
+                </div>
+                <div id="zenerOpenQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px;">
+                    <p style="font-weight: bold;">Switch OPEN:</p>
+                    <label>1. Zener Current (I<sub>Z</sub>):</label> <input type="text" id="zenerQ_IZ" placeholder="mA"><br><br>
+                    <label>2. Zener Power (P<sub>Z</sub>):</label> <input type="text" id="zenerQ_PZ" placeholder="mW">
                 </div>
             </div>
 
-            <div id="oscilloscopeInputs" style="display:none; flex-direction: column; gap: 10px;">
-                <div class="input-group" id="inputGroupOscAmp" style="display:none; align-items: center; gap: 10px;">
-                    <label id="labelOscAmp" for="inputOscAmp" style="color: #E64097; font-weight: bold; width: 100px; text-align: right;">Amplitude = </label>
-                    <input type="text" id="inputOscAmp" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
-                </div>
-                <div class="input-group" id="inputGroupOscPeriod" style="display:none; align-items: center; gap: 10px;">
-                    <label id="labelOscPeriod" for="inputOscPeriod" style="color: #E64097; font-weight: bold; width: 100px; text-align: right;">Time Period = </label>
-                    <input type="text" id="inputOscPeriod" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
-                </div>
-                <div class="input-group" id="inputGroupOscFreq" style="display:none; align-items: center; gap: 10px;">
-                    <label id="labelOscFreq" for="inputOscFreq" style="color: #E64097; font-weight: bold; width: 100px; text-align: right;">Frequency = </label>
-                    <input type="text" id="inputOscFreq" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
+            <div id="inputGroupIPOSort" class="input-group" style="display:none; flex-direction: column; width: 100%;">
+                <div style="font-weight: bold; color: #444; margin-bottom: 10px; text-align: center;">Drag components into the correct stage:</div>
+                <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 80px; background: #f1f3f5; border: 2px dashed #ced4da; display: flex; flex-wrap: wrap; justify-content: center; padding: 10px; gap: 10px; margin-bottom: 20px;"></div>
+                <div class="ipo-containers" style="display: flex; justify-content: space-between; gap: 10px; width: 100%;">
+                    <div class="ipo-box" style="flex: 1; border: 2px solid #dee2e6; border-radius: 8px;">
+                        <h3 style="background: #e7f1ff; font-size: 0.9em; margin: 0; padding: 5px;">INPUT</h3>
+                        <div id="zone-input" class="ipo-zone" data-type="input" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 150px; padding: 10px;"></div>
+                    </div>
+                    <div class="ipo-box" style="flex: 1; border: 2px solid #dee2e6; border-radius: 8px;">
+                        <h3 style="background: #fff3cd; font-size: 0.9em; margin: 0; padding: 5px;">PROCESS</h3>
+                        <div id="zone-process" class="ipo-zone" data-type="process" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 150px; padding: 10px;"></div>
+                    </div>
+                    <div class="ipo-box" style="flex: 1; border: 2px solid #dee2e6; border-radius: 8px;">
+                        <h3 style="background: #d1e7dd; font-size: 0.9em; margin: 0; padding: 5px;">OUTPUT</h3>
+                        <div id="zone-output" class="ipo-zone" data-type="output" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 150px; padding: 10px;"></div>
+                    </div>
                 </div>
             </div>
 
             <div id="inputGroupGrade9Zener" class="input-group" style="display: none;">
                 <div id="g9ZenerClosed" style="display: none;">
-                    <div style="display: flex; align-items: center; margin-bottom: 10px; gap: 10px;">
-                        <label for="g9IL" style="color: #d4af37; font-weight: bold; width: 160px; text-align: right;">Max Load Current (I<sub>L</sub>) =</label>
-                        <input type="text" id="g9IL" placeholder="e.g. 15.2 mA" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <label for="g9IZ" style="color: #d4af37; font-weight: bold; width: 160px; text-align: right;">Zener Current (I<sub>Z</sub>) =</label>
-                        <input type="text" id="g9IZ" placeholder="e.g. 24.5 mA" style="border: 1px solid #ccc; border-radius: 4px; padding: 8px;">
-                    </div>
+                    <label>Max I<sub>L</sub>: </label> <input type="text" id="g9IL">
+                    <label>Zener I<sub>Z</sub>: </label> <input type="text" id="g9IZ">
+                </div>
+                <div id="g9ZenerOpen" style="display: none;">
+                    <label>Max P<sub>Z</sub>: </label> <input type="text" id="g9PZ">
+                    <label>Min P<sub>Z</sub> Rating: </label> <input type="text" id="g9Rating">
                 </div>
             </div>
 
-            <div id="inputGroupIPOSort" class="input-group" style="display:none; flex-direction: column; width: 100%;">
-                <div style="font-weight: bold; color: #E64097; margin-bottom: 15px; text-align: center; font-size: 1.1em;">
-                    Drag and drop components from the bank into the correct stage.
-                </div>
-                <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" 
-                     style="min-height: 80px; margin-bottom: 15px; background: #fff; border: 2px dashed #E64097; border-radius: 8px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; padding: 15px; gap: 12px;">
-                </div>
-                <div class="ipo-containers" style="display: flex; justify-content: space-between; gap: 10px; width: 100%;">
-                    <div class="ipo-box" style="flex: 1; background: #fff; border: 2px solid #dee2e6; border-radius: 8px; text-align: center;">
-                        <h3 style="margin: 0; background: #e7f1ff; color: #0c63e4; padding: 8px; font-size: 0.9em; border-bottom: 1px solid #dee2e6;">INPUT</h3>
-                        <div id="zone-input" class="ipo-zone" data-type="input" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 120px; padding: 10px; display: flex; flex-direction: column; gap: 5px;"></div>
-                    </div>
-                    <div class="ipo-box" style="flex: 1; background: #fff; border: 2px solid #dee2e6; border-radius: 8px; text-align: center;">
-                        <h3 style="margin: 0; background: #fff3cd; color: #664d03; padding: 8px; font-size: 0.9em; border-bottom: 1px solid #dee2e6;">PROCESS</h3>
-                        <div id="zone-process" class="ipo-zone" data-type="process" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 120px; padding: 10px; display: flex; flex-direction: column; gap: 5px;"></div>
-                    </div>
-                    <div class="ipo-box" style="flex: 1; background: #fff; border: 2px solid #dee2e6; border-radius: 8px; text-align: center;">
-                        <h3 style="margin: 0; background: #d1e7dd; color: #0f5132; padding: 8px; font-size: 0.9em; border-bottom: 1px solid #dee2e6;">OUTPUT</h3>
-                        <div id="zone-output" class="ipo-zone" data-type="output" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 120px; padding: 10px; display: flex; flex-direction: column; gap: 5px;"></div>
-                    </div>
-                </div>
+            <div class="input-group" id="inputGroupColorVal" style="display: none; justify-content: center; gap: 5px;">
+                <input type="number" id="inputResValue" placeholder="Value" style="width: 80px;"> Ω ± 
+                <input type="number" id="inputResTol" placeholder="Tol" style="width: 60px;"> %
             </div>
 
         </div> 
         
-        <button id="checkansBtn" onclick="checkAnswers()" style="background-color: #E64097; color: white; border: none; border-radius: 4px; padding: 12px 25px; font-weight: bold; font-size: 1em; cursor: pointer; margin-bottom: 15px;">
-            Check Answer(s)
-        </button>
-        <div id="feedback" style="font-weight: bold; min-height: 1.2em; color: #333; margin-bottom: 20px;"></div>
-            
-        <div class="controls" style="display: flex; flex-direction: column; gap: 12px;">
-            
-            <button id="grade9DividerBtn" style="background-color: #FFD700 !important; color: #000 !important; display: none; width: 100%; padding: 14px; font-weight: bold; font-size: 1.05em; border: none; border-radius: 6px; cursor: pointer;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge</button>
-            <button id="grade9ResistorBtn" style="background-color: #FFD700 !important; color: #000 !important; display: none; width: 100%; padding: 14px; font-weight: bold; font-size: 1.05em; border: none; border-radius: 6px; cursor: pointer;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge</button>
-            <button id="grade9ZenerBtn" style="background-color: #FFD700 !important; color: #000 !important; display: none; width: 100%; padding: 14px; font-weight: bold; font-size: 1.05em; border: none; border-radius: 6px; cursor: pointer;" onclick="generateGrade9ZenerProblem()">🏆 Grade 9 Challenge</button>
-
-            <button class="btn-black" onclick="handleGenerateClick()" style="background-color: #000; color: #fff; border: none; border-radius: 6px; width: 100%; padding: 14px; font-weight: bold; font-size: 1.05em; cursor: pointer;">
-                New Problem
-            </button>
-            
-            <button id="showsolutionsBtn" onclick="toggleSolutions()" style="display: none; background-color: #6c757d; color: white; border: none; border-radius: 6px; width: 100%; padding: 14px; font-weight: bold; font-size: 1.05em; cursor: pointer;">
-                Need Help? (Show Solution)
-            </button>
+        <div style="margin-top: 20px;">
+            <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 15px;">
+                <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="flex: 3; padding: 10px;">Check Answer</button>
+                <button id="showsolutionsBtn" class="btn-red" onclick="toggleSolutions()" style="flex: 1; padding: 10px;">🛟 Help</button>
+            </div>
+            <div id="solutions" class="solutions" style="display: none; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097; text-align: left;">
+                <h4 style="margin-top: 0; color: #E64097;">Step-by-Step Logic:</h4>
+                <p id="solText" style="margin: 0; color: #333; line-height: 1.5;"></p>
+            </div>
+            <div id="feedback" style="font-weight: bold; margin: 15px 0; text-align: center; min-height: 24px;"></div>
         </div>
 
-        <div id="solutions" class="solutions" style="display:none; margin-top: 20px; padding: 15px; background: #fff; border-left: 5px solid #E64097; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: left;">
-            <h3 style="margin-top: 0; font-size: 1.1em; color: #E64097;">Step-by-Step Logic</h3>
-            <p id="solText" style="line-height: 1.5; color: #444; margin-bottom: 0;"></p>
-        </div>
-
+        <div class="controls" style="padding-top: 15px; border-top: 1px solid #e0e0e0;">
+            <div style="display: flex; gap: 10px; width: 100%;">
+                <button class="btn-black" onclick="handleGenerateClick()" style="flex: 1; padding: 10px;">New Problem</button>
+                <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1;" onclick="generateGrade9DividerProblem()">🏆 Grade 9 Challenge</button>
+                <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1;" onclick="generateGrade9Resistance()">🏆 Grade 9 Challenge</button>
+                <button id="grade9ZenerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1;" onclick="generateGrade9ZenerProblem()">🏆 Grade 9 Challenge</button>
+            </div> 
+        </div> 
     </div> 
 </div>
     
