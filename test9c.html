@@ -779,28 +779,32 @@
                     </div>
                 </div>
 
-                <div id="instructionPrompt" class="instruction-text" style="text-align: center; margin-top: 15px; font-size: 18px; display: none;"></div>
+                <div id="instructionPrompt" class="instruction-text" style="text-align: center; margin-top: 5px; font-size: 16px; display: none;"></div>
             </div>
         </div>
 
-        <div style="margin-top: auto; padding-top: 15px; border-top: 1px solid #e0e0e0;">
-            <div id="feedback" style="font-weight: bold; margin-bottom: 15px; text-align: center; min-height: 24px;"></div>
+        <div style="margin-top: 5px; padding-top: 5px; border-top: none;">
+            
+            <div id="feedback" style="font-weight: bold; margin-bottom: 8px; text-align: center; min-height: 20px;"></div>
 
-            <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="width: 100%; margin-bottom: 10px; padding: 14px; font-size: 18px;">
+            <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="width: 100%; margin-bottom: 8px; padding: 12px; font-size: 18px;">
                 🎯 Check Answers
             </button>
             
-            <div style="display: flex; gap: 10px; width: 100%;">
-                <button class="btn-black" onclick="handleGenerateClick()" style="flex: 1; margin: 0; padding: 12px 5px;">➕ New Problem</button>
-                <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0;" onclick="generateGrade9DividerProblem()">🚀 Grade 9 Challenge</button>
-                <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0;" onclick="generateGrade9Resistance()">🚀 Grade 9 Challenge</button>
-                <button id="grade9ZenerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0;" onclick="generateGrade9ZenerProblem()">🚀 Grade 9 Challenge</button>
+            <div style="display: flex; gap: 8px; width: 100%;">
+                <button class="btn-black" onclick="handleGenerateClick()" style="flex: 1; margin: 0; padding: 10px 5px;">
+                    ➕ New Problem
+                </button>
+                
+                <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0; padding: 10px 5px;" onclick="generateGrade9DividerProblem()">🚀 Grade 9 Challenge</button>
+                <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0; padding: 10px 5px;" onclick="generateGrade9Resistance()">🚀 Grade 9 Challenge</button>
+                <button id="grade9ZenerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; margin: 0; padding: 10px 5px;" onclick="generateGrade9ZenerProblem()">🚀 Grade 9 Challenge</button>
             </div>
         </div>
 
-        <div id="solutions" class="solutions" style="display: none; margin-top: 15px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #E64097;">
-            <h4 style="margin-top: 0; color: #E64097; margin-bottom: 10px;">Step-by-Step Logic:</h4>
-            <p id="solText" style="margin: 0; color: #333; line-height: 1.5;"></p>
+        <div id="solutions" class="solutions" style="display: none; margin-top: 10px; padding: 12px; background-color: #f8f9fa; border-left: 4px solid #E64097;">
+            <h4 style="margin-top: 0; color: #E64097; margin-bottom: 5px;">Step-by-Step Logic:</h4>
+            <p id="solText" style="margin: 0; color: #333; line-height: 1.4; font-size: 0.95em;"></p>
         </div>
 
     </div>
