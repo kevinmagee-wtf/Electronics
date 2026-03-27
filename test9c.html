@@ -650,22 +650,23 @@
            ==========================================  -->
 <div class="right-panel">
     <style>
-        /* This forces the blue buttons into exactly 2 columns */
+        /* Force IPO buttons into a 3-column, 2-row grid */
         #ipoBank .ipo-component {
-            width: calc(50% - 12px) !important; /* Force them to take up half the width */
-            margin: 0 !important;              /* Remove extra spacing that might push a 3rd button in */
-            box-sizing: border-box !important; /* Include padding in the width calculation */
+            width: calc(33.33% - 10px) !important; /* Forces exactly 3 per row */
+            margin: 0 !important;
+            box-sizing: border-box !important;
             text-align: center;
-            font-size: 14px;                   /* Optional: keeps text from being too bulky */
+            font-size: 13px; /* Slightly smaller text to ensure they fit side-by-side */
+            padding: 8px 2px;
         }
         
-        /* This ensures the container stays neat and tidy */
         #ipoBank {
             display: flex !important;
             flex-wrap: wrap !important;
             justify-content: center !important;
-            gap: 8px !important;               /* The space between the two columns */
+            gap: 8px !important;
             align-content: flex-start !important;
+            min-height: 120px;
         }
     </style>
 
