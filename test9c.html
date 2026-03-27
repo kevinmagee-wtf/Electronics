@@ -691,7 +691,9 @@
             </div>
         </div>
 
-        <div id="questionText" style="font-weight: bold; margin-bottom: 20px; color: #333; text-align: left; min-height: 24px;"></div>
+        <div id="questionText" style="font-weight: bold; margin-bottom: 5px; color: #333; text-align: left; min-height: 24px;"></div>
+        
+        <div id="instructionPrompt" class="instruction-text" style="text-align: left; margin-bottom: 15px; font-size: 14px; color: #666; font-style: italic; display: none;"></div>
         
         <div class="input-area">
 
@@ -747,12 +749,19 @@
                 <div id="astableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; text-align: center;"></div>
             </div>
 
+            <div class="input-group" id="inputGroupMarkSpace" style="display:none; text-align: center; width: 100%; margin-top: 10px;">
+                <label for="inputMarkSpace" style="font-weight: bold;">Ratio = </label>
+                <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="height: 45px; width: 120px; font-size: 18px; text-align: center;">
+                <div id="ratioInstruction" style="color: #6c757d; font-size: 0.85em; margin-top: 5px;"></div>
+            </div>
+
             <div id="oscilloscopeInputs" style="display:none;">
                 <div class="input-group" id="inputGroupOscAmp" style="display:none;"><label>V Peak-to-Peak = </label><input type="text" id="inputOscAmp"></div>
                 <div class="input-group" id="inputGroupOscMark" style="display:none;"><label>Mark Time = </label><input type="text" id="inputOscMark"></div>
                 <div class="input-group" id="inputGroupOscSpace" style="display:none;"><label>Space Time = </label><input type="text" id="inputOscSpace"></div>
                 <div class="input-group" id="inputGroupOscPeriod" style="display:none;"><label>Time Period = </label><input type="text" id="inputOscPeriod"></div>
                 <div class="input-group" id="inputGroupOscFreq" style="display:none;"><label>Frequency = </label><input type="text" id="inputOscFreq"></div>
+                <div class="input-group" id="inputGroupOscRatio" style="display:none;"><label>Ratio = </label><input type="text" id="inputOscRatio" placeholder="e.g. 1/2"></div>
             </div>
 
             <div id="inputGroupZener" class="input-group" style="display:none; flex-direction: column;">
@@ -801,6 +810,17 @@
             <div class="input-group" id="inputGroupColorVal" style="display: none; justify-content: center; gap: 5px;">
                 <input type="number" id="inputResValue" placeholder="Value" style="width: 80px;"> Ω ± 
                 <input type="number" id="inputResTol" placeholder="Tol" style="width: 60px;"> %
+            </div>
+
+            <div id="inputGroupColorNames" class="input-group" style="display:none; flex-direction: column; gap: 15px; margin-top: 15px; align-items: center;">
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <label for="inputBand1" style="font-weight: bold;">Band 1:</label> <input type="text" id="inputBand1" style="width: 90px;" placeholder="e.g. red">
+                    <label for="inputBand2" style="font-weight: bold;">Band 2:</label> <input type="text" id="inputBand2" style="width: 90px;" placeholder="e.g. grey">
+                </div>
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <label for="inputBand3" style="font-weight: bold;">Band 3:</label> <input type="text" id="inputBand3" style="width: 90px;" placeholder="e.g. blue">
+                    <label for="inputBandTol" style="font-weight: bold;">Band 4:</label> <input type="text" id="inputBandTol" style="width: 90px;" placeholder="e.g. gold">
+                </div>
             </div>
 
         </div> 
