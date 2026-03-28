@@ -774,8 +774,8 @@
                 </div>
 
                 <div id="inputGroupIPOSort" class="input-group" style="display:none; width: 100%; margin-top: 10px; flex: 0 0 auto;">
-                    <div style="display: flex; flex-direction: column; width: 100%; background-color: #ffffff; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e9ecef; box-sizing: border-box; height: max-content;">
-                        <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 40px !important; height: max-content !important; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; padding: 0; gap: 10px; box-sizing: border-box;">
+                    <div style="background-color: #ffffff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e9ecef; box-sizing: border-box; display: block; height: auto !important; min-height: 0 !important;">
+                        <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; min-height: 0 !important; height: auto !important; padding: 0 !important; margin: 0 !important;">
                         </div>
                     </div>
                 </div>
@@ -3169,7 +3169,7 @@ function generateGrade9ZenerProblem() {
 // IPO SORT GENERATOR & LOGIC
 // ==========================================
 const ipoDictionary = {
-    "LDR": "input", "Temperature Sensing Unit": "input", "Switch": "input", "Microphone": "input", "Light Sensing Unit": "input",
+    "LDR": "input", "Temp Sensor": "input", "Switch": "input", "Microphone": "input", "Light Sensor": "input",
     "Microcontroller": "process", "Logic Gate": "process", "Comparator": "process", "Op-Amp": "process", "Astable": "process", "Monostable": "process", "Counter": "process", "Transistor": "process", "MOSFET": "process",
     "LED": "output", "Motor": "output", "Buzzer": "output", "Relay": "output", "Speaker": "output", "7-Seg Display": "output"
 };
