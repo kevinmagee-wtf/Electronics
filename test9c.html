@@ -746,37 +746,37 @@
                     <div id="astableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; text-align: center;"></div>
                 </div>
 
-                    <div class="input-group" id="inputGroupMarkSpace" style="display:none; justify-content: flex-start; padding-left: 30px; width: 100%; margin-top: 10px; box-sizing: border-box;">
-                        <label for="inputMarkSpace" style="font-weight: bold; margin-right: 10px;">Ratio = </label>
-                        <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                    </div>
-                    
-                    <div id="oscilloscopeInputs" style="display:none; width: 100%; padding-left: 30px; box-sizing: border-box;">
-                        <div class="input-group" id="inputGroupOscAmp" style="display:none; justify-content: flex-start; margin-bottom: 10px;">
-                            <label style="margin-right: 10px;">Amplitude = </label>
-                            <input type="text" id="inputOscAmp" style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                        <div class="input-group" id="inputGroupOscMark" style="display:none; justify-content: flex-start; margin-bottom: 10px;">
-                            <label style="margin-right: 10px;">Mark Time = </label>
-                            <input type="text" id="inputOscMark" style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                        <div class="input-group" id="inputGroupOscSpace" style="display:none; justify-content: flex-start; margin-bottom: 10px;">
-                            <label style="margin-right: 10px;">Space Time = </label>
-                            <input type="text" id="inputOscSpace" style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                        <div class="input-group" id="inputGroupOscPeriod" style="display:none; justify-content: flex-start; margin-bottom: 10px;">
-                            <label style="margin-right: 10px;">Time Period = </label>
-                            <input type="text" id="inputOscPeriod" style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                        <div class="input-group" id="inputGroupOscFreq" style="display:none; justify-content: flex-start; margin-bottom: 10px;">
-                            <label style="margin-right: 10px;">Frequency = </label>
-                            <input type="text" id="inputOscFreq" style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                        <div class="input-group" id="inputGroupOscRatio" style="display:none; justify-content: flex-start; margin-bottom: 10px;">
-                            <label style="margin-right: 10px;">Ratio = </label>
-                            <input type="text" id="inputOscRatio" placeholder="e.g. 1/2" style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                        </div>
-                    </div>
+                   <div class="input-group" id="inputGroupMarkSpace" style="display:none; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-top: 15px; margin-bottom: 15px;">
+    <label for="inputMarkSpace" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px;">Ratio = </label>
+    <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+</div>
+
+<div id="oscilloscopeInputs" style="display:none; width: 100%;">
+    <div class="input-group" id="inputGroupOscAmp" style="display:none; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-bottom: 15px;">
+        <label style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px;">Amplitude = </label>
+        <input type="text" id="inputOscAmp" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
+    <div class="input-group" id="inputGroupOscPeriod" style="display:none; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-bottom: 15px;">
+        <label style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px;">Time Period = </label>
+        <input type="text" id="inputOscPeriod" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
+    <div class="input-group" id="inputGroupOscFreq" style="display:none; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-bottom: 15px;">
+        <label style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px;">Frequency = </label>
+        <input type="text" id="inputOscFreq" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
+    <div class="input-group" id="inputGroupOscMark" style="display:none; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-bottom: 15px;">
+        <label style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px;">Mark Time = </label>
+        <input type="text" id="inputOscMark" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
+    <div class="input-group" id="inputGroupOscSpace" style="display:none; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-bottom: 15px;">
+        <label style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px;">Space Time = </label>
+        <input type="text" id="inputOscSpace" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
+    <div class="input-group" id="inputGroupOscRatio" style="display:none; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-bottom: 15px;">
+        <label style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px;">Ratio = </label>
+        <input type="text" id="inputOscRatio" placeholder="e.g. 1/2" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
+</div>
 
                 <div id="inputGroupZener" class="input-group" style="display:none; flex-direction: column;">
                     <div id="zenerClosedQuestions" style="display:none; border-left: 4px solid #E64097; padding-left: 15px; margin-bottom: 20px;">
