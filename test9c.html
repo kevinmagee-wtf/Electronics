@@ -712,11 +712,14 @@
                     <span id="unitSymbolR" style="font-size: 20px; font-weight: bold; margin-left: 5px; color: #333;">&Omega;</span>
                 </div>
 
-                <div class="input-group" id="inputGroupMonostable" style="display:none;">
-                    <label id="labelMonostable" for="inputMonostable">T = </label>
-                    <input type="text" id="inputMonostable" style="width: 140px;" placeholder="e.g. 1.5 s">
-                    <div id="monostableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; margin-top: 5px; font-style: italic;"></div>
+                     <div class="input-group" id="inputGroupMonostable" style="display:none; width: 100%; margin-top: 15px; margin-bottom: 15px;">
+                <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; width: 100%;">
+                    <label id="labelMonostable" for="inputMonostable" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px; margin-bottom: 0;">T = </label>
+                    <input type="text" id="inputMonostable" placeholder="e.g. 5.5 s" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
+                
+                <div id="monostableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; margin-top: 8px; font-style: italic; text-align: center; width: 100%;"></div>
+            </div>
                     
                 <div class="input-group" id="inputGroupAstable" style="display:none; flex-direction: column; gap: 10px; width: 100%;">
                     <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
