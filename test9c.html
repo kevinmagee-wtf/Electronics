@@ -721,41 +721,38 @@
                 <div id="monostableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; margin-top: 8px; font-style: italic; text-align: center; width: 100%;"></div>
             </div>
                     
-                <div class="input-group" id="inputGroupAstable" style="display:none; width: 100%; flex-direction: column; align-items: center; margin-top: 15px; margin-bottom: 15px;">
+    <div class="input-group" id="inputGroupAstable" style="display:none; width: 100%; margin-top: 15px;">
     
-    <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; width: 100%; margin-bottom: 15px;">
-        <label for="inputAstable" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px; margin-bottom: 0;">Freq = </label>
-        <input type="text" id="inputAstable" placeholder="e.g. 50 Hz" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center; justify-items: center; width: 100%;">
+
+        <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
+            <label for="inputAstable" style="font-weight: bold; margin-right: 5px; margin-bottom: 0;">Freq =</label>
+            <input type="text" id="inputAstable" placeholder="e.g. 50" style="width: 75px; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
+            <label for="inputAstableT" style="font-weight: bold; margin-right: 5px; margin-bottom: 0;">T =</label>
+            <input type="text" id="inputAstableT" placeholder="e.g. 20" style="width: 75px; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
+            <label for="inputAstableMark" style="font-weight: bold; margin-right: 5px; margin-bottom: 0;">Mark =</label>
+            <input type="text" id="inputAstableMark" style="width: 75px; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
+            <label for="inputAstableSpace" style="font-weight: bold; margin-right: 5px; margin-bottom: 0;">Space =</label>
+            <input type="text" id="inputAstableSpace" style="width: 75px; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
+        <div style="grid-column: span 2; display: flex; align-items: center; justify-content: center; margin-top: 5px;">
+            <label for="inputAstableDuty" style="font-weight: bold; margin-right: 5px; margin-bottom: 0;">Duty Cycle =</label>
+            <input type="text" id="inputAstableDuty" placeholder="e.g. 60%" style="width: 85px; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
     </div>
 
-    <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; width: 100%; margin-bottom: 15px;">
-        <label for="inputAstableT" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px; margin-bottom: 0;">T = </label>
-        <input type="text" id="inputAstableT" placeholder="e.g. 20 ms" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-    </div>
-
-    <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; width: 100%; margin-bottom: 15px;">
-        <label for="inputAstableMark" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px; margin-bottom: 0;">Mark = </label>
-        <input type="text" id="inputAstableMark" placeholder="High time" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-    </div>
-
-    <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; width: 100%; margin-bottom: 15px;">
-        <label for="inputAstableSpace" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px; margin-bottom: 0;">Space = </label>
-        <input type="text" id="inputAstableSpace" placeholder="Low time" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-    </div>
-
-    <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; width: 100%; margin-bottom: 10px;">
-        <label for="inputAstableDuty" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px; margin-bottom: 0;">Duty Cycle = </label>
-        <input type="text" id="inputAstableDuty" placeholder="e.g. 60%" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-    </div>
-
-    <div id="astableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; text-align: center; width: 100%; margin-top: 5px; font-style: italic;"></div>
-</div>
-
-                   <div class="input-group" id="inputGroupMarkSpace" style="display:none; width: 100%; margin-top: 15px; margin-bottom: 15px;">
-    <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; width: 100%;">
-        <label for="inputMarkSpace" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px; margin-bottom: 0;">Mark Space Ratio = </label>
-        <input type="text" id="inputMarkSpace" placeholder="e.g. 2/1" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-    </div>
+    <div id="astableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; text-align: center; width: 100%; margin-top: 12px; font-style: italic;"></div>
 </div>
 
 <div id="oscilloscopeInputs" style="display:none; width: 100%;">
