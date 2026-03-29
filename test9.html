@@ -3114,8 +3114,13 @@ function generateGrade9ZenerProblem() {
         if (g9Open) g9Open.style.display = "none";
         
         if (qText) {
-            qText.innerHTML = "<strong>🏆 Grade 9 Challenge:</strong> The switch S is <strong>CLOSED</strong>. Calculate the maximum Load Current (I<sub>L</sub>) and the Zener Current (I<sub>Z</sub>). <em>(Answers in mA to 1 d.p.)</em>";
-            // ---> NEW: UNHIDE THE QUESTION TEXT <---
+            // 1. Call your function to load the standard DP/unit instruction layout
+            showDPinstruction(); 
+            
+            // 2. Drop the Grade 9 Zener text right on top of it with a nice gap!
+            qText.innerHTML = `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge:</strong> The switch S is <strong>CLOSED</strong>. Calculate max (I<sub>L</sub>) and max(I<sub>Z</sub>).</div>` + qText.innerHTML;
+            
+            // 3. Ensure the text box is visible
             qText.style.display = 'block'; 
         }
         
@@ -3152,8 +3157,13 @@ function generateGrade9ZenerProblem() {
         }
 
         if (qText) {
-            qText.innerHTML = "<strong>🏆 Grade 9 Challenge:</strong> The switch S is <strong>OPEN</strong>. Calculate the maximum Zener Power (P<sub>Z</sub>) to 1 d.p., and determine the minimum safe power rating to 1 significant figure.";
-            // ---> NEW: UNHIDE THE QUESTION TEXT <---
+            // 1. Call your function to load the standard DP/unit instruction layout
+            showDPinstruction(); 
+            
+            // 2. Drop the Grade 9 Zener text right on top of it with a nice gap!
+            qText.innerHTML = `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge:</strong> The switch S is <strong>OPEN</strong>. Calculate max (I<sub>L</sub>) and max(I<sub>Z</sub>).</div>` + qText.innerHTML;
+            
+            // 3. Ensure the text box is visible
             qText.style.display = 'block'; 
         }
 
