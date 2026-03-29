@@ -1621,6 +1621,11 @@ function generateGrade9Resistance() {
     // 0. RESET UI & STATE
     hideAllInputGroups(); 
     currentMode = 'resistance'; 
+
+    // Turn the Grade 9 button back on
+    if (document.getElementById('grade9ResistorBtn')) {
+        document.getElementById('grade9ResistorBtn').style.display = 'flex';
+    }
     
     // Show instruction for Ohms/Prefixes if function exists
     if (typeof showOhmUnitInstruction === "function") {
@@ -1919,6 +1924,11 @@ function generateGrade9DividerProblem() {
     // 0. RESET UI & STATE
     hideAllInputGroups(); 
     currentMode = 'divider'; 
+    
+    // Turn the Grade 9 button back on
+    if (document.getElementById('grade9DividerBtn')) {
+        document.getElementById('grade9DividerBtn').style.display = 'flex';
+    }
     
     // Bring back the specific Input Group
     const groupV = document.getElementById('inputGroupV');
