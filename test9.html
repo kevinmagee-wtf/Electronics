@@ -398,17 +398,6 @@
         background-color: #c82333; /* A deeper red for the hover effect */
         border-color: #c82333;
     }
-
-    /* The normal bright grade 9 button yellow state */
-    #grade9DividerBtn, #grade9ResistorBtn, #grade9ZenerBtn {
-        background-color: #FFD700 !important;
-        transition: background-color 0.2s ease-in-out; /* Adds a smooth fade effect! */
-    }
-
-    /* The mustard grade 9 button hover state */
-    #grade9DividerBtn:hover, #grade9ResistorBtn:hover, #grade9ZenerBtn:hover {
-        background-color: #D4A017 !important;
-    }
     .solutions { 
         padding: 15px; 
         background-color: #f8f9fa; 
@@ -868,9 +857,9 @@
             <div style="display: flex; gap: 8px; width: 100%;">
                 <button class="btn-black" onclick="handleGenerateClick()" style="flex: 1; padding: 10px 5px; font-size: 14px;">➕ New Problem</button>
                 
-                <button id="grade9DividerBtn" class="btn-check" style="color: #000 !important; display: none; flex: 1; padding: 10px 5px; font-size: 14px;" onclick="generateGrade9DividerProblem()">🚀 Grade 9</button>
-<button id="grade9ResistorBtn" class="btn-check" style="color: #000 !important; display: none; flex: 1; padding: 10px 5px; font-size: 14px;" onclick="generateGrade9Resistance()">🚀 Grade 9</button>
-<button id="grade9ZenerBtn" class="btn-check" style="color: #000 !important; display: none; flex: 1; padding: 10px 5px; font-size: 14px;" onclick="generateGrade9ZenerProblem()">🚀 Grade 9</button>
+                <button id="grade9DividerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; padding: 10px 5px; font-size: 14px;" onclick="generateGrade9DividerProblem()">🚀 Grade 9</button>
+                <button id="grade9ResistorBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; padding: 10px 5px; font-size: 14px;" onclick="generateGrade9Resistance()">🚀 Grade 9</button>
+                <button id="grade9ZenerBtn" class="btn-check" style="background-color: #FFD700 !important; color: #000 !important; display: none; flex: 1; padding: 10px 5px; font-size: 14px;" onclick="generateGrade9ZenerProblem()">🚀 Grade 9</button>
             </div>
 
             <div id="solutions" class="solutions" style="display: none; margin-top: 10px; padding: 12px; background-color: #f8f9fa; border-left: 4px solid #E64097;">
