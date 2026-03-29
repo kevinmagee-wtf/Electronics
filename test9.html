@@ -3162,18 +3162,16 @@ function generateGrade9ZenerProblem() {
         }
 
         if (qText) {
-            // 1. Call your function to load the standard DP/unit instruction layout
-            showDPinstruction(); 
-            
-            // 2. Drop the Grade 9 Zener text right on top of it with a nice gap!
+            // Drop the Grade 9 Zener text, adding the rounding rules directly to the list!
             qText.innerHTML = `<div style="margin-bottom: 10px;">
                 <strong style="color: #D4A017;">🏆 Grade 9 Challenge:</strong> The switch S is <strong>OPEN</strong>.<br>
                 Calculate:<br>
-                1. Max Zener Power dissipation<br>
+                1. Max Zener power dissipation (to 1 dp)<br>
                 2. Min Zener power rating needed (to 1 sig fig)
-            </div>` + qText.innerHTML;
+            </div>
+            <em style="font-size: 15px; color: #666; font-weight: normal;">Enter each value followed by a standard unit symbol.</em>`;
             
-            // 3. Ensure the text box is visible
+            // Ensure the text box is visible
             qText.style.display = 'block'; 
         }
 
