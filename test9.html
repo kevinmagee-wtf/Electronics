@@ -690,9 +690,9 @@
         <div class="quiz-header" style="flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; border-bottom: 2px solid #f2c7db; padding-bottom: 12px; margin-bottom: 12px;">
             <div id="scoreDisplay" class="scoreboard" style="margin: 0; flex: 1; text-align: center; font-size: 1em;">Score: 0 / 0</div>
             <div style="display: flex; gap: 10px; flex: 2;">
-                <button id="resetBtn" onclick="resetScore()" style="background-color: #f97316; color: white; border: none; border-radius: 5px; margin: 0; padding: 8px 10px; font-size: 14px; flex: 1; cursor: pointer;">🔄 Reset</button>
-                <button class="btn-download" id="downloadBtn" onclick="openSubmissionModal()" style="margin: 0; padding: 8px 10px; font-size: 14px; flex: 1;">⬇️ Submit</button>
-            </div>
+            <button id="resetBtn" onclick="resetScore()" style="background-color: #FFBF00; color: #333333; border: none; border-radius: 5px; margin: 0; padding: 8px 10px; font-size: 14px; flex: 1; cursor: pointer; font-weight: bold;">🔄 Reset</button>
+            <button id="downloadBtn" onclick="openSubmissionModal()" style="background-color: #43B3AE; color: white; border: none; border-radius: 5px; margin: 0; padding: 8px 10px; font-size: 14px; flex: 1; cursor: pointer; font-weight: bold;">⬇️ Submit</button>
+        </div>
         </div>
 
        <div style="flex: 0 0 auto; display: flex; gap: 10px; margin-bottom: 12px;">
@@ -913,7 +913,7 @@
    Score Submission Modal -->
 <div id="submissionModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
-        <h3>Submit Your Score</h3>
+        <h3> Your Score</h3>
         <div class="form-group">
             <label for="studentNameInput">Your Name:</label>
             <input type="text" id="studentNameInput">
