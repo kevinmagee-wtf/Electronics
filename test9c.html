@@ -2787,6 +2787,12 @@ function clearZenerInputs() {
             el.style.backgroundColor = '';
         }
     });
+
+    // ---> NEW: Hide the hint box when clearing inputs <---
+    const hintBox = document.getElementById('hintBox');
+    if (hintBox) {
+        hintBox.style.display = 'none';
+    }
 }
 
 function generateZenerProblem() {
