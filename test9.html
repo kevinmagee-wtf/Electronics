@@ -4355,6 +4355,11 @@ const blueBox = `text-align:left; background:#e0f8ff; color:#0077b6; padding:15p
             <div style="${blueBox}">
                 <strong>💡 Hint:</strong> Use the formula on the data sheet!
             </div>`;
+    } else if (currentMode === 'monostable') {
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong> Use the formula on the data sheet!
+            </div>`;
     } else if (currentMode === 'zener' || currentMode === 'grade9zener') {
         const isSwitchOpen = document.getElementById('zenerOpenQuestions') && document.getElementById('zenerOpenQuestions').style.display !== 'none';
         if (isSwitchOpen) {
