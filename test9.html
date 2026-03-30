@@ -695,9 +695,9 @@
             </div>
         </div>
 
-        <<div style="flex: 0 0 auto; display: flex; gap: 10px; margin-bottom: 12px;">
+        <div style="flex: 0 0 auto; display: flex; gap: 10px; margin-bottom: 12px;">
             <button id="dataSheetBtn" class="btn-secondary" onclick="openDataSheet()" style="margin: 0; padding: 8px; font-size: 14px; flex: 1;">📖 Data Sheet</button>
-            <button id="hintBtn" class="btn-red" onclick="showHint()" style="margin: 0; padding: 8px; font-size: 14px; flex: 1;">💡 Hint</button>
+            <button id="hintBtn" class="btn-red" onclick="provideHint()" style="margin: 0; padding: 8px; font-size: 14px; flex: 1;">💡 Hint</button>
         </div>
 
         <div id="scrollableArea" style="flex: 0 1 auto; overflow-y: auto; padding-right: 5px;">
@@ -2854,11 +2854,6 @@ function clearZenerInputs() {
 }
 
 function generateZenerProblem() {
-    // ---> NEW: Force the hint box to hide immediately <---
-    const hintBox = document.getElementById('hintBox');
-    if (hintBox) {
-        hintBox.style.display = 'none';
-    }
     // 0. RESET UI & STATE
     hideAllInputGroups();
     currentMode = 'zener';
@@ -4132,9 +4127,9 @@ function resetScore() {
 function provideHint() {
     if (isCurrentProblemSolved) return;
     
-    // Flag that they used help (prevents points)
-    viewedSolution = true;
-    canEarnPoints = false; 
+    // 🚫 REMOVED: viewedSolution = true;
+    // 🚫 REMOVED: canEarnPoints = false; 
+    // Now the student can get hints without losing points!
 
     const feedback = document.getElementById('feedback');
     if (!feedback) return;
@@ -4142,11 +4137,10 @@ function provideHint() {
     if (currentMode === 'colorcode') {
         let helpText = "";
         
-        // UPGRADE: Use the state variable instead of checking DOM styles
         if (window.colorCodeSubMode === 'colorToValue') {
             helpText = `
                 <div style="text-align:left; background:#fff3cd; padding:15px; border:1px solid #ffeeba; border-radius:8px; line-height:1.5;">
-                    <strong style="color: #856404;">Resistor Guide:</strong><br>
+                    <strong style="color: #856404;">💡 Resistor Guide:</strong><br>
                     • <b>Band 1</b> (${currentAnswers.b1.toUpperCase()}): 1st Significant Digit<br>
                     • <b>Band 2</b> (${currentAnswers.b2.toUpperCase()}): 2nd Significant Digit<br>
                     • <b>Band 3</b> (${currentAnswers.b3.toUpperCase()}): Multiplier (Number of zeros)<br>
@@ -4156,7 +4150,7 @@ function provideHint() {
             const displayVal = currentAnswers.resVal + " " + (currentAnswers.rTargetUnit || "Ω");
             helpText = `
                 <div style="text-align:left; background:#fff3cd; padding:15px; border:1px solid #ffeeba; border-radius:8px; line-height:1.5;">
-                    <strong style="color: #856404;">Colour Guide for ${displayVal}:</strong><br>
+                    <strong style="color: #856404;">💡 Colour Guide for ${displayVal}:</strong><br>
                     • <b>Digits:</b> Match the first two numbers to their colours.<br>
                     • <b>Multiplier:</b> How many zeros follow the first two numbers?<br>
                     • <b>Tolerance:</b> Gold is 5%, Silver is 10%.<br>
@@ -4167,32 +4161,38 @@ function provideHint() {
         feedback.innerHTML = helpText;
 
     } else if (currentMode === 'oscilloscope') {
-        feedback.innerHTML = `<div style="background:#e7f3ff; padding:10px; border-radius:5px; border:1px solid #b3d7ff;">
-            <b>Hint:</b> <i>Amplitude</i> is the vertical height from the center line to the peak. 
-            <i>Period (T)</i> is the horizontal time for one full cycle. Use $f = 1 / T$.
+        feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
+            <b>💡 Hint:</b> <i>Amplitude</i> is the vertical height from the center line to the peak. 
+            <i>Period (T)</i> is the horizontal time for one full cycle. Use $f = 1/T$.
         </div>`;
 
     } else if (currentMode === 'astable') {
-        feedback.innerHTML = `<div style="background:#e7f3ff; padding:10px; border-radius:5px; border:1px solid #b3d7ff;">
-            <b>Hint:</b> Use the 555 formula: $f = 1.44 / ((R_1 + 2R_2)C)$. 
+        feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
+            <b>💡 Hint:</b> Use the 555 formula: $f = 1.44/((R_1 + 2R_2)C)$. 
             The Mark/Space ratio is $(R_1 + R_2) : R_2$.
         </div>`;
 
     } else if (currentMode === 'zener' || currentMode === 'grade9zener') {
-        feedback.innerHTML = `<div style="background:#e7f3ff; padding:10px; border-radius:5px; border:1px solid #b3d7ff;">
-            <b>Hint:</b> If the Zener is "Open", no current flows through it ($I_z = 0$). 
-            If "Closed", the load voltage $V_L$ is clamped to the Zener voltage $V_z$.
-        </div>`;
+        // Upgraded Zener logic to detect Open vs Closed!
+        const isSwitchOpen = document.getElementById('zenerOpenQuestions') && document.getElementById('zenerOpenQuestions').style.display !== 'none';
+        
+        if (isSwitchOpen) {
+            feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
+                <strong>💡 Hint (Switch OPEN):</strong> The load is disconnected. <br>1. Find total source current (I<sub>S</sub>) using the main resistor. <br>2. All current flows through the Zener, so I<sub>Z</sub> = I<sub>S</sub>. <br>3. Finally, use P<sub>Z</sub> = I<sub>Z</sub> &times; V<sub>Z</sub>
+            </div>`;
+        } else {
+            feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
+                <strong>💡 Hint (Switch CLOSED):</strong> The Zener is in parallel with the load. <br>1. This means Load Voltage (V<sub>L</sub>) equals Zener Voltage (V<sub>Z</sub>). <br>2. Use Ohm's Law (I = V/R) on the load resistor to find I<sub>L</sub>.
+            </div>`;
+        }
 
     } else {
-        feedback.innerHTML = `<div style="background:#e7f3ff; padding:10px; border-radius:5px; border:1px solid #b3d7ff;">
-            <b>Hint:</b> Use Ohm's Law ($V = I \times R$) or the Potential Divider: $V_{out} = V_{in} \times \frac{R_2}{R_1 + R_2}$.
+        feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
+            <b>💡 Hint:</b> Use Ohm's Law ($V = I \\times R$) or the Potential Divider: $V_{out} = V_{in} \\times \\frac{R_2}{R_1 + R_2}$.
         </div>`;
     }
     
-    // Hide the help button after it's clicked
-    const showsolutionsBtn = document.getElementById('showsolutionsBtn');
-    if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+    // 🚫 REMOVED: Hiding the button! It will now stay exactly where it is, fixing the chevron bug!
 }
 
 function toggleSolutions() {
@@ -4214,44 +4214,6 @@ function toggleSolutions() {
     if (checkansBtn) checkansBtn.style.display = 'none';
 }
 
-function showHint() {
-    // 1. Look for a hint box. If it doesn't exist yet, build it!
-    let hintBox = document.getElementById('hintBox');
-    
-    if (!hintBox) {
-        hintBox = document.createElement('div');
-        hintBox.id = 'hintBox';
-        
-        // Style it to look like a friendly, non-punishing alert box (Light Blue)
-        hintBox.style.backgroundColor = '#e0f8ff'; 
-        hintBox.style.border = '1px solid #90e0ef';
-        hintBox.style.color = '#0077b6';
-        hintBox.style.padding = '12px';
-        hintBox.style.borderRadius = '8px';
-        hintBox.style.marginBottom = '15px';
-        hintBox.style.fontSize = '15px';
-        
-        // Inject it right underneath the button row
-        const buttonsDiv = document.getElementById('hintBtn').parentElement;
-        buttonsDiv.insertAdjacentElement('afterend', hintBox);
-    }
-
-    // 2. Check which problem the student is currently working on
-    const isSwitchOpen = document.getElementById('zenerOpenQuestions').style.display !== 'none';
-
-    // 3. Inject the correct formulas based on the problem
-    if (isSwitchOpen) {
-        hintBox.innerHTML = "<strong>💡 Hint (Switch OPEN):</strong> The load is disconnected. <br>1. Find total source current (I<sub>S</sub>) using the main resistor. <br>2. All current flows through the Zener, so I<sub>Z</sub> = I<sub>S</sub>. <br>3. Finally, use P<sub>Z</sub> = I<sub>Z</sub> &times; V<sub>Z</sub>";
-    } else {
-        hintBox.innerHTML = "<strong>💡 Hint (Switch CLOSED):</strong> The Zener is in parallel with the load. <br>1. This means Load Voltage (V<sub>L</sub>) equals Zener Voltage (V<sub>Z</sub>). <br>2. Use Ohm's Law (I = V/R) on the load resistor to find I<sub>L</sub>.";
-    }
-
-    // 4. Show the hint box (Notice we DO NOT set canEarnPoints = false!)
-    hintBox.style.display = 'block';
-    
-    // Optional: Hide the hint button after they click it once so it doesn't clutter the screen
-   // document.getElementById('hintBtn').style.display = 'none';
-}
 // ==========================================
 // FINAL INITIALIZATION (Place at the end of your .js file)
 // ==========================================
