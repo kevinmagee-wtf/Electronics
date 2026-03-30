@@ -990,22 +990,21 @@ function handleGenerateClick() {
     const showsolutionsBtn = document.getElementById('showsolutionsBtn');
     if (showsolutionsBtn) {
         showsolutionsBtn.style.display = 'block'; 
-        showsolutionsBtn.innerText = "🛟 Help"; // <-- Updated to match the new icon and text!
+        showsolutionsBtn.innerText = "🛟 Help"; 
     }
 
     // Bring back the Check Answer button for the new problem
     const checkansBtn = document.getElementById('checkansBtn');
     if (checkansBtn) checkansBtn.style.display = 'block'; 
 
-    // Clear any "Correct/Incorrect" feedback from the last problem
+    // ---> THE FIX: DO NOT COLLAPSE THE HEIGHT <---
+    // Use &nbsp; instead of "" so the div stays exactly the same height!
     const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerText = "";
+    if (feedback) feedback.innerHTML = "&nbsp;";
 
     // ==========================================
-    // ---> THE FIX: ESCAPE THE GRADE 9 LOOP <---
+    // ---> ESCAPE THE GRADE 9 LOOP <---
     // ==========================================
-    // If the student is in Grade 9 mode, kick them back to standard mode 
-    // when they ask for a new problem!
     if (currentMode === 'grade9zener') {
         currentMode = 'zener';
     }
@@ -1019,16 +1018,14 @@ function handleGenerateClick() {
     if (currentMode === 'colorcode') {
         if (typeof generateColorCodeProblem === "function") generateColorCodeProblem(ctx, canvas);
     } else if (currentMode === 'zener') {
-        // Pass ctx and canvas here too for consistency
         generateZenerProblem(ctx, canvas); 
     } else if (currentMode === 'silicon') {
         generateSiliconProblem(ctx, canvas);
     } else if (currentMode === 'analysis') {
-        // FIX: Pass the drawing tools into the function!
         generateAnalysisProblem(ctx, canvas); 
     } else {
-        // Handles Astable, Monostable, Oscilloscope
-        hubController(ctx, canvas);
+        // Handles Astable, Monostable, Oscilloscope, and Resistance
+        if (typeof hubController === "function") hubController(ctx, canvas);
     }
 }
 // ==================================================================================================================
