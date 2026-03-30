@@ -1454,6 +1454,12 @@ function generateResistanceProblem(ctx, canvas) {
     hideAllInputGroups(); 
     currentMode = 'resistance'; // Flags the grader to use resistance logic
 
+    // NEW FIX: Instantly clear old feedback and solutions to stop vertical jumping
+    const feedback = document.getElementById('feedback');
+    if (feedback) feedback.innerHTML = "&nbsp;"; // Holds the space to prevent layout collapse
+    const solutions = document.getElementById('solutions');
+    if (solutions) solutions.style.display = 'none';
+
     // BRING BACK THE GRADE 9 BUTTON
     const g9ResBtn = document.getElementById('grade9ResistorBtn');
     if (g9ResBtn) {
@@ -1465,8 +1471,15 @@ function generateResistanceProblem(ctx, canvas) {
         showOhmUnitInstruction(); 
     }
 
-// 1. SHOW AND RESET THE INPUT BOX
-    // Fallbacks added to link up perfectly with the HTML layout
+    // ---> MOVED UP: SET THE QUESTION TEXT FIRST <---
+    // This prevents the input box from sliding up into empty space!
+    const qText = document.getElementById('questionText');
+    if (qText) {
+        qText.innerHTML = "Calculate the total resistance.";
+        qText.style.display = 'block'; 
+    }
+
+    // 1. SHOW AND RESET THE INPUT BOX
     const groupR = document.getElementById('inputGroupR') || document.getElementById('inputGroupV');
     if (groupR) {
         groupR.style.display = 'flex'; 
@@ -1477,21 +1490,21 @@ function generateResistanceProblem(ctx, canvas) {
     const oldDropdown = document.getElementById('unitR');    
     
     if (oldDropdown) {
-        oldDropdown.style.display = 'none'; // Keep it hidden immediately
+        oldDropdown.style.display = 'none'; // Cleanup legacy UI
     }
-
+    
     if (inputR) {
         inputR.placeholder = "e.g. 1.2k"; 
         inputR.value = "";              
         
-        // FIX: Force the border back to standard grey instantly to prevent color-ghosting
+        // Force the border back to standard grey
         inputR.style.borderColor = "#ccc";
         inputR.style.borderWidth = "2px";
         inputR.style.borderStyle = "solid";
     }
     
     if (unitSpan) {
-        unitSpan.innerHTML = "&Omega;"; // Fixed symbol outside the box
+        unitSpan.innerHTML = "&Omega;"; 
     }
     
     // 2. SET THE PINK LABEL
@@ -1502,11 +1515,10 @@ function generateResistanceProblem(ctx, canvas) {
 
     // 3. PREPARE CANVAS AND RANDOMIZE UNIT
     const rUnitVisual = Math.random() < 0.5 ? 'k\u03A9' : '\u03A9';
-    // Normalize unit for the checker (e.g. convert \u03A9 to standard Ω)
     const expectedRUnit = rUnitVisual === 'k\u03A9' ? 'kΩ' : 'Ω';
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = '#000'; // brandBlack fallback
+    ctx.strokeStyle = '#000'; 
     ctx.lineWidth = 2; 
     ctx.font = "bold 18px Arial";
 
@@ -1619,13 +1631,6 @@ function generateResistanceProblem(ctx, canvas) {
     // 6. UPDATE SOLUTION DRAWER
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = logicHTML;
-
-    // ---> NEW: 7. UNHIDE AND SET THE QUESTION TEXT <---
-    const qText = document.getElementById('questionText');
-    if (qText) {
-        qText.innerHTML = "Calculate the total resistance.";
-        qText.style.display = 'block'; // THIS brings the text back!
-    }
 }
     
 function generateGrade9Resistance() {
