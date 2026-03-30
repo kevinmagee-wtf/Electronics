@@ -3345,9 +3345,10 @@ function generateIPOProblem(ctx, canvas) {
     const qText = document.getElementById("questionText");
     if (qText) {
         // Wrapped the second line in a span to force normal weight, smaller size, and lighter color
-        qText.innerHTML = "<strong> Drag components into the correct stage:</strong><br><span style='font-weight: normal; font-size: 0.8em; color: #777;'><em>(iPads: Press and hold for a second before moving)</em></span>";
+        qText.innerHTML = "<strong>Drag components into the correct stage:</strong><br><span style='font-weight: normal; font-size: 0.8em; color: #777;'><em>(iPads: Press and hold for a second before moving)</em></span>";
         qText.style.textAlign = "left"; 
-        qText.style.fontSize = "1.2em"; 
+        // Set explicit pixel size here:
+        qText.style.fontSize = "16px"; 
         qText.style.color = "#444"; // This sets the color for the main bold text
         
         // Ensure the text turns back on after the generator's wipe
