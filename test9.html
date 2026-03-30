@@ -1454,12 +1454,6 @@ function generateResistanceProblem(ctx, canvas) {
     hideAllInputGroups(); 
     currentMode = 'resistance'; // Flags the grader to use resistance logic
 
-    // NEW FIX: Instantly clear old feedback and solutions to stop vertical jumping
-    const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerHTML = "&nbsp;"; // Holds the space to prevent layout collapse
-    const solutions = document.getElementById('solutions');
-    if (solutions) solutions.style.display = 'none';
-
     // BRING BACK THE GRADE 9 BUTTON
     const g9ResBtn = document.getElementById('grade9ResistorBtn');
     if (g9ResBtn) {
@@ -1469,14 +1463,6 @@ function generateResistanceProblem(ctx, canvas) {
     // Standardized instruction for Ohms/Prefixes
     if (typeof showOhmUnitInstruction === "function") {
         showOhmUnitInstruction(); 
-    }
-
-    // ---> MOVED UP: SET THE QUESTION TEXT FIRST <---
-    // This prevents the input box from sliding up into empty space!
-    const qText = document.getElementById('questionText');
-    if (qText) {
-        qText.innerHTML = "Calculate the total resistance.";
-        qText.style.display = 'block'; 
     }
 
     // 1. SHOW AND RESET THE INPUT BOX
@@ -1497,7 +1483,7 @@ function generateResistanceProblem(ctx, canvas) {
         inputR.placeholder = "e.g. 1.2k"; 
         inputR.value = "";              
         
-        // Force the border back to standard grey
+        // Fix for the invisible border bug from earlier!
         inputR.style.borderColor = "#ccc";
         inputR.style.borderWidth = "2px";
         inputR.style.borderStyle = "solid";
@@ -1534,16 +1520,14 @@ function generateResistanceProblem(ctx, canvas) {
     let rTotal, logicHTML;
 
     if (scenario === 0) {
-        // --- SCENARIO 0: SERIES ---
         const r1 = (Math.floor(Math.random() * 10) + 1) * 10; 
         const r2 = (Math.floor(Math.random() * 10) + 1) * 10;
         rTotal = r1 + r2;
         
-        // Drawing
         drawLine(ctx, 300, 60, 300, 120); 
-        drawResistor(ctx, 300, 145); // R1
+        drawResistor(ctx, 300, 145); 
         drawLine(ctx, 300, 170, 300, 230);
-        drawResistor(ctx, 300, 255); // R2
+        drawResistor(ctx, 300, 255); 
         drawLine(ctx, 300, 280, 300, 360);
         
         drawLabel(ctx, "R1 = " + r1 + " " + rUnitVisual, 330, 150, 16, '#000');
@@ -1555,7 +1539,6 @@ function generateResistanceProblem(ctx, canvas) {
         logicHTML += "R<sub>Total</sub> = " + r1 + " + " + r2 + " = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
 
     } else if (scenario === 1) {
-        // --- SCENARIO 1: PARALLEL ---
         const pairs = [
             {r1: 10, r2: 10, req: 5}, {r1: 30, r2: 60, req: 20}, 
             {r1: 12, r2: 24, req: 8}, {r1: 40, r2: 40, req: 20},
@@ -1564,17 +1547,14 @@ function generateResistanceProblem(ctx, canvas) {
         const pair = pairs[Math.floor(Math.random() * pairs.length)];
         rTotal = pair.req;
 
-        const midY = 210; 
-        const topRailY = 110;
-        const bottomRailY = 310;
+        const midY = 210, topRailY = 110, bottomRailY = 310;
 
-        // Drawing
         drawLine(ctx, 300, 60, 300, topRailY);
         drawLine(ctx, 220, topRailY, 380, topRailY);
         drawLine(ctx, 220, topRailY, 220, midY - 25);
         drawLine(ctx, 380, topRailY, 380, midY - 25);
-        drawResistor(ctx, 220, midY); // R1
-        drawResistor(ctx, 380, midY); // R2
+        drawResistor(ctx, 220, midY); 
+        drawResistor(ctx, 380, midY); 
         drawLine(ctx, 220, midY + 25, 220, bottomRailY);
         drawLine(ctx, 380, midY + 25, 380, bottomRailY);
         drawLine(ctx, 220, bottomRailY, 380, bottomRailY);
@@ -1589,7 +1569,6 @@ function generateResistanceProblem(ctx, canvas) {
         logicHTML += "R<sub>Total</sub> = (" + pair.r1 + " &times; " + pair.r2 + ") / (" + pair.r1 + " + " + pair.r2 + ") = <strong>" + rTotal + " " + rUnitVisual + "</strong>";
 
     } else {
-        // --- SCENARIO 2: SERIES-PARALLEL (MIXED) ---
         const sp = [
             {r1: 10, r2: 20, r3: 20, rp: 10, req: 20}, 
             {r1: 15, r2: 30, r3: 60, rp: 20, req: 35}, 
@@ -1598,16 +1577,15 @@ function generateResistanceProblem(ctx, canvas) {
         const s = sp[Math.floor(Math.random() * sp.length)];
         rTotal = s.req;
 
-        // Drawing
         drawLine(ctx, 300, 60, 300, 90); 
-        drawResistor(ctx, 300, 115); // R1
+        drawResistor(ctx, 300, 115); 
         drawLine(ctx, 300, 140, 300, 180);
         drawLine(ctx, 220, 180, 380, 180); 
         drawLine(ctx, 220, 180, 220, 220); 
-        drawResistor(ctx, 220, 245); // R2
+        drawResistor(ctx, 220, 245); 
         drawLine(ctx, 220, 270, 220, 320);
         drawLine(ctx, 380, 180, 380, 220); 
-        drawResistor(ctx, 380, 245); // R3
+        drawResistor(ctx, 380, 245); 
         drawLine(ctx, 380, 270, 380, 320);
         drawLine(ctx, 220, 320, 380, 320); 
         drawLine(ctx, 300, 320, 300, 360);
@@ -1631,6 +1609,17 @@ function generateResistanceProblem(ctx, canvas) {
     // 6. UPDATE SOLUTION DRAWER
     const solText = document.getElementById('solText');
     if (solText) solText.innerHTML = logicHTML;
+
+    // ---> NEW FIX: 7. EXACT GRADE 9 TEXT LOGIC <---
+    const qText = document.getElementById('questionText');
+    if (qText) {
+        // 1. Run the instruction function exactly like Grade 9 does
+        if (typeof showDPinstruction === "function") showDPinstruction(); 
+        
+        // 2. Prepend our text (using + qText.innerHTML) so we don't destroy the layout height!
+        qText.innerHTML = `<div style="margin-bottom: 10px;">Calculate the total resistance.</div>` + qText.innerHTML;
+        qText.style.display = 'block'; 
+    }
 }
     
 function generateGrade9Resistance() {
