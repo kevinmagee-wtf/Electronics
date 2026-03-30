@@ -4126,21 +4126,20 @@ function resetScore() {
     
 function provideHint() {
     if (isCurrentProblemSolved) return;
-    
-    // 🚫 REMOVED: viewedSolution = true;
-    // 🚫 REMOVED: canEarnPoints = false; 
-    // Now the student can get hints without losing points!
 
     const feedback = document.getElementById('feedback');
     if (!feedback) return;
 
+    // Standard "Nice Blue" style for all boxes
+    const blueBox = `text-align:left; background:#e0f8ff; color:#0077b6; padding:15px; border:1px solid #90e0ef; border-radius:8px; line-height:1.5; font-size: 0.9em;`;
+    
+    let helpText = "";
+
     if (currentMode === 'colorcode') {
-        let helpText = "";
-        
         if (window.colorCodeSubMode === 'colorToValue') {
             helpText = `
-                <div style="text-align:left; background:#fff3cd; padding:15px; border:1px solid #ffeeba; border-radius:8px; line-height:1.5;">
-                    <strong style="color: #856404;">💡 Resistor Guide:</strong><br>
+                <div style="${blueBox}">
+                    <strong>💡 Resistor Guide:</strong><br>
                     • <b>Band 1</b> (${currentAnswers.b1.toUpperCase()}): 1st Significant Digit<br>
                     • <b>Band 2</b> (${currentAnswers.b2.toUpperCase()}): 2nd Significant Digit<br>
                     • <b>Band 3</b> (${currentAnswers.b3.toUpperCase()}): Multiplier (Number of zeros)<br>
@@ -4149,50 +4148,55 @@ function provideHint() {
         } else {
             const displayVal = currentAnswers.resVal + " " + (currentAnswers.rTargetUnit || "Ω");
             helpText = `
-                <div style="text-align:left; background:#fff3cd; padding:15px; border:1px solid #ffeeba; border-radius:8px; line-height:1.5;">
-                    <strong style="color: #856404;">💡 Colour Guide for ${displayVal}:</strong><br>
+                <div style="${blueBox}">
+                    <strong>💡 Colour Guide for ${displayVal}:</strong><br>
                     • <b>Digits:</b> Match the first two numbers to their colours.<br>
                     • <b>Multiplier:</b> How many zeros follow the first two numbers?<br>
                     • <b>Tolerance:</b> Gold is 5%, Silver is 10%.<br>
-                    <hr style="border: 0; border-top: 1px solid #ffeeba;">
+                    <hr style="border: 0; border-top: 1px solid #90e0ef; margin: 8px 0;">
                     <small>Code: 0:Blk, 1:Brn, 2:Red, 3:Org, 4:Yel, 5:Grn, 6:Blu, 7:Pur, 8:Gry, 9:Whi</small>
                 </div>`;
         }
-        feedback.innerHTML = helpText;
-
     } else if (currentMode === 'oscilloscope') {
-        feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
-            <b>💡 Hint:</b> <i>Amplitude</i> is the vertical height from the center line to the peak. 
-            <i>Period (T)</i> is the horizontal time for one full cycle. Use $f = 1/T$.
-        </div>`;
-
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong> <i>Amplitude</i> is the vertical height from the center line to the peak. 
+                <i>Period (T)</i> is the horizontal time for one full cycle. Use <b>f = 1 / T</b>.
+            </div>`;
     } else if (currentMode === 'astable') {
-        feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
-            <b>💡 Hint:</b> Use the 555 formula: $f = 1.44/((R_1 + 2R_2)C)$. 
-            The Mark/Space ratio is $(R_1 + R_2) : R_2$.
-        </div>`;
-
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong> Use the 555 formula: <b>f = 1.44 / ((R<sub>1</sub> + 2R<sub>2</sub>) × C)</b>.<br>
+                The Mark/Space ratio is <b>(R<sub>1</sub> + R<sub>2</sub>) : R<sub>2</sub></b>.
+            </div>`;
     } else if (currentMode === 'zener' || currentMode === 'grade9zener') {
-        // Upgraded Zener logic to detect Open vs Closed!
         const isSwitchOpen = document.getElementById('zenerOpenQuestions') && document.getElementById('zenerOpenQuestions').style.display !== 'none';
-        
         if (isSwitchOpen) {
-            feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
-                <strong>💡 Hint (Switch OPEN):</strong> The load is disconnected. <br>1. Find total source current (I<sub>S</sub>) using the main resistor. <br>2. All current flows through the Zener, so I<sub>Z</sub> = I<sub>S</sub>. <br>3. Finally, use P<sub>Z</sub> = I<sub>Z</sub> &times; V<sub>Z</sub>
-            </div>`;
+            helpText = `
+                <div style="${blueBox}">
+                    <strong>💡 Hint (Switch OPEN):</strong> The load is disconnected.<br>
+                    1. Find total source current (I<sub>S</sub>) using the main resistor.<br>
+                    2. All current flows through the Zener, so I<sub>Z</sub> = I<sub>S</sub>.<br>
+                    3. Finally, use <b>P<sub>Z</sub> = I<sub>Z</sub> × V<sub>Z</sub></b>.
+                </div>`;
         } else {
-            feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
-                <strong>💡 Hint (Switch CLOSED):</strong> The Zener is in parallel with the load. <br>1. This means Load Voltage (V<sub>L</sub>) equals Zener Voltage (V<sub>Z</sub>). <br>2. Use Ohm's Law (I = V/R) on the load resistor to find I<sub>L</sub>.
-            </div>`;
+            helpText = `
+                <div style="${blueBox}">
+                    <strong>💡 Hint (Switch CLOSED):</strong> The Zener is in parallel with the load.<br>
+                    1. This means Load Voltage (V<sub>L</sub>) equals Zener Voltage (V<sub>Z</sub>).<br>
+                    2. Use Ohm's Law (<b>I = V / R</b>) on the load resistor to find I<sub>L</sub>.
+                </div>`;
         }
-
     } else {
-        feedback.innerHTML = `<div style="background:#e0f8ff; color:#0077b6; padding:10px; border-radius:8px; border:1px solid #90e0ef;">
-            <b>💡 Hint:</b> Use Ohm's Law ($V = I \\times R$) or the Potential Divider: $V_{out} = V_{in} \\times \\frac{R_2}{R_1 + R_2}$.
-        </div>`;
+        // Potential Divider & General
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong> Use <b>Ohm's Law (V = I × R)</b> or the <b>Potential Divider formula:</b><br>
+                V<sub>out</sub> = V<sub>in</sub> × [ R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>) ]
+            </div>`;
     }
-    
-    // 🚫 REMOVED: Hiding the button! It will now stay exactly where it is, fixing the chevron bug!
+
+    feedback.innerHTML = helpText;
 }
 
 function toggleSolutions() {
