@@ -812,37 +812,33 @@
             </div>
         </div>
     </div>
-                <div id="inputGroupZener" class="input-group" style="display:none; flex-direction: column;">
-    
-    <div id="zenerClosedQuestions" style="display:none; margin-bottom: 20px;">
-        <p style="font-weight: bold; margin-bottom: 15px;">Switch CLOSED:</p>
+        <div id="inputGroupZener" class="input-group" style="display:none; flex-direction: column;">
         
-        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-            <label style="font-weight: bold; min-width: 150px; margin-bottom: 0;">Max (I<sub>L</sub>):</label> 
-            <input type="text" id="zenerQ_IL" class="form-control" style="max-width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 15.5 mA">
-        </div>
+            <div id="zenerClosedQuestions" style="display:none; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <label style="font-weight: bold; min-width: 150px; margin-bottom: 0;">Max (I<sub>L</sub>):</label> 
+                    <input type="text" id="zenerQ_IL" class="form-control" style="max-width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 15.5 mA">
+                </div>
+                
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <label style="font-weight: bold; min-width: 150px; margin-bottom: 0;">Load Voltage (V<sub>L</sub>):</label> 
+                    <input type="text" id="zenerQ_VL" class="form-control" style="max-width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 4.5 V">
+                </div>
+            </div>
         
-        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-            <label style="font-weight: bold; min-width: 150px; margin-bottom: 0;">Load Voltage (V<sub>L</sub>):</label> 
-            <input type="text" id="zenerQ_VL" class="form-control" style="max-width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 4.5 V">
-        </div>
-    </div>
-
-    <div id="zenerOpenQuestions" style="display:none;">
-        <p style="font-weight: bold; margin-bottom: 15px;">Switch OPEN:</p>
+            <div id="zenerOpenQuestions" style="display:none;">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <label style="font-weight: bold; min-width: 150px; margin-bottom: 0;">1. Max (I<sub>Z</sub>):</label> 
+                    <input type="text" id="zenerQ_IZ" class="form-control" style="max-width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 200 mA">
+                </div>
+                
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <label style="font-weight: bold; min-width: 150px; margin-bottom: 0;">2. Max (P<sub>Z</sub>):</label> 
+                    <input type="text" id="zenerQ_PZ" class="form-control" style="max-width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 50 mW">
+                </div>
+            </div>
         
-        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-            <label style="font-weight: bold; min-width: 150px; margin-bottom: 0;">1. Max (I<sub>Z</sub>):</label> 
-            <input type="text" id="zenerQ_IZ" class="form-control" style="max-width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 200 mA">
         </div>
-        
-        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-            <label style="font-weight: bold; min-width: 150px; margin-bottom: 0;">2. Max (P<sub>Z</sub>):</label> 
-            <input type="text" id="zenerQ_PZ" class="form-control" style="max-width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 50 mW">
-        </div>
-    </div>
-    
-</div>
 
                 <div id="inputGroupIPOSort" class="input-group" style="display:none; width: 100%; margin-top: 10px;">
                     <div style="display: flex; flex-direction: column; width: 100%; align-items: center; background-color: #ffffff; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e9ecef; box-sizing: border-box;">
@@ -3047,15 +3043,34 @@ function generateZenerProblem() {
     // ---> NEW: 5. UNHIDE AND SET THE QUESTION TEXT <---
     const qText = document.getElementById('questionText');
     if (qText) {
+        let questionHTML = "";
+        
         if (switchClosed) {
-            qText.innerHTML = "Calculate the maximum Load Current (I<sub>L</sub>) and the Load Voltage (V<sub>L</sub>).";
+            questionHTML = `<div style="font-size: 16px; line-height: 1.5; margin-bottom: 10px; color: #333;">
+                <strong>Switch S is closed.</strong> Calculate:<br>
+                1. The maximum load current<br>
+                2. The voltage across the load.
+            </div>`;
         } else {
-            qText.innerHTML = "Calculate the Zener Current (I<sub>Z</sub>) and Zener Power (P<sub>Z</sub>) when the switch is open.";
+            questionHTML = `<div style="font-size: 16px; line-height: 1.5; margin-bottom: 10px; color: #333;">
+                <strong>Switch S is open.</strong> Calculate:<br>
+                1. The Zener diode current<br>
+                2. The power dissipated by the Zener diode.
+            </div>`;
         }
-        qText.style.display = 'block'; // Brings the text back into view!
-    }
+        
+        // Add the unit instructions directly so it doesn't overwrite our custom text!
+        questionHTML += `<div style="font-size: 16px; line-height: 1.2; font-weight: bold; color: #333;">
+            Enter value followed by a standard unit symbol<br>
+            <em style="font-size: 15px; color: #666; font-weight: normal;">(e.g., 5 A, 12 mV).</em>
+        </div>`;
 
-    if (typeof showUnitInstruction === 'function') showUnitInstruction();
+        qText.innerHTML = questionHTML;
+        qText.style.display = 'block'; 
+    }
+    
+    // Note: We deliberately removed showUnitInstruction() here so it doesn't erase our text!
+}
 }
     
 function generateGrade9ZenerProblem() {
