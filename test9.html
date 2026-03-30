@@ -1355,7 +1355,7 @@ function generateAnalysisProblem(ctx, canvas) {
         { display: 'V1', html: 'V<sub>1</sub>', val: v1, logic: 'V<sub>1</sub> = V<sub>2</sub> (Parallel components share voltage)' },
         { display: 'V2', html: 'V<sub>2</sub>', val: v2, logic: 'V<sub>2</sub> = V<sub>1</sub> (Parallel components share voltage)' },
         { display: 'V3', html: 'V<sub>3</sub>', val: v3, logic: "V<sub>3</sub> = V<sub>supply</sub> - V<sub>1</sub> (" + vTotal + vUnit + " - " + v1 + vUnit + ")" },
-        { display: 'Vsupply', html: 'V<sub>supply</sub>', val: vTotal, logic: "V<sub>supply</sub> = V<sub>1</sub> + V<sub>3</sub> (" + v1 + vUnit + " + " + v3 + vUnit + ")" }
+        { display: 'Vsupply', html: 'V<sub>S</sub>', val: vTotal, logic: "V<sub>supply</sub> = V<sub>1</sub> + V<sub>3</sub> (" + v1 + vUnit + " + " + v3 + vUnit + ")" }
     ];
     
     const currents = [
