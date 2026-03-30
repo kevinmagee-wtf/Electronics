@@ -4386,6 +4386,11 @@ const blueBox = `text-align:left; background:#e0f8ff; color:#0077b6; padding:15p
                 • <b>Voltage (Series):</b> Resistors in series divide voltage.<br>
                 • <b>Voltage (Parallel):</b> Resistors in parallel have equal voltage.
             </div>`;
+    } else if (currentMode === 'iposort') {
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong> If you don't recognise the name as an Input or an Output, then there is a good chance that it is a <b>Process</b> component!
+            </div>`;
     } else if (currentMode === 'diode' || currentMode === 'silicon') {
         helpText = `
             <div style="${blueBox}">
