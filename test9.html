@@ -2443,157 +2443,168 @@ function generateOscilloscopeProblem() {
     }
 }
  
-function generateAstableProblem() {
-    // 1. UI RESET
-    hideAllInputGroups();
-    
-    // ---> THE FIX: Turn the main containers back on after the wipe <---
-    const mainGroup = document.getElementById('inputGroupAstableMain'); 
-    if (mainGroup) mainGroup.style.display = 'block';
+function generateOscilloscopeProblem() {
+    // 1. SELF-INITIALIZE CANVAS
+    const canvas = document.getElementById('circuitCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // 2. FULL UI RESET
+    hideAllInputGroups(); 
+    currentMode = 'oscilloscope';
+
+    // Ensure the main container and check button are visible
+    const scopeWrapper = document.getElementById('oscilloscopeInputs');
+    if (scopeWrapper) scopeWrapper.style.display = "block";
     
     const checkBtn = document.getElementById('checkansBtn');
     if (checkBtn) checkBtn.style.display = 'inline-block';
 
     const solContainer = document.getElementById('solutions');
-    if (solContainer) solContainer.style.display = "none"; 
-    
-    const solBox = document.getElementById('solText');
-    if (solBox) solBox.style.display = "block"; 
-    
-    // 2. SELF-INITIALIZE CANVAS
-    const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    currentMode = 'astable';
-    
-    // 3. CLEAR OLD INPUTS
-    const inputAstable = document.getElementById('inputAstable');
-    const inputAstableT = document.getElementById('inputAstableT');
-    const inputMarkSpace = document.getElementById('inputMarkSpace');
-    const astablePrompt = document.getElementById('astableInstruction');
-    const ratioPrompt = document.getElementById('ratioInstruction');
-    
-    [inputAstable, inputAstableT, inputMarkSpace].forEach(el => { 
-        if(el) { el.value = ""; el.placeholder = ""; el.style.backgroundColor = ""; } 
+    if (solContainer) solContainer.style.display = "none";
+
+    const ids = ['inputOscAmp', 'inputOscMark', 'inputOscSpace', 'inputOscPeriod', 'inputOscFreq', 'inputOscRatio'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { 
+            el.value = ""; 
+            el.placeholder = ""; 
+            el.style.backgroundColor = ""; // Reset colors
+        }
     });
-    [astablePrompt, ratioPrompt].forEach(el => { if(el) el.innerHTML = ""; });
 
-    // 4. MATH & VARIABLES
-    const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
-    const R2 = (Math.floor(Math.random() * 9) + 1) * 1000;
-    const C_uF = [0.1, 1, 10, 47][Math.floor(Math.random() * 4)];
-    const C_farads = C_uF / 1000000;
-
-    const freq = 1.44 / ((R1 + 2 * R2) * C_farads);
-    const period_ms = (1 / freq) * 1000;
+    // 3. DRAW BACKGROUND & GRID (OSCILLOSCOPE SCREEN)
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#e0e5e7"; ctx.strokeStyle = "#888"; ctx.lineWidth = 2; 
     
-    const gcd = (a, b) => b ? gcd(b, a % b) : a;
-    const num = R1 + R2;
-    const den = R2;
-    const common = gcd(num, den);
-    const ratioString = (num / common) + "/" + (den / common);
+    const drawRoundRect = (ctx, x, y, w, h, r) => {
+        ctx.beginPath(); ctx.moveTo(x+r, y); ctx.arcTo(x+w, y, x+w, y+h, r);
+        ctx.arcTo(x+w, y+h, x, y+h, r); ctx.arcTo(x, y+h, x, y, r);
+        ctx.arcTo(x, y, x+w, y, r); ctx.closePath(); ctx.fill(); ctx.stroke();
+    };
+    drawRoundRect(ctx, 20, 20, 400, 320, 25);
+    
+    ctx.strokeStyle = "#555"; ctx.lineWidth = 1;
+    for(let i=0; i<=8; i++) { let y = 20 + i*40; ctx.beginPath(); ctx.moveTo(20, y); ctx.lineTo(420, y); ctx.stroke(); }
+    for(let i=0; i<=10; i++) { let x = 20 + i*40; ctx.beginPath(); ctx.moveTo(x, 20); ctx.lineTo(x, 340); ctx.stroke(); }
+    
+    ctx.strokeStyle = "#222"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(20, 180); ctx.lineTo(420, 180); ctx.stroke(); 
+    ctx.beginPath(); ctx.moveTo(220, 20); ctx.lineTo(220, 340); ctx.stroke(); 
 
-    // 5. CHOOSE QUESTION TYPE
-    const qType = Math.floor(Math.random() * 2);
-    if (typeof currentAnswers === "undefined") currentAnswers = {};
-    currentAnswers.astableQType = qType;
+    // 4. SETUP VARIABLES & MATH
+    if (typeof currentAnswers === "undefined") currentAnswers = {}; 
 
-    const groupStd = document.getElementById('inputGroupAstable');
-    const groupRatio = document.getElementById('inputGroupMarkSpace');
+    let vGainUnit = Math.random() < 0.5 ? 'V' : 'mV';
+    let tBaseUnit = Math.random() < 0.5 ? 'ms' : 's';
+    let ampDivs = Math.floor(Math.random() * 3) + 1; 
+    let vGain = [1, 2, 5][Math.floor(Math.random() * 3)];
+    let amplitude = ampDivs * vGain;
+    let markDivs = Math.floor(Math.random() * 4) + 1; 
+    let spaceDivs = Math.floor(Math.random() * 4) + 1; 
+    let tBase = [1, 2, 5, 10, 20, 50][Math.floor(Math.random() * 6)];
+    let periodTime = (markDivs + spaceDivs) * tBase;
+    let frequency = (tBaseUnit === 'ms') ? (1000 / periodTime) : (1 / periodTime);
+    let freq_rounded = parseFloat(frequency.toFixed(1));
 
-    if (qType === 0) {
-        if(groupStd) groupStd.style.display = "block";
-        if(groupRatio) groupRatio.style.display = "none";
-        if(astablePrompt) astablePrompt.innerHTML = "(Give answer to 1 d.p.)";
+    // Store answers for the checker
+    currentAnswers.oscAmpValue = amplitude; 
+    currentAnswers.oscAmpUnit = vGainUnit; 
+    currentAnswers.oscMarkValue = markDivs * tBase; 
+    currentAnswers.oscMarkUnit = tBaseUnit; 
+    currentAnswers.oscSpaceValue = spaceDivs * tBase; 
+    currentAnswers.oscSpaceUnit = tBaseUnit; 
+    currentAnswers.oscPeriodValue = periodTime; 
+    currentAnswers.oscPeriodUnit = tBaseUnit; 
+    currentAnswers.oscFreqValue = freq_rounded; 
+    currentAnswers.oscFreqUnit = 'Hz'; 
+    currentAnswers.oscRatioValue = markDivs + "/" + spaceDivs;
+
+    // 5. DRAW SETTINGS & WAVEFORM
+    ctx.fillStyle = "#000"; ctx.font = "bold 15px Arial"; ctx.textAlign = "left";
+    ctx.fillText("Settings:", 430, 80);
+    ctx.font = "14px Arial";
+    ctx.fillText("Time Base:", 430, 110);
+    ctx.fillText(tBase + " " + tBaseUnit + " / div", 430, 130);
+    ctx.fillText("Voltage Gain:", 430, 170);
+    ctx.fillText(vGain + " " + vGainUnit + " / div", 430, 190);
+
+    ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
+    let phaseDivs = Math.floor(Math.random() * (markDivs + spaceDivs)); 
+    
+    // NEW LOGIC: Randomly shift the 0V base line up or down the screen
+    // Can shift between -1 (1 div above center) to +3 (3 divs below center)
+    let baseOffsetDivs = Math.floor(Math.random() * 5) - 1; 
+    let baseY = 180 + (baseOffsetDivs * 40); 
+
+    ctx.beginPath();
+    for(let px = 20; px <= 420; px++) {
+        let divOffset = (px - 20) / 40;
+        let currentCycleTime = (divOffset + phaseDivs) % (markDivs + spaceDivs);
+        // Draw the trace relative to the random baseY rather than the hardcoded 180 center
+        let y = (currentCycleTime < markDivs) ? baseY - (ampDivs * 40) : baseY; 
+        if (px === 20) ctx.moveTo(px, y);
+        else ctx.lineTo(px, y);
+    }
+    ctx.stroke();
+
+    // 6. QUESTION TYPE UI LOGIC 
+    const qType = Math.floor(Math.random() * 3) + 1;
+    currentAnswers.oscQType = qType;
+
+    // Ensure groups are hidden before showing the relevant ones
+    ['inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "none";
+    });
+
+    // ALL scenarios require Amplitude
+    document.getElementById('inputGroupOscAmp').style.display = "inline-block";
+    document.getElementById('inputOscAmp').placeholder = "e.g. 5 " + vGainUnit;
+
+    let solTextStr = "<strong>Amplitude = " + amplitude + " " + vGainUnit + "</strong><br>Logic: " + ampDivs + " divs &times; " + vGain + " " + vGainUnit + "/div<br><br>";
+
+    if (qType === 1) {
+        // Scenario 1: Amplitude, Period, Frequency
+        document.getElementById('inputGroupOscPeriod').style.display = "inline-block";
+        document.getElementById('inputGroupOscFreq').style.display = "inline-block";
+        document.getElementById('inputOscPeriod').placeholder = "e.g. 20 " + tBaseUnit;
+        document.getElementById('inputOscFreq').placeholder = "e.g. 50 Hz";
         
-        currentAnswers.astableValue = parseFloat(freq.toFixed(1)); 
-        currentAnswers.astableTValue = parseFloat(period_ms.toFixed(1)); 
-        currentAnswers.astableUnit = "Hz";  
-        currentAnswers.astableTUnit = "ms";  
+        solTextStr += "<strong>Period (T):</strong> " + (markDivs+spaceDivs) + " divs &times; " + tBase + tBaseUnit + " = " + periodTime + tBaseUnit + "<br>";
+        let fLogic = tBaseUnit === 'ms' ? `1000 / ${periodTime} ms` : `1 / ${periodTime} s`;
+        solTextStr += `<strong>Frequency (f):</strong> ${fLogic} = <strong>${freq_rounded} Hz</strong>`;
 
-        if(inputAstable) inputAstable.placeholder = "e.g. 50 Hz";
-        if(inputAstableT) inputAstableT.placeholder = "e.g. 20 ms";
+    } else if (qType === 2) {
+        // Scenario 2: Amplitude, Mark Time, Mark Space Ratio
+        document.getElementById('inputGroupOscMark').style.display = "inline-block";
+        document.getElementById('inputGroupOscRatio').style.display = "inline-block";
+        document.getElementById('inputOscMark').placeholder = "e.g. 10 " + tBaseUnit;
+        document.getElementById('inputOscRatio').placeholder = "e.g. 1/2";
+        
+        solTextStr += "<strong>Mark Time:</strong> " + markDivs + " divs &times; " + tBase + tBaseUnit + " = " + (markDivs*tBase) + tBaseUnit + "<br>";
+        solTextStr += "<strong>M/S Ratio:</strong> Mark (" + markDivs + " divs) / Space (" + spaceDivs + " divs) = <strong>" + currentAnswers.oscRatioValue + "</strong>";
 
     } else {
-        if(groupRatio) groupRatio.style.display = "block";
-        if(groupStd) groupStd.style.display = "none";
-        if(ratioPrompt) ratioPrompt.innerHTML = "(Simplified fraction, e.g. 2/1)";
+        // Scenario 3: Amplitude, Space Time, Mark Space Ratio
+        document.getElementById('inputGroupOscSpace').style.display = "inline-block";
+        document.getElementById('inputGroupOscRatio').style.display = "inline-block";
+        document.getElementById('inputOscSpace').placeholder = "e.g. 5 " + tBaseUnit;
+        document.getElementById('inputOscRatio').placeholder = "e.g. 1/2";
         
-        currentAnswers.astableRatio = ratioString;
-        if(inputMarkSpace) inputMarkSpace.placeholder = "e.g. 2/1";
+        solTextStr += "<strong>Space Time:</strong> " + spaceDivs + " divs &times; " + tBase + tBaseUnit + " = " + (spaceDivs*tBase) + tBaseUnit + "<br>";
+        solTextStr += "<strong>M/S Ratio:</strong> Mark (" + markDivs + " divs) / Space (" + spaceDivs + " divs) = <strong>" + currentAnswers.oscRatioValue + "</strong>";
     }
 
-    // 6. DRAWING HELPERS
-    const line = (x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
-    const drawNode = (x, y) => { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); };
-    const drawResistorBox = (x, y, val) => {
-        ctx.fillStyle = "white"; ctx.fillRect(x - 12, y - 25, 24, 50); ctx.strokeRect(x - 12, y - 25, 24, 50);
-        ctx.fillStyle = "#000"; ctx.font = "14px Arial"; ctx.textAlign = "right"; ctx.fillText(val, x - 20, y + 5);
-    };
-    const drawCapacitor = (x, y, val, align="right") => {
-        line(x - 15, y - 5, x + 15, y - 5); line(x - 15, y + 5, x + 15, y + 5);
-        ctx.font = "14px Arial"; ctx.textAlign = align;
-        ctx.fillText(val, align === "right" ? x - 25 : x + 25, y + 5);
-    };
+    const solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = solTextStr;
+    
+    if (typeof showUnitInstruction === 'function') showUnitInstruction();
 
-    // 7. DRAWING THE CIRCUIT
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.fillStyle = "#000";
-
-    line(100, 40, 500, 40); ctx.font = "bold 16px Arial"; ctx.textAlign = "left"; ctx.fillText("+Vcc", 510, 45);
-    line(100, 360, 500, 360); ctx.fillText("0V", 510, 365);
-    ctx.strokeRect(260, 120, 140, 140); 
-    ctx.font = "bold 24px Arial"; ctx.textAlign = "center"; ctx.fillText("555", 330, 195);
-
-    const bX = 160;
-    line(bX, 40, bX, 60); drawNode(bX, 40);
-    drawResistorBox(bX, 85, (R1/1000) + " k\u03a9");
-    line(bX, 110, bX, 155); drawNode(bX, 140);
-    drawResistorBox(bX, 180, (R2/1000) + " k\u03a9");
-    line(bX, 205, bX, 285); drawNode(bX, 225);
-    drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
-    line(bX, 295, bX, 360); drawNode(bX, 360);
-
-    line(bX, 140, 260, 140); ctx.font = "14px Arial"; ctx.textAlign = "left"; ctx.fillText("7", 265, 145);
-    line(bX, 225, 220, 225); drawNode(220, 225); line(220, 180, 220, 240);
-    line(220, 180, 260, 180); ctx.fillText("6", 265, 185); 
-    line(220, 240, 260, 240); ctx.fillText("2", 265, 245); 
-
-    // Static Pins & Output 
-    line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
-    line(300, 80, 300, 120); ctx.textAlign = "center"; ctx.fillText("8", 300, 135);
-    line(360, 80, 360, 120); ctx.fillText("4", 360, 135);
-    line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
-    line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
-    drawCapacitor(360, 310, "10 nF", "left");
-    line(360, 315, 360, 360); drawNode(360, 360);
-    line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
-    ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
-
-    // 8. Update Solution Text
-    if (solBox) {
-        let solHTML = "";
-        if (qType === 0) {
-            solHTML = `<strong>Formula:</strong> f = 1.44 / ((R1 + 2R2) × C) &nbsp;|&nbsp; T = 1 / f<br>`;
-            solHTML += `<strong>Working:</strong> f = 1.44 / ((${R1/1000}k + 2×${R2/1000}k) × ${C_uF}μF)<br>`;
-            solHTML += `<strong>Results:</strong> f = <strong>${freq.toFixed(1)} Hz</strong>, T = <strong>${period_ms.toFixed(1)} ms</strong>`;
-        } else {
-            solHTML = `<strong>Formula:</strong> Ratio = (R1 + R2) : R2<br>`;
-            solHTML += `<strong>Working:</strong> (${R1/1000}k + ${R2/1000}k) : ${R2/1000}k = ${num/1000}k : ${den/1000}k<br>`;
-            solHTML += `<strong>Simplified Ratio:</strong> <strong>${ratioString}</strong>`;
-        }
-        solBox.innerHTML = solHTML;
-    }
-
-    // 9. UNHIDE AND SET THE QUESTION TEXT
+    // 7. UNHIDE AND SET THE QUESTION TEXT
     const qText = document.getElementById('questionText');
     if (qText) {
-        if (qType === 0) {
-            qText.innerHTML = "Calculate the astable frequency and period.";
-        } else {
-            // Updated text here so it fits on one line!
-            qText.innerHTML = "Determine the astable mark-space ratio.";
-        }
+        qText.innerHTML = "Determine the oscilloscope measurements.";
         qText.style.display = 'block'; 
     }
 }
