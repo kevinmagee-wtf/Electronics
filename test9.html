@@ -4069,12 +4069,20 @@ function checkAnswers() {
          }
     }
 
-    // 5. Final Feedback and Scoring
+// 5. Final Feedback and Scoring
     activeInputs.forEach((id, index) => {
         const el = document.getElementById(id);
         if (el) {
-            el.style.borderColor = (results[index] === 'correct') ? "#28a745" : "#dc3545";
+            // Check for wrong unit first, then correct, then default to red for wrong
+            if (results[index] === 'wrongunit') {
+                el.style.borderColor = "#fd7e14"; // Orange for unit error
+            } else if (results[index] === 'correct') {
+                el.style.borderColor = "#28a745"; // Green for correct
+            } else {
+                el.style.borderColor = "#dc3545"; // Red for incorrect/empty
+            }
             el.style.borderWidth = "2px";
+            el.style.borderStyle = "solid"; // Ensures CSS doesn't hide the border
         }
     });
 
