@@ -3321,10 +3321,25 @@ function generateGrade9ZenerProblem() {
     ctx.strokeStyle = "black"; ctx.fillStyle = "black";
     drawLine(ctx, loadX, yJunc, loadX, yJunc + 30);
     ctx.strokeRect(loadX - 30, yJunc + 30, 60, 45); 
-    ctx.font = "bold 14px Arial";
-    ctx.fillText("LOAD", loadX - 22, yJunc + 50);
-    ctx.font = "14px Arial";
-    ctx.fillText(RL + " Ω", loadX - 18, yJunc + 68); // Show the RL!
+    
+    // Temporarily center text alignment for the box
+    ctx.textAlign = "center"; 
+    
+    if (switchClosed) {
+        // Switch is closed: Show LOAD on top, resistance on bottom
+        ctx.font = "bold 14px Arial";
+        ctx.fillText("LOAD", loadX, yJunc + 50);
+        ctx.font = "14px Arial";
+        ctx.fillText(RL + " Ω", loadX, yJunc + 68); 
+    } else {
+        // Switch is open: Only show LOAD, vertically centered in the 45px box
+        ctx.font = "bold 14px Arial";
+        ctx.fillText("LOAD", loadX, yJunc + 58); 
+    }
+    
+    // Reset text alignment back to default so other labels don't break!
+    ctx.textAlign = "left"; 
+
     drawLine(ctx, loadX, yJunc + 75, loadX, 360);
     drawNode(ctx, loadX, 360);
 
