@@ -3018,25 +3018,25 @@ function generateZenerProblem() {
     drawLine(ctx, loadX, yJunc + 75, loadX, 360);
     drawNode(ctx, loadX, 360);
 
-    // --- DYNAMIC PINK LABELS ---
+ // --- DYNAMIC PINK LABELS ---
     if (switchClosed) {
         // Draw Closed Switch
         ctx.strokeStyle = "black";
         drawLine(ctx, switchStartX, yJunc, switchEndX, yJunc); 
 
         // Pink IL Label and Arrow
-        ctx.strokeStyle = "black";
+        ctx.strokeStyle = pink; // <-- Changed from "black" to pink
+        ctx.fillStyle = pink;   // <-- Added so the arrowhead fills pink too
         drawArrowOnWire(ctx, switchEndX + 20, yJunc, switchEndX + 45, yJunc); 
 
-        ctx.fillStyle = pink;
-        ctx.font = "bold 16px Arial"; ctx.fillText("I", switchEndX + 28, yJunc - 15);
-        ctx.font = "bold 10px Arial"; ctx.fillText("L", switchEndX + 34, yJunc - 10);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", switchEndX + 44, yJunc - 15);
+        ctx.font = "bold 14px Arial"; ctx.fillText("I", switchEndX + 28, yJunc - 15);
+        ctx.font = "bold 10px Arial"; ctx.fillText("L", switchEndX + 36, yJunc - 10);
+        ctx.font = "bold 14px Arial"; ctx.fillText(" = ?", switchEndX + 46, yJunc - 15);
         
         // Pink VL Label
-        ctx.font = "bold 16px Arial"; ctx.fillText("V", loadX + 40, yJunc + 55);
-        ctx.font = "bold 10px Arial"; ctx.fillText("L", loadX + 52, yJunc + 60);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", loadX + 62, yJunc + 55);
+        ctx.font = "bold 14px Arial"; ctx.fillText("V", loadX + 40, yJunc + 55);
+        ctx.font = "bold 10px Arial"; ctx.fillText("L", loadX + 50, yJunc + 60);
+        ctx.font = "bold 14px Arial"; ctx.fillText(" = ?", loadX + 60, yJunc + 55);
     } else {
         // Draw Open Switch
         ctx.strokeStyle = "black";
@@ -3047,14 +3047,14 @@ function generateZenerProblem() {
         ctx.fillStyle = pink;
         drawArrowOnWire(ctx, xReg, 230, xReg, 255);
 
-        ctx.font = "bold 16px Arial"; ctx.fillText("I", xReg - 70, 255);
-        ctx.font = "bold 10px Arial"; ctx.fillText("Z", xReg - 64, 260);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg - 55, 255);
+        ctx.font = "bold 14px Arial"; ctx.fillText("I", xReg - 65, 255);
+        ctx.font = "bold 10px Arial"; ctx.fillText("Z", xReg - 57, 260);
+        ctx.font = "bold 14px Arial"; ctx.fillText(" = ?", xReg - 47, 255);
         
         // Pink PZ Label
-        ctx.font = "bold 16px Arial"; ctx.fillText("P", xReg + 35, 295);
-        ctx.font = "bold 10px Arial"; ctx.fillText("Z", xReg + 46, 300);
-        ctx.font = "bold 16px Arial"; ctx.fillText(" = ?", xReg + 55, 295);
+        ctx.font = "bold 14px Arial"; ctx.fillText("P", xReg + 35, 295);
+        ctx.font = "bold 10px Arial"; ctx.fillText("Z", xReg + 45, 300);
+        ctx.font = "bold 14px Arial"; ctx.fillText(" = ?", xReg + 55, 295);
     }
 
     // --- FOOTER ---
