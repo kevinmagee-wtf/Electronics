@@ -4054,12 +4054,21 @@ function checkAnswers() {
         }
     });
 
-    if (results.every(r => r === 'correct')) {
+    // UPGRADE: Success is now 'correct' OR 'manydecimals'
+    const isPass = results.every(r => r === 'correct' || r === 'manydecimals');
+    const hasLongDecimals = results.includes('manydecimals');
+
+    if (isPass) {
         // SUCCESS PATH
         isCurrentProblemSolved = true;
         
         if (canEarnPoints) {
-            feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
+            // NEW: Trigger the gold warning if they used too many decimal places
+            if (hasLongDecimals) {
+                feedback.innerHTML = "<span style='color: #D4A017;'>Correct! (Tip: In the future, try rounding to 2 or 3 decimal places max).</span>";
+            } else {
+                feedback.innerHTML = "<span style='color: #198754;'>Correct! Great job!</span>";
+            }
             problemsCorrect++; 
         } else if (viewedSolution) {
             feedback.innerHTML = "<span style='color: #E64097;'>Correct! (Solution viewed, 0 points).</span>";
@@ -4077,8 +4086,8 @@ function checkAnswers() {
         // FAILURE PATH
         canEarnPoints = false; 
         
-        // UPGRADE: Dynamic feedback based on EXACTLY how many boxes they got right!
-        const correctCount = results.filter(r => r === 'correct').length;
+        // UPGRADE: Count both perfect answers AND long-decimal answers as "correct" for partial scores
+        const correctCount = results.filter(r => r === 'correct' || r === 'manydecimals').length;
         
         if (results.includes('wrongunit')) {
             unitErrorMade = true;
@@ -4101,153 +4110,149 @@ function checkAnswers() {
     if (checkansBtn) checkansBtn.style.display = 'none';
     
     if (typeof updateScoreboard === "function") updateScoreboard();
-}
+    
 // **********************************************************************
 /**
- * Upgraded Hybrid Parser
+ * Upgraded Hybrid Parser with Precision Tracking
  * @param {string} str - The raw text from the input box.
  * @param {string} dropdownUnit - (Optional) The value from a unit <select> box.
+ * @returns {Object|null} An object containing { val: number, unit: string, dp: number, tol: number }
  */
 function parseInput(str, dropdownUnit = null) {
     if (!str && str !== 0) return null;
 
-    // 1. Remove all spaces
     let cleanStr = str.toString().trim().replace(/\s+/g, '');
     
-    // 2. NEW HYBRID LOGIC: If a dropdown unit is provided, use it immediately
     if (dropdownUnit !== null && dropdownUnit !== undefined) {
         let val = parseFloat(cleanStr);
-        return { val: isNaN(val) ? null : val, unit: dropdownUnit };
+        // Calculate decimal places for dropdown inputs
+        let dp = cleanStr.includes('.') ? cleanStr.split('.')[1].length : 0;
+        let tol = 0.5 * Math.pow(10, -dp);
+        return { val: isNaN(val) ? null : val, unit: dropdownUnit, dp: dp, tol: tol };
     }
 
-    // 3. Handle Ratios (e.g., 1/3 for Oscilloscope)
     let ratioCheck = cleanStr.toLowerCase().replace(/[a-z]+$/, '');
     if (/^\d+\/\d+$/.test(ratioCheck)) {
         let parts = ratioCheck.split('/');
-        return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio' };
+        return { val: parseFloat(parts[0]) / parseFloat(parts[1]), unit: 'ratio', dp: 0, tol: 0.01 };
     }
 
-    // 4. The "Smart" Unit Matcher (For text boxes without dropdowns)
-    const match = cleanStr.match(/^(-?[\d\.]+)([a-zA-Z\u03a9\u03bcΩμ]+)$/);
+    const match = cleanStr.match(/^(-?[\d\.]+)([a-zA-Z\u03a9\u03bcΩμ]*)$/);
     
     if (match) {
-        let val = parseFloat(match[1]);
+        let numStr = match[1];
+        let val = parseFloat(numStr);
+        
+        // NEW: Calculate how many decimal places they typed
+        let dp = numStr.includes('.') ? numStr.split('.')[1].length : 0;
+        // Calculate their strict rounding tolerance based on their chosen decimals
+        let tol = 0.5 * Math.pow(10, -dp);
+
         let rawUnit = match[2]; 
         let lowerUnit = rawUnit.toLowerCase();
-        let normalizedUnit = "";
+        let normalizedUnit = rawUnit;
 
-        // RESISTANCE: kΩ, kohm, kohms, k, Ω, ohm, ohms, r
+        // ... [Keep all your existing UNIT MATCHING IF/ELSE blocks exactly the same here] ...
         if (rawUnit === 'k' || rawUnit === 'kΩ' || lowerUnit.match(/^(kohm|kohms)$/)) {
             normalizedUnit = "kΩ";
         } else if (rawUnit === 'Ω' || rawUnit === 'r' || lowerUnit.match(/^(ohm|ohms)$/)) {
             normalizedUnit = "Ω";
-        } 
-        
-        // VOLTAGE: V, volts, volt, mV, millivolts
-        else if (lowerUnit.match(/^(millivolts|millivolt|mvolt|mvolts)$/) || rawUnit === 'mV') {
+        } else if (lowerUnit.match(/^(millivolts|millivolt|mvolt|mvolts)$/) || rawUnit === 'mV') {
             normalizedUnit = "mV"; 
         } else if (lowerUnit.match(/^(volts|volt)$/) || rawUnit === 'V') {
             normalizedUnit = "V"; 
-        }
-        
-        // CURRENT: A, amps, amp, amperes, mA, milliamps, mAmp
-        else if (lowerUnit.match(/^(milliamps|milliamp|mamp|mamps)$/) || rawUnit === 'mA') {
+        } else if (lowerUnit.match(/^(milliamps|milliamp|mamp|mamps)$/) || rawUnit === 'mA') {
             normalizedUnit = "mA"; 
         } else if (lowerUnit.match(/^(amps|amp|amperes)$/) || rawUnit === 'A') {
             normalizedUnit = "A"; 
-        }
-        
-        // TIME: s, sec, seconds, ms, milliseconds
-        else if (rawUnit === 'ms' || lowerUnit.match(/^(milliseconds|millisecond)$/)) {
+        } else if (rawUnit === 'ms' || lowerUnit.match(/^(milliseconds|millisecond)$/)) {
             normalizedUnit = "ms";
         } else if (lowerUnit.match(/^(s|sec|secs|seconds|second)$/)) {
             normalizedUnit = "s";
-        }
-
-        // POWER: W, watts, watt, mW, milliwatts (NEW)
-        else if (lowerUnit.match(/^(milliwatts|milliwatt|mwatts|mwatt)$/) || rawUnit === 'mW') {
+        } else if (lowerUnit.match(/^(milliwatts|milliwatt|mwatts|mwatt)$/) || rawUnit === 'mW') {
             normalizedUnit = "mW";
         } else if (lowerUnit.match(/^(watts|watt)$/) || rawUnit === 'W') {
             normalizedUnit = "W";
-        }
-
-        // FREQUENCY: Standardized to "Hz" regardless of user input casing
-        else if (lowerUnit.match(/^(hertz|hz)$/)) {
+        } else if (lowerUnit.match(/^(hertz|hz)$/)) {
             normalizedUnit = 'Hz'; 
         }
-        else {
-            normalizedUnit = rawUnit; 
-        }
 
-        return { val: val, unit: normalizedUnit };
+        // Return the new properties!
+        return { val: val, unit: normalizedUnit, dp: dp, tol: tol };
     }
 
-    // 5. Fallback for numbers only
-    let finalVal = parseFloat(cleanStr);
-    return { val: isNaN(finalVal) ? null : finalVal, unit: '' }; 
-}
+    // Fallback for numbers only
+    let fallbackMatch = cleanStr.match(/^(-?[\d\.]+)/);
+    let val = parseFloat(cleanStr);
+    let dp = 0; let tol = 0.5;
+    
+    if(fallbackMatch) {
+        let numStr = fallbackMatch[1];
+        dp = numStr.includes('.') ? numStr.split('.')[1].length : 0;
+        tol = 0.5 * Math.pow(10, -dp);
+    }
 
+    return { val: isNaN(val) ? null : val, unit: '', dp: dp, tol: tol }; 
+}
 // **********************************************************************
 
+// **********************************************************************
 function validateMatch(parsedInput, expectedVal, expectedUnit) {
-    // 1. BASIC VALIDATION
     if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
     
     let userVal = parsedInput.val;
     let userUnit = (parsedInput.unit || "").trim();
     let targetUnit = (expectedUnit || "").trim(); 
+    
+    // Pull the calculated tolerance and decimals from the parser
+    let userTol = parsedInput.tol !== undefined ? parsedInput.tol : 0;
+    let userDp = parsedInput.dp !== undefined ? parsedInput.dp : 0;
 
-    // 2. RATIO CHECK (Unitless)
     if (targetUnit === 'ratio') {
         return Math.abs(userVal - expectedVal) < 0.01 ? 'correct' : 'wrongval';
     }
     
-    // 3. AUTO-CONVERT EQUIVALENT UNITS (NEW)
+    // AUTO-CONVERT UNITS (Now scaling the userTol as well!)
     if (targetUnit === 'mA' && userUnit === 'A') {
-        userVal *= 1000;
-        userUnit = 'mA';
+        userVal *= 1000; userTol *= 1000; userUnit = 'mA';
     } else if (targetUnit === 'A' && userUnit === 'mA') {
-        userVal /= 1000;
-        userUnit = 'A';
+        userVal /= 1000; userTol /= 1000; userUnit = 'A';
     } else if (targetUnit === 'mW' && userUnit === 'W') {
-        userVal *= 1000;
-        userUnit = 'mW';
+        userVal *= 1000; userTol *= 1000; userUnit = 'mW';
     } else if (targetUnit === 'W' && userUnit === 'mW') {
-        userVal /= 1000;
-        userUnit = 'W';
+        userVal /= 1000; userTol /= 1000; userUnit = 'W';
     } else if (targetUnit === 'mV' && userUnit === 'V') {
-        userVal *= 1000;
-        userUnit = 'mV';
+        userVal *= 1000; userTol *= 1000; userUnit = 'mV';
     } else if (targetUnit === 'V' && userUnit === 'mV') {
-        userVal /= 1000;
-        userUnit = 'V';
+        userVal /= 1000; userTol /= 1000; userUnit = 'V';
     } else if (targetUnit === 'kΩ' && userUnit === 'Ω') {
-        userVal /= 1000;
-        userUnit = 'kΩ';
+        userVal /= 1000; userTol /= 1000; userUnit = 'kΩ';
     } else if (targetUnit === 'Ω' && userUnit === 'kΩ') {
-        userVal *= 1000;
-        userUnit = 'Ω';
+        userVal *= 1000; userTol *= 1000; userUnit = 'Ω';
     }
 
-    // 4. VALUE MATCHING (With Floating Point Safety)
     const diff = Math.abs(userVal - expectedVal);
-    // Allow 1% margin OR a very tiny absolute margin for small values (mA/mV)
-    const valMatch = diff < (Math.abs(expectedVal) * 0.01) || diff < 0.000001;
     
-    // 5. UNIT MATCHING 
-    // Logic for strict casing:
+    // REQUIREMENT 1: Must be mathematically correctly rounded! (Fails truncators)
+    const correctlyRounded = diff <= (userTol + 0.000001); 
+    
+    // REQUIREMENT 2: Must not be over-rounded (e.g., typing '2' for '1.66')
+    // A 2.5% max relative error ensures they gave a reasonable amount of precision.
+    const reasonablePrecision = diff < (Math.abs(expectedVal) * 0.025);
+    
+    const valMatch = correctlyRounded && reasonablePrecision;
+    
     let unitMatch = (userUnit === targetUnit);
-    
-    // BASE UNIT LENIENCY:
-    // Accept blank units if the target is a base unit (Ω, V, A, or W)
     if ((targetUnit === "Ω" || targetUnit === "V" || targetUnit === "A" || targetUnit === "W") && userUnit === "") {
         unitMatch = true;
     }
 
-    // 6. FINAL DECISION
-    if (valMatch && unitMatch) return 'correct';
+    if (valMatch && unitMatch) {
+        // NEW: If they wrote more than 3 decimal places, trigger the soft warning
+        if (userDp > 3) return 'manydecimals'; 
+        return 'correct';
+    }
     
-    // Specialized feedback trigger: Number is right, units are wrong!
     if (valMatch && !unitMatch) return 'wrongunit';
     
     return 'wrongval';
