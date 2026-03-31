@@ -4193,7 +4193,6 @@ function parseInput(str, dropdownUnit = null) {
 
     return { val: isNaN(val) ? null : val, unit: '', dp: dp, tol: tol }; 
 }
-// **********************************************************************
 
 // **********************************************************************
 function validateMatch(parsedInput, expectedVal, expectedUnit) {
@@ -4236,10 +4235,29 @@ function validateMatch(parsedInput, expectedVal, expectedUnit) {
     const correctlyRounded = diff <= (userTol + 0.000001); 
     
     // REQUIREMENT 2: Must not be over-rounded (e.g., typing '2' for '1.66')
-    // A 2.5% max relative error ensures they gave a reasonable amount of precision.
     const reasonablePrecision = diff < (Math.abs(expectedVal) * 0.025);
     
-    const valMatch = correctlyRounded && reasonablePrecision;
+    let valMatch = correctlyRounded && reasonablePrecision;
+    
+    // --- NEW: THE SYSTEM ROUNDING FALLBACK ---
+    // If the system generated a pre-rounded answer (like 13.3) 
+    // and the user typed exact math (13.333333), the strict check fails.
+    // This safely rounds the user's answer down to the system's decimal level to see if they match!
+    if (!valMatch) {
+        let expectedStr = expectedVal.toString();
+        let expectedDp = expectedStr.includes('.') ? expectedStr.split('.')[1].length : 0;
+
+        // If user provided MORE decimals than the system's answer key...
+        if (userDp > expectedDp) {
+            // ...round the user's answer to match the system's decimal places
+            let userRoundedToSystem = Number(userVal.toFixed(expectedDp));
+            // If it perfectly matches the system's answer key now, they are right!
+            if (Math.abs(userRoundedToSystem - expectedVal) < 0.000001) {
+                valMatch = true;
+            }
+        }
+    }
+    // -----------------------------------------
     
     let unitMatch = (userUnit === targetUnit);
     if ((targetUnit === "Ω" || targetUnit === "V" || targetUnit === "A" || targetUnit === "W") && userUnit === "") {
@@ -4247,7 +4265,7 @@ function validateMatch(parsedInput, expectedVal, expectedUnit) {
     }
 
     if (valMatch && unitMatch) {
-        // NEW: If they wrote more than 3 decimal places, trigger the soft warning
+        // If they wrote more than 3 decimal places, trigger the soft warning
         if (userDp > 3) return 'manydecimals'; 
         return 'correct';
     }
