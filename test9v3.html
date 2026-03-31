@@ -2866,7 +2866,7 @@ function generateMonostableProblem() {
         } else if (qType === 2) {
             qText.innerHTML = "Calculate R for the given pulse length.";
         } else {
-            qText.innerHTML = "Calculate C for the given pulse length.";
+            qText.innerHTML = 'Calculate C for the given pulse length.<br><span style="font-weight: normal; font-style: italic; font-size: 15px;">(if needed, type u for convenience instead of μ)</span>';
         }
         qText.style.display = 'block'; // Brings the text back into view!
     }
@@ -4117,6 +4117,12 @@ function checkAnswers() {
  * @param {string} dropdownUnit - (Optional) The value from a unit <select> box.
  * @returns {Object|null} An object containing { val: number, unit: string, dp: number, tol: number }
  */
+/**
+ * Upgraded Hybrid Parser with Precision Tracking & Capacitance Support
+ * @param {string} str - The raw text from the input box.
+ * @param {string} dropdownUnit - (Optional) The value from a unit <select> box.
+ * @returns {Object|null} An object containing { val: number, unit: string, dp: number, tol: number }
+ */
 function parseInput(str, dropdownUnit = null) {
     if (!str && str !== 0) return null;
 
@@ -4151,7 +4157,6 @@ function parseInput(str, dropdownUnit = null) {
         let lowerUnit = rawUnit.toLowerCase();
         let normalizedUnit = rawUnit;
 
-        // ... [Keep all your existing UNIT MATCHING IF/ELSE blocks exactly the same here] ...
         if (rawUnit === 'k' || rawUnit === 'kΩ' || lowerUnit.match(/^(kohm|kohms)$/)) {
             normalizedUnit = "kΩ";
         } else if (rawUnit === 'Ω' || rawUnit === 'r' || lowerUnit.match(/^(ohm|ohms)$/)) {
@@ -4174,6 +4179,17 @@ function parseInput(str, dropdownUnit = null) {
             normalizedUnit = "W";
         } else if (lowerUnit.match(/^(hertz|hz)$/)) {
             normalizedUnit = 'Hz'; 
+        // NEW: Capacitance unit checks added here
+        } else if (rawUnit === 'mF' || lowerUnit.match(/^(mf|millifarad|millifarads)$/)) {
+            normalizedUnit = "mF";
+        } else if (rawUnit === 'μF' || rawUnit === 'uF' || lowerUnit.match(/^(uf|microfarad|microfarads)$/)) {
+            normalizedUnit = "μF";
+        } else if (rawUnit === 'nF' || lowerUnit.match(/^(nf|nanofarad|nanofarads)$/)) {
+            normalizedUnit = "nF";
+        } else if (rawUnit === 'pF' || lowerUnit.match(/^(pf|picofarad|picofarads)$/)) {
+            normalizedUnit = "pF";
+        } else if (rawUnit === 'F' || lowerUnit.match(/^(f|farad|farads)$/)) {
+            normalizedUnit = "F";
         }
 
         // Return the new properties!
@@ -4194,6 +4210,7 @@ function parseInput(str, dropdownUnit = null) {
     return { val: isNaN(val) ? null : val, unit: '', dp: dp, tol: tol }; 
 }
 
+// **********************************************************************
 // **********************************************************************
 function validateMatch(parsedInput, expectedVal, expectedUnit) {
     if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
@@ -4227,6 +4244,19 @@ function validateMatch(parsedInput, expectedVal, expectedUnit) {
         userVal /= 1000; userTol /= 1000; userUnit = 'kΩ';
     } else if (targetUnit === 'Ω' && userUnit === 'kΩ') {
         userVal *= 1000; userTol *= 1000; userUnit = 'Ω';
+    // NEW: Auto-convert Farads, milliFarads, and microFarads
+    } else if (targetUnit === 'μF' && userUnit === 'F') {
+        userVal *= 1000000; userTol *= 1000000; userUnit = 'μF';
+    } else if (targetUnit === 'F' && userUnit === 'μF') {
+        userVal /= 1000000; userTol /= 1000000; userUnit = 'F';
+    } else if (targetUnit === 'mF' && userUnit === 'F') {
+        userVal *= 1000; userTol *= 1000; userUnit = 'mF';
+    } else if (targetUnit === 'F' && userUnit === 'mF') {
+        userVal /= 1000; userTol /= 1000; userUnit = 'F';
+    } else if (targetUnit === 'μF' && userUnit === 'mF') {
+        userVal *= 1000; userTol *= 1000; userUnit = 'μF';
+    } else if (targetUnit === 'mF' && userUnit === 'μF') {
+        userVal /= 1000; userTol /= 1000; userUnit = 'mF';
     }
 
     const diff = Math.abs(userVal - expectedVal);
