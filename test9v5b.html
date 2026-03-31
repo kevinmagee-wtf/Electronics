@@ -1046,14 +1046,28 @@ function handleGenerateClick() {
     if (canvasIPOWorkstation) canvasIPOWorkstation.style.display = 'none';
 
     // ==========================================
-    // ---> ESCAPE THE GRADE 9 LOOPS <---
+    // ---> ESCAPE THE GRADE 9 LOOPS & RESET SCORE <---
     // ==========================================
+    let escapedGrade9 = false;
+
     if (currentMode === 'grade9zener') {
         currentMode = 'zener';
+        escapedGrade9 = true;
     } else if (currentMode === 'grade9divider') {
         currentMode = 'divider';
+        escapedGrade9 = true;
     } else if (currentMode === 'grade9resistance') {
         currentMode = 'resistance';
+        escapedGrade9 = true;
+    }
+
+    // If we just dropped out of a Grade 9 mode, wipe the score!
+    if (escapedGrade9) {
+        problemsAttempted = 0;
+        problemsCorrect = 0;
+        if (typeof updateScoreboard === 'function') {
+            updateScoreboard();
+        }
     }
 
     // ==========================================
