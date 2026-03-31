@@ -4509,13 +4509,20 @@ async function processSubmission() {
     if (!teacherName) { alert("Please select your teacher."); return; }
 
     // Map the technical mode name to a readable topic string
+    // Update this section in your processSubmission function:
     const topicMap = {
-        'analysis': 'Circuit Analysis',
-        'divider': 'Potential Divider',
-        'resistance': 'Total Resistance',
+        'analysis': 'Cct Analysis',
+        'divider': 'Pot Divider',
+        'resistance': 'Tot Resistance',
         'oscilloscope': 'Oscilloscopes',
-        'astable': 'Astable 555 Timer', 
-        'monostable': 'Monostable 555 Timer' // Added Monostable just in case!
+        'astable': 'Astable', 
+        'monostable': 'Monostable',
+        'zener': 'Zener Diodes',
+        'silicon': 'Silicon Diodes',
+        'iposort': 'IPO Sort',
+        'grade9divider': 'G9 Divider',
+        'grade9resistance': 'G9 Resistance',
+        'grade9zener': 'G9 Zener'
     };
     const currentTopic = topicMap[currentMode] || 'Unknown Topic';
 
