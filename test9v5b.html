@@ -875,9 +875,9 @@
             
             <div style="display: flex; gap: 8px; width: 100%;">
                 <button onclick="handleGenerateClick()" style="background-color: #9571B9; color: white; border: none; border-radius: 5px; flex: 1; padding: 10px 5px; font-size: 14px; cursor: pointer; font-weight: bold;">❓ New Question</button>
-                <button id="grade9DividerBtn" class="btn-check" style="color: #000 !important; display: none; flex: 1; padding: 10px 5px; font-size: 14px;" onclick="problemsAttempted=0; problemsCorrect=0; if(typeof updateScoreboard==='function') updateScoreboard(); generateGrade9DividerProblem()">🚀 Grade 9</button>
-                <button id="grade9ResistorBtn" class="btn-check" style="color: #000 !important; display: none; flex: 1; padding: 10px 5px; font-size: 14px;" onclick="problemsAttempted=0; problemsCorrect=0; if(typeof updateScoreboard==='function') updateScoreboard(); generateGrade9Resistance()">🚀 Grade 9</button>
-                <button id="grade9ZenerBtn" class="btn-check" style="color: #000 !important; display: none; flex: 1; padding: 10px 5px; font-size: 14px;" onclick="problemsAttempted=0; problemsCorrect=0; if(typeof updateScoreboard==='function') updateScoreboard(); generateGrade9ZenerProblem()">🚀 Grade 9</button>
+                <button id="grade9DividerBtn" class="btn-check" style="display: none;" onclick="transitionToGrade9(generateGrade9DividerProblem)">🚀 Grade 9</button>
+                <button id="grade9ResistorBtn" class="btn-check" style="display: none;" onclick="transitionToGrade9(generateGrade9Resistance)">🚀 Grade 9</button>
+                <button id="grade9ZenerBtn" class="btn-check" style="display: none;" onclick="transitionToGrade9(generateGrade9ZenerProblem)">🚀 Grade 9</button>
             </div>
 
             <div id="solutions" class="solutions" style="display: none; margin-top: 10px; padding: 12px; background-color: #f8f9fa; border-left: 4px solid #E64097;">
@@ -1135,6 +1135,33 @@ const scenarioTracker = {
     grade9zener: 0
     // add any others you need here!
 };
+
+    // ==========================================
+// GRADE 9 TRANSITION WARNING
+// ==========================================
+function transitionToGrade9(generatorFunction) {
+    // If they have actually started doing problems, show the warning
+    if (problemsAttempted > 0) {
+        const wantsToProceed = confirm("Entering Grade 9 mode will reset your current score to 0. Do you want to continue?");
+        
+        // If they click "Cancel", stop right here
+        if (!wantsToProceed) {
+            return; 
+        }
+    }
+    
+    // If they clicked "OK" (or if their score was already 0), do the reset
+    problemsAttempted = 0;
+    problemsCorrect = 0;
+    if (typeof updateScoreboard === 'function') {
+        updateScoreboard();
+    }
+    
+    // Run the specific Grade 9 function passed in
+    if (typeof generatorFunction === 'function') {
+        generatorFunction();
+    }
+}
 
 //**************************************************************
 
