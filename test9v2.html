@@ -1063,6 +1063,15 @@ function showUnitInstruction() {
     }
 }
 
+    // This is used to cycle though the various question scenarios for individual pages
+const scenarioTracker = {
+    colorcode: 0,
+    oscilloscope: 0,
+    analysis: 0,
+    zener: 0
+    // add any others you need here!
+};
+
 //**************************************************************
 
 // Used exclusively when asking for Ohms (Resistance)  
@@ -2164,7 +2173,9 @@ function generateColorCodeProblem(ctx, canvas) {
     ctx.beginPath(); ctx.moveTo(100, 210); ctx.lineTo(500, 210); ctx.stroke(); 
     ctx.fillStyle = '#f4d3a6'; ctx.fillRect(200, 170, 200, 80); ctx.strokeRect(200, 170, 200, 80); 
 
-    const qType = Math.floor(Math.random() * 2);
+   // Use the global tracker to alternate perfectly between 0 and 1
+    const qType = scenarioTracker.colorcode;
+    scenarioTracker.colorcode = (scenarioTracker.colorcode + 1) % 2;
     
     // Crucial for checkAnswers to know which sub-mode to grade
     window.colorCodeSubMode = (qType === 0) ? 'colorToValue' : 'valueToColor'; 
