@@ -1112,15 +1112,14 @@ function showOhmUnitInstruction() {
         qText.style.display = 'block';
     }
 }
-// Used exclusively when giving dp instruction  
+// Function name kept the same so you don't break existing calls!
 function showDPinstruction() {
     const qText = document.getElementById('questionText');
     if (qText) {
         qText.style.minHeight = "60px"; // Reserves space so the buttons don't jump
-//        qText.innerHTML = `<div style="font-size: 16px; line-height: 1.2;">Enter value to 1 dp followed by a standard unit symbol<br>
-//                           <em style="font-size: 15px; color: #666; font-weight: normal;">(e.g., 5.2 A, 12.0 mV).</em></div>`;
         
-       qText.innerHTML = ` <em style="font-size: 15px; color: #666; font-weight: normal;">Enter value to <strong>1 dp</strong> followed by a standard unit symbol.</em>`;       
+        // UPGRADED: Removed the strict "1 dp" requirement to match your new flexible validation engine!
+        qText.innerHTML = ` <em style="font-size: 15px; color: #666; font-weight: normal;">Enter your value followed by a standard unit symbol <br>(e.g., 12 V, 5.2 mA, 0.45 A).</em>`;       
         
         qText.style.display = 'block';
     }
@@ -3243,8 +3242,8 @@ function generateGrade9ZenerProblem() {
             // Drop the Grade 9 Zener text, adding the rounding rules directly to the list!
             qText.innerHTML = `<div style="margin-bottom: 10px;">
                 <strong style="color: #D4A017;">🏆 Grade 9 Challenge.</strong><br>The switch S is <strong>closed</strong>. Calculate:<br>
-                1. Load current (to 1 sig fig)<br>
-                2. Zener current (to 1 dp)
+                1. Load current<br>
+                2. Zener current
             </div>
             <em style="font-size: 15px; color: #666; font-weight: normal;">Enter each value followed by a standard unit symbol.</em>`;
             
@@ -3288,7 +3287,7 @@ function generateGrade9ZenerProblem() {
             // Drop the Grade 9 Zener text, adding the rounding rules directly to the list!
             qText.innerHTML = `<div style="margin-bottom: 10px;">
                 <strong style="color: #D4A017;">🏆 Grade 9 Challenge.</strong><br>The switch S is <strong>open</strong>. Calculate:<br>
-                1. Max Zener power dissipation (to 1 dp)<br>
+                1. Max Zener power dissipation<br>
                 2. Min Zener power rating needed (to 1 sig fig)
                 
             </div>
