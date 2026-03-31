@@ -2881,14 +2881,34 @@ function generateZenerProblem() {
     // Hide the solutions box when generating a new problem!
     if (solContainer) solContainer.style.display = "none"; 
 
-    // 1. BASIC GCSE MATH (No parallel resistance calculations)
-    const Vin = Math.floor(Math.random() * 10) + 6; // 6V - 15V
-    const Vz = (Math.floor(Math.random() * 41) + 20) / 10; // 2.0V - 6.0V
-    const Iz_min = Math.floor(Math.random() * 6) + 5; // 5mA - 10mA
-    const Ir_mA = Math.floor(Math.random() * 401) + 200; // 200mA - 600mA (Total Supply Current)
+    // =======================================================
+    // 1. SCENARIO TRACKER LOGIC (4 Scenarios)
+    // =======================================================
+    const qType = scenarioTracker.zener;
+    scenarioTracker.zener = (scenarioTracker.zener + 1) % 4;
 
-    const switchClosed = Math.random() > 0.5;
+    // Scenarios:
+    // 0: Closed Switch, Given Current
+    // 1: Open Switch, Given Current
+    // 2: Closed Switch, Given Resistor
+    // 3: Open Switch, Given Resistor
+
+    const switchClosed = (qType === 0 || qType === 2);
+    const givenResistor = (qType === 2 || qType === 3);
     currentZenerState = switchClosed ? "closed" : "open"; 
+
+    // =======================================================
+    // 2. BASIC GCSE MATH 
+    // =======================================================
+    // We carefully pick these numbers so that if they have to calculate
+    // current via Ohm's law (V / R), it results in a clean whole integer.
+    const Vin = Math.floor(Math.random() * 7) + 6; // 6V - 12V
+    const Vz = Math.floor(Math.random() * 3) + 2; // 2V - 4V
+    const Vr = Vin - Vz; // Voltage drop across the series resistor
+    const R_ohms = [10, 20, 25, 50][Math.floor(Math.random() * 4)]; // Clean divisors
+    
+    const Ir_mA = (Vr / R_ohms) * 1000; // Total Supply Current
+    const Iz_min = Math.floor(Math.random() * 6) + 5; // 5mA - 10mA
 
     if (typeof currentAnswers === "undefined") currentAnswers = {};
     
@@ -2897,13 +2917,15 @@ function generateZenerProblem() {
     const VL_at_max = Vz;
     const Pz_open_mW = Ir_mA * Vz; // When open, all current flows through Zener
 
-    // SAVE FIX: Names updated to strictly match checkAnswers (iL, vL, iZ, pZ)
+    // Store Answers
     currentAnswers.iL = parseFloat(IL_max.toFixed(1));
     currentAnswers.vL = parseFloat(VL_at_max.toFixed(1));
     currentAnswers.iZ = parseFloat(Ir_mA.toFixed(1));
     currentAnswers.pZ = parseFloat(Pz_open_mW.toFixed(1));
 
-    // 2. UI SETUP (Unhide the specific Zener Questions)
+    // =======================================================
+    // 3. UI SETUP
+    // =======================================================
     const zenerMainGroup = document.getElementById('inputGroupZener');
     if (zenerMainGroup) zenerMainGroup.style.display = "block";
 
@@ -2924,7 +2946,9 @@ function generateZenerProblem() {
         }
     }
 
-    // 3. DRAWING 
+    // =======================================================
+    // 4. DRAWING 
+    // =======================================================
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.fillStyle = "black";
@@ -2943,15 +2967,24 @@ function generateZenerProblem() {
     const loadX = 380;             
     const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
-    // --- LEFT BRANCH (Total Current Arrow & Zener) ---
-    // Total Current Arrow + Label
+// --- LEFT BRANCH (Total Current Arrow & Zener) ---
     ctx.font = "16px Arial";
-    ctx.fillText(Ir_mA + " mA", xReg - 75, 90); 
+    if (givenResistor) {
+        ctx.fillText("I = ?", xReg - 55, 90); 
+    } else {
+        ctx.fillText(Ir_mA + " mA", xReg - 75, 90); 
+    }
     drawLine(ctx, xReg, 60, xReg, 110); 
     drawArrowOnWire(ctx, xReg, 70, xReg, 90); // Arrow pointing down
 
-    // Series Resistor (No value text)
+    // Series Resistor 
+    if (givenResistor) {
+        ctx.font = "16px Arial";
+        // MATCHED TO GRADE 9 FORMATTING: Placed to the left of the component
+        ctx.fillText(R_ohms + " Ω", xReg - 75, 140);
+    }
     drawComponent(ctx, 'fixed', xReg, 135); 
+    
     drawLine(ctx, xReg, 160, xReg, 360); 
 
     // Zener Diode
@@ -3028,32 +3061,49 @@ function generateZenerProblem() {
     ctx.font = "italic 16px Arial";
     ctx.fillText("Minimum Zener holding current = " + Iz_min + " mA", 70, 390);
 
-    // --- 4. BUILD THE SOLUTION TEXT ---
+    // =======================================================
+    // 5. BUILD THE SOLUTION TEXT
+    // =======================================================
     if (solBox) {
+        let solHTML = "";
+        
+        if (givenResistor) {
+            solHTML += `
+                <strong>Step 1: Supply Current (I<sub>TOTAL</sub>):</strong><br>
+                Calculate voltage across resistor: V<sub>R</sub> = ${Vin}V - ${Vz}V = ${Vr}V.<br>
+                I<sub>TOTAL</sub> = V / R = ${Vr}V / ${R_ohms}Ω = ${(Vr/R_ohms).toFixed(3)} A = <strong>${Ir_mA} mA</strong><br><br>
+            `;
+        }
+
         if (switchClosed) {
-            solBox.innerHTML = `
-                <strong>1. Max Load Current (I<sub>L</sub>):</strong><br>
+            let stepNum = givenResistor ? 2 : 1;
+            solHTML += `
+                <strong>${stepNum}. Max Load Current (I<sub>L</sub>):</strong><br>
                 Subtract minimum Zener holding current from the total supply current.<br>
                 I<sub>L</sub> = ${Ir_mA} mA - ${Iz_min} mA = <strong>${currentAnswers.iL} mA</strong><br><br>
                 
-                <strong>2. Load Voltage (V<sub>L</sub>):</strong><br>
+                <strong>${stepNum + 1}. Load Voltage (V<sub>L</sub>):</strong><br>
                 The Zener diode locks the voltage in parallel.<br>
                 V<sub>L</sub> = V<sub>Z</sub> = <strong>${currentAnswers.vL} V</strong>
             `;
         } else {
-            solBox.innerHTML = `
-                <strong>1. Zener Current (I<sub>Z</sub>):</strong><br>
+            let stepNum = givenResistor ? 2 : 1;
+            solHTML += `
+                <strong>${stepNum}. Zener Current (I<sub>Z</sub>):</strong><br>
                 With the switch open, all supply current goes through the Zener.<br>
                 I<sub>Z</sub> = I<sub>TOTAL</sub> = <strong>${currentAnswers.iZ} mA</strong><br><br>
                 
-                <strong>2. Zener Power (P<sub>Z</sub>):</strong><br>
+                <strong>${stepNum + 1}. Zener Power (P<sub>Z</sub>):</strong><br>
                 Power = Current &times; Voltage.<br>
                 P<sub>Z</sub> = ${currentAnswers.iZ} mA &times; ${currentAnswers.vL} V = <strong>${currentAnswers.pZ} mW</strong>
             `;
         }
+        solBox.innerHTML = solHTML;
     }
 
-    // ---> NEW: 5. UNHIDE AND SET THE QUESTION TEXT <---
+    // =======================================================
+    // 6. UNHIDE AND SET THE QUESTION TEXT 
+    // =======================================================
     const qText = document.getElementById('questionText');
     if (qText) {
         let questionHTML = "";
@@ -3081,8 +3131,6 @@ function generateZenerProblem() {
         qText.innerHTML = questionHTML;
         qText.style.display = 'block'; 
     }
-    
-    // Note: We deliberately removed showUnitInstruction() here so it doesn't erase our text!
 }
     
 function generateGrade9ZenerProblem() {
