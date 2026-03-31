@@ -1045,10 +1045,11 @@ function handleGenerateClick() {
     const canvasIPOWorkstation = document.getElementById('canvasIPOWorkstation');
     if (canvasIPOWorkstation) canvasIPOWorkstation.style.display = 'none';
 
-    // ==========================================
+// ==========================================
     // ---> ESCAPE THE GRADE 9 LOOPS & RESET SCORE <---
     // ==========================================
     let escapedGrade9 = false;
+    let previousMode = currentMode; // Remember where we were just in case they cancel!
 
     if (currentMode === 'grade9zener') {
         currentMode = 'zener';
@@ -1061,7 +1062,17 @@ function handleGenerateClick() {
         escapedGrade9 = true;
     }
 
-    // If we just dropped out of a Grade 9 mode, wipe the score!
+    // If we are dropping out of a Grade 9 mode AND they have a score, warn them!
+    if (escapedGrade9 && problemsAttempted > 0) {
+        const wantsToProceed = confirm("Warning: Returning to standard mode will reset your Grade 9 score to 0. Do you want to continue?");
+        
+        if (!wantsToProceed) {
+            currentMode = previousMode; // Put them back in Grade 9 mode
+            return; // Stop the rest of the function from running
+        }
+    }
+
+    // If they clicked "OK" (or if their score was 0), wipe the score
     if (escapedGrade9) {
         problemsAttempted = 0;
         problemsCorrect = 0;
