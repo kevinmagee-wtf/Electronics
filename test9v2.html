@@ -3343,12 +3343,14 @@ function generateGrade9ZenerProblem() {
     ctx.beginPath(); ctx.arc(switchStartX, yJunc, 3, 0, Math.PI * 2); ctx.stroke(); 
     ctx.beginPath(); ctx.arc(switchEndX, yJunc, 3, 0, Math.PI * 2); ctx.stroke(); 
     
+    // Switch S perfectly centered underneath
     ctx.fillStyle = "black";
+    ctx.font = "bold 16px Arial";
     ctx.textAlign = "center";
-    ctx.fillText(switchClosed ? "S (CLOSED)" : "S (OPEN)", (switchStartX + switchEndX) / 2, yJunc + 25); 
-    ctx.textAlign = "left"; 
+    ctx.fillText("S", (switchStartX + switchEndX) / 2, yJunc + 25); 
+    ctx.textAlign = "left"; // Reset for other text
 
-    drawLine(ctx, switchEndX, yJunc, loadX, yJunc); 
+    drawLine(ctx, switchEndX, yJunc, loadX, yJunc);
 
     // --- RIGHT BRANCH (LOAD Box with RL!) ---
     ctx.strokeStyle = "black"; ctx.fillStyle = "black";
