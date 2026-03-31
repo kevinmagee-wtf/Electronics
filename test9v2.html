@@ -3112,8 +3112,8 @@ function generateZenerProblem() {
         if (switchClosed) {
             questionHTML = `<div style="font-size: 16px; line-height: 1.5; margin-bottom: 10px; color: #333;">
                 <strong>Switch S is closed.</strong> Calculate:<br>
-                1. The maximum load current<br>
-                2. The voltage across the load.
+                1. The voltage across the load.<br>
+                2. The maximum load current.
             </div>`;
         } else {
             questionHTML = `<div style="font-size: 16px; line-height: 1.5; margin-bottom: 10px; color: #333;">
@@ -4281,20 +4281,20 @@ const blueBox = `text-align:left; background:#e0f8ff; color:#0077b6; padding:15p
             helpText = `
                 <div style="${blueBox}">
                     <strong>💡 Hint (Switch CLOSED):</strong> The Zener is in parallel with the load.<br>
-                    1. This means Load Voltage (V<sub>L</sub>) equals Zener Voltage (V<sub>Z</sub>).<br>
-                    2. Use Ohm's Law (<b>I = V / R</b>) on the load resistor to find I<sub>L</sub>.
+                    1. The load voltage will always match the Zener voltage.<br>
+                    2. The Zener diode only passes the current that the load doesn't use. The load current reaches its maximum when the Zener current drops to the minimum holding current needed to maintain the Zener voltage.."
                 </div>`;
         }
-    //**************    
+  
     } else if (currentMode === 'grade9zener') {
-        // NEW: Grade 9 specific hints!
+        // Grade 9 specific hints
         // Check the Grade 9 specific ID to see if the switch is open
         const isG9SwitchOpen = document.getElementById('g9ZenerOpen') && document.getElementById('g9ZenerOpen').style.display !== 'none';
         
         if (isG9SwitchOpen) {
             helpText = `
                 <div style="${blueBox}">
-                    <strong>💡 Hint (Switch OPEN):</strong> The Zener diode power rating can never be below the power dissipated by the existing circuit set up.
+                    <strong>💡 Hint (Switch OPEN):</strong> The Zener diode's power rating must always be greater than or equal to the power it actually dissipates in the circuit.
                 </div>`;
         } else {
             helpText = `
