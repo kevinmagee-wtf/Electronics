@@ -2366,7 +2366,9 @@ function generateOscilloscopeProblem() {
     ctx.stroke();
 
     // 6. QUESTION TYPE UI LOGIC 
-    const qType = Math.floor(Math.random() * 3) + 1;
+    // THE FIX: Use the global tracker to alternate 0, 1, 2
+    const qType = scenarioTracker.oscilloscope;
+    scenarioTracker.oscilloscope = (scenarioTracker.oscilloscope + 1) % 3;
     currentAnswers.oscQType = qType;
 
     // Ensure groups are hidden before showing the relevant ones
@@ -2381,7 +2383,7 @@ function generateOscilloscopeProblem() {
 
     let solTextStr = "<strong>Amplitude = " + amplitude + " " + vGainUnit + "</strong><br>Logic: " + ampDivs + " divs &times; " + vGain + " " + vGainUnit + "/div<br><br>";
 
-    if (qType === 1) {
+    if (qType === 0) {
         // Scenario 1: Amplitude, Period, Frequency
         document.getElementById('inputGroupOscPeriod').style.display = "inline-block";
         document.getElementById('inputGroupOscFreq').style.display = "inline-block";
@@ -2392,7 +2394,7 @@ function generateOscilloscopeProblem() {
         let fLogic = tBaseUnit === 'ms' ? `1000 / ${periodTime} ms` : `1 / ${periodTime} s`;
         solTextStr += `<strong>Frequency (f):</strong> ${fLogic} = <strong>${freq_rounded} Hz</strong>`;
 
-    } else if (qType === 2) {
+    } else if (qType === 1) {
         // Scenario 2: Amplitude, Mark Time, Mark Space Ratio
         document.getElementById('inputGroupOscMark').style.display = "inline-block";
         document.getElementById('inputGroupOscRatio').style.display = "inline-block";
@@ -3804,9 +3806,10 @@ function checkAnswers() {
     else if (currentMode === 'oscilloscope') {
         // ALL scenarios use Amplitude
         activeInputs = ['inputOscAmp'];
-        if (currentAnswers.oscQType === 1) {
+        // THE FIX: Changed to 0 and 1 to match the new scenario tracker logic
+        if (currentAnswers.oscQType === 0) {
             activeInputs.push('inputOscPeriod', 'inputOscFreq');
-        } else if (currentAnswers.oscQType === 2) {
+        } else if (currentAnswers.oscQType === 1) {
             activeInputs.push('inputOscMark', 'inputOscRatio');
         } else {
             activeInputs.push('inputOscSpace', 'inputOscRatio');
@@ -3877,10 +3880,11 @@ function checkAnswers() {
         // ALWAYS grade amplitude
         results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscAmp').value)), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
         
-        if (currentAnswers.oscQType === 1) {
+        // THE FIX: Changed to 0 and 1 here as well
+        if (currentAnswers.oscQType === 0) {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscPeriod').value)), currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscFreq').value)), currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
-        } else if (currentAnswers.oscQType === 2) {
+        } else if (currentAnswers.oscQType === 1) {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscMark').value)), currentAnswers.oscMarkValue, currentAnswers.oscMarkUnit));
             const userRatio = document.getElementById('inputOscRatio').value;
             results.push(acceptSpaces(userRatio) === acceptSpaces(currentAnswers.oscRatioValue) ? 'correct' : 'wrongval');
