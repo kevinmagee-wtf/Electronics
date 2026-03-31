@@ -4493,6 +4493,101 @@ function toggleSolutions() {
     if (checkansBtn) checkansBtn.style.display = 'none';
 }
 
+async function processSubmission() {
+            const studentName = document.getElementById('studentNameInput').value.trim();
+            const teacherName = document.getElementById('teacherSelect').value;
+
+            if (!studentName) { alert("Please enter your name."); return; }
+            if (!teacherName) { alert("Please select your teacher."); return; }
+
+            // Map the technical mode name to a readable topic string
+            const topicMap = {
+            'analysis': 'Circuit Analysis',
+            'divider': 'Potential Divider',
+            'resistance': 'Total Resistance',
+            'oscilloscope': 'Oscilloscopes',
+            'astable': 'Astable 555 Timer' // <--- ADD THIS LINE
+            };
+            const currentTopic = topicMap[currentMode] || 'Unknown Topic';
+
+            closeModal();
+
+            // 1. Loading State
+            const downloadBtn = document.getElementById('downloadBtn');
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = "&#8987; Submitting..."; 
+            downloadBtn.disabled = true;
+
+            // 2. Generate Certificate Image
+            const certCanvas = document.createElement('canvas');
+            certCanvas.width = 600; certCanvas.height = 420;
+            const ctx = certCanvas.getContext('2d');
+
+            ctx.fillStyle = "#fdf4f8"; ctx.fillRect(0, 0, certCanvas.width, certCanvas.height);
+            ctx.strokeStyle = brandPink; ctx.lineWidth = 12; ctx.strokeRect(6, 6, 588, 408);
+            ctx.strokeStyle = brandBlack; ctx.lineWidth = 2; ctx.strokeRect(18, 18, 564, 384);
+
+            ctx.textAlign = "center";
+            ctx.fillStyle = brandBlack; ctx.font = "bold 36px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("ABINGDON ELECTRONICS", 300, 80);
+
+            ctx.fillStyle = brandPink; ctx.font = "italic 24px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Basics Knowledge Check", 300, 120);
+
+            ctx.beginPath(); ctx.moveTo(150, 145); ctx.lineTo(450, 145); ctx.lineWidth = 2; ctx.stroke();
+
+            ctx.fillStyle = brandBlack; ctx.font = "28px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Student: " + studentName, 300, 190);
+            
+            ctx.fillStyle = "#555"; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Topic: " + currentTopic, 300, 225);
+
+            ctx.fillStyle = brandPink; ctx.font = "bold 56px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText(problemsCorrect + " / " + problemsAttempted, 300, 305);
+            
+            ctx.fillStyle = brandBlack; ctx.font = "20px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Questions Answered Correctly", 300, 335);
+
+            const today = new Date().toLocaleDateString('en-GB'); 
+            ctx.fillStyle = "#666"; ctx.font = "16px 'Segoe UI', Arial, sans-serif";
+            ctx.fillText("Completed on: " + today + " | Teacher: " + teacherName, 300, 380);
+
+            const imageURI = certCanvas.toDataURL("image/png");
+            const downloadLink = document.createElement('a');
+            const safeName = studentName.replace(/[^a-zA-Z0-9]/g, '_');
+            downloadLink.download = "Electronics_Score_" + safeName + ".png"; 
+            downloadLink.href = imageURI;
+            downloadLink.click();
+
+            // 3. Send Data to Google Sheets
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxrHYNKqWSa3BMJNSqS99KQkd7ME1zrTy_ba1RlmhShEzpTuPw6Tg7l9rIpLqC3Ki9f/exec'; // <--- PASTE YOUR URL HERE!
+            
+            const formData = new URLSearchParams();
+            formData.append('name', studentName);
+            formData.append('teacher', teacherName);
+            formData.append('topic', currentTopic);
+            formData.append('correct', problemsCorrect);
+            formData.append('attempted', problemsAttempted);
+
+            try {
+                await fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' });
+                console.log('Score submitted successfully.');
+                alert("Score submitted to " + teacherName + " and certificate downloaded!");
+            } catch (error) {
+                console.error('Error submitting score!', error.message);
+                alert("Certificate downloaded! (Note: Could not connect to Google Sheets to send score to teacher.)");
+            } finally {
+                // 4. Reset Everything
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+
+                problemsAttempted = 0;
+                problemsCorrect = 0;
+                updateScoreboard();
+                generateProblem();
+            }
+}
+
 // **********************************************************************   
 // ==========================================
 // FINAL INITIALIZATION (Place at the end of your .js file)
