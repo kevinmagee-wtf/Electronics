@@ -3075,17 +3075,16 @@ function generateZenerProblem() {
                 I<sub>TOTAL</sub> = V / R = ${Vr}V / ${R_ohms}Ω = ${(Vr/R_ohms).toFixed(3)} A = <strong>${Ir_mA} mA</strong><br><br>
             `;
         }
-
         if (switchClosed) {
             let stepNum = givenResistor ? 2 : 1;
             solHTML += `
-                <strong>${stepNum}. Max Load Current (I<sub>L</sub>):</strong><br>
-                Subtract minimum Zener holding current from the total supply current.<br>
-                I<sub>L</sub> = ${Ir_mA} mA - ${Iz_min} mA = <strong>${currentAnswers.iL} mA</strong><br><br>
-                
-                <strong>${stepNum + 1}. Load Voltage (V<sub>L</sub>):</strong><br>
+                <strong>${stepNum}. Load Voltage (V<sub>L</sub>):</strong><br>
                 The Zener diode locks the voltage in parallel.<br>
-                V<sub>L</sub> = V<sub>Z</sub> = <strong>${currentAnswers.vL} V</strong>
+                V<sub>L</sub> = V<sub>Z</sub> = <strong>${currentAnswers.vL} V</strong><br><br>
+                
+                <strong>${stepNum + 1}. Max Load Current (I<sub>L</sub>):</strong><br>
+                Subtract the minimum Zener holding current from the total supply current.<br>
+                I<sub>L</sub> = ${Ir_mA} mA - ${Iz_min} mA = <strong>${currentAnswers.iL} mA</strong>
             `;
         } else {
             let stepNum = givenResistor ? 2 : 1;
@@ -4282,7 +4281,7 @@ const blueBox = `text-align:left; background:#e0f8ff; color:#0077b6; padding:15p
                 <div style="${blueBox}">
                     <strong>💡 Hint (Switch CLOSED):</strong> The Zener is in parallel with the load.<br>
                     1. The load voltage will always match the Zener voltage.<br>
-                    2. The Zener diode only passes the current that the load doesn't use. The load current reaches its maximum when the Zener current drops to the minimum holding current needed to maintain the Zener voltage.."
+                    2. The Zener diode only passes the current that the load doesn't use. The load current reaches its maximum when the Zener current drops to the minimum holding current needed to maintain the Zener voltage."
                 </div>`;
         }
   
