@@ -58,6 +58,11 @@
             outline: none; /* Also removes the blue focus outline on some browsers */
     }
     
+   /* .tabs (The Container): This is the wrapper box that holds your buttons. Because it uses display: flex; and justify-content: center;, 
+    it forces all the buttons inside it to sit in a perfectly centered row. 
+    The most important part is flex-wrap: wrap;—this tells the browser, 
+    "If the screen is too small (like on a phone), wrap the extra buttons onto a new line below instead of squashing them together."*/
+    
     .tabs { 
         display: flex; 
         justify-content: center; 
@@ -83,7 +88,9 @@
         margin-bottom: 25px;
         flex-wrap: wrap; 
     }
-        
+    /* .tab (The Individual Button): This is the styling for the buttons themselves. 
+    It gives them their nice pink background (#E64097), makes the text bold and white, rounds the corners (border-radius: 8px), 
+    and ensures they are all at least a certain width (min-width: 120px) so they look uniform.    */
     .tab { 
         padding: 10px 25px; 
         font-size: 16px; 
@@ -754,6 +761,7 @@
     <button class="tab" id="tab-divider" onclick="safeSwitchTab('divider')">Potential Divider</button>
     <button class="tab" id="tab-resistance" onclick="safeSwitchTab('resistance')">Total Resistance</button>
     <button class="tab" id="tab-colorcode" onclick="safeSwitchTab('colorcode')">Colour Codes</button>
+    <button class="tab" id="tab-power" onclick="safeSwitchTab('power')">Power</button>
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
 </div>
 
@@ -868,15 +876,35 @@
                     <span id="unitSymbolR" style="font-size: 20px; font-weight: bold; margin-left: 5px; color: #333;">&Omega;</span>
                 </div>
 
-                     <div class="input-group" id="inputGroupMonostable" style="display:none; width: 100%; margin-top: 15px; margin-bottom: 15px;">
-                <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; width: 100%;">
-                    <label id="labelMonostable" for="inputMonostable" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px; margin-bottom: 0;">T = </label>
-                    <input type="text" id="inputMonostable" placeholder="e.g. 5.5 s" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+<!-- Input group Power -->
+                <div class="input-group" id="inputGroupP" style="display:none; align-items: center; margin-bottom: 10px;">
+                    <label id="labelP" for="inputP">P = </label>
+                    <input type="text" id="inputP" placeholder="e.g. 15 W">
+                    <span id="unitSymbolP" style="font-size: 20px; font-weight: bold; margin-left: 8px; color: #333;"></span>
+                </div>
+
+                <div class="input-group" id="inputGroupPowerRating" style="display:none; align-items: center; margin-bottom: 10px; flex-direction: column; gap: 5px;">
+                    <label for="selectPowerRating" style="font-weight: bold; color: #E64097;">Select Safe Power Rating:</label>
+                    <select id="selectPowerRating" style="padding: 10px; border-radius: 8px; border: 2px solid #ccc; font-size: 16px; width: 150px; cursor: pointer;">
+                        <option value="">-- Select --</option>
+                        <option value="0.25">0.25 W</option>
+                        <option value="1">1 W</option>
+                        <option value="2">2 W</option>
+                        <option value="5">5 W</option>
+                        <option value="10">10 W</option>
+                    </select>
+                </div>
+<!-- Input group Monostable -->
+                <div class="input-group" id="inputGroupMonostable" style="display:none; width: 100%; margin-top: 15px; margin-bottom: 15px;">
+                    <div style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; width: 100%;">
+                        <label id="labelMonostable" for="inputMonostable" style="font-weight: bold; width: 130px; text-align: right; margin-right: 10px; margin-bottom: 0;">T = </label>
+                        <input type="text" id="inputMonostable" placeholder="e.g. 5.5 s" style="width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                    
+                    <div id="monostableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; margin-top: 8px; font-style: italic; text-align: center; width: 100%;"></div>
                 </div>
                 
-                <div id="monostableInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; margin-top: 8px; font-style: italic; text-align: center; width: 100%;"></div>
-            </div>
-                    
+<!-- Input group astable -->                
    <div id="inputGroupAstableMain" style="display:none; width: 100%;">
 
     <div id="inputGroupAstable" style="display:none; flex-direction: column; gap: 15px; align-items: center; margin-top: 15px; margin-bottom: 15px;">
@@ -911,7 +939,6 @@
 
         <div id="ratioInstruction" class="instruction-text" style="color: #6c757d; font-size: 0.85em; text-align: center; width: 100%; margin-top: 10px;"></div>
     </div>
-
 </div>
 <div id="oscilloscopeInputs" style="display:none; width: 100%;">
     <div class="input-group" id="inputGroupOscAmp" style="display:none; width: 100%; margin-bottom: 15px;">
@@ -1063,6 +1090,7 @@
                 <button id="grade9DividerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9DividerProblem)">🚀 Grade 9</button>
                 <button id="grade9ResistorBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9Resistance)">🚀 Grade 9</button>
                 <button id="grade9ZenerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9ZenerProblem)">🚀 Grade 9</button>
+                <button id="grade9PowerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9Power)">🚀 Grade 9</button>
             </div>
 
             <div id="solutions" class="solutions" style="display: none; margin-top: 10px; padding: 12px; background-color: #f8f9fa; border-left: 4px solid #E64097;">
@@ -2771,7 +2799,129 @@ function generateOscilloscopeProblem() {
         qText.style.display = 'block'; 
     }
 }
+//**********************************************
+// ======================================================
+// Power Calculation Problem (Scenario 1)
+// ======================================================
+function generatePowerProblem(ctx, canvas) {
+    // 0. RESET UI & STATE
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups(); 
+    currentMode = 'power'; 
 
+    // BRING BACK THE GRADE 9 POWER BUTTON (If you have one)
+    const g9PowerBtn = document.getElementById('grade9PowerBtn');
+    if (g9PowerBtn) g9PowerBtn.style.display = 'inline-block';
+
+    // TURN ON THE P BOX
+    const groupP = document.getElementById('inputGroupP');
+    if (groupP) groupP.style.display = 'flex'; // Using flex to match your other inputs
+
+    // 1. GENERATE MATH LOGIC (Scenario 1: Series LED & Resistor)
+    let supplyV = Math.floor(Math.random() * 6) + 6; // Random supply 6V to 11V
+    let ledV = parseFloat((Math.random() * (3.2 - 1.8) + 1.8).toFixed(1)); // Random LED 1.8V to 3.2V
+    let current_mA = Math.floor(Math.random() * 15) + 5; // Random current 5mA to 19mA
+    
+    // The core calculation
+    let resistorV = supplyV - ledV;
+    let power_mW = parseFloat((resistorV * current_mA).toFixed(1));
+
+    // Save the answers for checkAnswers() to verify later
+    // NOTE: Depending on your parseInput(), you might need pNameHTML/pValue/pUnit
+    currentAnswers.vNameHTML = 'P';
+    currentAnswers.vValue = power_mW;
+    currentAnswers.vUnit = 'mW'; 
+
+    // Update Input Box Label and Placeholder using your brandPink
+    const labelP = document.getElementById('labelP');
+    if (labelP) labelP.innerHTML = "<span style='color:" + brandPink + "'>P</span> = ";
+    
+    const inputBox = document.getElementById('inputP');
+    const unitSpan = document.getElementById('unitSymbolP'); 
+
+    if (inputBox) {
+        inputBox.value = ""; 
+        inputBox.placeholder = "e.g. 50 mW"; 
+        if (unitSpan) unitSpan.innerHTML = ""; 
+    }
+
+    // Update Question Text
+    const qText = document.getElementById('questionText');
+    if (qText) {
+        qText.innerHTML = "An LED is connected in series with a protection resistor across a " + supplyV + "V supply. The voltage drop across the LED is " + ledV + "V, and the current flowing is " + current_mA + " mA.<br><br>Calculate the power dissipated by the protection resistor.";
+        qText.style.display = 'block';
+    }
+
+    // 2. DRAW THE CIRCUIT
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = brandBlack;
+    ctx.lineWidth = 2;
+    
+    // Draw Top and Bottom Rails
+    drawLine(ctx, 150, 100, 450, 100);
+    drawLine(ctx, 150, 350, 450, 350);
+
+    // --- Left Branch (Battery Supply) ---
+    ctx.lineWidth = 2;
+    drawLine(ctx, 150, 100, 150, 200);
+    // Battery Symbol
+    ctx.lineWidth = 3; drawLine(ctx, 130, 200, 170, 200);
+    ctx.lineWidth = 6; drawLine(ctx, 110, 215, 190, 215);
+    ctx.lineWidth = 3; drawLine(ctx, 130, 230, 170, 230);
+    ctx.lineWidth = 6; drawLine(ctx, 110, 245, 190, 245);
+    ctx.lineWidth = 2;
+    drawLine(ctx, 150, 245, 150, 350);
+
+    // --- Right Branch (Resistor & LED) ---
+    drawLine(ctx, 450, 100, 450, 140);
+    
+    // Using your custom drawComponent helper for the resistor!
+    drawComponent(ctx, 'fixed', 450, 165); 
+    
+    drawLine(ctx, 450, 190, 450, 230);
+
+    // Draw LED Pointing Down
+    ctx.beginPath(); 
+    ctx.moveTo(430, 230); ctx.lineTo(470, 230); ctx.lineTo(450, 270); 
+    ctx.fillStyle = "white"; ctx.fill(); ctx.closePath(); ctx.stroke();
+    drawLine(ctx, 430, 270, 470, 270); // Cathode bar
+    
+    // LED Light Emission Arrows
+    drawLine(ctx, 480, 240, 500, 220);
+    drawLine(ctx, 500, 220, 490, 220); 
+    drawLine(ctx, 500, 220, 500, 230); 
+    drawLine(ctx, 485, 255, 505, 235);
+    drawLine(ctx, 505, 235, 495, 235);
+    drawLine(ctx, 505, 235, 505, 245);
+
+    drawLine(ctx, 450, 270, 450, 350);
+
+    // 3. TEXT LABELS (Using your Smart Label Helper)
+    drawLabel(ctx, supplyV + "V", 90, 225, 16, brandPink); // Supply voltage
+    drawLabel(ctx, "V = " + ledV + "V", 480, 285, 16, brandBlack); // LED Voltage
+    drawLabel(ctx, "I = " + current_mA + " mA", 275, 90, 16, brandPink); // Current on top wire
+    
+    // Resistor Labels
+    drawLabel(ctx, "R", 485, 160, 16, brandBlack);
+    drawLabel(ctx, "P = ?", 485, 185, 18, brandPink);
+
+    // 4. SOLUTION LOGIC PANEL
+    const solText = document.getElementById('solText');
+    if (solText) {
+        let logicHTML = "<strong>P = " + power_mW + " mW</strong><br><br>";
+        logicHTML += "<em>Core Equation:</em> <strong>P = I &times; V</strong><br><br>";
+        logicHTML += "<em>Step 1:</em> Find the voltage across the resistor.<br>";
+        logicHTML += "V<sub>R</sub> = V<sub>supply</sub> - V<sub>LED</sub> = " + supplyV + "V - " + ledV + "V = <strong>" + resistorV.toFixed(1) + "V</strong>.<br><br>";
+        logicHTML += "<em>Step 2:</em> Multiply the current by the voltage.<br>";
+        logicHTML += "P = " + current_mA + " mA &times; " + resistorV.toFixed(1) + "V = <strong>" + power_mW + " mW</strong><br>";
+        logicHTML += "<span style='font-size: 0.9em; color: #666;'>(Note: Because current is in mA, the power remains in mW).</span>";
+        solText.innerHTML = logicHTML;
+    }
+}
+
+
+
+
+    
 //**********************************************
 
 function generateAstableProblem() {
