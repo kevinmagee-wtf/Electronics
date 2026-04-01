@@ -3968,7 +3968,6 @@ function checkAnswers() {
     const feedback = document.getElementById('feedback');
     const showsolutionsBtn = document.getElementById('showsolutionsBtn');
 
-   
     // IPO SORT GRADING INTERCEPTOR
     if (currentMode === 'iposort') {
         const bank = document.getElementById('ipoBank');
@@ -4038,9 +4037,7 @@ function checkAnswers() {
     else if (currentMode === 'divider') activeInputs = ['inputV'];
     else if (currentMode === 'resistance') activeInputs = ['inputR']; 
     else if (currentMode === 'oscilloscope') {
-        // ALL scenarios use Amplitude
         activeInputs = ['inputOscAmp'];
-        // THE FIX: Changed to 0 and 1 to match the new scenario tracker logic
         if (currentAnswers.oscQType === 0) {
             activeInputs.push('inputOscPeriod', 'inputOscFreq');
         } else if (currentAnswers.oscQType === 1) {
@@ -4050,7 +4047,6 @@ function checkAnswers() {
         }
     }
     else if (currentMode === 'colorcode') {
-        // UPGRADE: Relies on the state flag you set in generation, rather than CSS checking!
         activeInputs = (window.colorCodeSubMode === 'colorToValue') 
             ? ['inputResValue', 'inputResTol'] 
             : ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'];
@@ -4066,7 +4062,7 @@ function checkAnswers() {
         activeInputs = (currentZenerState === "closed") ? ['g9IL', 'g9IZ'] : ['g9PZ', 'g9Rating'];
     }
 
-    // 3. Check for empty boxes (Protects them from losing points if they accidentally click Check early!)
+    // 3. Check for empty boxes
     let hasEmptyBox = activeInputs.some(id => !document.getElementById(id) || document.getElementById(id)?.value.trim() === '');
     if (hasEmptyBox) {
         feedback.innerHTML = "<span style='color: #dc3545;'>Please enter a value!</span>";
@@ -4111,10 +4107,8 @@ function checkAnswers() {
         results.push(validateMatch(parseInput(cleanStr), currentAnswers.rValue, currentAnswers.rTargetUnit || 'Ω'));
 
     } else if (currentMode === 'oscilloscope') {
-        // ALWAYS grade amplitude
         results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscAmp').value)), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
         
-        // THE FIX: Changed to 0 and 1 here as well
         if (currentAnswers.oscQType === 0) {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscPeriod').value)), currentAnswers.oscPeriodValue, currentAnswers.oscPeriodUnit));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscFreq').value)), currentAnswers.oscFreqValue, currentAnswers.oscFreqUnit));
@@ -4141,19 +4135,28 @@ function checkAnswers() {
         results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputMonostable').value)), currentAnswers.expectedT, currentAnswers.expectedUnit));
 
     } else if (currentMode === 'colorcode') {
+        // ========================================================
+        // ---> THE FIX: BULLETPROOFING THE COLOUR CODE GRADER <---
+        // ========================================================
         if (window.colorCodeSubMode === 'colorToValue') {
-            const resVal = document.getElementById('inputResValue').value;
-            const resUnit = document.getElementById('unitResColor').value;
-            const resTol = document.getElementById('inputResTol').value;
+            // Using ?.value guarantees it won't crash even if an ID is missing!
+            const resVal = document.getElementById('inputResValue')?.value || "";
+            const resUnitEl = document.getElementById('unitResColor');
+            const resUnit = resUnitEl ? resUnitEl.value : "";
+            const resTol = document.getElementById('inputResTol')?.value || "";
             
             results.push(validateMatch(parseInput(acceptSpaces(resVal), acceptSpaces(resUnit)), currentAnswers.resVal, currentAnswers.rTargetUnit || 'Ω'));
             results.push(validateMatch(parseInput(acceptSpaces(resTol)), currentAnswers.resTol, '%'));
         } else {
             ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'].forEach((id, i) => {
+                const el = document.getElementById(id);
+                const val = el ? el.value.toLowerCase().trim() : "";
                 const ans = [currentAnswers.b1, currentAnswers.b2, currentAnswers.b3, currentAnswers.tol];
-                results.push(document.getElementById(id).value.toLowerCase().trim() === ans[i] ? 'correct' : 'wrong');
+                results.push(val === ans[i] ? 'correct' : 'wrong');
             });
         }
+        // ========================================================
+
     } else if (currentMode === 'zener' || currentMode === 'grade9zener') {
          if (currentMode === 'zener') {
             if (currentZenerState === "closed") {
@@ -4174,14 +4177,13 @@ function checkAnswers() {
          }
     }
 
-// 5. Final Feedback and Scoring
+    // 5. Final Feedback and Scoring
     activeInputs.forEach((id, index) => {
         const el = document.getElementById(id);
         if (el) {
-            // Check for wrong unit first, then correct, then default to red for wrong
             if (results[index] === 'wrongunit') {
                 el.style.borderColor = "#fd7e14"; // Orange for unit error
-            } else if (results[index] === 'correct') {
+            } else if (results[index] === 'correct' || results[index] === 'manydecimals') {
                 el.style.borderColor = "#28a745"; // Green for correct
             } else {
                 el.style.borderColor = "#dc3545"; // Red for incorrect/empty
@@ -4191,7 +4193,6 @@ function checkAnswers() {
         }
     });
 
-    // UPGRADE: Success is now 'correct' OR 'manydecimals'
     const isPass = results.every(r => r === 'correct' || r === 'manydecimals');
     const hasLongDecimals = results.includes('manydecimals');
 
@@ -4200,7 +4201,6 @@ function checkAnswers() {
         isCurrentProblemSolved = true;
         
         if (canEarnPoints) {
-            // NEW: Trigger the gold warning if they used too many decimal places
             if (hasLongDecimals) {
                 feedback.innerHTML = "<span style='color: #D4A017;'>Correct! (Tip: In the future, try rounding to 2 or 3 decimal places max).</span>";
             } else {
@@ -4223,7 +4223,6 @@ function checkAnswers() {
         // FAILURE PATH
         canEarnPoints = false; 
         
-        // UPGRADE: Count both perfect answers AND long-decimal answers as "correct" for partial scores
         const correctCount = results.filter(r => r === 'correct' || r === 'manydecimals').length;
         
         if (results.includes('wrongunit')) {
@@ -4247,7 +4246,7 @@ function checkAnswers() {
     if (checkansBtn) checkansBtn.style.display = 'none';
     
     if (typeof updateScoreboard === "function") updateScoreboard();
-}  
+}
 // **********************************************************************
 /**
  * Upgraded Hybrid Parser with Precision Tracking & Capacitance Support
