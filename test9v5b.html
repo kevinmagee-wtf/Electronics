@@ -4137,21 +4137,27 @@ function checkAnswers() {
     } else if (currentMode === 'colorcode') {
         if (window.colorCodeSubMode === 'colorToValue') {
             const resValRaw = document.getElementById('inputResValue')?.value || "";
-            const resTolRaw = document.getElementById('inputResTol')?.value || "";
-            
             let cleanRes = acceptSpaces(resValRaw);
-            let cleanTol = acceptSpaces(resTolRaw);
             
-            // Auto-append Ohms and % since they are hardcoded on the UI
+            // Auto-append Ohms since they are hardcoded on the UI
             if (cleanRes !== "" && !cleanRes.includes("Ω") && !cleanRes.toLowerCase().includes("ohm")) {
                 cleanRes += "Ω";
             }
-            if (cleanTol !== "" && !cleanTol.includes("%")) {
-                cleanTol += "%";
-            }
-            
             results.push(validateMatch(parseInput(cleanRes), currentAnswers.resVal, currentAnswers.rTargetUnit || 'Ω'));
-            results.push(validateMatch(parseInput(cleanTol), currentAnswers.resTol, '%'));
+            
+            // --- NEW TOLERANCE GRADER ---
+            // Bypass parseInput and validateMatch completely. 
+            // Just strip everything except numbers and decimals, and compare!
+            const resTolRaw = document.getElementById('inputResTol')?.value || "";
+            const cleanUserTol = resTolRaw.replace(/[^0-9.]/g, ''); 
+            const cleanAnsTol = String(currentAnswers.resTol).replace(/[^0-9.]/g, '');
+            
+            if (cleanUserTol === cleanAnsTol && cleanUserTol !== "") {
+                results.push('correct');
+            } else {
+                results.push('wrong');
+            }
+            // ----------------------------
             
         } else {
             ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'].forEach((id, i) => {
