@@ -2806,34 +2806,32 @@ function generateOscilloscopeProblem() {
 // ======================================================
 // Power Calculation Problem (adapted for Power Rails)
 // ======================================================
+// ======================================================
+// Power Calculation Problem (adapted for Power Rails)
+// ======================================================
 function generatePowerProblem(ctx, canvas) {
     // 0. RESET UI & STATE
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups(); 
     currentMode = 'power'; 
 
-    // BRING BACK THE GRADE 9 POWER BUTTON
     const g9PowerBtn = document.getElementById('grade9PowerBtn');
     if (g9PowerBtn) g9PowerBtn.style.display = 'inline-block';
 
-    // TURN ON THE P BOX
     const groupP = document.getElementById('inputGroupP');
-    if (groupP) groupP.style.display = 'flex'; // Turn on the power input box
+    if (groupP) groupP.style.display = 'flex'; 
 
-    // 1. GENERATE MATH LOGIC (Scenario 1: Series LED & Resistor)
-    let supplyV = Math.floor(Math.random() * 6) + 6; // Random supply 6V to 11V
-    let ledV = parseFloat((Math.random() * (3.2 - 1.8) + 1.8).toFixed(1)); // Random LED 1.8V to 3.2V
-    let current_mA = Math.floor(Math.random() * 15) + 5; // Random current 5mA to 19mA
+    // 1. GENERATE MATH LOGIC
+    let supplyV = Math.floor(Math.random() * 6) + 6; 
+    let ledV = parseFloat((Math.random() * (3.2 - 1.8) + 1.8).toFixed(1)); 
+    let current_mA = Math.floor(Math.random() * 15) + 5; 
     
-    // The core calculation
     let resistorV = supplyV - ledV;
     let power_mW = parseFloat((resistorV * current_mA).toFixed(1));
 
-    // Save the answers for checkAnswers() to verify later
     currentAnswers.vNameHTML = 'P';
     currentAnswers.vValue = power_mW;
     currentAnswers.vUnit = 'mW'; 
 
-    // Update Input Box Label and Placeholder with brandPink
     const labelP = document.getElementById('labelP');
     if (labelP) labelP.innerHTML = "<span style='color:" + brandPink + "'>P</span> = ";
     
@@ -2846,7 +2844,6 @@ function generatePowerProblem(ctx, canvas) {
         if (unitSpan) unitSpan.innerHTML = ""; 
     }
 
-    // Update Question Text
     const qText = document.getElementById('questionText');
     if (qText) {
         qText.innerHTML = "An LED is connected in series with a protection resistor across a " + supplyV + "V supply. The voltage drop across the LED is " + ledV + "V, and the current flowing is " + current_mA + " mA.<br><br>Calculate the power dissipated by the protection resistor.";
@@ -2862,44 +2859,59 @@ function generatePowerProblem(ctx, canvas) {
     drawLine(ctx, 150, 60, 450, 60);
     drawLine(ctx, 150, 360, 450, 360);
 
-    // --- Labels for Rails (Replicating your ref image) ---
-    drawLabel(ctx, "Vsupply = " + supplyV + " V", 260, 45, 16, brandPink); // Top rail
-    drawLabel(ctx, "0V (GND)", 260, 390, 16, brandPink); // Bottom rail (using pink, like ref)
+    // --- Labels for Rails (ALL BLACK) ---
+    // Centered at X=300 to match the new branch location
+    drawLabel(ctx, "Vsupply = " + supplyV + " V", 300, 45, 16, brandBlack); 
+    drawLabel(ctx, "0V (GND)", 300, 390, 16, brandBlack); 
 
-    // --- Vertical Branch (on the right for components) ---
-    drawLine(ctx, 420, 60, 420, 100);
+    // --- Centered Vertical Branch (X = 300) ---
+    // Top wire down to resistor box
+    drawLine(ctx, 300, 60, 300, 135); 
 
-    // Current Label on Top wire (Using pink with an arrow pointing down)
-    drawLine(ctx, 410, 80, 430, 80); // Cross line
-    ctx.fillStyle = brandPink; ctx.font = "bold 16px Arial"; ctx.fillText("I = " + current_mA + " mA", 310, 85);
+    // Downward Current Arrowhead ON the wire
+    ctx.beginPath();
+    ctx.moveTo(295, 95);
+    ctx.lineTo(305, 95);
+    ctx.lineTo(300, 105);
+    ctx.fillStyle = brandBlack;
+    ctx.fill();
 
-    // drawComponent helper for the resistor rectangle!
-    drawComponent(ctx, 'fixed', 420, 125); 
-    drawLine(ctx, 420, 150, 420, 190);
+    // Current Label (LEFT of the wire, BLACK)
+    ctx.fillStyle = brandBlack; 
+    ctx.font = "bold 16px Arial"; 
+    ctx.textAlign = "right"; // Right-align so it grows leftwards away from wire
+    ctx.fillText("I = " + current_mA + " mA", 285, 103);
+    ctx.textAlign = "center"; // Reset alignment for other standard text
+
+    // Resistor Box (Center Y is 160)
+    drawComponent(ctx, 'fixed', 300, 160); 
+    
+    // Wire from bottom of Resistor to LED
+    drawLine(ctx, 300, 185, 300, 240);
 
     // Resistor Labels
-    drawLabel(ctx, "R", 385, 120, 16, brandBlack);
-    drawLabel(ctx, "P = ?", 385, 145, 18, brandPink); // Question label near resistor
+    drawLabel(ctx, "R", 265, 165, 16, brandBlack);       // Left, Black
+    drawLabel(ctx, "P = ?", 335, 165, 18, brandPink);    // Right, Pink (The ONLY pink item)
 
     // --- LED (POINTING DOWN) ---
-    // Drawing raw symbol logic: styled hollow triangle with cathode bar
     ctx.beginPath(); 
-    ctx.moveTo(400, 190); ctx.lineTo(440, 190); ctx.lineTo(420, 230); 
+    ctx.moveTo(280, 240); ctx.lineTo(320, 240); ctx.lineTo(300, 280); 
     ctx.fillStyle = "white"; ctx.fill(); ctx.closePath(); ctx.stroke();
-    drawLine(ctx, 400, 230, 440, 230); // Cathode bar
+    drawLine(ctx, 280, 280, 320, 280); // Cathode bar
 
-    // LED Light Emission Arrows (pointing outward)
-    drawLine(ctx, 450, 200, 470, 180); // Top arrow
-    drawLine(ctx, 470, 180, 460, 180); // Arrow head
-    drawLine(ctx, 470, 180, 470, 190); // Arrow head
-    drawLine(ctx, 455, 215, 475, 195); // Bottom arrow
-    drawLine(ctx, 475, 195, 465, 195); // Arrow head
-    drawLine(ctx, 475, 195, 475, 205); // Arrow head
+    // LED Light Emission Arrows
+    drawLine(ctx, 330, 250, 350, 230); // Top arrow
+    drawLine(ctx, 350, 230, 340, 230); // Arrow head
+    drawLine(ctx, 350, 230, 350, 240); // Arrow head
+    drawLine(ctx, 335, 265, 355, 245); // Bottom arrow
+    drawLine(ctx, 355, 245, 345, 245); // Arrow head
+    drawLine(ctx, 355, 245, 355, 255); // Arrow head
 
-    drawLine(ctx, 420, 230, 420, 360); // Connect to bottom rail
+    // Wire from LED to bottom rail
+    drawLine(ctx, 300, 280, 300, 360); 
 
-    // LED Label (uses black)
-    drawLabel(ctx, "V = " + ledV + "V", 450, 245, 16, brandBlack); // Label for LED voltage drop
+    // LED Voltage Label
+    drawLabel(ctx, "V = " + ledV + "V", 365, 285, 16, brandBlack); 
 
     // 4. SOLUTION LOGIC PANEL
     const solText = document.getElementById('solText');
@@ -2914,11 +2926,7 @@ function generatePowerProblem(ctx, canvas) {
         solText.innerHTML = logicHTML;
     }
 }
-
-
-
-
-    
+ 
 //**********************************************
 
 function generateAstableProblem() {
