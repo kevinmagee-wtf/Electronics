@@ -393,6 +393,48 @@
     #downloadBtn:hover {
         background-color: #328A86; /* A slightly darker, richer teal */
     }
+
+    /* Data Sheet Button Base Styles */
+    #dataSheetBtn {
+        background-color: #ffffff; 
+        color: #6c757d; 
+        border: 2px solid #6c757d; 
+        border-radius: 5px; 
+        margin: 0; 
+        padding: 8px; 
+        font-size: 14px; 
+        flex: 1; 
+        cursor: pointer; 
+        font-weight: bold;
+        transition: all 0.2s ease-in-out;
+    }
+
+    /* Data Sheet Button Hover State */
+    #dataSheetBtn:hover {
+        background-color: #6c757d; /* Fill solid grey */
+        color: #ffffff;            /* Make text white */
+    }
+
+    /* Hint Button Base Styles */
+    #hintBtn {
+        background-color: #ffffff; 
+        color: #0077b6; 
+        border: 2px solid #0077b6; 
+        border-radius: 5px; 
+        margin: 0; 
+        padding: 8px; 
+        font-size: 14px; 
+        flex: 1; 
+        cursor: pointer; 
+        font-weight: bold;
+        transition: all 0.2s ease-in-out;
+    }
+
+    /* Hint Button Hover State */
+    #hintBtn:hover {
+        background-color: #0077b6; /* Fill solid blue */
+        color: #ffffff;            /* Make text white */
+    }
     
     /* Grade 9 normal bright yellow state */
     #grade9DividerBtn, #grade9ResistorBtn, #grade9ZenerBtn {
@@ -692,8 +734,8 @@
         </div>
 
        <div style="flex: 0 0 auto; display: flex; gap: 10px; margin-bottom: 12px;">
-            <button id="dataSheetBtn" onclick="openDataSheet()" style="background-color: #ffffff; color: #6c757d; border: 2px solid #6c757d; border-radius: 5px; margin: 0; padding: 8px; font-size: 14px; flex: 1; cursor: pointer; font-weight: bold;">📖 Data Sheet</button>
-            <button id="hintBtn" onclick="provideHint()" style="background-color: #ffffff; color: #0077b6; border: 2px solid #0077b6; border-radius: 5px; margin: 0; padding: 8px; font-size: 14px; flex: 1; cursor: pointer; font-weight: bold;">💡 Hint</button>
+            <button id="dataSheetBtn" onclick="openDataSheet()">📖 Data Sheet</button>
+            <button id="hintBtn" onclick="provideHint()">💡 Hint</button>
         </div>
 
         <div id="scrollableArea" style="flex: 0 1 auto; overflow-y: auto; padding-right: 5px;">
