@@ -2141,7 +2141,9 @@ function generateDividerProblem(ctx, canvas) {
     let R2_val = Math.floor(Math.random() * 10) + 1;
     let current = Math.floor(Math.random() * 5) + 1; 
     let Vin_val = (R1_val + R2_val) * current;
-    let Vout_val = Vin_val * (R2_val / (R1_val + R2_val)); 
+    // Calculate Vout, force it to 2 decimal places, and strip trailing zeros!
+    let raw_Vout = Vin_val * (R2_val / (R1_val + R2_val)); 
+    let Vout_val = parseFloat(raw_Vout.toFixed(2));
 
     // 0: Find Vout, 1: Find Vin, 2: Find R1, 3: Find R2
     let targetVar = Math.floor(Math.random() * 4); 
