@@ -344,7 +344,27 @@
     }
     button:active { transform: scale(0.98); }
     
-    .btn-secondary { background-color: #6c757d !important; color: #ffffff !important; opacity: 1 !important; }
+    /* ============================================================
+       UTILITY BUTTON CLASSES
+       ============================================================ */
+    
+    /* Submit score Cancel Button */
+    .btn-cancel {
+        background-color: #6c757d; 
+        color: #ffffff; 
+        border: none; 
+        border-radius: 5px; 
+        margin: 0; 
+        padding: 8px 10px; 
+        font-size: 14px; 
+        cursor: pointer; 
+        font-weight: bold;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-cancel:hover {
+        background-color: #5a6268; 
+    }
     
     /* Check Answer Button Base Styles */
     .btn-check { 
@@ -353,15 +373,6 @@
         opacity: 1 !important; 
     }
     .btn-check:hover { background-color: #cc2b81 !important; }
-
-
-
-    
-    .btn-black { background-color: #000000 !important; color: #ffffff !important; opacity: 1 !important; }
-    
-/* ============================================================
-       UTILITY BUTTON CLASSES
-       ============================================================ */
        
     /* Reset Button */
     .btn-reset {
@@ -438,15 +449,33 @@
         color: #ffffff;            
     }
     
-    /* Grade 9 normal bright yellow state */
+    /* 
+    Grade 9 normal bright yellow state 
     #grade9DividerBtn, #grade9ResistorBtn, #grade9ZenerBtn {
         background-color: #FFD700 !important;
         transition: background-color 0.2s ease-in-out;
     }
 
-    /* Grade 9 mustard hover state */
+   Grade 9 mustard hover state 
     #grade9DividerBtn:hover, #grade9ResistorBtn:hover, #grade9ZenerBtn:hover {
         background-color: #D4A017 !important;
+    } 
+    */
+
+    //* Grade 9 Button (Gold/Mustard) */
+    .btn-grade9 {
+        background-color: #FFD700;
+        color: #000; /* Ensuring text is black for readability on yellow */
+        border: none;
+        border-radius: 5px;
+        padding: 8px 10px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .btn-grade9:hover {
+        background-color: #D4A017;
     }
     
     .solutions { 
@@ -956,9 +985,9 @@
             
             <div style="display: flex; gap: 8px; width: 100%;">
                 <button onclick="handleGenerateClick()" style="background-color: #9571B9; color: white; border: none; border-radius: 5px; flex: 1; padding: 10px 5px; font-size: 14px; cursor: pointer; font-weight: bold;">❓ New Question</button>
-                <button id="grade9DividerBtn" class="btn-check" style="display: none;" onclick="transitionToGrade9(generateGrade9DividerProblem)">🚀 Grade 9</button>
-                <button id="grade9ResistorBtn" class="btn-check" style="display: none;" onclick="transitionToGrade9(generateGrade9Resistance)">🚀 Grade 9</button>
-                <button id="grade9ZenerBtn" class="btn-check" style="display: none;" onclick="transitionToGrade9(generateGrade9ZenerProblem)">🚀 Grade 9</button>
+                <button id="grade9DividerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9DividerProblem)">🚀 Grade 9</button>
+                <button id="grade9ResistorBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9Resistance)">🚀 Grade 9</button>
+                <button id="grade9ZenerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9ZenerProblem)">🚀 Grade 9</button>
             </div>
 
             <div id="solutions" class="solutions" style="display: none; margin-top: 10px; padding: 12px; background-color: #f8f9fa; border-left: 4px solid #E64097;">
@@ -992,7 +1021,7 @@
             </select>
         </div>
         <div class="modal-actions">
-            <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
             <button class="btn-check" id="confirmSubmitBtn" onclick="processSubmission()">Submit Score</button>
         </div>
     </div>
