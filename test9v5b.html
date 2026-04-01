@@ -344,7 +344,6 @@
     }
     button:active { transform: scale(0.98); }
     
-    .btn-download { background-color: #198754 !important; color: #ffffff !important; opacity: 1 !important; }
     .btn-secondary { background-color: #6c757d !important; color: #ffffff !important; opacity: 1 !important; }
     .btn-check { 
         background-color: #E64097 !important; 
@@ -353,7 +352,27 @@
     }
     .btn-check:hover { background-color: #cc2b81 !important; }
     .btn-black { background-color: #000000 !important; color: #ffffff !important; opacity: 1 !important; }
+    
+    /* Reset Button Base Styles */
+    #resetBtn {
+        background-color: #ffffff; 
+        color: #f97316; 
+        border: 2px solid #f97316; 
+        border-radius: 5px; 
+        margin: 0; 
+        padding: 8px 10px; 
+        font-size: 14px; 
+        flex: 1; 
+        cursor: pointer; 
+        font-weight: bold;
+        transition: all 0.2s; /* Smooth fade effect */
+    }
 
+    /* Reset Button Hover State */
+    #resetBtn:hover {
+        background-color: #f97316; /* Fill solid orange */
+        color: #ffffff;            /* Make text white */
+    }
 
     /* Grade 9 normal bright yellow state */
     #grade9DividerBtn, #grade9ResistorBtn, #grade9ZenerBtn {
@@ -647,7 +666,7 @@
             <div id="scoreDisplay" class="scoreboard" style="margin: 0; flex: 1; text-align: center; font-size: 1em;">Score: 0 / 0</div>
             
             <div style="display: flex; gap: 10px; flex: 2;">
-                <button id="resetBtn" onclick="resetScore()" style="background-color: #ffffff; color: #f97316; border: 2px solid #f97316; border-radius: 5px; margin: 0; padding: 8px 10px; font-size: 14px; flex: 1; cursor: pointer; font-weight: bold;">🔄 Reset</button>
+                <button id="resetBtn" onclick="resetScore()">🔄 Reset</button>
                 <button id="downloadBtn" onclick="openSubmissionModal()" style="background-color: #43B3AE; color: white; border: none; border-radius: 5px; margin: 0; padding: 8px 10px; font-size: 14px; flex: 1; cursor: pointer; font-weight: bold;">⬇️ Submit</button>
             </div>
         </div>
