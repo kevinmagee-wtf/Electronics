@@ -4135,18 +4135,24 @@ function checkAnswers() {
         results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputMonostable').value)), currentAnswers.expectedT, currentAnswers.expectedUnit));
 
     } else if (currentMode === 'colorcode') {
-        // ========================================================
-        // ---> THE FIX: BULLETPROOFING THE COLOUR CODE GRADER <---
-        // ========================================================
         if (window.colorCodeSubMode === 'colorToValue') {
-            // Using ?.value guarantees it won't crash even if an ID is missing!
-            const resVal = document.getElementById('inputResValue')?.value || "";
-            const resUnitEl = document.getElementById('unitResColor');
-            const resUnit = resUnitEl ? resUnitEl.value : "";
-            const resTol = document.getElementById('inputResTol')?.value || "";
+            const resValRaw = document.getElementById('inputResValue')?.value || "";
+            const resTolRaw = document.getElementById('inputResTol')?.value || "";
             
-            results.push(validateMatch(parseInput(acceptSpaces(resVal), acceptSpaces(resUnit)), currentAnswers.resVal, currentAnswers.rTargetUnit || 'Ω'));
-            results.push(validateMatch(parseInput(acceptSpaces(resTol)), currentAnswers.resTol, '%'));
+            let cleanRes = acceptSpaces(resValRaw);
+            let cleanTol = acceptSpaces(resTolRaw);
+            
+            // Auto-append Ohms and % since they are hardcoded on the UI
+            if (cleanRes !== "" && !cleanRes.includes("Ω") && !cleanRes.toLowerCase().includes("ohm")) {
+                cleanRes += "Ω";
+            }
+            if (cleanTol !== "" && !cleanTol.includes("%")) {
+                cleanTol += "%";
+            }
+            
+            results.push(validateMatch(parseInput(cleanRes), currentAnswers.resVal, currentAnswers.rTargetUnit || 'Ω'));
+            results.push(validateMatch(parseInput(cleanTol), currentAnswers.resTol, '%'));
+            
         } else {
             ['inputBand1', 'inputBand2', 'inputBand3', 'inputBandTol'].forEach((id, i) => {
                 const el = document.getElementById(id);
@@ -4155,7 +4161,6 @@ function checkAnswers() {
                 results.push(val === ans[i] ? 'correct' : 'wrong');
             });
         }
-        // ========================================================
 
     } else if (currentMode === 'zener' || currentMode === 'grade9zener') {
          if (currentMode === 'zener') {
@@ -4189,7 +4194,7 @@ function checkAnswers() {
                 el.style.borderColor = "#dc3545"; // Red for incorrect/empty
             }
             el.style.borderWidth = "2px";
-            el.style.borderStyle = "solid"; // Ensures CSS doesn't hide the border
+            el.style.borderStyle = "solid"; 
         }
     });
 
