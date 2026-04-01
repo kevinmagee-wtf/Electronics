@@ -343,7 +343,15 @@
         transition: all 0.2s; 
     }
     button:active { transform: scale(0.98); }
-    
+
+    .solutions { 
+        padding: 15px; 
+        background-color: #f8f9fa; 
+        border-left: 4px solid #E64097; 
+        border-radius: 0 5px 5px 0; 
+        display: none; 
+        text-align: left; 
+    }
     /* ============================================================
        UTILITY BUTTON CLASSES
        ============================================================ */
@@ -462,10 +470,11 @@
     } 
     */
 
-    //* Grade 9 Button (Gold/Mustard) */
+    /* Grade 9 Button (Gold/Mustard) */
+    /* Grade 9 Button (Gold/Mustard)- Forced Yellow */
     .btn-grade9 {
-        background-color: #FFD700;
-        color: #000; /* Ensuring text is black for readability on yellow */
+        background-color: #FFD700 !important; /* Force the Bright Yellow */
+        color: #000000 !important;            /* Force Black text for readability */
         border: none;
         border-radius: 5px;
         padding: 8px 10px;
@@ -475,17 +484,11 @@
     }
 
     .btn-grade9:hover {
-        background-color: #D4A017;
+        background-color: #D4A017 !important; /* Force the Mustard Hover */
+        color: #ffffff !important;            /* Optional: Flip text to white on hover */
     }
     
-    .solutions { 
-        padding: 15px; 
-        background-color: #f8f9fa; 
-        border-left: 4px solid #E64097; 
-        border-radius: 0 5px 5px 0; 
-        display: none; 
-        text-align: left; 
-    }
+    
 
     /* ============================================================
        6. IPO DRAG & DROP STYLES
