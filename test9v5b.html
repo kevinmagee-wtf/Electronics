@@ -381,7 +381,27 @@
         opacity: 1 !important; 
     }
     .btn-check:hover { background-color: #cc2b81 !important; }
-       
+
+    /* New Question Button (Purple) */
+    .btn-new-question {
+        background-color: #9571B9; 
+        color: white; 
+        border: none; 
+        border-radius: 5px; 
+        flex: 1; 
+        padding: 10px 5px; 
+        font-size: 14px; 
+        cursor: pointer; 
+        font-weight: bold;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-new-question:hover {
+        background-color: #7e5aa7; /* A deeper amethyst purple */
+        transform: translateY(-1px); /* Optional: adds a tiny "lift" effect */
+    }
+
+    
     /* Reset Button */
     .btn-reset {
         background-color: #ffffff; 
@@ -987,7 +1007,7 @@
             <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="width: 100%; margin-bottom: 10px; padding: 12px; font-size: 18px;">🎯 Check Answers</button>
             
             <div style="display: flex; gap: 8px; width: 100%;">
-                <button onclick="handleGenerateClick()" style="background-color: #9571B9; color: white; border: none; border-radius: 5px; flex: 1; padding: 10px 5px; font-size: 14px; cursor: pointer; font-weight: bold;">❓ New Question</button>
+                <button class="btn-new-question" onclick="handleGenerateClick()">❓ New Question</button>
                 <button id="grade9DividerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9DividerProblem)">🚀 Grade 9</button>
                 <button id="grade9ResistorBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9Resistance)">🚀 Grade 9</button>
                 <button id="grade9ZenerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9ZenerProblem)">🚀 Grade 9</button>
