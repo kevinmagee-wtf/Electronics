@@ -2890,20 +2890,20 @@ function generatePowerProblem(ctx, canvas) {
         selectBox.id = 'ratingSelectP';
         selectBox.style.fontSize = '16px';
         selectBox.style.padding = '6px'; 
-        selectBox.style.marginLeft = '5px';
+        selectBox.style.marginLeft = '10px'; // Added a bit more space from the text box
         selectBox.style.borderRadius = '6px';
-        selectBox.style.width = '120px'; 
+        selectBox.style.width = '160px'; // WIDER DROPDOWN BOX
         selectBox.style.cursor = 'pointer';
         inputBox.parentNode.insertBefore(selectBox, inputBox.nextSibling);
         
-        selectBox.addEventListener('change', function() {
-            inputBox.value = this.value; 
-        });
+        // Note: The event listener that overwrote inputBox.value has been REMOVED
+        // so the text box and dropdown can operate independently.
     }
 
-    // Default UI states (Text box ON, Dropdown OFF)
+    // Default UI states (Text box ON, Dropdown OFF, default width for text box)
     if (inputBox) {
         inputBox.style.display = 'inline-block';
+        inputBox.style.width = '80px'; // Ensure text box isn't too wide
         inputBox.value = ""; 
         if (unitSpan) unitSpan.innerHTML = "";
     }
@@ -2915,6 +2915,7 @@ function generatePowerProblem(ctx, canvas) {
 
     // RANDOMLY SELECT SCENARIO (1, 2, or 3)
     const scenario = Math.floor(Math.random() * 3) + 1;
+    currentAnswers.scenario = scenario; // Useful for your checkAnswer function to know which logic to apply
 
     if (scenario === 1) {
         // ==========================================
@@ -2931,7 +2932,8 @@ function generatePowerProblem(ctx, canvas) {
         currentAnswers.vValue = power_mW;
         currentAnswers.vUnit = 'mW'; 
 
-        if (inputBox) inputBox.placeholder = "e.g. 50 mW"; 
+        if (inputBox) inputBox.placeholder = "e.g. 50"; 
+        if (unitSpan) unitSpan.innerHTML = " mW";
 
         if (qText) {
             qText.innerHTML = "Calculate the power dissipated by the protection resistor.";
@@ -2995,7 +2997,6 @@ function generatePowerProblem(ctx, canvas) {
         // SCENARIO 2: Real-World Component Rating (FILAMENT BULB)
         // Focus: P = V^2 / R
         // ==========================================
-        // UPGRADE: Restrict to standard power supply rails
         const supplyOptions = [5, 6, 12, 24];
         let supplyV = supplyOptions[Math.floor(Math.random() * supplyOptions.length)];
         let rValue = Math.floor(Math.random() * 36) + 15; // 15 to 50 ohms
@@ -3003,19 +3004,25 @@ function generatePowerProblem(ctx, canvas) {
         // Calculate power: P = V^2 / R
         let power_W = parseFloat(((supplyV * supplyV) / rValue).toFixed(2));
 
-        // Logic to pick the next highest available rating (Expanded up to 100W for 24V loads)
         const availableRatings = [1, 2, 5, 10, 20, 50, 100];
         let chosenRating = availableRatings.find(rating => rating >= power_W);
 
+        // Storing BOTH the exact calculated power and the chosen stock rating
         currentAnswers.vNameHTML = 'P';
-        currentAnswers.vValue = chosenRating; 
+        currentAnswers.exactPower = power_W; 
+        currentAnswers.safeRating = chosenRating + " W"; 
         currentAnswers.vUnit = 'W'; 
 
-        // UI SWITCH: Hide text input, show wider dropdown
-        if (inputBox) inputBox.style.display = 'none';
+        // UI SWITCH: Show BOTH text input and wider dropdown
+        if (inputBox) {
+            inputBox.style.display = 'inline-block';
+            inputBox.placeholder = "Exact P";
+        }
+        if (unitSpan) unitSpan.innerHTML = " W";
+        
         if (selectBox) {
             selectBox.style.display = 'inline-block';
-            selectBox.innerHTML = '<option value="" disabled selected>Select...</option>';
+            selectBox.innerHTML = '<option value="" disabled selected>Select Rating...</option>';
             availableRatings.forEach(rating => {
                 let opt = document.createElement('option');
                 opt.value = rating + " W"; 
@@ -3025,8 +3032,8 @@ function generatePowerProblem(ctx, canvas) {
         }
 
         if (qText) {
-            // Updated text to Filament Bulb
-            qText.innerHTML = "Calculate the power dissipated by the filament bulb. Based on your calculation, what is the safest minimum power rating to choose from stock?";
+            // Updated text with underline
+            qText.innerHTML = "Calculate the power dissipated by the filament bulb and choose the safest <u>minimum</u> power rating to choose from stock?";
             qText.style.display = 'block';
         }
 
@@ -3042,9 +3049,8 @@ function generatePowerProblem(ctx, canvas) {
 
         drawLine(ctx, 300, 60, 300, 210 - 15); 
         
-        // --- DRAW THE FILAMENT BULB ---
         if (typeof drawFilamentBulb === "function") {
-            drawFilamentBulb(ctx, 300, 210); // Centered at (300, 210)
+            drawFilamentBulb(ctx, 300, 210);
         } else {
             console.error("Missing drawFilamentBulb helper function!");
             drawComponent(ctx, 'fixed', 300, 210); 
@@ -3056,20 +3062,16 @@ function generatePowerProblem(ctx, canvas) {
         ctx.fillStyle = brandBlack; 
         ctx.textAlign = "right"; 
         ctx.font = "bold 16px Arial";
-        
-        // Line 1: Type of Bulb
         ctx.fillText(supplyV + "V bulb", 300 - 25, 205); 
-        // Line 2: Resistance
         ctx.fillText("R = " + rValue + " \u03A9", 300 - 25, 225); 
         
-        // Question Label pushed right
         ctx.fillStyle = brandPink; 
         ctx.textAlign = "left"; 
         ctx.fillText("P = ?", 300 + 25, 215); 
 
         // 5. Solution Panel
         if (solText) {
-            solText.innerHTML = "<strong>Safe Rating = " + chosenRating + " W</strong><br><br>" +
+            solText.innerHTML = "<strong>Exact Power = " + power_W + " W | Safe Rating = " + chosenRating + " W</strong><br><br>" +
                 "<em>Core Equation:</em> <strong>P = V&sup2; / R</strong><br><br>" +
                 "P = (" + supplyV + "&sup2;) / " + rValue + " = " + (supplyV*supplyV) + " / " + rValue + " = <strong>" + power_W + " W</strong><br><br>" +
                 "<em>Engineering Application:</em> Because the filament bulb dissipates " + power_W + "W, you must select the next highest available rating (" + chosenRating + "W) to prevent the component from failing.";
@@ -3080,8 +3082,8 @@ function generatePowerProblem(ctx, canvas) {
         // SCENARIO 3: Series Ratio
         // Focus: P = I^2 * R
         // ==========================================
-        let current_A = parseFloat((Math.random() * 1.4 + 0.1).toFixed(1)); // 0.1A to 1.5A
-        let r1Value = Math.floor(Math.random() * 8) * 10 + 20; // 20, 30... 90
+        let current_A = parseFloat((Math.random() * 1.4 + 0.1).toFixed(1)); 
+        let r1Value = Math.floor(Math.random() * 8) * 10 + 20; 
         let r2Value = Math.floor(Math.random() * 8) * 10 + 20; 
         
         let power_W = parseFloat(((current_A * current_A) * r1Value).toFixed(2));
@@ -3090,7 +3092,8 @@ function generatePowerProblem(ctx, canvas) {
         currentAnswers.vValue = power_W;
         currentAnswers.vUnit = 'W'; 
 
-        if (inputBox) inputBox.placeholder = "e.g. 11.75 W"; 
+        if (inputBox) inputBox.placeholder = "e.g. 11.75"; 
+        if (unitSpan) unitSpan.innerHTML = " W";
 
         if (qText) {
             qText.innerHTML = "Calculate the power dissipated in <strong>R<sub>1</sub></strong> only.";
@@ -3103,7 +3106,6 @@ function generatePowerProblem(ctx, canvas) {
 
         ctx.fillStyle = brandBlack; 
         
-        // Vsupply Subscript
         ctx.textAlign = "left";
         ctx.font = "bold 16px Arial"; ctx.fillText("V", 270, 45);
         ctx.font = "bold 12px Arial"; ctx.fillText("supply", 282, 50);
@@ -3111,12 +3113,10 @@ function generatePowerProblem(ctx, canvas) {
         ctx.textAlign = "center"; ctx.font = "bold 16px Arial";
         ctx.fillText("0V (GND)", 300, 390);
 
-        // Top wire with current arrow
         drawLine(ctx, 300, 60, 300, 120); 
         drawArrowOnWire(ctx, 300, 60, 300, 90);
         ctx.textAlign = "right"; ctx.fillText("I = " + current_A + " A", 285, 95);
 
-        // Resistor 1 (Top) with Subscript R1
         drawComponent(ctx, 'fixed', 300, 145); 
         ctx.fillStyle = brandBlack; ctx.textAlign = "left"; 
         ctx.font = "bold 16px Arial"; ctx.fillText("R", 210, 150); 
@@ -3127,10 +3127,8 @@ function generatePowerProblem(ctx, canvas) {
         
         ctx.fillStyle = brandPink; ctx.textAlign = "left"; ctx.fillText("P = ?", 325, 150); 
 
-        // Connecting wire
         drawLine(ctx, 300, 170, 300, 230);
 
-        // Resistor 2 (Bottom) with Subscript R2
         drawComponent(ctx, 'fixed', 300, 255);
         ctx.fillStyle = brandBlack; ctx.textAlign = "left"; 
         ctx.font = "bold 16px Arial"; ctx.fillText("R", 210, 260); 
@@ -3139,7 +3137,6 @@ function generatePowerProblem(ctx, canvas) {
         let sub2W = ctx.measureText("2").width;
         ctx.font = "bold 16px Arial"; ctx.fillText(" = " + r2Value + " \u03A9", 210 + r2TextW + sub2W, 260); 
 
-        // Bottom wire
         drawLine(ctx, 300, 280, 300, 360);
 
         if (solText) {
