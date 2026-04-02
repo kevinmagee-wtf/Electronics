@@ -5654,29 +5654,38 @@ function hideAllInputGroups() {
     hasCheckedCurrentProblem = false;
     viewedSolution = false;
     unitErrorMade = false;
-    canEarnPoints = true; // NEW: Reset the points lock!
+    canEarnPoints = true; 
 
     // 2. Hide every div that has the 'input-group' class
-    document.querySelectorAll('.input-group').forEach(el => el.style.display = 'none');
+    // This is the "General Sweep"
+    document.querySelectorAll('.input-group').forEach(el => {
+        el.style.display = 'none';
+    });
 
-    // 2b. BULLETPROOF FIX: Explicitly hide specific groups just in case the HTML class is missing
-    if (document.getElementById('inputGroupColorVal')) document.getElementById('inputGroupColorVal').style.display = 'none';
-    if (document.getElementById('inputGroupColorNames')) document.getElementById('inputGroupColorNames').style.display = 'none';
+    // 2b. BULLETPROOF FORCED HIDE: Specifically targeting persistent groups
+    // We use setProperty to override any stubborn CSS
+    const ghostGroups = [
+        'inputGroupColorVal', 
+        'inputGroupColorNames', 
+        'inputGroupZener', 
+        'inputGroupGrade9Zener', 
+        'inputGroupGrade9Power',
+        'inputGroupPowerRating', // THE GHOST BULB DROPDOWN
+        'inputGroupIPOSort'
+    ];
+
+    ghostGroups.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.setProperty("display", "none", "important");
+    });
     
-    // ---> NEW ADDITIONS TO FIX ZENER/GRADE 9 TOGGLE GHOSTING <---
-    if (document.getElementById('inputGroupZener')) document.getElementById('inputGroupZener').style.display = 'none';
-    if (document.getElementById('inputGroupGrade9Zener')) document.getElementById('inputGroupGrade9Zener').style.display = 'none';
+    // 2c. TOGGLE BUTTONS (Hide Zener/Divider buttons, but NOT Grade 9 Power)
+    // We removed 'grade9PowerBtn' from this list so it doesn't disappear!
     if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'none';
     if (document.getElementById('grade9DividerBtn')) document.getElementById('grade9DividerBtn').style.display = 'none';
     if (document.getElementById('grade9ResistorBtn')) document.getElementById('grade9ResistorBtn').style.display = 'none';
-    // ---> THE FIX: ADD POWER ELEMENTS TO THE WIPE LIST! <---
-    if (document.getElementById('grade9PowerBtn')) document.getElementById('grade9PowerBtn').style.display = 'none';
-    if (document.getElementById('inputGroupGrade9Power')) document.getElementById('inputGroupGrade9Power').style.display = 'none';
-    if (document.getElementById('inputGroupPowerRating')) document.getElementById('inputGroupPowerRating').style.display = 'none';
-    // ---> NEW ADDITIONS FOR IPO SORT (SYSTEMS) <---
-    if (document.getElementById('inputGroupIPOSort')) document.getElementById('inputGroupIPOSort').style.display = 'none';
     
-    // NEW WORKSTATION TOGGLES: Hide the big IPO workstation, and guarantee the circuit canvas comes back!
+    // NEW WORKSTATION TOGGLES
     if (document.getElementById('canvasIPOWorkstation')) document.getElementById('canvasIPOWorkstation').style.display = 'none';
     if (document.getElementById('circuitContainer')) document.getElementById('circuitContainer').style.display = 'block';
 
@@ -5692,40 +5701,39 @@ function hideAllInputGroups() {
         qText.innerHTML = "";
     }
 
-    // 5. Clear all instruction prompts in one go
+    // 5. Clear all instruction prompts
     document.querySelectorAll('.instruction-text').forEach(p => p.innerHTML = "");
 
-    // 6. THE ULTIMATE WIPER (Replaces clearZenerInputs and resetAnswerBox)
-    // This grabs EVERY text/number input on the entire page and resets it
+    // 6. THE ULTIMATE WIPER
     document.querySelectorAll('input').forEach(input => {
         if (input.type === 'text' || input.type === 'number') {
-            input.value = "";                     // Empties the text
-            input.style.borderColor = "#ccc";     // Resets border color
-            input.style.borderWidth = "1px";      // Resets border thickness
-            input.style.backgroundColor = "";     // Resets background color (covers Zener!)
-            input.placeholder = "";               // FIX: Clear developer trap placeholders
+            input.value = "";                     
+            input.style.borderColor = "#ccc";     
+            input.style.borderWidth = "1px";      
+            input.style.backgroundColor = "";     
+            input.placeholder = "";               
         }
     });
 
-    // 7. NEW HYBRID UI FIX: Reset all Dropdowns (<select> elements)
+    // 7. DROPDOWN RESET (Crucial for the Bulb Dropdown)
     document.querySelectorAll('select').forEach(select => {
-        // Prevent clearing the teacher selection modal if you have one
         if (select.id !== 'teacherSelect') {
-            select.selectedIndex = 0; // Resets back to the first option (e.g. 'Ω' or 'V')
+            select.selectedIndex = 0; 
         }
     });
 
-    // 8. CLEAR EXTERNAL UNIT SYMBOLS (Prevents "Ghosting" across pages)
-    const symbolV = document.getElementById('unitSymbolV');
-    const symbolI = document.getElementById('unitSymbolI');
-    if (symbolV) symbolV.innerHTML = "";
-    if (symbolI) symbolI.innerHTML = "";
+    // 8. CLEAR EXTERNAL UNIT SYMBOLS
+    const symbols = ['unitSymbolV', 'unitSymbolI', 'unitSymbolP', 'unitSymbolR'];
+    symbols.forEach(id => {
+        const sym = document.getElementById(id);
+        if (sym) sym.innerHTML = (id === 'unitSymbolR') ? "&Omega;" : "";
+    });
     
-    // 9. CLEAR IPO DRAG ZONES (Prevents ghosting blocks if switching tabs mid-sort)
+    // 9. CLEAR IPO DRAG ZONES
     if (document.getElementById('ipoBank')) document.getElementById('ipoBank').innerHTML = "";
     document.querySelectorAll('.ipo-zone').forEach(zone => zone.innerHTML = "");
 
-    // 10. NEW: BRING BACK ACTION BUTTONS (In case they were hidden by Show Solutions)
+    // 10. REVEAL ACTION BUTTONS
     const checkansBtn = document.getElementById('checkansBtn');
     const showsolutionsBtn = document.getElementById('showsolutionsBtn');
     if (checkansBtn) checkansBtn.style.display = 'block';
