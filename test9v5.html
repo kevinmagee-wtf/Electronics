@@ -2954,37 +2954,9 @@ function generatePowerProblem(ctx, canvas) {
     const qText = document.getElementById('questionText');
     const solText = document.getElementById('solText');
 
-    // --- DYNAMIC DROPDOWN CREATION (NEW LINE CONTAINER) ---
-    let ratingDiv = document.getElementById('ratingDiv');
-    let selectBox = document.getElementById('ratingSelectP');
-    
-    if (!ratingDiv && groupP) {
-        ratingDiv = document.createElement('div');
-        ratingDiv.id = 'ratingDiv';
-        ratingDiv.style.marginTop = '10px';
-        ratingDiv.style.display = 'flex';
-        ratingDiv.style.alignItems = 'center';
-        
-        groupP.parentNode.insertBefore(ratingDiv, groupP.nextSibling);
-
-        let ratingLabel = document.createElement('span');
-        ratingLabel.innerHTML = "<strong style='color:" + brandPink + "'>Bulb power rating = </strong>&nbsp;";
-        ratingLabel.style.fontSize = '18px';
-        
-        selectBox = document.createElement('select');
-        selectBox.id = 'ratingSelectP';
-        selectBox.style.fontSize = '16px';
-        selectBox.style.padding = '6px'; 
-        selectBox.style.borderRadius = '6px';
-        selectBox.style.cursor = 'pointer';
-        
-        // Forcing the width to override any external CSS restrictions
-        selectBox.style.setProperty('width', '160px', 'important');
-        selectBox.style.setProperty('min-width', '160px', 'important');
-
-        ratingDiv.appendChild(ratingLabel);
-        ratingDiv.appendChild(selectBox);
-    }
+    // TARGET THE HTML DROPDOWN (No longer creating dynamic ones)
+    const powerRatingGroup = document.getElementById('inputGroupPowerRating');
+    const selectBox = document.getElementById('selectPowerRating');
 
     if (inputBox) {
         inputBox.style.display = 'inline-block';
@@ -2992,7 +2964,9 @@ function generatePowerProblem(ctx, canvas) {
         inputBox.value = ""; 
     }
     if (unitSpan) unitSpan.innerHTML = "";
-    if (ratingDiv) ratingDiv.style.display = 'none';
+    
+    // Ensure the bulb rating dropdown is hidden by default
+    if (powerRatingGroup) powerRatingGroup.style.display = 'none';
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = brandBlack;
@@ -3025,22 +2999,17 @@ function generatePowerProblem(ctx, canvas) {
         // --- DRAWING ---
         drawLine(ctx, 150, 60, 450, 60);
         drawLine(ctx, 150, 360, 450, 360);
-
         ctx.fillStyle = brandBlack; ctx.textAlign = "left";
         ctx.font = "bold 16px Arial"; ctx.fillText("V", 250, 45);
         ctx.font = "bold 12px Arial"; ctx.fillText("supply", 262, 50); 
         ctx.font = "bold 16px Arial"; ctx.fillText(" = " + supplyV + " V", 305, 45);
         ctx.textAlign = "center"; ctx.fillText("0V (GND)", 300, 390);
-
         drawLine(ctx, 300, 60, 300, 135); 
         drawArrowOnWire(ctx, 300, 60, 300, 97.5);
-
         ctx.fillStyle = brandBlack; ctx.font = "bold 16px Arial"; ctx.textAlign = "right"; 
         ctx.fillText("I = " + current_mA + " mA", 285, 103);
-
         drawComponent(ctx, 'fixed', 300, 160); 
         drawLine(ctx, 300, 185, 300, 240);
-
         ctx.fillStyle = brandBlack; ctx.textAlign = "right"; ctx.fillText("R", 285, 165); 
         ctx.fillStyle = brandPink; ctx.textAlign = "left"; ctx.fillText("P = ?", 325, 165); 
 
@@ -3049,12 +3018,9 @@ function generatePowerProblem(ctx, canvas) {
         ctx.moveTo(280, 240); ctx.lineTo(320, 240); ctx.lineTo(300, 280); 
         ctx.fillStyle = "white"; ctx.fill(); ctx.closePath(); ctx.stroke();
         drawLine(ctx, 280, 280, 320, 280); 
-        
         drawLine(ctx, 330, 250, 350, 230); drawLine(ctx, 350, 230, 340, 230); drawLine(ctx, 350, 230, 350, 240); 
         drawLine(ctx, 335, 265, 355, 245); drawLine(ctx, 355, 245, 345, 245); drawLine(ctx, 355, 245, 355, 255); 
-
         drawLine(ctx, 300, 280, 300, 360); 
-        
         ctx.fillStyle = brandBlack; ctx.textAlign = "left";
         ctx.font = "bold 16px Arial"; ctx.fillText("V", 365, 285);
         let vW = ctx.measureText("V").width;
@@ -3078,28 +3044,28 @@ function generatePowerProblem(ctx, canvas) {
         const supplyOptions = [5, 6, 12, 24];
         let supplyV = supplyOptions[Math.floor(Math.random() * supplyOptions.length)];
         let rValue = Math.floor(Math.random() * 36) + 15; 
-        
         let power_W = parseFloat(((supplyV * supplyV) / rValue).toFixed(2));
 
-        const availableRatings = [1, 2, 5, 10, 20, 50, 100];
+        const availableRatings = [0.25, 1, 2, 5, 10];
         let chosenRating = availableRatings.find(rating => rating >= power_W);
+        // If it exceeds our stock, default to 10
+        if (!chosenRating) chosenRating = 10;
 
         currentAnswers.vNameHTML = 'P';
         currentAnswers.exactPower = power_W; 
-        currentAnswers.safeRating = chosenRating + " W"; 
+        currentAnswers.safeRating = chosenRating.toString(); 
         currentAnswers.vUnit = 'W'; 
 
-        if (inputBox) {
-            inputBox.placeholder = "e.g. 1.2 W";
-        }
+        if (inputBox) inputBox.placeholder = "e.g. 1.2 W";
         
-        if (ratingDiv) ratingDiv.style.display = 'flex';
+        // SHOW THE HTML DROPDOWN GROUP
+        if (powerRatingGroup) powerRatingGroup.style.display = 'flex';
         
         if (selectBox) {
-            selectBox.innerHTML = '<option value="" disabled selected>Select Rating...</option>';
+            selectBox.innerHTML = '<option value="" disabled selected>-- Select --</option>';
             availableRatings.forEach(rating => {
                 let opt = document.createElement('option');
-                opt.value = rating + " W"; 
+                opt.value = rating; 
                 opt.innerHTML = rating + " W";
                 selectBox.appendChild(opt);
             });
@@ -3113,13 +3079,11 @@ function generatePowerProblem(ctx, canvas) {
         // --- DRAWING ---
         drawLine(ctx, 150, 60, 450, 60);
         drawLine(ctx, 150, 360, 450, 360);
-
         ctx.fillStyle = brandBlack; ctx.textAlign = "left";
         ctx.font = "bold 16px Arial"; ctx.fillText("V", 250, 45);
         ctx.font = "bold 12px Arial"; ctx.fillText("supply", 262, 50); 
         ctx.font = "bold 16px Arial"; ctx.fillText(" = " + supplyV + " V", 305, 45);
         ctx.textAlign = "center"; ctx.fillText("0V (GND)", 300, 390);
-
         drawLine(ctx, 300, 60, 300, 185); 
         
         if (typeof drawFilamentBulb === 'function') {
@@ -3127,18 +3091,12 @@ function generatePowerProblem(ctx, canvas) {
         } else {
             drawComponent(ctx, 'filament', 300, 210); 
         }
-
         drawLine(ctx, 300, 235, 300, 360); 
 
-        ctx.fillStyle = brandBlack; 
-        ctx.textAlign = "right"; 
-        ctx.font = "bold 16px Arial";
-        ctx.fillText(supplyV + "V bulb", 300 - 32, 205); 
-        ctx.fillText("R = " + rValue + " \u03A9", 300 - 32, 225); 
-        
-        ctx.fillStyle = brandPink; 
-        ctx.textAlign = "left"; 
-        ctx.fillText("P = ?", 300 + 32, 215); 
+        ctx.fillStyle = brandBlack; ctx.textAlign = "right"; ctx.font = "bold 16px Arial";
+        ctx.fillText(supplyV + "V bulb", 268, 205); 
+        ctx.fillText("R = " + rValue + " \u03A9", 268, 225); 
+        ctx.fillStyle = brandPink; ctx.textAlign = "left"; ctx.fillText("P = ?", 332, 215); 
 
         if (solText) {
             solText.innerHTML = "<strong>Exact Power = " + power_W + " W | Safe Rating = " + chosenRating + " W</strong><br><br>" +
@@ -3147,16 +3105,12 @@ function generatePowerProblem(ctx, canvas) {
                 "<em>Engineering Application:</em> Because the filament bulb dissipates " + power_W + "W, you must select the next highest available rating (" + chosenRating + "W) to prevent the component from failing.";
         }
 
-} else {
+    } else {
         // ==========================================
         // SCENARIO 3: Resistor + (Resistor, Motor, or Lamp)
         // ==========================================
-        // Series circuit so Current (Amps) is shared across both components
         let current_A = parseFloat((Math.random() * 1.4 + 0.1).toFixed(1)); 
-        
         const secondaryTypes = ['resistor', 'signal', 'motor'];
-        
-        // Ensure at least one component is always a resistor
         let isTopResistor = Math.random() < 0.5;
         let c1Type = isTopResistor ? 'resistor' : secondaryTypes[Math.floor(Math.random() * secondaryTypes.length)];
         let c2Type = !isTopResistor ? 'resistor' : secondaryTypes[Math.floor(Math.random() * secondaryTypes.length)];
@@ -3164,23 +3118,15 @@ function generatePowerProblem(ctx, canvas) {
         let c1 = { type: c1Type, r: Math.floor(Math.random() * 8) * 10 + 20, isTarget: false };
         let c2 = { type: c2Type, r: Math.floor(Math.random() * 8) * 10 + 20, isTarget: false };
 
-        // Randomly pick which component we want them to calculate power for
         let targetIdx = Math.random() < 0.5 ? 1 : 2;
         let targetComp = targetIdx === 1 ? c1 : c2;
         targetComp.isTarget = true;
 
-        // Dynamic naming logic ensuring perfect grammar & preventing text overlap
         function setProps(comp, otherComp, pos) {
-            // Unify label to R1 or R2 for all to keep text short and avoid overlapping symbols
             comp.label = "R";
             comp.sub = pos.toString(); 
-
             if (comp.type === 'resistor') {
-                if (otherComp.type === 'resistor') { 
-                    comp.name = "R<sub>" + pos + "</sub>"; 
-                } else { 
-                    comp.name = "the resistor"; 
-                }
+                comp.name = (otherComp.type === 'resistor') ? "R<sub>" + pos + "</sub>" : "the resistor";
             } else if (comp.type === 'signal') {
                 comp.name = "the signal lamp"; 
             } else if (comp.type === 'motor') {
@@ -3191,7 +3137,6 @@ function generatePowerProblem(ctx, canvas) {
         setProps(c2, c1, 2);
 
         let power_W = parseFloat(((current_A * current_A) * targetComp.r).toFixed(2));
-
         currentAnswers.vNameHTML = 'P';
         currentAnswers.vValue = power_W;
         currentAnswers.vUnit = 'W'; 
@@ -3206,46 +3151,25 @@ function generatePowerProblem(ctx, canvas) {
         // --- DRAWING ---
         drawLine(ctx, 150, 60, 450, 60);
         drawLine(ctx, 150, 360, 450, 360);
-
-        ctx.fillStyle = brandBlack; 
-        ctx.textAlign = "left";
+        ctx.fillStyle = brandBlack; ctx.textAlign = "left";
         ctx.font = "bold 16px Arial"; ctx.fillText("V", 270, 45);
         ctx.font = "bold 12px Arial"; ctx.fillText("supply", 282, 50);
-        
-        ctx.textAlign = "center"; ctx.font = "bold 16px Arial";
-        ctx.fillText("0V (GND)", 300, 390);
-
+        ctx.textAlign = "center"; ctx.font = "bold 16px Arial"; ctx.fillText("0V (GND)", 300, 390);
         drawLine(ctx, 300, 60, 300, 120); 
         drawArrowOnWire(ctx, 300, 60, 300, 90);
         ctx.textAlign = "right"; ctx.fillText("I = " + current_A + " A", 285, 95);
 
-        // Sub-function to handle dynamic drawing & text layout safely
         function drawDynamicComp(comp, yCenter) {
-            if (comp.type === 'resistor') {
-                if (typeof drawComponent === 'function') drawComponent(ctx, 'fixed', 300, yCenter);
-            } else if (comp.type === 'signal') {
-                if (typeof drawLamp === 'function') drawLamp(ctx, 300, yCenter);
-            } else if (comp.type === 'motor') {
-                if (typeof drawMotor === 'function') drawMotor(ctx, 300, yCenter);
-            } 
-
-            ctx.fillStyle = brandBlack; ctx.textAlign = "left"; 
-            ctx.font = "bold 16px Arial"; 
+            if (comp.type === 'resistor') drawComponent(ctx, 'fixed', 300, yCenter);
+            else if (comp.type === 'signal') drawLamp(ctx, 300, yCenter);
+            else if (comp.type === 'motor') drawMotor(ctx, 300, yCenter);
+            
+            ctx.fillStyle = brandBlack; ctx.textAlign = "left"; ctx.font = "bold 16px Arial"; 
             ctx.fillText(comp.label, 180, yCenter + 5); 
             let labelW = ctx.measureText(comp.label).width;
-            
-            if (comp.sub) {
-                ctx.font = "bold 12px Arial"; 
-                ctx.fillText(comp.sub, 180 + labelW, yCenter + 9);
-                let subW = ctx.measureText(comp.sub).width;
-                ctx.font = "bold 16px Arial"; 
-                ctx.fillText(" = " + comp.r + " \u03A9", 180 + labelW + subW, yCenter + 5); 
-            } else {
-                ctx.font = "bold 16px Arial"; 
-                ctx.fillText(" = " + comp.r + " \u03A9", 180 + labelW, yCenter + 5); 
-            }
-            
-            // Draw the P = ? label beside the target component
+            ctx.font = "bold 12px Arial"; ctx.fillText(comp.sub, 180 + labelW, yCenter + 9);
+            let subW = ctx.measureText(comp.sub).width;
+            ctx.font = "bold 16px Arial"; ctx.fillText(" = " + comp.r + " \u03A9", 180 + labelW + subW, yCenter + 5);
             if (comp.isTarget) {
                 ctx.fillStyle = brandPink; ctx.textAlign = "left"; ctx.fillText("P = ?", 335, yCenter + 5); 
             }
@@ -3254,14 +3178,12 @@ function generatePowerProblem(ctx, canvas) {
         drawDynamicComp(c1, 145);
         drawLine(ctx, 300, 170, 300, 230);
         drawDynamicComp(c2, 255);
-
         drawLine(ctx, 300, 280, 300, 360);
 
         if (solText) {
             solText.innerHTML = "<strong>P = " + power_W + " W</strong><br><br>" +
                 "<em>Core Equation:</em> <strong>P = I&sup2; &times; R</strong><br><br>" +
-                "<em>Trap Avoided:</em> You only need the resistance of " + targetComp.name + ", not the total circuit resistance.<br><br>" +
-                "P = (" + current_A + " A)&sup2; &times; " + targetComp.r + " &Omega; = " + (current_A * current_A).toFixed(2) + " &times; " + targetComp.r + " = <strong>" + power_W + " W</strong>";
+                "P = (" + current_A + " A)&sup2; &times; " + targetComp.r + " &Omega; = <strong>" + power_W + " W</strong>";
         }
     }
 }
