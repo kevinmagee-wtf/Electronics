@@ -3037,7 +3037,7 @@ function generatePowerProblem(ctx, canvas) {
                 "P = " + current_mA + " mA &times; " + resistorV.toFixed(1) + "V = <strong>" + power_mW + " mW</strong>";
         }
 
-    } else if (scenario === 2) {
+} else if (scenario === 2) {
         // ==========================================
         // SCENARIO 2: Real-World Component Rating
         // ==========================================
@@ -3048,7 +3048,6 @@ function generatePowerProblem(ctx, canvas) {
 
         const availableRatings = [0.25, 1, 2, 5, 10];
         let chosenRating = availableRatings.find(rating => rating >= power_W);
-        // If it exceeds our stock, default to 10
         if (!chosenRating) chosenRating = 10;
 
         currentAnswers.vNameHTML = 'P';
@@ -3058,10 +3057,35 @@ function generatePowerProblem(ctx, canvas) {
 
         if (inputBox) inputBox.placeholder = "e.g. 1.2 W";
         
-        // SHOW THE HTML DROPDOWN GROUP
-        if (powerRatingGroup) powerRatingGroup.style.display = 'flex';
+        // --- RESTORED: THE "PERFECT" ORIGINAL FORMATTING ---
+        if (powerRatingGroup) {
+            powerRatingGroup.style.display = 'flex';
+            powerRatingGroup.style.alignItems = 'center';
+            powerRatingGroup.style.marginTop = '10px';
+            powerRatingGroup.style.flexDirection = 'row';    
+            powerRatingGroup.style.justifyContent = 'flex-start'; 
+            powerRatingGroup.style.marginLeft = '0';        
+            
+            const ratingLabel = powerRatingGroup.querySelector('label');
+            if (ratingLabel) {
+                ratingLabel.innerHTML = "<strong style='color:" + brandPink + "'>Bulb power rating = </strong>&nbsp;";
+                ratingLabel.style.fontSize = '18px';
+                ratingLabel.style.fontWeight = 'normal'; 
+                ratingLabel.style.whiteSpace = 'nowrap'; 
+            }
+        }
         
         if (selectBox) {
+            selectBox.style.fontSize = '16px';
+            selectBox.style.padding = '6px'; 
+            selectBox.style.borderRadius = '6px';
+            selectBox.style.border = '2px solid #ccc';
+            selectBox.style.cursor = 'pointer';
+            
+            // Set to 200px wide as requested
+            selectBox.style.setProperty('width', '200px', 'important');
+            selectBox.style.setProperty('min-width', '200px', 'important');
+
             selectBox.innerHTML = '<option value="" disabled selected>-- Select --</option>';
             availableRatings.forEach(rating => {
                 let opt = document.createElement('option');
