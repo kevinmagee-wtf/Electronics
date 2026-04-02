@@ -2883,31 +2883,50 @@ function generatePowerProblem(ctx, canvas) {
     const qText = document.getElementById('questionText');
     const solText = document.getElementById('solText');
 
-    // --- DYNAMIC DROPDOWN CREATION ---
+    // --- DYNAMIC DROPDOWN CREATION (NEW LINE CONTAINER) ---
+    let ratingDiv = document.getElementById('ratingDiv');
     let selectBox = document.getElementById('ratingSelectP');
-    if (!selectBox && inputBox) {
+    
+    // Create the separate line container if it doesn't exist
+    if (!ratingDiv && groupP) {
+        ratingDiv = document.createElement('div');
+        ratingDiv.id = 'ratingDiv';
+        ratingDiv.style.marginTop = '10px';
+        ratingDiv.style.display = 'flex';
+        ratingDiv.style.alignItems = 'center';
+        
+        // Insert directly after the main P= input group
+        groupP.parentNode.insertBefore(ratingDiv, groupP.nextSibling);
+
+        let ratingLabel = document.createElement('span');
+        ratingLabel.innerHTML = "<strong>Bulb power rating</strong> = ";
+        ratingLabel.style.fontSize = '18px';
+        ratingLabel.style.color = '#333'; 
+        
         selectBox = document.createElement('select');
         selectBox.id = 'ratingSelectP';
         selectBox.style.fontSize = '16px';
         selectBox.style.padding = '6px'; 
-        selectBox.style.marginLeft = '10px'; // Added a bit more space from the text box
+        selectBox.style.marginLeft = '10px'; 
         selectBox.style.borderRadius = '6px';
-        selectBox.style.width = '160px'; // WIDER DROPDOWN BOX
+        selectBox.style.width = '160px'; 
         selectBox.style.cursor = 'pointer';
-        inputBox.parentNode.insertBefore(selectBox, inputBox.nextSibling);
-        
-        // Note: The event listener that overwrote inputBox.value has been REMOVED
-        // so the text box and dropdown can operate independently.
+
+        ratingDiv.appendChild(ratingLabel);
+        ratingDiv.appendChild(selectBox);
     }
 
-    // Default UI states (Text box ON, Dropdown OFF, default width for text box)
+    // Default UI states
     if (inputBox) {
         inputBox.style.display = 'inline-block';
-        inputBox.style.width = '80px'; // Ensure text box isn't too wide
+        inputBox.style.width = '130px'; // Made slightly wider to fit placeholder
         inputBox.value = ""; 
-        if (unitSpan) unitSpan.innerHTML = "";
     }
-    if (selectBox) selectBox.style.display = 'none';
+    // Globally clear the outside unit text for all scenarios
+    if (unitSpan) unitSpan.innerHTML = "";
+    
+    // Hide dropdown container by default
+    if (ratingDiv) ratingDiv.style.display = 'none';
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = brandBlack;
@@ -2915,7 +2934,7 @@ function generatePowerProblem(ctx, canvas) {
 
     // RANDOMLY SELECT SCENARIO (1, 2, or 3)
     const scenario = Math.floor(Math.random() * 3) + 1;
-    currentAnswers.scenario = scenario; // Useful for your checkAnswer function to know which logic to apply
+    currentAnswers.scenario = scenario; 
 
     if (scenario === 1) {
         // ==========================================
@@ -2932,8 +2951,8 @@ function generatePowerProblem(ctx, canvas) {
         currentAnswers.vValue = power_mW;
         currentAnswers.vUnit = 'mW'; 
 
-        if (inputBox) inputBox.placeholder = "e.g. 50"; 
-        if (unitSpan) unitSpan.innerHTML = " mW";
+        // Placeholder mimics new style
+        if (inputBox) inputBox.placeholder = "e.g. 50 mW"; 
 
         if (qText) {
             qText.innerHTML = "Calculate the power dissipated by the protection resistor.";
@@ -3013,15 +3032,14 @@ function generatePowerProblem(ctx, canvas) {
         currentAnswers.safeRating = chosenRating + " W"; 
         currentAnswers.vUnit = 'W'; 
 
-        // UI SWITCH: Show BOTH text input and wider dropdown
+        // UI SWITCH: Placeholder updated, Dropdown container displayed
         if (inputBox) {
-            inputBox.style.display = 'inline-block';
-            inputBox.placeholder = "Exact P";
+            inputBox.placeholder = "e.g. 1.2 W";
         }
-        if (unitSpan) unitSpan.innerHTML = " W";
+        
+        if (ratingDiv) ratingDiv.style.display = 'flex';
         
         if (selectBox) {
-            selectBox.style.display = 'inline-block';
             selectBox.innerHTML = '<option value="" disabled selected>Select Rating...</option>';
             availableRatings.forEach(rating => {
                 let opt = document.createElement('option');
@@ -3032,7 +3050,6 @@ function generatePowerProblem(ctx, canvas) {
         }
 
         if (qText) {
-            // Updated text with underline
             qText.innerHTML = "Calculate the power dissipated by the filament bulb and choose the safest <u>minimum</u> power rating to choose from stock?";
             qText.style.display = 'block';
         }
@@ -3092,8 +3109,8 @@ function generatePowerProblem(ctx, canvas) {
         currentAnswers.vValue = power_W;
         currentAnswers.vUnit = 'W'; 
 
-        if (inputBox) inputBox.placeholder = "e.g. 11.75"; 
-        if (unitSpan) unitSpan.innerHTML = " W";
+        // Placeholder mimics new style
+        if (inputBox) inputBox.placeholder = "e.g. 11.75 W"; 
 
         if (qText) {
             qText.innerHTML = "Calculate the power dissipated in <strong>R<sub>1</sub></strong> only.";
