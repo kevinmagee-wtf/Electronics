@@ -2814,126 +2814,132 @@ function generatePowerProblem(ctx, canvas) {
 
     const groupP = document.getElementById('inputGroupP');
     if (groupP) groupP.style.display = 'flex'; 
-
-    // 1. GENERATE MATH LOGIC
-    let supplyV = Math.floor(Math.random() * 6) + 6; 
-    let ledV = parseFloat((Math.random() * (3.2 - 1.8) + 1.8).toFixed(1)); 
-    let current_mA = Math.floor(Math.random() * 15) + 5; 
     
-    let resistorV = supplyV - ledV;
-    let power_mW = parseFloat((resistorV * current_mA).toFixed(1));
-
-    currentAnswers.vNameHTML = 'P';
-    currentAnswers.vValue = power_mW;
-    currentAnswers.vUnit = 'mW'; 
-
     const labelP = document.getElementById('labelP');
     if (labelP) labelP.innerHTML = "<span style='color:" + brandPink + "'>P</span> = ";
     
     const inputBox = document.getElementById('inputP');
     const unitSpan = document.getElementById('unitSymbolP'); 
-
-    if (inputBox) {
-        inputBox.value = ""; 
-        inputBox.placeholder = "e.g. 50 mW"; 
-        if (unitSpan) unitSpan.innerHTML = ""; 
-    }
-
     const qText = document.getElementById('questionText');
-    if (qText) {
-        qText.innerHTML = "Calculate the power dissipated by the protection resistor.";
-        qText.style.display = 'block';
-    }
+    const solText = document.getElementById('solText');
 
-    // 2. DRAW THE CIRCUIT
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = brandBlack;
     ctx.lineWidth = 2;
-    
-    // Draw Top and Bottom Power Rails
-    drawLine(ctx, 150, 60, 450, 60);
-    drawLine(ctx, 150, 360, 450, 360);
 
-    // --- Labels for Rails (USING RAW CANVAS TEXT) ---
-    ctx.fillStyle = brandBlack;
-    ctx.textAlign = "left";
-    
-    // Top Rail (Vsupply) - Replicating the subscript logic from circuit_analysis
-    ctx.font = "bold 16px Arial";
-    ctx.fillText("V", 250, 45);
-    ctx.font = "bold 12px Arial";
-    ctx.fillText("supply", 262, 50); // Dropped down slightly for subscript
-    ctx.font = "bold 16px Arial";
-    ctx.fillText(" = " + supplyV + " V", 305, 45);
+    // RANDOMLY SELECT SCENARIO (1, 2, or 3)
+    const scenario = Math.floor(Math.random() * 3) + 1;
 
-    // Bottom Rail (GND)
-    ctx.textAlign = "center";
-    ctx.fillText("0V (GND)", 300, 390);
+    if (scenario === 1) {
+        // ==========================================
+        // SCENARIO 1: Voltage Splitting (LED)
+        // Focus: P = I * V
+        // ==========================================
+        let supplyV = Math.floor(Math.random() * 6) + 6; 
+        let ledV = parseFloat((Math.random() * (3.2 - 1.8) + 1.8).toFixed(1)); 
+        let current_mA = Math.floor(Math.random() * 15) + 5; 
+        let resistorV = supplyV - ledV;
+        let power_mW = parseFloat((resistorV * current_mA).toFixed(1));
 
-    // --- Centered Vertical Branch (X = 300) ---
-    // Top wire down to resistor box
-    drawLine(ctx, 300, 60, 300, 135); 
+        currentAnswers.vNameHTML = 'P';
+        currentAnswers.vValue = power_mW;
+        currentAnswers.vUnit = 'mW'; 
 
-    // Downward Current Arrowhead ON the wire using your helper
-    drawArrowOnWire(ctx, 300, 60, 300, 97.5);
+        if (inputBox) {
+            inputBox.value = ""; 
+            inputBox.placeholder = "e.g. 50 mW"; 
+        }
 
-    // Current Label (LEFT of the wire, RAW TEXT)
-    ctx.fillStyle = brandBlack; 
-    ctx.font = "bold 16px Arial"; 
-    ctx.textAlign = "right"; 
-    ctx.fillText("I = " + current_mA + " mA", 285, 103);
+        if (qText) {
+            qText.innerHTML = "Calculate the power dissipated by the protection resistor.";
+            qText.style.display = 'block';
+        }
 
-    // Resistor Box (Center Y is 160)
-    drawComponent(ctx, 'fixed', 300, 160); 
-    
-    // Wire from bottom of Resistor to LED
-    drawLine(ctx, 300, 185, 300, 240);
+        // TODO: Insert the Canvas Drawing code for Scenario 1 here
+        // (The exact drawing code we just finalized)
 
-    // Resistor Labels (RAW TEXT)
-    ctx.fillStyle = brandBlack;
-    ctx.textAlign = "right";
-    ctx.fillText("R", 285, 165); // Left side
+        if (solText) {
+            solText.innerHTML = "<strong>P = " + power_mW + " mW</strong><br><br>" +
+                "<em>Core Equation:</em> <strong>P = I &times; V</strong><br><br>" +
+                "<em>Step 1:</em> Find the voltage across the resistor.<br>" +
+                "V<sub>R</sub> = V<sub>supply</sub> - V<sub>LED</sub> = " + supplyV + "V - " + ledV + "V = <strong>" + resistorV.toFixed(1) + "V</strong>.<br><br>" +
+                "<em>Step 2:</em> Multiply the current by the voltage.<br>" +
+                "P = " + current_mA + " mA &times; " + resistorV.toFixed(1) + "V = <strong>" + power_mW + " mW</strong>";
+        }
 
-    ctx.fillStyle = brandPink;
-    ctx.textAlign = "left";
-    ctx.fillText("P = ?", 325, 165); // Right side, safely spaced
+    } else if (scenario === 2) {
+        // ==========================================
+        // SCENARIO 2: Real-World Component Rating
+        // Focus: P = V^2 / R
+        // ==========================================
+        let supplyV = Math.floor(Math.random() * 15) + 5; // e.g., 5V to 19V
+        let rValue = Math.floor(Math.random() * 40) + 10; // e.g., 10 to 49 ohms
+        
+        let power_W = parseFloat(((supplyV * supplyV) / rValue).toFixed(2));
 
-    // --- LED (POINTING DOWN) ---
-    ctx.beginPath(); 
-    ctx.moveTo(280, 240); ctx.lineTo(320, 240); ctx.lineTo(300, 280); 
-    ctx.fillStyle = "white"; ctx.fill(); ctx.closePath(); ctx.stroke();
-    drawLine(ctx, 280, 280, 320, 280); // Cathode bar
+        // Logic to pick the appropriate rating
+        const availableRatings = [1, 2, 5, 10, 20];
+        let chosenRating = availableRatings.find(rating => rating >= power_W);
 
-    // LED Light Emission Arrows
-    drawLine(ctx, 330, 250, 350, 230); // Top arrow
-    drawLine(ctx, 350, 230, 340, 230); // Arrow head
-    drawLine(ctx, 350, 230, 350, 240); // Arrow head
-    drawLine(ctx, 335, 265, 355, 245); // Bottom arrow
-    drawLine(ctx, 355, 245, 345, 245); // Arrow head
-    drawLine(ctx, 355, 245, 355, 255); // Arrow head
+        currentAnswers.vNameHTML = 'P';
+        currentAnswers.vValue = power_W; 
+        currentAnswers.vUnit = 'W'; 
 
-    // Wire from LED to bottom rail
-    drawLine(ctx, 300, 280, 300, 360); 
+        if (inputBox) {
+            inputBox.value = ""; 
+            inputBox.placeholder = "e.g. 6.5 W"; 
+        }
 
-    // LED Voltage Label (RAW TEXT to avoid parsing bugs)
-    ctx.fillStyle = brandBlack;
-    ctx.textAlign = "left";
-    ctx.fillText("V = " + ledV + " V", 365, 285);
+        if (qText) {
+            qText.innerHTML = "Calculate the power dissipated by the resistor. Based on your answer, what is the safest minimum power rating to choose from stock (1W, 2W, 5W, 10W, or 20W)?";
+            qText.style.display = 'block';
+        }
 
-    // Reset alignment just in case
-    ctx.textAlign = "left"; 
+        // TODO: Insert the Canvas Drawing code for Scenario 2 here
+        // (Single resistor across power rails)
 
-    // 4. SOLUTION LOGIC PANEL
-    const solText = document.getElementById('solText');
-    if (solText) {
-        let logicHTML = "<strong>P = " + power_mW + " mW</strong><br><br>";
-        logicHTML += "<em>Core Equation:</em> <strong>P = I &times; V</strong><br><br>";
-        logicHTML += "<em>Step 1:</em> Find the voltage across the resistor.<br>";
-        logicHTML += "V<sub>R</sub> = V<sub>supply</sub> - V<sub>LED</sub> = " + supplyV + "V - " + ledV + "V = <strong>" + resistorV.toFixed(1) + "V</strong>.<br><br>";
-        logicHTML += "<em>Step 2:</em> Multiply the current by the voltage.<br>";
-        logicHTML += "P = " + current_mA + " mA &times; " + resistorV.toFixed(1) + "V = <strong>" + power_mW + " mW</strong><br>";
-        logicHTML += "<span style='font-size: 0.9em; color: #666;'>(Note: Because current is in mA, the power remains in mW).</span>";
-        solText.innerHTML = logicHTML;
+        if (solText) {
+            solText.innerHTML = "<strong>P = " + power_W + " W</strong><br><br>" +
+                "<em>Core Equation:</em> <strong>P = V&sup2; / R</strong><br><br>" +
+                "P = (" + supplyV + "&sup2;) / " + rValue + " = " + (supplyV*supplyV) + " / " + rValue + " = <strong>" + power_W + " W</strong><br><br>" +
+                "<em>Engineering Application:</em> Because the resistor dissipates " + power_W + "W, a " + chosenRating + "W resistor is the most appropriate choice to prevent it from burning out.";
+        }
+
+    } else {
+        // ==========================================
+        // SCENARIO 3: Series Ratio
+        // Focus: P = I^2 * R
+        // ==========================================
+        let current_A = parseFloat((Math.random() * 1.5 + 0.1).toFixed(2)); // e.g., 0.1A to 1.5A
+        let r1Value = Math.floor(Math.random() * 80) + 20; 
+        let r2Value = Math.floor(Math.random() * 80) + 20; 
+        
+        // Target R1 for the question
+        let power_W = parseFloat(((current_A * current_A) * r1Value).toFixed(2));
+
+        currentAnswers.vNameHTML = 'P';
+        currentAnswers.vValue = power_W;
+        currentAnswers.vUnit = 'W'; 
+
+        if (inputBox) {
+            inputBox.value = ""; 
+            inputBox.placeholder = "e.g. 11.75 W"; 
+        }
+
+        if (qText) {
+            qText.innerHTML = "Calculate the power dissipated in <strong>R<sub>1</sub></strong> only.";
+            qText.style.display = 'block';
+        }
+
+        // TODO: Insert the Canvas Drawing code for Scenario 3 here
+        // (Two resistors in series with an I arrow)
+
+        if (solText) {
+            solText.innerHTML = "<strong>P = " + power_W + " W</strong><br><br>" +
+                "<em>Core Equation:</em> <strong>P = I&sup2; &times; R</strong><br><br>" +
+                "<em>Trap Avoided:</em> You only need the resistance of R<sub>1</sub>, not the total circuit resistance.<br><br>" +
+                "P = (" + current_A + "A)&sup2; &times; " + r1Value + " &Omega; = " + (current_A * current_A).toFixed(4) + " &times; " + r1Value + " = <strong>" + power_W + " W</strong>";
+        }
     }
 }
  
