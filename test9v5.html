@@ -5082,7 +5082,7 @@ function provideHint() {
     if (!feedback) return;
 
    // Standard "Nice Blue" style for all boxes - now forcing normal font weight
-const blueBox = `text-align:left; background:#e0f8ff; color:#0077b6; padding:15px; border:1px solid #90e0ef; border-radius:8px; line-height:1.5; font-size: 0.9em; font-weight: normal;`;
+   const blueBox = `text-align:left; background:#e0f8ff; color:#0077b6; padding:15px; border:1px solid #90e0ef; border-radius:8px; line-height:1.5; font-size: 0.9em; font-weight: normal;`;
     
     let helpText = "";
 
@@ -5188,6 +5188,12 @@ const blueBox = `text-align:left; background:#e0f8ff; color:#0077b6; padding:15p
                     R<sub>T</sub> = (R<sub>1</sub> × R<sub>2</sub>) / (R<sub>1</sub> + R<sub>2</sub>)
                 </div>
             </div>`;
+    } else if (currentMode === 'power') {
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong> Note: only one calculation required. Identify which two variables you have, then apply the matching power formula:<br><br>
+                <strong>P = I &times; V</strong> &nbsp;|&nbsp; <strong>P = I&sup2;R</strong> &nbsp;|&nbsp; <strong>P = V&sup2; / R</strong>
+            </div>`;
     } else {
         // Potential Divider & General
         helpText = `
@@ -5198,7 +5204,6 @@ const blueBox = `text-align:left; background:#e0f8ff; color:#0077b6; padding:15p
 
     feedback.innerHTML = helpText;
 }
-
 // **********************************************************************   
 function toggleSolutions() {
     const sol = document.getElementById('solutions');
