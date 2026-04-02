@@ -3247,20 +3247,21 @@ function generateGrade9PowerProblem() {
 
     // 0. RESET UI & STATE
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups(); 
-    currentMode = 'grade9power'; // Updated to your new broader category
+    currentMode = 'grade9power'; 
+    
+    // Show the new dedicated HTML container
+    const inputZone = document.getElementById('inputGroupGrade9Power');
+    if (inputZone) inputZone.style.display = 'block'; 
 
-    // Target a generic input zone (e.g., inputGroupV) to inject our custom UI
-    const inputZone = document.getElementById('inputGroupV');
-    if (inputZone) {
-        inputZone.style.display = 'block'; // Make sure the container is visible
-    }
+    // Clear previous answers from the boxes
+    if (document.getElementById('g9PowerIdealR')) document.getElementById('g9PowerIdealR').value = "";
+    if (document.getElementById('g9PowerDissipated')) document.getElementById('g9PowerDissipated').value = "";
+    if (document.getElementById('g9PowerE24')) document.getElementById('g9PowerE24').value = "";
 
     // Update Question Text
     const qText = document.getElementById('questionText');
     if (qText) {
         if (typeof showDPinstruction === 'function') showDPinstruction(); 
-        
-        // Grade 9 Challenge Header
         qText.innerHTML = `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge.<br></strong></div>` + qText.innerHTML;
     }
 
@@ -3274,15 +3275,15 @@ function generateGrade9PowerProblem() {
     let i_led_mA = Math.floor(Math.random() * 16) + 10; // 10mA to 25mA
     
     // Core Math
-    let v_r = v_in - v_f; // Voltage across resistor
-    let r_ideal = (v_r / (i_led_mA / 1000)); // Ohms
-    let p_r_mW = v_r * i_led_mA; // mW (V * mA = mW)
+    let v_r = v_in - v_f; 
+    let r_ideal = (v_r / (i_led_mA / 1000)); 
+    let p_r_mW = v_r * i_led_mA; 
     
     // Convert to exactly 4 sig figs
     let r_ideal_4sf = Number(r_ideal.toPrecision(4));
     let p_r_mW_4sf = Number(p_r_mW.toPrecision(4));
 
-    // Find the correct E24 value (Next highest to protect the LED)
+    // Find E24 value
     const e24Base = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
     let magnitude = Math.pow(10, Math.floor(Math.log10(r_ideal)));
     let normalizedR = r_ideal / magnitude;
@@ -3294,14 +3295,13 @@ function generateGrade9PowerProblem() {
     }
     let e24R = Math.round(selectedBase * magnitude * 10) / 10; 
 
-    // --- SAVE ANSWERS FOR VALIDATION ---
+    // Save for validation
     currentAnswers = {
         rIdeal: r_ideal_4sf,
         pMw: p_r_mW_4sf,
         e24: e24R
     };
 
-    // Update UI Elements
     if (qText) {
         qText.innerHTML += 
             `The current through the LED must be limited to <strong>${i_led_mA} mA</strong>.<br><br>` +
@@ -3315,75 +3315,55 @@ function generateGrade9PowerProblem() {
         hintDiv.innerHTML = "<strong>Hint:</strong> Use your E24 series data sheet to find the closest standard resistor value. Remember, to safely limit current, you must choose the next highest standard value, not necessarily the closest!";
     }
 
-    // Inject custom multi-input layout (IDs updated to match the power theme)
-    if (inputZone) {
-        inputZone.innerHTML = `
-            <div class="input-group" style="margin-bottom: 10px; display: flex; align-items: center;">
-                <label style="width: 140px; text-align: right; margin-right: 10px; color: ${brandBlack};"><b>Ideal R =</b></label>
-                <input type="text" id="g9PowerIdealR" placeholder="e.g. 345.6 &Omega;" style="width: 120px; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
-            </div>
-            <div class="input-group" style="margin-bottom: 10px; display: flex; align-items: center;">
-                <label style="width: 140px; text-align: right; margin-right: 10px; color: ${brandBlack};"><b>Power =</b></label>
-                <input type="text" id="g9PowerDissipated" placeholder="e.g. 150 mW" style="width: 120px; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
-            </div>
-            <div class="input-group" style="display: flex; align-items: center;">
-                <label style="width: 140px; text-align: right; margin-right: 10px; color: ${brandBlack};"><b>E24 Resistor =</b></label>
-                <input type="text" id="g9PowerE24" placeholder="e.g. 360 &Omega;" style="width: 120px; padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
-            </div>
-        `;
-    }
-
-    // 2. DRAWING CODE
+    // 2. DRAWING CODE (Replaced with Scenario 1 logic)
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = brandBlack; 
     ctx.lineWidth = 2;
 
-    drawLine(ctx, 150, 60, 450, 60);  // Top rail
-    drawLine(ctx, 150, 360, 450, 360); // Bottom rail
+    drawLine(ctx, 150, 60, 450, 60);
+    drawLine(ctx, 150, 360, 450, 360);
 
-    ctx.fillStyle = brandBlack; 
-    ctx.textAlign = "left";
-    ctx.font = "bold 16px Arial"; ctx.fillText("V", 270, 45);
-    ctx.font = "bold 12px Arial"; ctx.fillText("supply", 282, 50);
-    ctx.font = "bold 16px Arial"; ctx.fillText("= " + v_in + " V", 325, 45);
+    ctx.fillStyle = brandBlack; ctx.textAlign = "left";
+    ctx.font = "bold 16px Arial"; ctx.fillText("V", 250, 45);
+    ctx.font = "bold 12px Arial"; ctx.fillText("supply", 262, 50); 
+    ctx.font = "bold 16px Arial"; ctx.fillText(" = " + v_in + " V", 305, 45);
+    ctx.textAlign = "center"; ctx.fillText("0V (GND)", 300, 390);
+
+    drawLine(ctx, 300, 60, 300, 135); 
+    if (typeof drawArrowOnWire === 'function') drawArrowOnWire(ctx, 300, 60, 300, 97.5);
+
+    ctx.fillStyle = brandBlack; ctx.font = "bold 16px Arial"; ctx.textAlign = "right"; 
+    ctx.fillText("I = " + i_led_mA + " mA", 285, 103);
+
+    if (typeof drawComponent === 'function') drawComponent(ctx, 'fixed', 300, 160); 
+    drawLine(ctx, 300, 185, 300, 240);
+
+    ctx.fillStyle = brandBlack; ctx.textAlign = "right"; ctx.fillText("R = ?", 285, 165); 
+
+    // LED
+    ctx.beginPath(); 
+    ctx.moveTo(280, 240); ctx.lineTo(320, 240); ctx.lineTo(300, 280); 
+    ctx.fillStyle = "white"; ctx.fill(); ctx.closePath(); ctx.stroke();
+    drawLine(ctx, 280, 280, 320, 280); 
     
-    ctx.textAlign = "center"; ctx.font = "bold 16px Arial";
-    ctx.fillText("0V (GND)", 300, 390);
+    drawLine(ctx, 330, 250, 350, 230); drawLine(ctx, 350, 230, 340, 230); drawLine(ctx, 350, 230, 350, 240); 
+    drawLine(ctx, 335, 265, 355, 245); drawLine(ctx, 355, 245, 345, 245); drawLine(ctx, 355, 245, 355, 255); 
 
-    drawLine(ctx, 300, 60, 300, 110); 
-    if (typeof drawArrowOnWire === 'function') drawArrowOnWire(ctx, 300, 60, 300, 90);
-
-    // Draw Resistor
-    if (typeof drawComponent === 'function') {
-        drawComponent(ctx, 'fixed', 300, 140);
-    } else {
-        ctx.strokeRect(285, 110, 30, 60); // Fallback box
-    }
-    ctx.textAlign = "right"; ctx.fillText("R", 270, 145);
-
-    drawLine(ctx, 300, 170, 300, 220);
-
-    // Draw LED (Circle, Triangle, Line, and tiny light arrows)
-    ctx.beginPath(); ctx.arc(300, 245, 25, 0, 2 * Math.PI); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(285, 235); ctx.lineTo(315, 235); ctx.lineTo(300, 255); ctx.closePath(); ctx.stroke(); // Triangle
-    ctx.beginPath(); ctx.moveTo(285, 255); ctx.lineTo(315, 255); ctx.stroke(); // Bar
+    drawLine(ctx, 300, 280, 300, 360); 
     
-    // Tiny light arrows
-    if (typeof drawArrowOnWire === 'function') {
-        drawArrowOnWire(ctx, 330, 230, 345, 215);
-        drawArrowOnWire(ctx, 335, 240, 350, 225);
-    }
-
-    ctx.textAlign = "left"; ctx.fillText("Vf = " + v_f + " V", 335, 260);
-
-    drawLine(ctx, 300, 270, 300, 360);
+    ctx.fillStyle = brandBlack; ctx.textAlign = "left";
+    ctx.font = "bold 16px Arial"; ctx.fillText("V", 365, 285);
+    let vW = ctx.measureText("V").width;
+    ctx.font = "bold 12px Arial"; ctx.fillText("LED", 365 + vW, 289);
+    let ledW = ctx.measureText("LED").width;
+    ctx.font = "bold 16px Arial"; ctx.fillText(" = " + v_f + " V", 365 + vW + ledW, 285);
 
     // 3. SOLUTION TEXT
     const solText = document.getElementById('solText');
     if (solText) {
         solText.innerHTML = `
             <strong>Step 1: Ideal Resistor</strong><br>
-            V<sub>R</sub> = V<sub>supply</sub> - V<sub>f</sub> = ${v_in}V - ${v_f}V = ${v_r.toFixed(2)}V<br>
+            V<sub>R</sub> = V<sub>supply</sub> - V<sub>LED</sub> = ${v_in}V - ${v_f}V = ${v_r.toFixed(2)}V<br>
             R = V<sub>R</sub> / I = ${v_r.toFixed(2)}V / ${(i_led_mA/1000).toFixed(3)}A = ${r_ideal.toFixed(2)} &Omega;<br>
             To 4 sf: <strong>${r_ideal_4sf} &Omega;</strong><br><br>
             
@@ -3392,12 +3372,11 @@ function generateGrade9PowerProblem() {
             To 4 sf: <strong>${p_r_mW_4sf} mW</strong><br><br>
             
             <strong>Step 3: E24 Series Selection</strong><br>
-            Looking at the E24 series, the ideal resistance is ${r_ideal.toFixed(2)} &Omega;. To ensure the current is limited to a maximum of ${i_led_mA} mA, we must round <em>up</em> to the next standard value.<br>
+            Ideal resistance is ${r_ideal.toFixed(2)} &Omega;. To ensure the current is limited to a max of ${i_led_mA} mA, we must round <em>up</em> to the next standard value.<br>
             Selected Value: <strong>${e24R} &Omega;</strong>
         `;
     }
 }
-
 //*****************************************
 function generateAstableProblem() {
     // 1. UI RESET
