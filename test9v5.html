@@ -3102,7 +3102,7 @@ function generatePowerProblem(ctx, canvas) {
                 "<em>Engineering Application:</em> Because the filament bulb dissipates " + power_W + "W, you must select the next highest available rating (" + chosenRating + "W) to prevent the component from failing.";
         }
 
-    } else {
+} else {
         // ==========================================
         // SCENARIO 3: Resistor + (Resistor, Motor, or Lamp)
         // ==========================================
@@ -3124,15 +3124,22 @@ function generatePowerProblem(ctx, canvas) {
         let targetComp = targetIdx === 1 ? c1 : c2;
         targetComp.isTarget = true;
 
-        // Dynamic naming logic ensuring perfect grammar
+        // Dynamic naming logic ensuring perfect grammar & preventing text overlap
         function setProps(comp, otherComp, pos) {
+            // Unify label to R1 or R2 for all to keep text short and avoid overlapping symbols
+            comp.label = "R";
+            comp.sub = pos.toString(); 
+
             if (comp.type === 'resistor') {
-                if (otherComp.type === 'resistor') { comp.name = "R<sub>" + pos + "</sub>"; comp.label = "R"; comp.sub = pos.toString(); }
-                else { comp.name = "the resistor"; comp.label = "R"; comp.sub = ""; }
+                if (otherComp.type === 'resistor') { 
+                    comp.name = "R<sub>" + pos + "</sub>"; 
+                } else { 
+                    comp.name = "the resistor"; 
+                }
             } else if (comp.type === 'signal') {
-                comp.name = "the signal lamp"; comp.label = "Lamp"; comp.sub = ""; 
+                comp.name = "the signal lamp"; 
             } else if (comp.type === 'motor') {
-                comp.name = "the motor"; comp.label = "Motor"; comp.sub = ""; 
+                comp.name = "the motor"; 
             }
         }
         setProps(c1, c2, 1);
