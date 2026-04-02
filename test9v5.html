@@ -894,21 +894,48 @@
                         <option value="10">10 W</option>
                     </select>
                 </div>
-    <div class="input-group" id="inputGroupGrade9Power" style="display:none; flex-direction: column; align-items: flex-end; gap: 10px; margin-bottom: 15px;">
+    <div id="inputGroupGrade9Power" class="input-group" style="display: none; flex-direction: column;">
     
-    <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
-        <label for="g9PowerIdealR" style="font-weight: bold; color: #333; margin-right: 10px;">Ideal R =</label>
-        <input type="text" id="g9PowerIdealR" placeholder="e.g. 120.5 &Omega;" style="width: 110px;">
+    <div id="g9PowerStyle1" style="display: block; width: 100%;">
+        
+        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
+            <label for="g9PowerIdealR" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
+                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Ideal R =</span>
+            </label> 
+            <input type="text" id="g9PowerIdealR" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 120.5 &Omega;">
+        </div>
+        
+        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
+            <label for="g9PowerDissipated" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
+                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Power =</span>
+            </label> 
+            <input type="text" id="g9PowerDissipated" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 150 mW">
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
+            <label for="g9PowerE24" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
+                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">E24 R =</span>
+            </label> 
+            <input type="text" id="g9PowerE24" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 130 &Omega;">
+        </div>
     </div>
-    
-    <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
-        <label for="g9PowerDissipated" style="font-weight: bold; color: #333; margin-right: 10px;">Power =</label>
-        <input type="text" id="g9PowerDissipated" placeholder="e.g. 150.0 mW" style="width: 110px;">
-    </div>
-    
-    <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
-        <label for="g9PowerE24" style="font-weight: bold; color: #333; margin-right: 10px;">E24 R =</label>
-        <input type="text" id="g9PowerE24" placeholder="e.g. 130 &Omega;" style="width: 110px;">
+
+    <div id="g9PowerStyle2" style="display: none; width: 100%;">
+        
+        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
+            <label for="g9PowerVoltage" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
+                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Voltage =</span>
+            </label> 
+            <input type="text" id="g9PowerVoltage" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 12 V">
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
+            <label for="g9PowerCurrent" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
+                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Current =</span>
+            </label> 
+            <input type="text" id="g9PowerCurrent" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 1.5 A">
+        </div>
+
     </div>
 
 </div>
