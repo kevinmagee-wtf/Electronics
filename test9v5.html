@@ -883,10 +883,14 @@
                     <span id="unitSymbolP" style="font-size: 20px; font-weight: bold; margin-left: 8px; color: #333;"></span>
                 </div>
 
-                <div class="input-group" id="inputGroupPowerRating" style="display:none; align-items: center; margin-bottom: 10px; flex-direction: column; gap: 5px;">
-                    <label for="selectPowerRating" style="font-weight: bold; color: #E64097;">Select Safe Power Rating:</label>
-                    <select id="selectPowerRating" style="padding: 10px; border-radius: 8px; border: 2px solid #ccc; font-size: 16px; width: 150px; cursor: pointer;">
-                        <option value="">-- Select --</option>
+                <div class="input-group" id="inputGroupPowerRating" 
+                     style="display:none; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; gap: 8px; width: 100%;">
+                    
+                    <label for="selectPowerRating" style="font-weight: bold; color: #E64097; font-size: 19px; text-align: center;">P<sub>rating</sub> =</label>
+                
+                    <select id="selectPowerRating" 
+                            style="padding: 10px; border-radius: 8px; border: 2px solid #ccc; font-size: 16px; width: 160px; cursor: pointer; text-align: center;">
+                        <option value="" disabled selected>-- Select --</option>
                         <option value="0.25">0.25 W</option>
                         <option value="1">1 W</option>
                         <option value="2">2 W</option>
