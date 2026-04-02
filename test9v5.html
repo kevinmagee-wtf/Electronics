@@ -2876,7 +2876,7 @@ function generatePowerProblem(ctx, canvas) {
     if (groupP) groupP.style.display = 'flex'; 
     
     const labelP = document.getElementById('labelP');
-    if (labelP) labelP.innerHTML = "<span style='color:" + brandPink + "'>P</span> = ";
+    if (labelP) labelP.innerHTML = "<strong style='color:" + brandPink + "'>P = </strong>";
     
     const inputBox = document.getElementById('inputP');
     const unitSpan = document.getElementById('unitSymbolP'); 
@@ -2887,7 +2887,6 @@ function generatePowerProblem(ctx, canvas) {
     let ratingDiv = document.getElementById('ratingDiv');
     let selectBox = document.getElementById('ratingSelectP');
     
-    // Create the separate line container if it doesn't exist
     if (!ratingDiv && groupP) {
         ratingDiv = document.createElement('div');
         ratingDiv.id = 'ratingDiv';
@@ -2895,51 +2894,46 @@ function generatePowerProblem(ctx, canvas) {
         ratingDiv.style.display = 'flex';
         ratingDiv.style.alignItems = 'center';
         
-        // Insert directly after the main P= input group
         groupP.parentNode.insertBefore(ratingDiv, groupP.nextSibling);
 
         let ratingLabel = document.createElement('span');
-        ratingLabel.innerHTML = "<strong>Bulb power rating</strong> = ";
+        // Changed text color to brandPink to match "P="
+        ratingLabel.innerHTML = "<strong style='color:" + brandPink + "'>Bulb power rating = </strong>&nbsp;";
         ratingLabel.style.fontSize = '18px';
-        ratingLabel.style.color = '#333'; 
         
         selectBox = document.createElement('select');
         selectBox.id = 'ratingSelectP';
         selectBox.style.fontSize = '16px';
         selectBox.style.padding = '6px'; 
-        selectBox.style.marginLeft = '10px'; 
         selectBox.style.borderRadius = '6px';
-        selectBox.style.width = '160px'; 
         selectBox.style.cursor = 'pointer';
+        
+        // Forcing the width to override any external CSS restrictions
+        selectBox.style.setProperty('width', '160px', 'important');
+        selectBox.style.setProperty('min-width', '160px', 'important');
 
         ratingDiv.appendChild(ratingLabel);
         ratingDiv.appendChild(selectBox);
     }
 
-    // Default UI states
     if (inputBox) {
         inputBox.style.display = 'inline-block';
-        inputBox.style.width = '130px'; // Made slightly wider to fit placeholder
+        inputBox.style.width = '130px'; 
         inputBox.value = ""; 
     }
-    // Globally clear the outside unit text for all scenarios
     if (unitSpan) unitSpan.innerHTML = "";
-    
-    // Hide dropdown container by default
     if (ratingDiv) ratingDiv.style.display = 'none';
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = brandBlack;
     ctx.lineWidth = 2;
 
-    // RANDOMLY SELECT SCENARIO (1, 2, or 3)
     const scenario = Math.floor(Math.random() * 3) + 1;
     currentAnswers.scenario = scenario; 
 
     if (scenario === 1) {
         // ==========================================
         // SCENARIO 1: Voltage Splitting (LED)
-        // Focus: P = I * V
         // ==========================================
         let supplyV = Math.floor(Math.random() * 6) + 6; 
         let ledV = parseFloat((Math.random() * (3.2 - 1.8) + 1.8).toFixed(1)); 
@@ -2951,7 +2945,6 @@ function generatePowerProblem(ctx, canvas) {
         currentAnswers.vValue = power_mW;
         currentAnswers.vUnit = 'mW'; 
 
-        // Placeholder mimics new style
         if (inputBox) inputBox.placeholder = "e.g. 50 mW"; 
 
         if (qText) {
@@ -2992,15 +2985,12 @@ function generatePowerProblem(ctx, canvas) {
 
         drawLine(ctx, 300, 280, 300, 360); 
         
-        // V_LED Subscript Label
         ctx.fillStyle = brandBlack; ctx.textAlign = "left";
         ctx.font = "bold 16px Arial"; ctx.fillText("V", 365, 285);
         let vW = ctx.measureText("V").width;
         ctx.font = "bold 12px Arial"; ctx.fillText("LED", 365 + vW, 289);
         let ledW = ctx.measureText("LED").width;
         ctx.font = "bold 16px Arial"; ctx.fillText(" = " + ledV + " V", 365 + vW + ledW, 285);
-        
-        ctx.textAlign = "left"; 
 
         if (solText) {
             solText.innerHTML = "<strong>P = " + power_mW + " mW</strong><br><br>" +
@@ -3013,26 +3003,22 @@ function generatePowerProblem(ctx, canvas) {
 
     } else if (scenario === 2) {
         // ==========================================
-        // SCENARIO 2: Real-World Component Rating (FILAMENT BULB)
-        // Focus: P = V^2 / R
+        // SCENARIO 2: Real-World Component Rating
         // ==========================================
         const supplyOptions = [5, 6, 12, 24];
         let supplyV = supplyOptions[Math.floor(Math.random() * supplyOptions.length)];
-        let rValue = Math.floor(Math.random() * 36) + 15; // 15 to 50 ohms
+        let rValue = Math.floor(Math.random() * 36) + 15; 
         
-        // Calculate power: P = V^2 / R
         let power_W = parseFloat(((supplyV * supplyV) / rValue).toFixed(2));
 
         const availableRatings = [1, 2, 5, 10, 20, 50, 100];
         let chosenRating = availableRatings.find(rating => rating >= power_W);
 
-        // Storing BOTH the exact calculated power and the chosen stock rating
         currentAnswers.vNameHTML = 'P';
         currentAnswers.exactPower = power_W; 
         currentAnswers.safeRating = chosenRating + " W"; 
         currentAnswers.vUnit = 'W'; 
 
-        // UI SWITCH: Placeholder updated, Dropdown container displayed
         if (inputBox) {
             inputBox.placeholder = "e.g. 1.2 W";
         }
@@ -3064,29 +3050,42 @@ function generatePowerProblem(ctx, canvas) {
         ctx.font = "bold 16px Arial"; ctx.fillText(" = " + supplyV + " V", 305, 45);
         ctx.textAlign = "center"; ctx.fillText("0V (GND)", 300, 390);
 
-        drawLine(ctx, 300, 60, 300, 210 - 15); 
+        // Larger Bulb Drawing Parameters
+        let bulbR = 25; // Increased from 15
+
+        // Top wire down to bulb edge
+        drawLine(ctx, 300, 60, 300, 210 - bulbR); 
         
-        if (typeof drawFilamentBulb === "function") {
-            drawFilamentBulb(ctx, 300, 210);
-        } else {
-            console.error("Missing drawFilamentBulb helper function!");
-            drawComponent(ctx, 'fixed', 300, 210); 
-        }
+        // Custom Hump Bulb to match screenshot
+        ctx.beginPath();
+        ctx.arc(300, 210, bulbR, 0, 2 * Math.PI); // Outer circle
+        ctx.fillStyle = "white"; // clear background
+        ctx.fill();
+        ctx.stroke();
 
-        drawLine(ctx, 300, 210 + 15, 300, 360); 
+        // Horizontal line passing through to hump
+        drawLine(ctx, 300 - bulbR, 210, 288, 210);
+        drawLine(ctx, 312, 210, 300 + bulbR, 210);
 
-        // 4. Two-Line Labeling for the Component
+        // Center hump (radius 12)
+        ctx.beginPath();
+        ctx.arc(300, 210, 12, Math.PI, 0); 
+        ctx.stroke();
+
+        // Bottom wire from bulb edge down to GND
+        drawLine(ctx, 300, 210 + bulbR, 300, 360); 
+
+        // Labels pushed out slightly further to accommodate larger bulb
         ctx.fillStyle = brandBlack; 
         ctx.textAlign = "right"; 
         ctx.font = "bold 16px Arial";
-        ctx.fillText(supplyV + "V bulb", 300 - 25, 205); 
-        ctx.fillText("R = " + rValue + " \u03A9", 300 - 25, 225); 
+        ctx.fillText(supplyV + "V bulb", 300 - 32, 205); 
+        ctx.fillText("R = " + rValue + " \u03A9", 300 - 32, 225); 
         
         ctx.fillStyle = brandPink; 
         ctx.textAlign = "left"; 
-        ctx.fillText("P = ?", 300 + 25, 215); 
+        ctx.fillText("P = ?", 300 + 32, 215); 
 
-        // 5. Solution Panel
         if (solText) {
             solText.innerHTML = "<strong>Exact Power = " + power_W + " W | Safe Rating = " + chosenRating + " W</strong><br><br>" +
                 "<em>Core Equation:</em> <strong>P = V&sup2; / R</strong><br><br>" +
@@ -3097,7 +3096,6 @@ function generatePowerProblem(ctx, canvas) {
     } else {
         // ==========================================
         // SCENARIO 3: Series Ratio
-        // Focus: P = I^2 * R
         // ==========================================
         let current_A = parseFloat((Math.random() * 1.4 + 0.1).toFixed(1)); 
         let r1Value = Math.floor(Math.random() * 8) * 10 + 20; 
@@ -3109,7 +3107,6 @@ function generatePowerProblem(ctx, canvas) {
         currentAnswers.vValue = power_W;
         currentAnswers.vUnit = 'W'; 
 
-        // Placeholder mimics new style
         if (inputBox) inputBox.placeholder = "e.g. 11.75 W"; 
 
         if (qText) {
@@ -3122,7 +3119,6 @@ function generatePowerProblem(ctx, canvas) {
         drawLine(ctx, 150, 360, 450, 360);
 
         ctx.fillStyle = brandBlack; 
-        
         ctx.textAlign = "left";
         ctx.font = "bold 16px Arial"; ctx.fillText("V", 270, 45);
         ctx.font = "bold 12px Arial"; ctx.fillText("supply", 282, 50);
