@@ -5640,7 +5640,10 @@ function hideAllInputGroups() {
     if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'none';
     if (document.getElementById('grade9DividerBtn')) document.getElementById('grade9DividerBtn').style.display = 'none';
     if (document.getElementById('grade9ResistorBtn')) document.getElementById('grade9ResistorBtn').style.display = 'none';
-
+    // ---> THE FIX: ADD POWER ELEMENTS TO THE WIPE LIST! <---
+    if (document.getElementById('grade9PowerBtn')) document.getElementById('grade9PowerBtn').style.display = 'none';
+    if (document.getElementById('inputGroupGrade9Power')) document.getElementById('inputGroupGrade9Power').style.display = 'none';
+    if (document.getElementById('inputGroupPowerRating')) document.getElementById('inputGroupPowerRating').style.display = 'none';
     // ---> NEW ADDITIONS FOR IPO SORT (SYSTEMS) <---
     if (document.getElementById('inputGroupIPOSort')) document.getElementById('inputGroupIPOSort').style.display = 'none';
     
