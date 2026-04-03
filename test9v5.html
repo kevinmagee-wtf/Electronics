@@ -3306,10 +3306,10 @@ function generateGrade9PowerProblem() {
     if (qText) {
         qText.innerHTML = 
             `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge.</strong></div>` +
-            `<strong>The LED current cannot exceed ${i_led_mA} mA.</strong><br><br>` +
+            `<strong>The LED current is limited to ${i_led_mA} mA.</strong><br><br>` +
             `1) Calculate the ideal value of R to 4 sf.<br>` +
-            `2) Calculate the power dissipated by R to 4 sf.<br>` +
-            `3) Choose the correct E24 series for resistor R.`;
+            `2) Choose the correct E24 series for resistor R.<br>` +
+            `3) Calculate the power dissipated by the E24 resistor.`;
         qText.style.display = 'block';
     }
 
