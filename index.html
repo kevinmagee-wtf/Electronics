@@ -4622,11 +4622,9 @@ function switchTab(mode) {
         'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
         'inputGroupSilicon', 'zenerOpenQuestions', 'zenerClosedQuestions', 
         'instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction',
-        'mainGrade9Btn', 'showsolutionsBtn', 
+        'mainGrade9Btn', 'showsolutionsBtn', // Updated: Removed old IDs, added mainGrade9Btn
         'inputGroupGrade9Zener', 'g9ZenerClosed', 'g9ZenerOpen',
-        'inputGroupIPOSort',
-        // --- NEW POWER CONTAINERS ADDED HERE ---
-        'inputGroupPower', 'inputGroupGrade9Power', 'inputGroupPowerRating' 
+        'inputGroupIPOSort'
     ];
 
     elementsToHide.forEach(id => {
@@ -4640,10 +4638,9 @@ function switchTab(mode) {
     const subtitle = document.getElementById('moduleSubtitle');
     if (subtitle) {
         if (mode === 'home') subtitle.innerText = "Welcome to Electronics";
-        // --- POWER AND GRADE9POWER ADDED TO MODULE 1 ---
-        else if (['analysis', 'divider', 'resistance', 'colorcode', 'power', 'grade9power'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
+        else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
+        else if (mode === 'iposort') subtitle.innerText = "Module 7: Systems";
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
-        else if (mode === 'iposort') subtitle.innerText = "Module 4: Systems";
         else if (['silicon', 'zener', 'grade9zener'].includes(mode)) subtitle.innerText = "Module 8: Diodes";
     }
 
