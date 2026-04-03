@@ -3077,7 +3077,7 @@ function generatePowerProblem(ctx, canvas) {
             
             const ratingLabel = powerRatingGroup.querySelector('label');
             if (ratingLabel) {
-                // Added a flex align-items fix so the subscript doesn't bump the equal sign
+                // Flex align-items fix so the subscript doesn't bump the equal sign
                 ratingLabel.innerHTML = "<strong style='color:" + brandPink + "; display: flex; align-items: baseline;'>P<sub style='font-size: 0.75em; margin: 0 3px;'>rating</sub> =</strong>";
                 ratingLabel.style.setProperty('font-size', '16px', 'important');
                 ratingLabel.style.setProperty('margin', '0', 'important'); 
@@ -3129,10 +3129,10 @@ function generatePowerProblem(ctx, canvas) {
         }
         
         ctx.fillStyle = brandBlack; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-        ctx.font = "bold 14px Arial";
-        ctx.fillText("R = " + rValue + " \u03A9", 270, 255); 
+        ctx.font = "bold 16px Arial"; // Restored to 16px
+        ctx.fillText("R = " + rValue + " \u03A9", 265, 255); // Nudged slightly left to 265
         ctx.fillStyle = brandPink; ctx.textAlign = "left"; 
-        ctx.fillText("P = ?", 330, 255); 
+        ctx.fillText("P = ?", 335, 255); // Nudged slightly right to 335
 
         drawLine(ctx, 300, 280, 300, 360); 
 
@@ -3179,29 +3179,28 @@ function generatePowerProblem(ctx, canvas) {
         ctx.font = "bold 12px Arial"; ctx.fillText("supply", 282, 50);
         ctx.textAlign = "center"; ctx.font = "bold 16px Arial"; ctx.fillText("0V (GND)", 300, 390);
 
-        // Parallel branches drop DIRECTLY from the power rail (y=60)
-        drawLine(ctx, 220, 60, 220, 105); 
-        drawLine(ctx, 380, 60, 380, 105); 
+        // Parallel branches drop DIRECTLY from the power rail (y=60), stop at y=100 so they don't clip into radius 25 components centered at y=125
+        drawLine(ctx, 220, 60, 220, 100); 
+        drawLine(ctx, 380, 60, 380, 100); 
         
         if (compType === 'signal') {
             drawLamp(ctx, 220, 125); 
             drawLamp(ctx, 380, 125);
         } else {
-            // Reverting entirely to your original global drawMotor call
             drawMotor(ctx, 220, 125);
             drawMotor(ctx, 380, 125);
         }
 
-        // Label for the right-side component - Explicitly sized down and pushed right to x=415
+        // Label for the right-side component
         ctx.fillStyle = brandBlack; ctx.textAlign = "left"; ctx.textBaseline = "middle";
-        ctx.font = "bold 14px Arial";
-        ctx.fillText("R = " + rValue + " \u03A9", 415, 115);
+        ctx.font = "bold 16px Arial"; // Restored to 16px
+        ctx.fillText("R = " + rValue + " \u03A9", 420, 115); // Nudged slightly right to 420
         ctx.fillStyle = brandPink;
-        ctx.fillText("P = ?", 415, 135);
+        ctx.fillText("P = ?", 420, 135); // Nudged slightly right to 420
 
-        // Bottom parallel branches recombining
-        drawLine(ctx, 220, 145, 220, 190);
-        drawLine(ctx, 380, 145, 380, 190);
+        // Bottom parallel branches recombining. Start at y=150 so they don't clip into components.
+        drawLine(ctx, 220, 150, 220, 190);
+        drawLine(ctx, 380, 150, 380, 190);
         drawLine(ctx, 220, 190, 380, 190); 
         
         // Main line down to the lower resistor
@@ -3210,8 +3209,7 @@ function generatePowerProblem(ctx, canvas) {
         // Total current arrow correctly placed before the lower resistor
         drawArrowOnWire(ctx, 300, 190, 300, 225);
         ctx.fillStyle = brandBlack; ctx.textAlign = "right"; ctx.textBaseline = "middle";
-        // Explicitly set font to prevent inheriting massive text sizes
-        ctx.font = "bold 14px Arial"; 
+        ctx.font = "bold 16px Arial"; // Restored to 16px
         ctx.fillText("I = " + total_I + " A", 285, 207);
 
         // Lower Resistor
