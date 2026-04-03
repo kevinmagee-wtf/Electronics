@@ -3062,22 +3062,24 @@ function generatePowerProblem(ctx, canvas) {
 
         if (inputBox) inputBox.placeholder = "e.g. 1.2 W";
         
-        // --- FIXED ALIGNMENT TO PREVENT TEXT CUT-OFF ---
+        // --- UPDATED FOR VERTICAL STACK & SUBSCRIPT ---
         if (powerRatingGroup) {
+            // Change from 'flex' to 'column' style (handled by your CSS or here)
             powerRatingGroup.style.display = 'flex';
-            powerRatingGroup.style.marginTop = '15px';
+            powerRatingGroup.style.flexDirection = 'column'; 
             powerRatingGroup.style.alignItems = 'center';
-            // Use flex-start and padding instead of center to prevent left-side clipping
-            powerRatingGroup.style.justifyContent = 'flex-start'; 
-            powerRatingGroup.style.paddingLeft = '20px'; 
+            powerRatingGroup.style.justifyContent = 'center';
+            powerRatingGroup.style.paddingLeft = '0'; // Reset padding since we are centering now
             powerRatingGroup.style.width = '100%';
+            powerRatingGroup.style.marginTop = '15px';
             
             const ratingLabel = powerRatingGroup.querySelector('label');
             if (ratingLabel) {
-                ratingLabel.innerHTML = "<strong style='color:" + brandPink + "'>Bulb power rating = </strong>&nbsp;";
-                ratingLabel.style.fontSize = '18px';
-                ratingLabel.style.whiteSpace = 'nowrap'; // Keeps it on one line
-                ratingLabel.style.flexShrink = '0';    // Forces the text to stay full size
+                // This line now uses the short subscript version
+                ratingLabel.innerHTML = "<strong style='color:" + brandPink + "'>P<sub>rating</sub> =</strong>";
+                ratingLabel.style.fontSize = '20px'; // Made slightly larger since it's short
+                ratingLabel.style.whiteSpace = 'nowrap'; 
+                ratingLabel.style.marginBottom = '5px'; // Gap between label and box
             }
         }
         
