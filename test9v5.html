@@ -900,49 +900,50 @@
                         <option value="10">10 W</option>
                     </select>
                 </div>
-    <div id="inputGroupGrade9Power" class="input-group" style="display: none; flex-direction: column;">
     
-    <div id="g9PowerStyle1" style="display: block; width: 100%;">
-        
-        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
-            <label for="g9PowerIdealR" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
-                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Ideal R =</span>
-            </label> 
-            <input type="text" id="g9PowerIdealR" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 120.5 &Omega;">
+    <div id="inputGroupGrade9Power" class="input-group" style="display: none; flex-direction: column; padding-left: 25px;">
+    
+        <div id="g9PowerStyle1" style="display: block; width: 100%;">
+            
+            <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 15px;">
+                <label for="g9PowerIdealR" style="min-width: 80px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+                    <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Ideal R =</span>
+                </label> 
+                <input type="text" id="g9PowerIdealR" class="form-control" style="width: 130px; border-radius: 4px; border: 1px solid #ccc; padding: 4px;">
+            </div>
+            
+            <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 15px;">
+                <label for="g9PowerDissipated" style="min-width: 80px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+                    <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Power =</span>
+                </label> 
+                <input type="text" id="g9PowerDissipated" class="form-control" style="width: 130px; border-radius: 4px; border: 1px solid #ccc; padding: 4px;">
+            </div>
+    
+            <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 15px;">
+                <label for="g9PowerE24" style="min-width: 80px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+                    <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">E24 R =</span>
+                </label> 
+                <input type="text" id="g9PowerE24" class="form-control" style="width: 130px; border-radius: 4px; border: 1px solid #ccc; padding: 4px;">
+            </div>
         </div>
-        
-        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
-            <label for="g9PowerDissipated" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
-                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Power =</span>
-            </label> 
-            <input type="text" id="g9PowerDissipated" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 150 mW">
-        </div>
+    
+        <div id="g9PowerStyle2" style="display: none; width: 100%;">
+            
+            <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 15px;">
+                <label for="g9PowerVoltage" style="min-width: 80px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+                    <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Voltage =</span>
+                </label> 
+                <input type="text" id="g9PowerVoltage" class="form-control" style="width: 130px; border-radius: 4px; border: 1px solid #ccc; padding: 4px;">
+            </div>
+    
+            <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 15px;">
+                <label for="g9PowerCurrent" style="min-width: 80px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+                    <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Current =</span>
+                </label> 
+                <input type="text" id="g9PowerCurrent" class="form-control" style="width: 130px; border-radius: 4px; border: 1px solid #ccc; padding: 4px;">
+            </div>
 
-        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
-            <label for="g9PowerE24" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
-                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">E24 R =</span>
-            </label> 
-            <input type="text" id="g9PowerE24" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 130 &Omega;">
         </div>
-    </div>
-
-    <div id="g9PowerStyle2" style="display: none; width: 100%;">
-        
-        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
-            <label for="g9PowerVoltage" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
-                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Voltage =</span>
-            </label> 
-            <input type="text" id="g9PowerVoltage" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 12 V">
-        </div>
-
-        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
-            <label for="g9PowerCurrent" style="min-width: 80px; margin-bottom: 0; text-align: right; margin-right: 10px;">
-                <span style="font-weight: bold !important; font-size: 16px !important; color: #E64097 !important;">Current =</span>
-            </label> 
-            <input type="text" id="g9PowerCurrent" class="form-control" style="width: 140px; border-radius: 8px; border: 2px solid #ccc; text-align: center; font-style: italic; color: #888;" placeholder="e.g. 1.5 A">
-        </div>
-
-    </div>
 
 </div>
 <!-- Input group Monostable -->
@@ -3256,10 +3257,24 @@ function generateGrade9PowerProblem() {
     const inputZone = document.getElementById('inputGroupGrade9Power');
     if (inputZone) inputZone.style.display = 'block'; 
 
-    // Clear previous answers from the boxes
-    if (document.getElementById('g9PowerIdealR')) document.getElementById('g9PowerIdealR').value = "";
-    if (document.getElementById('g9PowerDissipated')) document.getElementById('g9PowerDissipated').value = "";
-    if (document.getElementById('g9PowerE24')) document.getElementById('g9PowerE24').value = "";
+    // Clear previous answers and set dynamic placeholders
+    const idealRInput = document.getElementById('g9PowerIdealR');
+    if (idealRInput) {
+        idealRInput.value = "";
+        idealRInput.placeholder = "e.g. 120.5 \u03A9";
+    }
+    
+    const powerInput = document.getElementById('g9PowerDissipated');
+    if (powerInput) {
+        powerInput.value = "";
+        powerInput.placeholder = "e.g. 150 mW";
+    }
+    
+    const e24Input = document.getElementById('g9PowerE24');
+    if (e24Input) {
+        e24Input.value = "";
+        e24Input.placeholder = "e.g. 130 \u03A9";
+    }
 
     // 1. GENERATE MATH
     const vSupplyList = [5, 9, 12, 15, 24];
@@ -3298,7 +3313,7 @@ function generateGrade9PowerProblem() {
         e24: e24R
     };
 
-    // Update Question Text (Removed italics, shortened text)
+    // Update Question Text
     const qText = document.getElementById('questionText');
     if (qText) {
         qText.innerHTML = 
@@ -3307,7 +3322,7 @@ function generateGrade9PowerProblem() {
             `1) Calculate the ideal value of R to 4 sf.<br>` +
             `2) Calculate the power dissipated by R to 4 sf.<br>` +
             `3) Choose the correct E24 series for resistor R.`;
-        qText.style.display = 'block'; // Ensure it's visible
+        qText.style.display = 'block';
     }
 
     const hintDiv = document.getElementById('hintText');
@@ -3317,7 +3332,7 @@ function generateGrade9PowerProblem() {
 
     // 2. DRAWING CODE 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097"; // Set up pink!
+    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
     ctx.strokeStyle = "black"; 
     ctx.lineWidth = 2;
 
@@ -3339,11 +3354,10 @@ function generateGrade9PowerProblem() {
     if (typeof drawComponent === 'function') drawComponent(ctx, 'fixed', 300, 160); 
     drawLine(ctx, 300, 185, 300, 240);
 
-    // FIX: Make R and P Pink and vertically center them on the resistor body!
     ctx.fillStyle = pink; 
     ctx.textAlign = "right"; 
-    ctx.fillText("R = ?", 285, 153); // Shifted slightly up
-    ctx.fillText("P = ?", 285, 175); // Placed right below it
+    ctx.fillText("R = ?", 285, 153);
+    ctx.fillText("P = ?", 285, 175); 
 
     // LED
     ctx.beginPath(); 
