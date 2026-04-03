@@ -3273,16 +3273,12 @@ function generateGrade9PowerProblem() {
     
     let i_led_mA = Math.floor(Math.random() * 16) + 10; // 10mA to 25mA
     
-    // Core Math
+    // --- Core Math: Step 1 (Ideal R) ---
     let v_r = v_in - v_f; 
     let r_ideal = (v_r / (i_led_mA / 1000)); 
-    let p_r_mW = v_r * i_led_mA; 
-    
-    // Convert to exactly 4 sig figs
     let r_ideal_4sf = Number(r_ideal.toPrecision(4));
-    let p_r_mW_4sf = Number(p_r_mW.toPrecision(4));
 
-    // Find E24 value
+    // --- Core Math: Step 2 (Find E24 value FIRST so we can use it for Power) ---
     const e24Base = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
     let magnitude = Math.pow(10, Math.floor(Math.log10(r_ideal)));
     let normalizedR = r_ideal / magnitude;
@@ -3294,11 +3290,16 @@ function generateGrade9PowerProblem() {
     }
     let e24R = Math.round(selectedBase * magnitude * 10) / 10; 
 
+    // --- Core Math: Step 3 (E24 Power) ---
+    // Calculate power using the selected E24 resistor: P = (V_R^2) / R_E24
+    let p_r_mW = ((v_r * v_r) / e24R) * 1000; 
+    let p_r_mW_4sf = Number(p_r_mW.toPrecision(4));
+
     // Save for validation
     currentAnswers = {
         rIdeal: r_ideal_4sf,
-        pMw: p_r_mW_4sf,
-        e24: e24R
+        e24: e24R,
+        pMw: p_r_mW_4sf
     };
 
     // Update Question Text
@@ -3374,16 +3375,18 @@ function generateGrade9PowerProblem() {
             R = V<sub>R</sub> / I = ${v_r.toFixed(2)}V / ${(i_led_mA/1000).toFixed(3)}A = ${r_ideal.toFixed(2)} &Omega;<br>
             To 4 sf: <strong>${r_ideal_4sf} &Omega;</strong><br><br>
             
-            <strong>Step 2: Power Dissipated</strong><br>
-            P = V<sub>R</sub> &times; I = ${v_r.toFixed(2)}V &times; ${i_led_mA}mA = ${p_r_mW.toFixed(2)} mW<br>
-            To 4 sf: <strong>${p_r_mW_4sf} mW</strong><br><br>
-            
-            <strong>Step 3: E24 Series Selection</strong><br>
+            <strong>Step 2: E24 Series Selection</strong><br>
             Ideal resistance is ${r_ideal.toFixed(2)} &Omega;. To ensure the current is limited to a max of ${i_led_mA} mA, we must round <em>up</em> to the next standard value.<br>
-            Selected Value: <strong>${e24R} &Omega;</strong>
+            Selected Value: <strong>${e24R} &Omega;</strong><br><br>
+
+            <strong>Step 3: Power Dissipated by E24 R</strong><br>
+            Using our chosen E24 resistor, P = V<sub>R</sub>&sup2; / R<sub>E24</sub><br>
+            P = (${v_r.toFixed(2)}V)&sup2; / ${e24R} &Omega; = ${(p_r_mW / 1000).toFixed(4)} W = ${p_r_mW.toFixed(2)} mW<br>
+            To 4 sf: <strong>${p_r_mW_4sf} mW</strong>
         `;
     }
 }
+
 //*****************************************
 function generateAstableProblem() {
     // 1. UI RESET
