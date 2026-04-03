@@ -1127,10 +1127,7 @@
             
             <div style="display: flex; gap: 8px; width: 100%;">
                 <button class="btn-new-question" onclick="handleGenerateClick()">❓ New Question</button>
-                <button id="grade9DividerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9DividerProblem)">🚀 Grade 9</button>
-                <button id="grade9ResistorBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9Resistance)">🚀 Grade 9</button>
-                <button id="grade9ZenerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9ZenerProblem)">🚀 Grade 9</button>
-                <button id="grade9PowerBtn" class="btn-grade9" style="display: none;" onclick="transitionToGrade9(generateGrade9PowerProblem)">🚀 Grade 9</button>
+                <button id="mainGrade9Btn" class="btn-grade9" style="display: none;" onclick="handleGrade9Click()">🚀 Grade 9</button>
             </div>
 
             <div id="solutions" class="solutions" style="display: none; margin-top: 10px; padding: 12px; background-color: #f8f9fa; border-left: 4px solid #E64097;">
@@ -1357,6 +1354,23 @@ function handleGenerateClick() {
         // Handles Astable, Monostable, Oscilloscope, Divider, Resistance, etc.
         if (typeof hubController === "function") hubController(ctx, canvas);
     }
+}
+
+function handleGrade9Click() {
+    // 1. First, hide the Rocket button so it doesn't stay visible inside the Grade 9 module
+    document.getElementById('mainGrade9Btn').style.display = 'none';
+
+    // 2. Teleport the student based on their current page
+    if (currentMode === 'potentialDivider') {
+        safeSwitchTab('grade9divider');
+    } 
+    else if (currentMode === 'resistorColor' || currentMode === 'basics') {
+        safeSwitchTab('grade9power');
+    } 
+    else if (currentMode === 'zenerDiode') {
+        safeSwitchTab('grade9zener');
+    }
+    // As you build 'Total Resistance', you'd add another 'else if' here!
 }
 // ==================================================================================================================
 // FUNCTION 0: SMALL UTILITIES (HELPERS)   
@@ -4565,7 +4579,7 @@ function switchTab(mode) {
     if (activeTab) {
         activeTab.classList.add('active');
         activeTab.style.backgroundColor = "#333"; 
-        activeTab.style.color = "#fff";               
+        activeTab.style.color = "#fff";                
     }
 
     // 2. SAFE HIDE: Loop through elements and only hide them if they exist
@@ -4577,7 +4591,7 @@ function switchTab(mode) {
         'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
         'inputGroupSilicon', 'zenerOpenQuestions', 'zenerClosedQuestions', 
         'instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction',
-        'grade9DividerBtn', 'grade9ResistorBtn', 'showsolutionsBtn', 'grade9ZenerBtn', 
+        'mainGrade9Btn', 'showsolutionsBtn', // Updated: Removed old IDs, added mainGrade9Btn
         'inputGroupGrade9Zener', 'g9ZenerClosed', 'g9ZenerOpen',
         'inputGroupIPOSort'
     ];
@@ -4684,24 +4698,22 @@ function hubController(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // 2. Full UI Reset (The "Master Wipe")
-    // This handles all state and hides all groups BEFORE we pick the new mode
     if (typeof hideAllInputGroups === "function") hideAllInputGroups(); 
     
-    // ---> THE FIX: Reset the workspaces so normal circuits don't vanish! <---
+    // Reset the workspaces
     if (document.getElementById("circuitContainer")) document.getElementById("circuitContainer").style.display = "block";
     if (document.getElementById("canvasIPOWorkstation")) document.getElementById("canvasIPOWorkstation").style.display = "none";
 
-    // Reset grading flags for the new problem
+    // Reset grading flags
     hasCheckedCurrentProblem = false;
     isCurrentProblemSolved = false;
-    viewedSolution = false; 
+    viewSolution = false; 
     unitErrorMade = false; 
 
-    // 3. Clear text containers without collapsing the height!
+    // 3. Clear text containers
     const qText = document.getElementById('questionText');
     if (qText) {
-        qText.innerHTML = '&nbsp;'; // Use a non-breaking space instead of ''
-        // Leave display as it is, do not force it to 'none' here!
+        qText.innerHTML = '&nbsp;'; 
     }
 
     // 4. ROUTER: Setup the UI for the specific mode
@@ -4714,14 +4726,14 @@ function hubController(ctx, canvas) {
 
     } else if (currentMode === 'divider') {
         if (document.getElementById('inputGroupV')) document.getElementById('inputGroupV').style.display = 'inline-block';
-        if (document.getElementById('grade9DividerBtn')) document.getElementById('grade9DividerBtn').style.display = 'inline-block';
+        // SHOW SMART ROCKET
+        if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         if (typeof generateDividerProblem === "function") generateDividerProblem(ctx, canvas);
 
     } else if (currentMode === 'resistance') {
         if (document.getElementById('inputGroupR')) document.getElementById('inputGroupR').style.display = 'inline-block';
-        if (document.getElementById('grade9ResistorBtn')) document.getElementById('grade9ResistorBtn').style.display = 'inline-block';
-        
-        // INSTANT EXECUTION: Removed the 20ms timeout!
+        // SHOW SMART ROCKET
+        if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         if (typeof generateResistanceProblem === "function") generateResistanceProblem(ctx, canvas);
 
     } else if (currentMode === 'oscilloscope') {
@@ -4741,12 +4753,14 @@ function hubController(ctx, canvas) {
 
     } else if (currentMode === 'zener') {
         if (document.getElementById('inputGroupZener')) document.getElementById('inputGroupZener').style.display = 'inline-block';
-        if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
+        // SHOW SMART ROCKET
+        if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         if (typeof generateZenerProblem === "function") generateZenerProblem(ctx, canvas); 
 
     } else if (currentMode === 'grade9zener') {
         if (document.getElementById('inputGroupGrade9Zener')) document.getElementById('inputGroupGrade9Zener').style.display = 'inline-block';
-        if (document.getElementById('grade9ZenerBtn')) document.getElementById('grade9ZenerBtn').style.display = 'inline-block';
+        // Hide rocket because we are already in Grade 9
+        if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'none';
         if (typeof generateGrade9ZenerProblem === "function") generateGrade9ZenerProblem(ctx, canvas);
 
     } else if (currentMode === 'silicon') {
@@ -4759,15 +4773,14 @@ function hubController(ctx, canvas) {
         
     } else if (currentMode === 'power') {
         if (document.getElementById('inputGroupP')) document.getElementById('inputGroupP').style.display = 'inline-block';
-        if (document.getElementById('grade9PowerBtn')) document.getElementById('grade9PowerBtn').style.display = 'inline-block';
+        // SHOW SMART ROCKET
+        if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         if (typeof generatePowerProblem === "function") generatePowerProblem(ctx, canvas);
         
     } else if (currentMode === 'grade9power') {
-        // ---> FIX: Target the new dedicated container, not inputGroupV! <---
         if (document.getElementById('inputGroupGrade9Power')) document.getElementById('inputGroupGrade9Power').style.display = 'block';
-        
-        // Ensure the Grade 9 button stays visible
-        if (document.getElementById('grade9PowerBtn')) document.getElementById('grade9PowerBtn').style.display = 'inline-block';
+        // Hide rocket because we are already in Grade 9
+        if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'none';
         if (typeof generateGrade9PowerProblem === "function") generateGrade9PowerProblem(ctx, canvas);
     }
 }
