@@ -5474,6 +5474,14 @@ function provideHint() {
                 <strong>💡 Hint:</strong> Note: only one calculation required. Identify which two variables you have, then apply the matching power formula:<br><br>
                 <strong>P = I &times; V</strong> &nbsp;|&nbsp; <strong>P = I&sup2;R</strong> &nbsp;|&nbsp; <strong>P = V&sup2; / R</strong>
             </div>`;
+    } else if (currentMode === 'grade9power') {
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong> Trap alert! If you use the chosen E24 resistor, the current is no longer exactly the target value. You must either calculate the <em>new</em> actual current first, or skip a step by using the constant resistor voltage:<br><br>
+                <div style="text-align:center; font-weight:bold;">
+                    P = V<sub>R</sub>&sup2; / R<sub>E24</sub>
+                </div>
+            </div>`;
     } else {
         // Potential Divider & General
         helpText = `
