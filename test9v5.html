@@ -3255,7 +3255,7 @@ function generateGrade9PowerProblem() {
     const powerInput = document.getElementById('g9PowerDissipated');
     if (powerInput) {
         powerInput.value = "";
-        powerInput.placeholder = "e.g. 150 mW";
+        powerInput.placeholder = "e.g. 150.5 mW";
     }
     
     const e24Input = document.getElementById('g9PowerE24');
@@ -3276,7 +3276,7 @@ function generateGrade9PowerProblem() {
     // --- Core Math: Step 1 (Ideal R) ---
     let v_r = v_in - v_f; 
     let r_ideal = (v_r / (i_led_mA / 1000)); 
-    let r_ideal_4sf = Number(r_ideal.toPrecision(4));
+    let r_ideal_rounded = Number(r_ideal.toFixed(1)); // Rounded to 1 dp
 
     // --- Core Math: Step 2 (Find E24 value FIRST so we can use it for Power) ---
     const e24Base = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
@@ -3293,13 +3293,13 @@ function generateGrade9PowerProblem() {
     // --- Core Math: Step 3 (E24 Power) ---
     // Calculate power using the selected E24 resistor: P = (V_R^2) / R_E24
     let p_r_mW = ((v_r * v_r) / e24R) * 1000; 
-    let p_r_mW_4sf = Number(p_r_mW.toPrecision(4));
+    let p_r_mW_rounded = Number(p_r_mW.toFixed(1)); // Rounded to 1 dp
 
     // Save for validation
     currentAnswers = {
-        rIdeal: r_ideal_4sf,
+        rIdeal: r_ideal_rounded,
         e24: e24R,
-        pMw: p_r_mW_4sf
+        pMw: p_r_mW_rounded
     };
 
     // Update Question Text
@@ -3308,7 +3308,7 @@ function generateGrade9PowerProblem() {
         qText.innerHTML = 
             `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge.</strong></div>` +
             `<strong>The LED current is limited to ${i_led_mA} mA.</strong><br><br>` +
-            `1) Calculate the ideal value of R to 4 sf.<br>` +
+            `1) Calculate the ideal value of R.<br>` +
             `2) Choose the correct E24 series for resistor R.<br>` +
             `3) Calculate the power dissipated by the E24 R.`;
         qText.style.display = 'block';
@@ -3366,23 +3366,23 @@ function generateGrade9PowerProblem() {
     let ledW = ctx.measureText("LED").width;
     ctx.font = "bold 16px Arial"; ctx.fillText(" = " + v_f + " V", 365 + vW + ledW, 285);
 
-    // 3. SOLUTION TEXT
+    // 3. SOLUTION TEXT (Updated to 1 dp)
     const solText = document.getElementById('solText');
     if (solText) {
         solText.innerHTML = `
             <strong>Step 1: Ideal Resistor</strong><br>
-            V<sub>R</sub> = V<sub>supply</sub> - V<sub>LED</sub> = ${v_in}V - ${v_f}V = ${v_r.toFixed(2)}V<br>
-            R = V<sub>R</sub> / I = ${v_r.toFixed(2)}V / ${(i_led_mA/1000).toFixed(3)}A = ${r_ideal.toFixed(2)} &Omega;<br>
-            To 4 sf: <strong>${r_ideal_4sf} &Omega;</strong><br><br>
+            V<sub>R</sub> = V<sub>supply</sub> - V<sub>LED</sub> = ${v_in}V - ${v_f}V = ${v_r.toFixed(1)}V<br>
+            R = V<sub>R</sub> / I = ${v_r.toFixed(1)}V / ${(i_led_mA/1000).toFixed(3)}A = ${r_ideal.toFixed(1)} &Omega;<br>
+            Ideal R: <strong>${r_ideal_rounded} &Omega;</strong><br><br>
             
             <strong>Step 2: E24 Series Selection</strong><br>
-            Ideal resistance is ${r_ideal.toFixed(2)} &Omega;. To ensure the current is limited to a max of ${i_led_mA} mA, we must round <em>up</em> to the next standard value.<br>
+            Ideal resistance is ${r_ideal.toFixed(1)} &Omega;. To ensure the current is limited to a max of ${i_led_mA} mA, we must round <em>up</em> to the next standard value.<br>
             Selected Value: <strong>${e24R} &Omega;</strong><br><br>
 
             <strong>Step 3: Power Dissipated by E24 R</strong><br>
             Using our chosen E24 resistor, P = V<sub>R</sub>&sup2; / R<sub>E24</sub><br>
-            P = (${v_r.toFixed(2)}V)&sup2; / ${e24R} &Omega; = ${(p_r_mW / 1000).toFixed(4)} W = ${p_r_mW.toFixed(2)} mW<br>
-            To 4 sf: <strong>${p_r_mW_4sf} mW</strong>
+            P = (${v_r.toFixed(1)}V)&sup2; / ${e24R} &Omega; = ${(p_r_mW / 1000).toFixed(3)} W<br>
+            P = <strong>${p_r_mW_rounded} mW</strong>
         `;
     }
 }
