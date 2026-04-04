@@ -4945,9 +4945,13 @@ function checkAnswers() {
     // 4. Grade the inputs using the Hybrid Parser
     let results = [];
     
-    if (currentMode === 'analysis') {
-        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputV').value)), currentAnswers.vValue, 'mV'));
-        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputI').value)), currentAnswers.iValue, 'mA'));
+if (currentMode === 'analysis') {
+        // Grab the actual correct units that were generated for this specific problem
+        const expectedVUnit = currentAnswers.vUnit || 'V'; 
+        const expectedIUnit = currentAnswers.iUnit || 'A';
+
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputV').value)), currentAnswers.vValue, expectedVUnit));
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputI').value)), currentAnswers.iValue, expectedIUnit));
 
     } else if (currentMode === 'divider') {
         let inputStr = document.getElementById('inputV').value;
