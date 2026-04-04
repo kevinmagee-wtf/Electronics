@@ -4946,8 +4946,12 @@ function checkAnswers() {
     let results = [];
     
     if (currentMode === 'analysis') {
-        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputV').value)), currentAnswers.vValue, 'mV'));
-        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputI').value)), currentAnswers.iValue, 'mA'));
+        // Use the dynamic units from currentAnswers, with fallbacks just in case
+        const expectedVUnit = currentAnswers.vUnit || 'V'; 
+        const expectedIUnit = currentAnswers.iUnit || 'A';
+
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputV').value)), currentAnswers.vValue, expectedVUnit));
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputI').value)), currentAnswers.iValue, expectedIUnit));
 
     } else if (currentMode === 'divider') {
         let inputStr = document.getElementById('inputV').value;
