@@ -5554,18 +5554,19 @@ async function processSubmission() {
     const topicMap = {
             'analysis': 'Cct Analysis',
             'divider': 'Pot Divider',
+            'grade9divider': 'G9 Divider',
             'resistance': 'Tot Resistance',
+            'grade9resistance': 'G9 Resistance',
+            'colorcode': 'Colour Codes', 
+            'power': 'Power',
+            'grade9power': 'G9 Power' 
             'oscilloscope': 'Oscilloscopes',
             'astable': 'Astable', 
             'monostable': 'Monostable',
             'zener': 'Zener Diodes',
-            'silicon': 'Silicon Diodes',
-            'iposort': 'IPO Sort',
-            'power': 'Power',  
-            'grade9divider': 'G9 Divider',
-            'grade9resistance': 'G9 Resistance',
             'grade9zener': 'G9 Zener',
-            'grade9power': 'G9 Power' 
+            'silicon': 'Silicon Diodes',
+            'iposort': 'IPO Sort',    
         };
     const currentTopic = topicMap[currentMode] || 'Unknown Topic';
 
