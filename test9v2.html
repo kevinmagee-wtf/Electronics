@@ -5142,12 +5142,12 @@ function switchTab(mode) {
         'inputGroupOscPeriod', 'inputGroupOscFreq', 'inputGroupOscRatio',
         'inputGroupAstable', 'inputGroupMonostable', 'inputGroupMarkSpace',
         'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
-        'inputGroupSilicon', 'zenerOpenQuestions', 'zenerClosedQuestions', 
+         'zenerOpenQuestions', 'zenerClosedQuestions', 
         'instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction',
         'mainGrade9Btn', 'showsolutionsBtn', 
         'inputGroupGrade9Zener', 'g9ZenerClosed', 'g9ZenerOpen',
         'inputGroupIPOSort',
-        'inputGroupBasicsDiodeLogic', 'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse' // <-- NEW: Added all new Silicon Groups
+        'inputGroupSilicon','inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse' // <-- NEW: Added all new Silicon Groups
     ];
 
     elementsToHide.forEach(id => {
@@ -5320,7 +5320,6 @@ function hubController(ctx, canvas) {
 } else if (currentMode === 'silicon') {
         // 1. Unhide the parent container AND the specific Diode Logic container!
         if (document.getElementById('inputGroupSilicon')) document.getElementById('inputGroupSilicon').style.display = 'flex';
-        if (document.getElementById('inputGroupBasicsDiodeLogic')) document.getElementById('inputGroupBasicsDiodeLogic').style.display = 'block';
         
         // 2. SHOW SMART ROCKET
         if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
