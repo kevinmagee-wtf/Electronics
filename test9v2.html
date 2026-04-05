@@ -4577,11 +4577,8 @@ function generateSiliconProblem() {
     ctx.fillText("0V (Ground)", 100, 380);
 
     if (qText) {
-        qText.innerHTML = 
-            `<div style="margin-bottom: 10px;"><strong style="color: #4CAF50;">💡 Basics: Diode Logic</strong></div>` +
-            `Assume the diodes are ideal (acting as simple open or closed switches).<br><br>` +
-            `Look carefully at the direction of the supply voltage and determine if lamps <strong>L1, L2, and L3</strong> are ON or OFF.`;
-        qText.style.display = 'block'; 
+    qText.innerHTML = `Look carefully at the direction of the supply voltage and determine if lamps <strong>L1, L2, and L3</strong> are ON or OFF.`;
+    qText.style.display = 'block'; 
     }
 
     let l1_state, l2_state, l3_state;
