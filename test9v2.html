@@ -5199,9 +5199,10 @@ function switchTab(mode) {
         'inputGroupColorVal', 'inputGroupColorNames', 'inputGroupZener',
         'inputGroupSilicon', 'zenerOpenQuestions', 'zenerClosedQuestions', 
         'instructionPrompt', 'astableInstruction', 'ratioInstruction', 'zenerInstruction',
-        'mainGrade9Btn', 'showsolutionsBtn', // Updated: Removed old IDs, added mainGrade9Btn
+        'mainGrade9Btn', 'showsolutionsBtn', 
         'inputGroupGrade9Zener', 'g9ZenerClosed', 'g9ZenerOpen',
-        'inputGroupIPOSort'
+        'inputGroupIPOSort',
+        'inputGroupBasicsDiodeLogic', 'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse' // <-- NEW: Added all new Silicon Groups
     ];
 
     elementsToHide.forEach(id => {
@@ -5218,7 +5219,7 @@ function switchTab(mode) {
         else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
         else if (mode === 'iposort') subtitle.innerText = "Module 4: Systems";
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
-        else if (['silicon', 'zener', 'grade9zener'].includes(mode)) subtitle.innerText = "Module 8: Diodes";
+        else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; // <-- NEW: Added grade9silicon
     }
 
     // 4. Global Cleanup
