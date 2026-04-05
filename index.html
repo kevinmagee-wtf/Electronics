@@ -1023,6 +1023,7 @@
             </div>
         </div>
     </div>
+                
 <!-- Input group Silicon -->   
 <div id="inputGroupSilicon" class="input-group" style="display: none;">
     <label id="labelSil1"></label>
@@ -1030,6 +1031,47 @@
     
     <label id="labelSil2" style="margin-left: 15px;"></label>
     <input type="text" id="inputSil2" placeholder="ON or OFF">
+</div>
+
+<!-- Input group G9Silicon -->   
+                
+<div id="inputGroupGrade9Silicon" class="input-group" style="display: none; flex-direction: column; padding-left: 25px;">
+    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+        <label style="min-width: 100px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>Payload</sub> =</span>
+        </label> 
+        <input type="text" id="g9SilVPayload" class="form-control" style="width: 130px;" placeholder="e.g. 11.3">
+        <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
+    </div>
+    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+        <label style="min-width: 100px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">D1 State =</span>
+        </label> 
+        <input type="text" id="g9SilD1" class="form-control" style="width: 130px;" placeholder="ON or OFF">
+    </div>
+    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+        <label style="min-width: 100px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">D2 State =</span>
+        </label> 
+        <input type="text" id="g9SilD2" class="form-control" style="width: 130px;" placeholder="ON or OFF">
+    </div>
+</div>
+
+<div id="inputGroupGrade9SiliconReverse" class="input-group" style="display: none; flex-direction: column; padding-left: 25px;">
+    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+        <label style="min-width: 130px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>Diode</sub> =</span>
+        </label> 
+        <input type="text" id="g9SilRevVDiode" class="form-control" style="width: 130px;" placeholder="e.g. 12">
+        <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
+    </div>
+    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+        <label style="min-width: 130px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>Component</sub> =</span>
+        </label> 
+        <input type="text" id="g9SilRevVComp" class="form-control" style="width: 130px;" placeholder="e.g. 0">
+        <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
+    </div>
 </div>
                 
 <!-- Input group Zener -->                
@@ -4657,6 +4699,217 @@ function generateSiliconProblem(ctx, canvas) {
 
 //****************************************************
 
+
+function generateGrade9SiliconProblem() {
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // 0. RESET UI & STATE
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups(); 
+    
+    // Set the tracker if it doesn't exist yet
+    if (typeof scenarioTracker.grade9silicon === 'undefined') {
+        scenarioTracker.grade9silicon = 0;
+    }
+    
+    // Toggle between 0 (OR-Gate) and 1 (Reverse Bias)
+    const qType = scenarioTracker.grade9silicon;
+    scenarioTracker.grade9silicon = (scenarioTracker.grade9silicon + 1) % 2;
+    const isOrGate = (qType === 0);
+
+    // Set a distinct currentMode so your checkAnswers() function knows which one to grade!
+    currentMode = isOrGate ? 'grade9silicon_orgate' : 'grade9silicon_reverse';
+    
+    // Keep the Smart Rocket visible!
+    if (document.getElementById('mainGrade9Btn')) {
+        document.getElementById('mainGrade9Btn').style.display = 'inline-block';
+    }
+
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none";
+
+    const qText = document.getElementById('questionText');
+    const solText = document.getElementById('solText');
+    const hintDiv = document.getElementById('hintText');
+    const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
+
+    // Setup Canvas
+    ctx.setTransform(1, 0, 0, 1, 0, 0); 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "black"; 
+    ctx.lineWidth = 2;
+
+    // ==========================================
+    // BRANCH 1: THE OR-GATE PAYLOAD PROBLEM
+    // ==========================================
+    if (isOrGate) {
+        // Show correct HTML inputs
+        if (document.getElementById('inputGroupGrade9Silicon')) document.getElementById('inputGroupGrade9Silicon').style.display = 'flex';
+        document.getElementById('g9SilVPayload').value = "";
+        document.getElementById('g9SilD1').value = "";
+        document.getElementById('g9SilD2').value = "";
+
+        // Math
+        const mainVoltages = [12, 15, 24];
+        let v_main = mainVoltages[Math.floor(Math.random() * mainVoltages.length)];
+        let v_backup = v_main - (Math.floor(Math.random() * 3) + 2); // 2V to 4V lower
+
+        let v_payload = Number((v_main - 0.7).toFixed(1));
+        let d1_state = "ON";
+        let d2_state = "OFF";
+
+        currentAnswers = { vPayload: v_payload, d1: d1_state, d2: d2_state };
+
+        // Text Update
+        if (qText) {
+            qText.innerHTML = 
+                `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🚀 Grade 9 Challenge: Payload Redundancy</strong></div>` +
+                `A critical rocket payload is powered by a Main Battery (<strong>${v_main}V</strong>) and a Backup Battery (<strong>${v_backup}V</strong>).<br>` +
+                `Both are connected using Silicon Diodes (0.7V drop) to prevent power backfeeding.<br><br>` +
+                `1) Calculate the voltage at the Payload.<br>` +
+                `2) Determine if D1 is ON or OFF.<br>` +
+                `3) Determine if D2 is ON or OFF.`;
+            qText.style.display = 'block';
+        }
+        if (hintDiv) {
+            hintDiv.innerHTML = "<strong>Hint:</strong> The battery with the highest voltage will push its diode into forward bias. Check the voltage at the cathode junction to see if the backup diode can turn on!";
+        }
+
+        // Draw: Horizontal Rails & Vertical Components
+        ctx.fillStyle = "black"; ctx.font = "bold 14px Arial";
+        
+        // Rail 1: Main Battery (Top)
+        ctx.textAlign = "right"; ctx.fillText(`Main (${v_main}V)`, 140, 55);
+        drawLine(ctx, 150, 60, 250, 60);
+        
+        // D1 dropping vertically
+        drawLine(ctx, 200, 60, 200, 90);
+        ctx.beginPath(); // Diode pointing down
+        ctx.moveTo(185, 90); ctx.lineTo(215, 90); ctx.lineTo(200, 120); ctx.closePath();
+        ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
+        drawLine(ctx, 185, 120, 215, 120); // Cathode
+        ctx.fillStyle = pink; ctx.textAlign = "right"; ctx.fillText("D1", 175, 110);
+        drawLine(ctx, 200, 120, 200, 220); // Wire down to junction
+
+        // Rail 2: Backup Battery (Middle)
+        ctx.fillStyle = "black"; ctx.textAlign = "right"; ctx.fillText(`Backup (${v_backup}V)`, 140, 135);
+        drawLine(ctx, 150, 140, 350, 140);
+        
+        // D2 dropping vertically
+        drawLine(ctx, 300, 140, 300, 160);
+        ctx.beginPath(); // Diode pointing down
+        ctx.moveTo(285, 160); ctx.lineTo(315, 160); ctx.lineTo(300, 190); ctx.closePath();
+        ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
+        drawLine(ctx, 285, 190, 315, 190); // Cathode
+        ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("D2", 325, 180);
+        drawLine(ctx, 300, 190, 300, 220); // Wire down to junction
+
+        // Combine at Junction and drop to Payload
+        drawLine(ctx, 200, 220, 300, 220); // Horizontal connecting wire
+        if(typeof drawNode === 'function') { drawNode(ctx, 200, 220); drawNode(ctx, 300, 220); drawNode(ctx, 250, 220); }
+        
+        drawLine(ctx, 250, 220, 250, 250);
+        
+        // Payload Box
+        ctx.fillStyle = "#f8f9fa"; ctx.fillRect(215, 250, 70, 50); ctx.strokeRect(215, 250, 70, 50);
+        ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("Payload", 250, 275);
+        ctx.fillStyle = pink; ctx.fillText("V = ?", 250, 295);
+
+        // Ground
+        drawLine(ctx, 250, 300, 250, 340);
+        drawLine(ctx, 230, 340, 270, 340); drawLine(ctx, 240, 345, 260, 345); drawLine(ctx, 245, 350, 255, 350);
+        ctx.fillStyle = "black"; ctx.fillText("0V (GND)", 250, 365);
+
+        // Solution Text
+        if (solText) {
+            solText.innerHTML = `
+                <strong>Step 1: Understand Diode OR-Logic</strong><br>
+                Both batteries are trying to power the payload. The one with the highest voltage will "win" and push its diode into forward bias.<br><br>
+                <strong>Step 2: Calculate Payload Voltage</strong><br>
+                The Main battery (${v_main}V) is higher. It pushes D1 into conduction (ON).<br>
+                V<sub>Payload</sub> = V<sub>Main</sub> - 0.7V = ${v_main}V - 0.7V = <strong>${v_payload}V</strong>.<br><br>
+                <strong>Step 3: Determine D2 State</strong><br>
+                Look at D2. Its anode is connected to the Backup battery (${v_backup}V). Its cathode is tied to the Payload (${v_payload}V).<br>
+                Because its cathode voltage (${v_payload}V) is higher than its anode voltage (${v_backup}V), D2 is reverse-biased (<strong>OFF</strong>). This perfectly prevents the Main battery from dangerously charging the Backup battery!
+            `;
+        }
+    } 
+    // ==========================================
+    // BRANCH 2: THE REVERSE BIAS LEAKAGE PROBLEM
+    // ==========================================
+    else {
+        // Show correct HTML inputs
+        if (document.getElementById('inputGroupGrade9SiliconReverse')) document.getElementById('inputGroupGrade9SiliconReverse').style.display = 'flex';
+        document.getElementById('g9SilRevVDiode').value = "";
+        document.getElementById('g9SilRevVComp').value = "";
+
+        // Math
+        const vSupplyList = [5, 9, 12, 15, 24];
+        let v_in = vSupplyList[Math.floor(Math.random() * vSupplyList.length)];
+        let v_diode = v_in;
+        let v_comp = 0;
+
+        currentAnswers = { vDiode: v_diode, vComp: v_comp };
+
+        // Text Update
+        if (qText) {
+            qText.innerHTML = 
+                `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge: Reverse Leakage</strong></div>` +
+                `A silicon diode is connected in series with a load component, but it has been installed backward.<br><br>` +
+                `1) Calculate the voltage measured across the diode (V<sub>Diode</sub>).<br>` +
+                `2) Calculate the voltage measured across the component (V<sub>Component</sub>).`;
+            qText.style.display = 'block';
+        }
+        if (hintDiv) {
+            hintDiv.innerHTML = "<strong>Hint:</strong> Think of a reverse-biased diode as an open switch (infinite resistance). In a series circuit, where does the supply voltage drop if the circuit is broken?";
+        }
+
+        // Draw: Vertical Series Circuit
+        drawLine(ctx, 200, 60, 400, 60);
+        ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.font = "bold 16px Arial";
+        ctx.fillText("V_supply = " + v_in + "V", 300, 45);
+
+        drawLine(ctx, 300, 60, 300, 120);
+
+        // Draw Diode (Reverse Biased - pointing UP)
+        ctx.beginPath();
+        ctx.moveTo(280, 160); ctx.lineTo(320, 160); ctx.lineTo(300, 120); ctx.closePath();
+        ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
+        drawLine(ctx, 280, 120, 320, 120); // Cathode line
+        ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("V_Diode = ?", 340, 145);
+
+        drawLine(ctx, 300, 160, 300, 220);
+
+        // Draw Component
+        ctx.fillStyle = "white"; ctx.fillRect(285, 220, 30, 60); ctx.strokeRect(285, 220, 30, 60);
+        ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("V_Component = ?", 340, 255);
+
+        // Ground
+        drawLine(ctx, 300, 280, 300, 340);
+        drawLine(ctx, 200, 340, 400, 340); // Bottom Ground Rail
+        ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("0V (GND)", 300, 365);
+
+        // Solution Text
+        if (solText) {
+            solText.innerHTML = `
+                <strong>Step 1: Check Diode Orientation</strong><br>
+                The diode is pointing <em>against</em> the positive supply. It is reverse-biased and acts like an open switch with effectively infinite resistance.<br><br>
+                <strong>Step 2: Component Voltage</strong><br>
+                Because the diode acts as an open switch, <strong>0 A</strong> of current flows through the circuit. With no current flowing through the load component, there is no voltage drop across it (Ohm's Law: V = I &times; R &rarr; V = 0 &times; R = 0V).<br>
+                V<sub>Component</sub> = <strong>0 V</strong>.<br><br>
+                <strong>Step 3: Diode Voltage</strong><br>
+                By Kirchhoff's Voltage Law, the sum of voltage drops must equal the supply voltage. Since the component drops 0V, the entire supply voltage must be dropping across the "open switch" (the diode).<br>
+                V<sub>Diode</sub> = <strong>${v_in} V</strong>.
+            `;
+        }
+    }
+}
+
+
+
+
+
+    
 // ==========================================
 // IPO SORT GENERATOR & LOGIC
 // ==========================================
