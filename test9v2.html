@@ -1902,9 +1902,9 @@ function drawArrowOnWire(ctx, fromx, fromy, tox, toy) {
 /**
  * Draws a standard GCSE Silicon Diode (with wire passing through the middle)
  * direction can be: "up", "down", "left", "right" (defaults to "down")
+ * size defaults to 18px for backwards compatibility with other modules.
  */
-function drawDiode(ctx, x, y, direction = "down") {
-    const size = 18; 
+function drawDiode(ctx, x, y, direction = "down", size = 18) {
     ctx.strokeStyle = "black"; 
     ctx.lineWidth = 2;
 
@@ -4547,20 +4547,16 @@ function generateSiliconProblem() {
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Updated tracker name to match the new function name
     if (typeof scenarioTracker.silicon === 'undefined') {
         scenarioTracker.silicon = 0;
     }
     
-    // Cycle between 0, 1, and 2
     const scenario = scenarioTracker.silicon;
     scenarioTracker.silicon = (scenarioTracker.silicon + 1) % 3;
 
-    // Unhide the specific input group for the dropdowns
     const inputZone = document.getElementById('inputGroupBasicsDiodeLogic');
     if (inputZone) inputZone.style.display = 'flex'; 
 
-    // Reset dropdowns
     document.getElementById('basicL1State').value = "";
     document.getElementById('basicL2State').value = "";
     document.getElementById('basicL3State').value = "";
@@ -4572,7 +4568,6 @@ function generateSiliconProblem() {
     
     const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
-    // Setup Canvas Base
     ctx.setTransform(1, 0, 0, 1, 0, 0); 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "black"; 
@@ -4584,7 +4579,6 @@ function generateSiliconProblem() {
     drawLine(ctx, 100, 360, 400, 360);
     ctx.fillText("0V (Ground)", 100, 380);
 
-    // Update Common Question Text
     if (qText) {
         qText.innerHTML = 
             `<div style="margin-bottom: 10px;"><strong style="color: #4CAF50;">💡 Basics: Diode Logic</strong></div>` +
@@ -4616,7 +4610,7 @@ function generateSiliconProblem() {
         
         // Right Branch (L2 + Diode)
         drawLine(ctx, 320, 80, 320, 120);
-        drawDiode(ctx, 320, 135, d2Forward ? "down" : "up");
+        drawDiode(ctx, 320, 135, d2Forward ? "down" : "up", 12);
         drawLine(ctx, 320, 150, 320, 180);
         drawLamp(ctx, 320, 195, 15);
         drawLabel(ctx, "L2", 320 + 25, 195 + 5, 16, pink);
@@ -4642,16 +4636,16 @@ function generateSiliconProblem() {
         const branchForward = Math.random() < 0.5;
 
         if (!masterForward) {
-            l1_state = "OFF"; l2_state = "OFF"; l3_state = "OFF"; // L3 represents Master state here
+            l1_state = "OFF"; l2_state = "OFF"; l3_state = "OFF"; 
         } else {
             l2_state = "ON";
             l1_state = branchForward ? "ON" : "OFF";
-            l3_state = "ON"; // Master is on
+            l3_state = "ON"; 
         }
 
         // Master Wire
         drawLine(ctx, 250, 40, 250, 60);
-        drawDiode(ctx, 250, 75, masterForward ? "down" : "up");
+        drawDiode(ctx, 250, 75, masterForward ? "down" : "up", 12);
         
         // Master Lamp (L3)
         drawLine(ctx, 250, 90, 250, 110);
@@ -4664,7 +4658,7 @@ function generateSiliconProblem() {
 
         // Left Branch (Branch Diode + L1)
         drawLine(ctx, 180, 170, 180, 200);
-        drawDiode(ctx, 180, 215, branchForward ? "down" : "up");
+        drawDiode(ctx, 180, 215, branchForward ? "down" : "up", 12);
         drawLine(ctx, 180, 230, 180, 260);
         drawLamp(ctx, 180, 275, 15);
         drawLabel(ctx, "L1", 180 + 25, 275 + 5, 16, pink);
@@ -4708,7 +4702,7 @@ function generateSiliconProblem() {
         
         for(let i=0; i<3; i++) {
             drawLine(ctx, xPos[i], 40, xPos[i], 100);
-            drawDiode(ctx, xPos[i], 115, fwds[i] ? "down" : "up");
+            drawDiode(ctx, xPos[i], 115, fwds[i] ? "down" : "up", 12);
             drawLine(ctx, xPos[i], 130, xPos[i], 200);
             drawLamp(ctx, xPos[i], 215, 15);
             drawLabel(ctx, labels[i], xPos[i] + 25, 215 + 5, 16, pink);
