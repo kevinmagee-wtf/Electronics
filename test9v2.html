@@ -4609,9 +4609,10 @@ function generateSiliconProblem() {
         drawLabel(ctx, "L1", 180 + 25, 150 + 5, 16, pink);
         
         // Right Branch (L2 + Diode)
-        drawLine(ctx, 320, 80, 320, 120);
+        // Diode center is 135, size 12. Wires stop at 123 and start at 147.
+        drawLine(ctx, 320, 80, 320, 123);
         drawDiode(ctx, 320, 135, d2Forward ? "down" : "up", 12);
-        drawLine(ctx, 320, 150, 320, 180);
+        drawLine(ctx, 320, 147, 320, 180);
         drawLamp(ctx, 320, 195, 15);
         drawLabel(ctx, "L2", 320 + 25, 195 + 5, 16, pink);
         drawLine(ctx, 320, 210, 320, 240);
@@ -4644,11 +4645,12 @@ function generateSiliconProblem() {
         }
 
         // Master Wire
-        drawLine(ctx, 250, 40, 250, 60);
+        // Center is 75. Wires stop at 63 and start at 87.
+        drawLine(ctx, 250, 40, 250, 63);
         drawDiode(ctx, 250, 75, masterForward ? "down" : "up", 12);
         
         // Master Lamp (L3)
-        drawLine(ctx, 250, 90, 250, 110);
+        drawLine(ctx, 250, 87, 250, 110);
         drawLamp(ctx, 250, 125, 15);
         drawLabel(ctx, "L3", 250 + 25, 125 + 5, 16, pink);
 
@@ -4657,9 +4659,10 @@ function generateSiliconProblem() {
         drawLine(ctx, 180, 170, 320, 170); 
 
         // Left Branch (Branch Diode + L1)
-        drawLine(ctx, 180, 170, 180, 200);
+        // Center is 215. Wires stop at 203 and start at 227.
+        drawLine(ctx, 180, 170, 180, 203);
         drawDiode(ctx, 180, 215, branchForward ? "down" : "up", 12);
-        drawLine(ctx, 180, 230, 180, 260);
+        drawLine(ctx, 180, 227, 180, 260);
         drawLamp(ctx, 180, 275, 15);
         drawLabel(ctx, "L1", 180 + 25, 275 + 5, 16, pink);
         drawLine(ctx, 180, 290, 180, 320);
@@ -4701,9 +4704,10 @@ function generateSiliconProblem() {
         const labels = ["L1", "L2", "L3"];
         
         for(let i=0; i<3; i++) {
-            drawLine(ctx, xPos[i], 40, xPos[i], 100);
+            // Center is 115. Wires stop at 103 and start at 127.
+            drawLine(ctx, xPos[i], 40, xPos[i], 103);
             drawDiode(ctx, xPos[i], 115, fwds[i] ? "down" : "up", 12);
-            drawLine(ctx, xPos[i], 130, xPos[i], 200);
+            drawLine(ctx, xPos[i], 127, xPos[i], 200);
             drawLamp(ctx, xPos[i], 215, 15);
             drawLabel(ctx, labels[i], xPos[i] + 25, 215 + 5, 16, pink);
             drawLine(ctx, xPos[i], 230, xPos[i], 360);
