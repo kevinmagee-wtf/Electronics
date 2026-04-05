@@ -1341,8 +1341,9 @@ let canEarnPoints = true;
 
 // This allows the variable to hold ANY data we throw at it (Voltage, Resistors, Colour Codes, etc.)
 let currentAnswers = {};
-
+//*****************************************************
 /* --- 2. MAIN CONTROLLER --- */
+//*****************************************************
 function handleGenerateClick() {
     // ==========================================
     // 1. RESET SCORING & UI FOR THE NEW PROBLEM
@@ -1386,6 +1387,7 @@ function handleGenerateClick() {
     // ==========================================
     // ---> ESCAPE THE GRADE 9 LOOPS & RESET SCORE <---
     // ==========================================
+
     let escapedGrade9 = false;
     let previousMode = currentMode; // Remember where we were just in case they cancel!
 
@@ -1398,8 +1400,11 @@ function handleGenerateClick() {
     } else if (currentMode === 'grade9resistance') {
         currentMode = 'resistance';
         escapedGrade9 = true;
-    } else if (currentMode === 'grade9power') {        // <-- NEW: Added Power Escape
+    } else if (currentMode === 'grade9power') {
         currentMode = 'power';
+        escapedGrade9 = true;
+    } else if (currentMode === 'grade9silicon') {  
+        currentMode = 'silicon';
         escapedGrade9 = true;
     }
 
@@ -1422,6 +1427,7 @@ function handleGenerateClick() {
         }
     }
 
+
     // ==========================================
     // 2. GENERATE THE NEW PROBLEM
     // ==========================================
@@ -1431,15 +1437,14 @@ function handleGenerateClick() {
     if (currentMode === 'colorcode') {
         if (typeof generateColorCodeProblem === "function") generateColorCodeProblem(ctx, canvas);
     } else if (currentMode === 'zener') {
-        generateZenerProblem(ctx, canvas); 
-    } else if (currentMode === 'silicon') {
-        generateSiliconProblem(ctx, canvas);
+        if (typeof generateZenerProblem === "function") generateZenerProblem(ctx, canvas); 
     } else if (currentMode === 'analysis') {
-        generateAnalysisProblem(ctx, canvas); 
-    } else if (currentMode === 'power' || currentMode === 'grade9power') { // <-- NEW: Explicit Power Router
+        if (typeof generateAnalysisProblem === "function") generateAnalysisProblem(ctx, canvas); 
+    } else if (currentMode === 'power' || currentMode === 'grade9power') { 
         if (typeof generatePowerProblem === "function") generatePowerProblem(ctx, canvas);
     } else {
-        // Handles Astable, Monostable, Oscilloscope, Divider, Resistance, etc.
+        // Handles Astable, Monostable, Oscilloscope, Divider, Resistance, Silicon, AND Grade 9 Silicon
+        // We route them to hubController so it can perfectly clean up the UI menus!
         if (typeof hubController === "function") hubController(ctx, canvas);
     }
 }
@@ -1464,6 +1469,14 @@ function handleGrade9Click() {
     }
     else if (currentMode === 'power' || currentMode === 'grade9power') {
         generateGrade9PowerProblem(); 
+    }
+
+
+    else if (currentMode === 'silicon' || currentMode === 'grade9silicon') {  // <-- NEW: Silicon Rocket Logic
+        currentMode = 'grade9silicon'; 
+        const canvas = document.getElementById('circuitCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        if (typeof hubController === "function") hubController(ctx, canvas);
     }
     else {
         // If nothing happens, this will tell you EXACTLY what mode name is missing from the list above!
@@ -5359,8 +5372,20 @@ function hubController(ctx, canvas) {
         if (typeof generateGrade9ZenerProblem === "function") generateGrade9ZenerProblem(ctx, canvas);
 
     } else if (currentMode === 'silicon') {
-        if (document.getElementById('inputGroupSilicon')) document.getElementById('inputGroupSilicon').style.display = 'inline-block';
+        // Unhide the main container, but let the generator decide the specifics
+        if (document.getElementById('inputGroupSilicon')) document.getElementById('inputGroupSilicon').style.display = 'flex';
+        
+        // SHOW SMART ROCKET
+        if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         if (typeof generateSiliconProblem === "function") generateSiliconProblem(ctx, canvas);
+        
+    } else if (currentMode === 'grade9silicon') {
+        // Unhide the main container, but let the generator decide the specifics
+        if (document.getElementById('inputGroupGrade9Silicon')) document.getElementById('inputGroupGrade9Silicon').style.display = 'flex'; 
+        
+        // Hide rocket because we are already in Grade 9
+        if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'none';
+        if (typeof generateGrade9SiliconProblem === "function") generateGrade9SiliconProblem(ctx, canvas);
         
     } else if (currentMode === 'iposort') {
         if (document.getElementById('inputGroupIPOSort')) document.getElementById('inputGroupIPOSort').style.display = 'block';
