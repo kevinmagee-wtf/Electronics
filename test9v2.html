@@ -1480,22 +1480,31 @@ function handleGrade9Click() {
     else if (currentMode === 'power' || currentMode === 'grade9power') {
         generateGrade9PowerProblem(); 
     }
-
-    // 👇 UPDATED: Catch the Silicon base mode AND the two specific sub-modes! 👇
-    else if (currentMode === 'silicon' || currentMode === 'grade9silicon' || currentMode === 'grade9silicon_orgate' || currentMode === 'grade9silicon_reverse') { 
-        currentMode = 'grade9silicon'; // Reset to parent mode so hubController routes it correctly
+    // 👇 UPGRADED SILICON ROUTING: Includes the Parallel Trap name 👇
+    else if (
+        currentMode === 'silicon' || 
+        currentMode === 'grade9silicon' || 
+        currentMode === 'grade9silicon_orgate' || 
+        currentMode === 'grade9silicon_reverse' || 
+        currentMode === 'grade9silicon_parallel'
+    ) { 
+        currentMode = 'grade9silicon'; // Force to parent mode so hubController triggers the generator
         const canvas = document.getElementById('circuitCanvas');
         const ctx = canvas ? canvas.getContext('2d') : null;
-        if (typeof hubController === "function") hubController(ctx, canvas);
+        if (typeof hubController === "function") {
+            hubController(ctx, canvas);
+        } else if (typeof generateGrade9SiliconProblem === "function") {
+            // Fallback if hubController isn't available
+            generateGrade9SiliconProblem();
+        }
     }
- 
     else {
-        // If nothing happens, this will tell you EXACTLY what mode name is missing from the list above!
+        // If nothing happens, this will tell you EXACTLY what mode name is missing!
         console.warn("Rocket clicked, but currentMode was not recognized: " + currentMode);
     }
     
-    // Safety check: Log to console so you can see if it fired
-    console.log("Rocket launched for mode: " + currentMode);
+    // Safety check: Log to console so you can see the state
+    console.log("Rocket launched. Transitioned from/to mode: " + currentMode);
 }
 // ==================================================================================================================
 // FUNCTION 0: SMALL UTILITIES (HELPERS)   
@@ -5420,10 +5429,7 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateSiliconProblem is not defined!");
         }
         
-    
-
-
-        } else if (currentMode === 'grade9silicon' || currentMode === 'grade9silicon_orgate' || currentMode === 'grade9silicon_reverse') {
+    } else if (currentMode === 'grade9silicon' || currentMode === 'grade9silicon_orgate' || currentMode === 'grade9silicon_reverse' || currentMode === 'grade9silicon_parallel') {
         // 1. Keep rocket VISIBLE so they can cycle through the Grade 9 problems
         if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         
