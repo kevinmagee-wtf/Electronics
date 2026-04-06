@@ -5030,8 +5030,17 @@ function generateGrade9SiliconProblem() {
         // --- DRAWING: VERTICAL PARALLEL CIRCUIT ---
         
         // Top Rail: Supply
-        ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.font = "bold 16px Arial";
-        ctx.fillText("V_supply = " + v_in + "V", 250, 40);
+        ctx.fillStyle = "black"; 
+        ctx.textAlign = "left"; 
+        
+        // Draw V_supply with a subscript
+        ctx.font = "bold 16px Arial";
+        ctx.fillText("V", 195, 40);
+        ctx.font = "bold 12px Arial";
+        ctx.fillText("supply", 207, 45); // Dropped slightly for subscript
+        ctx.font = "bold 16px Arial";
+        ctx.fillText(" = " + v_in + "V", 248, 40);
+        
         drawLine(ctx, 150, 60, 350, 60);
 
         // -- LEFT BRANCH (D1) --
@@ -5099,8 +5108,10 @@ function generateGrade9SiliconProblem() {
         // Ground Connection
         drawLine(ctx, 250, 300, 250, 340);
         drawLine(ctx, 230, 340, 270, 340); drawLine(ctx, 240, 345, 260, 345); drawLine(ctx, 245, 350, 255, 350);
-        ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.font = "bold 16px Arial";
-        ctx.fillText("0V (GND)", 250, 365);
+        ctx.fillStyle = "black"; 
+        ctx.textAlign = "center"; 
+        ctx.font = "bold 16px Arial";
+        ctx.fillText("0V (GND)", 250, 375); // Moved Y-coordinate down from 365 to 375
 
         // Solution Text
         if (solText) {
