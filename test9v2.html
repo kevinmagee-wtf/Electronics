@@ -1093,23 +1093,25 @@
 </div>
                 
 <!-- Input group G9Silicon -->                  
-<div id="inputGroupGrade9Silicon" class="input-group" style="display: none; flex-direction: column; gap: 12px; padding: 10px 0 10px 25px; align-items: flex-start;">
+<div id="inputGroupGrade9Silicon" class="input-group" style="display: none; flex-direction: column; gap: 20px; padding: 10px 0 10px 25px; align-items: flex-start;">
+    
     <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
-        <div style="width: 110px; font-weight: bold; color: #E64097; font-size: 16px;">V<sub>Payload</sub> =</div>
-        <input type="number" step="0.1" id="g9SilPayload" style="width: 100px; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
-        <span style="margin-left: 8px; font-weight: bold; color: #E64097;">V</span>
+        <div style="width: 130px; font-weight: bold; color: #E64097; font-size: 19px;">V<sub>Payload</sub> =</div>
+        <input type="text" id="g9SilPayload" style="width: 140px; height: 50px; font-size: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; text-align: center;" placeholder="e.g. 11.3V">
     </div>
+
     <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
-        <div style="width: 110px; font-weight: bold; color: #E64097; font-size: 16px;">D1 State =</div>
-        <select id="g9SilD1" style="width: 100px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">
+        <div style="width: 130px; font-weight: bold; color: #E64097; font-size: 19px;">D1 State =</div>
+        <select id="g9SilD1" style="width: 140px; height: 50px; font-size: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; text-align-last: center;">
             <option value="">--</option>
             <option value="ON">ON</option>
             <option value="OFF">OFF</option>
         </select>
     </div>
+
     <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
-        <div style="width: 110px; font-weight: bold; color: #E64097; font-size: 16px;">D2 State =</div>
-        <select id="g9SilD2" style="width: 100px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">
+        <div style="width: 130px; font-weight: bold; color: #E64097; font-size: 19px;">D2 State =</div>
+        <select id="g9SilD2" style="width: 140px; height: 50px; font-size: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; text-align-last: center;">
             <option value="">--</option>
             <option value="ON">ON</option>
             <option value="OFF">OFF</option>
@@ -4976,9 +4978,39 @@ function generateGrade9SiliconProblem() {
         if(typeof drawNode === 'function') drawNode(ctx, 250, 220); 
         drawLine(ctx, 250, 220, 250, 250);
         
-        ctx.fillStyle = "#f8f9fa"; ctx.fillRect(215, 250, 70, 50); ctx.strokeRect(215, 250, 70, 50);
-        ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("Payload", 250, 275);
-        ctx.fillStyle = pink; ctx.fillText("V = ?", 250, 295);
+        // ==========================================
+// UPDATED DRAWING LOGIC: Payload and Labels
+// ==========================================
+// 1. Position and draw the physical Box
+const boxX = 215; 
+const boxY = 250; 
+const boxW = 70; 
+const boxH = 50;
+const centerY = boxY + (boxH / 2); // 275
+
+ctx.fillStyle = "#f8f9fa"; // Fill color
+ctx.fillRect(boxX, boxY, boxW, boxH);
+ctx.strokeRect(boxX, boxY, boxW, boxH); // Outline
+
+// 2. Draw "Payload" text - CENTERED vertically in the box
+ctx.fillStyle = "black"; 
+ctx.textAlign = "center";
+ctx.font = "bold 16px Arial"; // Use bold to make it clear
+// Position: (centerY + a small offset to account for text height)
+ctx.fillText("Payload", boxX + (boxW / 2), centerY + 5); 
+
+// 3. Draw pink label outside the box - to the left
+// Reset color if brandPink isn't defined
+let pinkColor = typeof brandPink !== 'undefined' ? brandPink : "#E64097";
+ctx.fillStyle = pinkColor; 
+ctx.textAlign = "left"; // Set alignment for outside placement
+
+// Drawing "V = ?" situated to the left, centered vertically with the box
+ctx.font = "bold 16px Arial"; // Bold, same size
+// We drop the y coordinate slightly from centerY to visually align with the line of 'Payload' text
+ctx.fillText("V = ?", boxX - 80, centerY + 5); 
+
+// ==========================================
 
         drawLine(ctx, 250, 300, 250, 340);
         drawLine(ctx, 230, 340, 270, 340); drawLine(ctx, 240, 345, 260, 345); drawLine(ctx, 245, 350, 255, 350);
