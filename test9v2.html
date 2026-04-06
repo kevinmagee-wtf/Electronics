@@ -4955,12 +4955,12 @@ function generateGrade9SiliconProblem() {
         currentAnswers = { vPayload: v_payload, d1: d1_state, d2: d2_state };
 
         // Text Update
-        let switchStatusText = switchClosed ? "CLOSED (normal operation)" : "OPEN (simulating a circuit break)";
+        let switchStatusText = switchClosed ? "CLOSED (normal operation)" : "OPEN (circuit break)";
         if (qText) {
             qText.innerHTML = 
                 `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🚀 Grade 9 Challenge: Backup Battery</strong></div>` +
                 `Backup batteries for critical systems use diodes to prevent power backfeeding.<br>` +
-                `Currently, switch S is <strong>${switchStatusText}</strong>.<br><br>` +
+                `Switch S is <strong>${switchStatusText}</strong>.<br><br>` +
                 `1) Calculate the load voltage.<br>` +
                 `2) State if D1 & D2 are ON or OFF.`;
         }
