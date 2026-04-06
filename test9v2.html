@@ -314,6 +314,15 @@
         width: 120px !important;
         }
 
+        /* Override the global row/important constraint for Grade 9 Silicon */
+        #inputGroupGrade9Silicon, 
+        #inputGroupGrade9SiliconPath {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px;
+            padding-left: 25px;
+        }
+    
     .quiz-section input:focus, .quiz-section select:focus {
         border-color: #E64097 !important; 
         box-shadow: 0 0 5px rgba(230, 64, 151, 0.4) !important;
