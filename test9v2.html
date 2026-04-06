@@ -5208,15 +5208,26 @@ function openModule(module) {
 // =======================================================================================================
 //switchTab runs when you click the navigation menu at the very top of the page   
 function switchTab(mode) {
-
+    // 1. GRADE 9 SANITIZER
+    // If the user clicks a tab, we assume they want the basic version of that topic.
+    // This strips "grade9silicon_orgate" back to just "silicon".
+    let targetMode = mode;
+    if (targetMode.includes('grade9')) {
+        targetMode = targetMode.replace('grade9', '');
+        if (targetMode.includes('_')) {
+            targetMode = targetMode.split('_')[0];
+        }
+    }
+    
     // WIPES THE SCORE FOR THE NEW TOPIC
     if (typeof resetScore === "function") {
         resetScore(); 
     }
 
-    currentMode = mode;
+    // Set the global currentMode to our sanitized targetMode
+    currentMode = targetMode;
     
-    // 1. Highlight active tab
+    // 2. Highlight active tab
     document.querySelectorAll('.tab').forEach(t => {
         t.classList.remove('active');
         if (t.innerText && !t.innerText.includes('Home')) {
@@ -5229,10 +5240,10 @@ function switchTab(mode) {
     if (activeTab) {
         activeTab.classList.add('active');
         activeTab.style.backgroundColor = "#333"; 
-        activeTab.style.color = "#fff";                
+        activeTab.style.color = "#fff";                 
     }
 
-    // 2. SAFE HIDE: Loop through elements and only hide them if they exist
+    // 3. SAFE HIDE: Loop through elements and only hide them if they exist
     const elementsToHide = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -5244,7 +5255,8 @@ function switchTab(mode) {
         'mainGrade9Btn', 'showsolutionsBtn', 
         'inputGroupGrade9Zener', 'g9ZenerClosed', 'g9ZenerOpen',
         'inputGroupIPOSort',
-        'inputGroupSilicon', 'inputGroupSiliconVoltage', 'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse' // <-- NEW: Added inputGroupSiliconVoltage
+        'inputGroupSilicon', 'inputGroupSiliconVoltage', 'inputGroupGrade9Silicon', 
+        'inputGroupGrade9SiliconReverse', 'inputGroupGrade9SiliconParallel' // <-- Added Parallel group here too
     ];
 
     elementsToHide.forEach(id => {
@@ -5254,17 +5266,17 @@ function switchTab(mode) {
         }
     });
 
-    // 3. Reset Subtitle
+    // 4. Reset Subtitle
     const subtitle = document.getElementById('moduleSubtitle');
     if (subtitle) {
         if (mode === 'home') subtitle.innerText = "Welcome to Electronics";
-        else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
+        else if (['analysis', 'divider', 'resistance', 'colorcode', 'power'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
         else if (mode === 'iposort') subtitle.innerText = "Module 4: Systems";
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
         else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
     }
 
-    // 4. Global Cleanup
+    // 5. Global Cleanup
     if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '';
     if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'none';
     
@@ -5286,7 +5298,7 @@ function switchTab(mode) {
         clearZenerInputs();
     }
 
-    // 5. THE CANVAS FIX
+    // 6. THE CANVAS FIX
     const canvas = document.getElementById('circuitCanvas') || document.getElementById('resistorCanvas') || document.querySelector('canvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
     const qText = document.getElementById('questionText');
@@ -5300,7 +5312,8 @@ function switchTab(mode) {
         return; 
     }
 
-    // 6. ROUTE TO MASTER CONTROLLER
+    // 7. ROUTE TO MASTER CONTROLLER
+    // Because we sanitized currentMode in step 1, this will now correctly route to basics!
     if (typeof hubController === "function") {
         hubController(ctx, canvas);
     } else {
