@@ -1446,7 +1446,13 @@ function handleGenerateClick() {
     } else if (currentMode === 'grade9power') {
         currentMode = 'power';
         escapedGrade9 = true;
-    } else if (currentMode === 'grade9silicon') {  
+    } else if (
+        currentMode === 'grade9silicon' || 
+        currentMode === 'grade9silicon_orgate' || 
+        currentMode === 'grade9silicon_reverse' || 
+        currentMode === 'grade9silicon_parallel' ||
+        currentMode === 'grade9silicon_pathfinder' // <- Catches the new mode!
+    ) {  
         currentMode = 'silicon';
         escapedGrade9 = true;
     }
@@ -1513,13 +1519,14 @@ function handleGrade9Click() {
     else if (currentMode === 'power' || currentMode === 'grade9power') {
         generateGrade9PowerProblem(); 
     }
-    // 👇 UPGRADED SILICON ROUTING: Includes the Parallel Trap name 👇
+    // 👇 UPGRADED SILICON ROUTING: Includes the Parallel Trap & Pathfinder 👇
     else if (
         currentMode === 'silicon' || 
         currentMode === 'grade9silicon' || 
         currentMode === 'grade9silicon_orgate' || 
         currentMode === 'grade9silicon_reverse' || 
-        currentMode === 'grade9silicon_parallel'
+        currentMode === 'grade9silicon_parallel' ||
+        currentMode === 'grade9silicon_pathfinder' // <- Added Pathfinder here!
     ) { 
         currentMode = 'grade9silicon'; // Force to parent mode so hubController triggers the generator
         const canvas = document.getElementById('circuitCanvas');
