@@ -4863,12 +4863,15 @@ function generateGrade9SiliconProblem() {
     // 0. RESET UI & STATE
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups(); 
     
-    // Set the tracker if it doesn't exist yet
+    // Set the trackers if they don't exist yet
     if (typeof scenarioTracker === 'undefined') {
         window.scenarioTracker = {}; // Safety fallback
     }
     if (typeof scenarioTracker.grade9silicon === 'undefined') {
         scenarioTracker.grade9silicon = 0;
+    }
+    if (typeof scenarioTracker.switchState === 'undefined') {
+        scenarioTracker.switchState = 0; // Tracks if S is open/closed
     }
     
     // Toggle between 0 (OR-Gate) and 1 (Pathfinder)
@@ -4902,14 +4905,14 @@ function generateGrade9SiliconProblem() {
         if (groupOrGate) {
             groupOrGate.style.display = 'flex';
             groupOrGate.style.flexDirection = 'column';
-            groupOrGate.style.alignItems = 'flex-start'; // Align labels left
+            groupOrGate.style.alignItems = 'flex-start'; 
         }
     } else {
         const pathInputGroup = document.getElementById('inputGroupGrade9SiliconPath');
         if (pathInputGroup) {
             pathInputGroup.style.display = 'flex';
             pathInputGroup.style.flexDirection = 'column';
-            pathInputGroup.style.alignItems = 'flex-start'; // Align labels left
+            pathInputGroup.style.alignItems = 'flex-start'; 
         }
     }
 
@@ -4925,28 +4928,45 @@ function generateGrade9SiliconProblem() {
     // BRANCH 1: THE OR-GATE PAYLOAD PROBLEM
     // ==========================================
     if (isOrGate) {
+        
+        // Alternate the switch state every time the OR-Gate question appears
+        scenarioTracker.switchState = (scenarioTracker.switchState + 1) % 2;
+        let switchClosed = (scenarioTracker.switchState === 1);
+
         // Math
         const mainVoltages = [12, 15, 24];
         let v_main = mainVoltages[Math.floor(Math.random() * mainVoltages.length)];
         let v_backup = v_main - (Math.floor(Math.random() * 3) + 2); // 2V to 4V lower
 
-        let v_payload = Number((v_main - 0.7).toFixed(1));
-        let d1_state = "ON";
-        let d2_state = "OFF";
+        let v_payload, d1_state, d2_state;
+
+        // Dynamic Logic based on Switch S
+        if (switchClosed) {
+            v_payload = Number((v_main - 0.7).toFixed(1));
+            d1_state = "ON";
+            d2_state = "OFF";
+        } else {
+            // Main battery is cut off. Backup kicks in.
+            v_payload = Number((v_backup - 0.7).toFixed(1));
+            d1_state = "OFF";
+            d2_state = "ON";
+        }
 
         currentAnswers = { vPayload: v_payload, d1: d1_state, d2: d2_state };
 
         // Text Update
+        let switchStatusText = switchClosed ? "CLOSED (normal operation)" : "OPEN (simulating a circuit break)";
         if (qText) {
             qText.innerHTML = 
                 `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🚀 Grade 9 Challenge: Backup Battery</strong></div>` +
-                `Backup batteries for critical systems use diodes to prevent power backfeeding.<br><br>` +
+                `Backup batteries for critical systems use diodes to prevent power backfeeding.<br>` +
+                `Currently, switch S is <strong>${switchStatusText}</strong>.<br><br>` +
                 `1) Calculate the load voltage.<br>` +
                 `2) Determine if D1 is ON or OFF.<br>` +
                 `3) Determine if D2 is ON or OFF.`;
         }
         if (hintDiv) {
-            hintDiv.innerHTML = "<strong>Hint:</strong> The battery with the highest voltage will push its diode into forward bias. Check the voltage at the cathode junction to see if the backup diode can turn on!";
+            hintDiv.innerHTML = "<strong>Hint:</strong> If the switch is open, the main power is disconnected. Which battery is left to power the circuit?";
         }
 
         // Draw Logic
@@ -4954,15 +4974,31 @@ function generateGrade9SiliconProblem() {
         ctx.textAlign = "right"; ctx.fillText(`Main (${v_main}V)`, 140, 55);
         drawLine(ctx, 150, 60, 250, 60);
         
-        drawLine(ctx, 200, 60, 200, 90);
-        ctx.beginPath(); 
-        ctx.moveTo(185, 90); ctx.lineTo(215, 90); ctx.lineTo(200, 120); ctx.closePath();
-        ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
-        drawLine(ctx, 185, 120, 215, 120); 
-        drawLine(ctx, 200, 90, 200, 120);  
-        ctx.fillStyle = pink; ctx.textAlign = "right"; ctx.fillText("D1", 175, 110);
-        drawLine(ctx, 200, 120, 200, 220); 
+        // --- DRAWING THE SWITCH (S) ON D1 BRANCH ---
+        drawLine(ctx, 200, 60, 200, 70);
+        
+        ctx.beginPath(); ctx.arc(200, 70, 3, 0, 2 * Math.PI); ctx.fill(); // Top switch node
+        ctx.beginPath(); ctx.arc(200, 95, 3, 0, 2 * Math.PI); ctx.fill(); // Bottom switch node
+        
+        if (switchClosed) {
+            drawLine(ctx, 200, 70, 200, 95); // Closed line
+        } else {
+            drawLine(ctx, 200, 95, 220, 75); // Angled open line
+        }
+        ctx.textAlign = "left"; 
+        ctx.fillText("S", 220, 85); // Switch label
 
+        // --- DRAWING D1 (Shifted down slightly to fit the switch) ---
+        drawLine(ctx, 200, 95, 200, 100);
+        ctx.beginPath(); 
+        ctx.moveTo(185, 100); ctx.lineTo(215, 100); ctx.lineTo(200, 130); ctx.closePath();
+        ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
+        drawLine(ctx, 185, 130, 215, 130); 
+        drawLine(ctx, 200, 100, 200, 130);  
+        ctx.fillStyle = pink; ctx.textAlign = "right"; ctx.fillText("D1", 175, 120);
+        drawLine(ctx, 200, 130, 200, 220); 
+
+        // --- DRAWING BACKUP BRANCH & D2 ---
         drawLine(ctx, 230, 140, 350, 140);
         ctx.fillStyle = "black"; ctx.textAlign = "left"; 
         ctx.fillText(`Backup (${v_backup}V)`, 360, 145);
@@ -4976,59 +5012,62 @@ function generateGrade9SiliconProblem() {
         ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("D2", 325, 180);
         drawLine(ctx, 300, 190, 300, 220); 
 
+        // --- LOWER CIRCUIT RECOMBINATION ---
         drawLine(ctx, 200, 220, 300, 220); 
         if(typeof drawNode === 'function') drawNode(ctx, 250, 220); 
         drawLine(ctx, 250, 220, 250, 250);
         
-// ==========================================
-// UPDATED DRAWING LOGIC: Payload and Labels
-// ==========================================
-// 1. Position and draw the physical Box
-const boxX = 215; 
-const boxY = 250; 
-const boxW = 70; 
-const boxH = 50;
-const centerY = boxY + (boxH / 2); // 275
+        // Payload Box
+        const boxX = 215, boxY = 250, boxW = 70, boxH = 50;
+        const centerY = boxY + (boxH / 2); 
 
-ctx.fillStyle = "#f8f9fa"; // Fill color
-ctx.fillRect(boxX, boxY, boxW, boxH);
-ctx.strokeRect(boxX, boxY, boxW, boxH); // Outline
+        ctx.fillStyle = "#f8f9fa"; 
+        ctx.fillRect(boxX, boxY, boxW, boxH);
+        ctx.strokeRect(boxX, boxY, boxW, boxH); 
 
-// 2. Draw "Payload" text - CENTERED vertically and horizontally
-ctx.fillStyle = "black"; 
-ctx.textAlign = "center";
-ctx.textBaseline = "middle"; // Ensures perfect vertical centering
-ctx.font = "bold 14px Arial"; // Adjusted to 14px as per your preference for smaller text
-ctx.fillText("Load", boxX + (boxW / 2), centerY); 
+        ctx.fillStyle = "black"; 
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle"; 
+        ctx.font = "bold 14px Arial"; 
+        ctx.fillText("Load", boxX + (boxW / 2), centerY); 
 
-// 3. Draw pink label outside the box - situated tightly to the left
-let pinkColor = typeof brandPink !== 'undefined' ? brandPink : "#E64097";
-ctx.fillStyle = pinkColor; 
-ctx.textAlign = "right"; // Right-aligned so "V = ?" ends right before the box starts
-ctx.font = "bold 16px Arial"; 
+        let pinkColor = typeof brandPink !== 'undefined' ? brandPink : "#E64097";
+        ctx.fillStyle = pinkColor; 
+        ctx.textAlign = "right"; 
+        ctx.font = "bold 16px Arial"; 
+        ctx.fillText("V = ?", boxX - 10, centerY); 
 
-// Position: boxX - 10 puts it just outside the left edge of the box
-ctx.fillText("V = ?", boxX - 10, centerY); 
+        ctx.textBaseline = "alphabetic";
+        ctx.textAlign = "start";
 
-// Reset text settings to avoid affecting other drawing logic later in the script
-ctx.textBaseline = "alphabetic";
-ctx.textAlign = "start";
-
-// ==========================================
-
+        // Ground
         drawLine(ctx, 250, 300, 250, 340);
         drawLine(ctx, 230, 340, 270, 340); drawLine(ctx, 240, 345, 260, 345); drawLine(ctx, 245, 350, 255, 350);
         ctx.fillStyle = "black"; ctx.fillText("0V (GND)", 250, 375);
 
+        // --- DYNAMIC SOLUTION TEXT ---
         if (solText) {
-            solText.innerHTML = `
-                <strong>Step 1: Understand Diode OR-Logic</strong><br>
-                The battery with the highest voltage will "win" and push its diode into forward bias.<br><br>
-                <strong>Step 2: Calculate Payload Voltage</strong><br>
-                The Main battery (${v_main}V) is higher. V<sub>Payload</sub> = ${v_main}V - 0.7V = <strong>${v_payload}V</strong>.<br><br>
-                <strong>Step 3: Determine D2 State</strong><br>
-                D2's cathode is at ${v_payload}V while its anode is only at ${v_backup}V. It is reverse-biased (<strong>OFF</strong>).
-            `;
+            if (switchClosed) {
+                solText.innerHTML = `
+                    <strong>Step 1: Analyze Switch State</strong><br>
+                    Switch S is CLOSED. The Main battery is connected, so the highest voltage "wins".<br><br>
+                    <strong>Step 2: Calculate Payload Voltage</strong><br>
+                    The Main battery (${v_main}V) is higher than the Backup (${v_backup}V).<br>
+                    V<sub>Payload</sub> = ${v_main}V - 0.7V = <strong>${v_payload}V</strong>.<br><br>
+                    <strong>Step 3: Determine D1 & D2 States</strong><br>
+                    Because Main power flows, D1 is <strong>ON</strong>. D2's cathode is blocked by the ${v_payload}V at the junction, while its anode is only ${v_backup}V. It is reverse-biased (<strong>OFF</strong>).
+                `;
+            } else {
+                solText.innerHTML = `
+                    <strong>Step 1: Analyze Switch State</strong><br>
+                    Switch S is OPEN. The Main battery is completely disconnected, simulating a failure.<br><br>
+                    <strong>Step 2: Calculate Payload Voltage</strong><br>
+                    The Backup battery (${v_backup}V) automatically takes over to power the circuit.<br>
+                    V<sub>Payload</sub> = ${v_backup}V - 0.7V = <strong>${v_payload}V</strong>.<br><br>
+                    <strong>Step 3: Determine D1 & D2 States</strong><br>
+                    Because it is supplying the power, D2 is <strong>ON</strong>. D1 is cut off from its power source, leaving it <strong>OFF</strong>.
+                `;
+            }
         }
     } 
     // ==========================================
