@@ -1069,6 +1069,14 @@
     </div>
 
 </div>
+
+<div id="inputGroupSiliconVoltage" style="display: none; justify-content: center; gap: 15px; margin-top: 15px; align-items: center; flex-wrap: wrap;">
+    <label style="font-weight: bold; color: #fff;">Voltage at TP1:</label>
+    <input type="text" id="siliconTP1" style="width: 80px; padding: 5px; text-align: center; border-radius: 4px; border: 1px solid #ccc;">
+
+    <label style="font-weight: bold; color: #fff;">Voltage at TP2:</label>
+    <input type="text" id="siliconTP2" style="width: 80px; padding: 5px; text-align: center; border-radius: 4px; border: 1px solid #ccc;">
+</div>
                 
 <!-- Input group G9Silicon -->                  
 <div id="inputGroupGrade9Silicon" class="input-group" style="display: none; flex-direction: column; padding-left: 25px;">
@@ -4551,16 +4559,25 @@ function generateSiliconProblem() {
     }
     
     const scenario = scenarioTracker.silicon;
-    // Now toggles only between 0 and 1
-    scenarioTracker.silicon = (scenarioTracker.silicon + 1) % 2;
+    // UPDATED: Now toggles between 0, 1, and 2!
+    scenarioTracker.silicon = (scenarioTracker.silicon + 1) % 3;
 
-    // UPDATED: Now targets the newly named 'inputGroupSilicon'
-    const inputZone = document.getElementById('inputGroupSilicon');
-    if (inputZone) inputZone.style.display = 'flex'; 
-
-    document.getElementById('basicL1State').value = "";
-    document.getElementById('basicL2State').value = "";
-    document.getElementById('basicL3State').value = "";
+    // UI TOGGLE LOGIC: Show dropdowns for Logic, show text boxes for Math
+    const inputLogic = document.getElementById('inputGroupSilicon');
+    const inputVoltage = document.getElementById('inputGroupSiliconVoltage');
+    
+    if (scenario === 0 || scenario === 1) {
+        if (inputLogic) inputLogic.style.display = 'flex'; 
+        if (inputVoltage) inputVoltage.style.display = 'none';
+        document.getElementById('basicL1State').value = "";
+        document.getElementById('basicL2State').value = "";
+        document.getElementById('basicL3State').value = "";
+    } else {
+        if (inputLogic) inputLogic.style.display = 'none'; 
+        if (inputVoltage) inputVoltage.style.display = 'flex';
+        document.getElementById('siliconTP1').value = "";
+        document.getElementById('siliconTP2').value = "";
+    }
 
     const qText = document.getElementById('questionText');
     const solText = document.getElementById('solText');
@@ -4580,22 +4597,21 @@ function generateSiliconProblem() {
     drawLine(ctx, 100, 360, 400, 360);
     ctx.fillText("0V (Ground)", 100, 380);
 
-    if (qText) {
-    qText.innerHTML = `Look carefully at the direction of the supply voltage and determine if lamps <strong>L1, L2, and L3</strong> are ON or OFF.`;
-    qText.style.display = 'block'; 
-    }
-
-    let l1_state, l2_state, l3_state;
     let logicHTML = "<strong>Step-by-Step Logic:</strong><br><br>";
 
     // ==========================================
     // SCENARIO 0: Parallel Bypass
     // ==========================================
     if (scenario === 0) {
+        if (qText) {
+            qText.innerHTML = `Look carefully at the direction of the supply voltage and determine if lamps <strong>L1, L2, and L3</strong> are ON or OFF.`;
+            qText.style.display = 'block'; 
+        }
+
         const d2Forward = Math.random() < 0.5;
-        l1_state = "ON";
-        l3_state = "ON";
-        l2_state = d2Forward ? "ON" : "OFF";
+        let l1_state = "ON";
+        let l3_state = "ON";
+        let l2_state = d2Forward ? "ON" : "OFF";
 
         // Main Wire Top
         drawLine(ctx, 250, 40, 250, 80);
@@ -4607,7 +4623,6 @@ function generateSiliconProblem() {
         drawLabel(ctx, "L1", 180 + 25, 150 + 5, 16, pink);
         
         // Right Branch (L2 + Diode)
-        // Diode center is 135, size 12. Wires stop at 123 and start at 147.
         drawLine(ctx, 320, 80, 320, 123);
         drawDiode(ctx, 320, 135, d2Forward ? "down" : "up", 12);
         drawLine(ctx, 320, 147, 320, 180);
@@ -4623,16 +4638,24 @@ function generateSiliconProblem() {
         drawLine(ctx, 250, 310, 250, 360);
 
         logicHTML += `<strong>L1 is ${l1_state}</strong>: It is on a direct branch to ground with no diodes blocking it.<br><br>`;
-        logicHTML += `<strong>L2 is ${l2_state}</strong>: The diode on its branch is ${d2Forward ? "pointing toward ground (Forward-biased)" : "pointing against the supply (Reverse-biased)"}.<br><br>`;
-        logicHTML += `<strong>L3 is ${l3_state}</strong>: Because L1 provides an open path for current, current successfully reaches the bottom junction and flows through L3 to ground.`;
+        logicHTML += `<strong>L2 is ${l2_state}</strong>: The diode on its branch is ${d2Forward ? "Forward-biased" : "Reverse-biased"}.<br><br>`;
+        logicHTML += `<strong>L3 is ${l3_state}</strong>: Because L1 provides an open path, current reaches the bottom junction and flows through L3.`;
+        
+        currentAnswers = { l1: l1_state, l2: l2_state, l3: l3_state };
     }
 
     // ==========================================
     // SCENARIO 1: Master Gate
     // ==========================================
     else if (scenario === 1) {
+        if (qText) {
+            qText.innerHTML = `Look carefully at the direction of the supply voltage and determine if lamps <strong>L1, L2, and L3</strong> are ON or OFF.`;
+            qText.style.display = 'block'; 
+        }
+
         const masterForward = Math.random() < 0.5;
         const branchForward = Math.random() < 0.5;
+        let l1_state, l2_state, l3_state;
 
         if (!masterForward) {
             l1_state = "OFF"; l2_state = "OFF"; l3_state = "OFF"; 
@@ -4642,8 +4665,7 @@ function generateSiliconProblem() {
             l3_state = "ON"; 
         }
 
-        // Master Wire
-        // Center is 75. Wires stop at 63 and start at 87.
+        // Master Wire & Diode
         drawLine(ctx, 250, 40, 250, 63);
         drawDiode(ctx, 250, 75, masterForward ? "down" : "up", 12);
         
@@ -4657,7 +4679,6 @@ function generateSiliconProblem() {
         drawLine(ctx, 180, 170, 320, 170); 
 
         // Left Branch (Branch Diode + L1)
-        // Center is 215. Wires stop at 203 and start at 227.
         drawLine(ctx, 180, 170, 180, 203);
         drawDiode(ctx, 180, 215, branchForward ? "down" : "up", 12);
         drawLine(ctx, 180, 227, 180, 260);
@@ -4683,14 +4704,64 @@ function generateSiliconProblem() {
             logicHTML += `<strong>L2 is ${l2_state}</strong>: Its branch has no diodes blocking the path to ground.<br><br>`;
             logicHTML += `<strong>L1 is ${l1_state}</strong>: The branch diode is ${branchForward ? "Forward-biased" : "Reverse-biased"}.`;
         }
+        
+        currentAnswers = { l1: l1_state, l2: l2_state, l3: l3_state };
     }
 
-    // Save answers & Solutions
-    currentAnswers = {
-        l1: l1_state,
-        l2: l2_state,
-        l3: l3_state
-    };
+    // ==========================================
+    // SCENARIO 2: Series Staircase (Voltage Math)
+    // ==========================================
+    else if (scenario === 2) {
+        if (qText) {
+            // Remind them of the unit requirement using your existing function!
+            if (typeof showDPinstruction === 'function') showDPinstruction();
+            qText.innerHTML = `Calculate the voltage at <strong>Test Point 1 (TP1)</strong> and <strong>Test Point 2 (TP2)</strong>.<br>` + qText.innerHTML;
+        }
+
+        // Math Logic
+        const d2Forward = Math.random() < 0.5; // The Twist!
+        let v_tp1 = 11.3; // 12V - 0.7V
+        let v_tp2 = d2Forward ? 10.6 : 0; // If reverse, it's 0V!
+
+        // Draw Line to D1
+        drawLine(ctx, 250, 40, 250, 70);
+        drawDiode(ctx, 250, 85, "down", 12); // D1 is always forward
+        
+        // Draw TP1
+        drawLine(ctx, 250, 100, 250, 140);
+        if(typeof drawNode === 'function') drawNode(ctx, 250, 140);
+        ctx.fillStyle = "black"; ctx.fillText("TP1", 270, 145);
+        
+        // Draw Line to D2
+        drawLine(ctx, 250, 140, 250, 180);
+        drawDiode(ctx, 250, 195, d2Forward ? "down" : "up", 12); // The Twist Diode
+        
+        // Draw TP2
+        drawLine(ctx, 250, 210, 250, 250);
+        if(typeof drawNode === 'function') drawNode(ctx, 250, 250);
+        ctx.fillStyle = "black"; ctx.fillText("TP2", 270, 255);
+
+        // Draw Load Resistor to Ground
+        drawLine(ctx, 250, 250, 250, 280);
+        ctx.fillStyle = "white"; ctx.fillRect(235, 280, 30, 50); ctx.strokeRect(235, 280, 30, 50); // Resistor
+        ctx.fillStyle = "black"; ctx.fillText("Load", 280, 310);
+        drawLine(ctx, 250, 330, 250, 360);
+
+        // Solution Logic
+        logicHTML += `<strong>TP1:</strong> The top diode is forward-biased. It consumes 0.7V of the supply voltage to operate.<br>`;
+        logicHTML += `12V - 0.7V = <strong>11.3V at TP1</strong>.<br><br>`;
+        
+        if (d2Forward) {
+            logicHTML += `<strong>TP2:</strong> The second diode is also forward-biased! It consumes another 0.7V.<br>`;
+            logicHTML += `11.3V - 0.7V = <strong>10.6V at TP2</strong>.`;
+        } else {
+            logicHTML += `<strong>TP2:</strong> The second diode is pointing backwards (Reverse-Biased)!<br>`;
+            logicHTML += `It acts as an open switch. Because the circuit is broken, no current can flow down to the load resistor. Therefore, a voltmeter at TP2 reading relative to ground will see <strong>0V</strong>.`;
+        }
+
+        // Store answers to be checked later
+        currentAnswers = { tp1: v_tp1, tp2: v_tp2 };
+    }
 
     if (solText) solText.innerHTML = logicHTML;
 }
@@ -5147,7 +5218,7 @@ function switchTab(mode) {
         'mainGrade9Btn', 'showsolutionsBtn', 
         'inputGroupGrade9Zener', 'g9ZenerClosed', 'g9ZenerOpen',
         'inputGroupIPOSort',
-        'inputGroupSilicon','inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse' // <-- NEW: Added all new Silicon Groups
+        'inputGroupSilicon', 'inputGroupSiliconVoltage', 'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse' // <-- NEW: Added inputGroupSiliconVoltage
     ];
 
     elementsToHide.forEach(id => {
@@ -5164,7 +5235,7 @@ function switchTab(mode) {
         else if (['analysis', 'divider', 'resistance', 'colorcode'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
         else if (mode === 'iposort') subtitle.innerText = "Module 4: Systems";
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
-        else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; // <-- NEW: Added grade9silicon
+        else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
     }
 
     // 4. Global Cleanup
