@@ -4944,7 +4944,7 @@ function generateGrade9SiliconProblem() {
             hintDiv.innerHTML = "<strong>Hint:</strong> The battery with the highest voltage will push its diode into forward bias. Check the voltage at the cathode junction to see if the backup diode can turn on!";
         }
 
-        // Draw: Horizontal Rails & Vertical Components
+// Draw: Horizontal Rails & Vertical Components
         ctx.fillStyle = "black"; ctx.font = "bold 14px Arial";
         
         // Rail 1: Main Battery (Top)
@@ -4957,13 +4957,17 @@ function generateGrade9SiliconProblem() {
         ctx.moveTo(185, 90); ctx.lineTo(215, 90); ctx.lineTo(200, 120); ctx.closePath();
         ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
         drawLine(ctx, 185, 120, 215, 120); // Cathode line
-        drawLine(ctx, 200, 90, 200, 120);  // <-- GCSE STANDARD: Line straight through the middle
+        drawLine(ctx, 200, 90, 200, 120);  
         ctx.fillStyle = pink; ctx.textAlign = "right"; ctx.fillText("D1", 175, 110);
         drawLine(ctx, 200, 120, 200, 220); // Wire down to junction
 
         // Rail 2: Backup Battery (Middle)
-        ctx.fillStyle = "black"; ctx.textAlign = "right"; ctx.fillText(`Backup (${v_backup}V)`, 140, 135);
-        drawLine(ctx, 150, 140, 350, 140);
+        // CHANGED: Line now starts after D1 to avoid crossing it
+        drawLine(ctx, 230, 140, 350, 140);
+        
+        // CHANGED: Label shifted to the far right of the backup line
+        ctx.fillStyle = "black"; ctx.textAlign = "left"; 
+        ctx.fillText(`Backup (${v_backup}V)`, 360, 145);
         
         // D2 dropping vertically
         drawLine(ctx, 300, 140, 300, 160);
@@ -4971,13 +4975,17 @@ function generateGrade9SiliconProblem() {
         ctx.moveTo(285, 160); ctx.lineTo(315, 160); ctx.lineTo(300, 190); ctx.closePath();
         ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
         drawLine(ctx, 285, 190, 315, 190); // Cathode line
-        drawLine(ctx, 300, 160, 300, 190); // <-- GCSE STANDARD: Line straight through the middle
+        drawLine(ctx, 300, 160, 300, 190); 
         ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("D2", 325, 180);
         drawLine(ctx, 300, 190, 300, 220); // Wire down to junction
 
         // Combine at Junction and drop to Payload
         drawLine(ctx, 200, 220, 300, 220); // Horizontal connecting wire
-        if(typeof drawNode === 'function') { drawNode(ctx, 200, 220); drawNode(ctx, 300, 220); drawNode(ctx, 250, 220); }
+        
+        // CHANGED: Removed the 2 corner nodes, leaving only the center node
+        if(typeof drawNode === 'function') { 
+            drawNode(ctx, 250, 220); 
+        }
         
         drawLine(ctx, 250, 220, 250, 250);
         
@@ -4989,7 +4997,9 @@ function generateGrade9SiliconProblem() {
         // Ground
         drawLine(ctx, 250, 300, 250, 340);
         drawLine(ctx, 230, 340, 270, 340); drawLine(ctx, 240, 345, 260, 345); drawLine(ctx, 245, 350, 255, 350);
-        ctx.fillStyle = "black"; ctx.fillText("0V (GND)", 250, 365);
+        
+        // CHANGED: Dropped the label text down further from the symbol
+        ctx.fillStyle = "black"; ctx.fillText("0V (GND)", 250, 375);
 
         // Solution Text
         if (solText) {
