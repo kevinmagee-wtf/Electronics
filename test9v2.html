@@ -1088,22 +1088,18 @@
 <div id="inputGroupGrade9Silicon" class="input-group" style="display: none; flex-direction: column; padding-left: 25px;">
     <div style="display: flex; align-items: center; margin-bottom: 15px;">
         <label style="min-width: 100px; margin-bottom: 0; text-align: left; margin-right: 10px;">
-            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>Payload</sub> =</span>
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>TP1</sub> =</span>
         </label> 
-        <input type="text" id="g9SilVPayload" class="form-control" style="width: 130px;" placeholder="e.g. 11.3">
+        <input type="text" id="g9SilTP1" class="form-control" style="width: 130px;" placeholder="e.g. 11.3">
         <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
     </div>
+    
     <div style="display: flex; align-items: center; margin-bottom: 15px;">
         <label style="min-width: 100px; margin-bottom: 0; text-align: left; margin-right: 10px;">
-            <span style="font-weight: bold; font-size: 16px; color: #E64097;">D1 State =</span>
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>TP2</sub> =</span>
         </label> 
-        <input type="text" id="g9SilD1" class="form-control" style="width: 130px;" placeholder="ON or OFF">
-    </div>
-    <div style="display: flex; align-items: center; margin-bottom: 15px;">
-        <label style="min-width: 100px; margin-bottom: 0; text-align: left; margin-right: 10px;">
-            <span style="font-weight: bold; font-size: 16px; color: #E64097;">D2 State =</span>
-        </label> 
-        <input type="text" id="g9SilD2" class="form-control" style="width: 130px;" placeholder="ON or OFF">
+        <input type="text" id="g9SilTP2" class="form-control" style="width: 130px;" placeholder="e.g. 0">
+        <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
     </div>
 </div>
 
@@ -1115,6 +1111,7 @@
         <input type="text" id="g9SilRevVDiode" class="form-control" style="width: 130px;" placeholder="e.g. 12">
         <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
     </div>
+    
     <div style="display: flex; align-items: center; margin-bottom: 15px;">
         <label style="min-width: 130px; margin-bottom: 0; text-align: left; margin-right: 10px;">
             <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>Component</sub> =</span>
@@ -4981,10 +4978,6 @@ function generateGrade9SiliconProblem() {
         }
     }
 }
-
-
-
-
 
     
 // ==========================================
