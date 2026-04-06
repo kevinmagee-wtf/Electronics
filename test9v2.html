@@ -1085,11 +1085,45 @@
                 
 <!-- Input group G9Silicon -->                  
 <div id="inputGroupGrade9Silicon" class="input-group" style="display: none; flex-direction: column; padding-left: 25px;">
+    
+    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+        <label style="min-width: 130px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>Payload</sub> =</span>
+        </label> 
+        <input type="number" step="0.1" id="g9SilPayload" class="form-control" style="width: 100px;" placeholder="e.g. 11.3">
+        <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
+    </div>
+    
+    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+        <label style="min-width: 130px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">D1 State =</span>
+        </label> 
+        <select id="g9SilD1" class="form-control" style="width: 100px; padding: 5px; font-weight: bold;">
+            <option value="">--</option>
+            <option value="ON">ON</option>
+            <option value="OFF">OFF</option>
+        </select>
+    </div>
+
+    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+        <label style="min-width: 130px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">D2 State =</span>
+        </label> 
+        <select id="g9SilD2" class="form-control" style="width: 100px; padding: 5px; font-weight: bold;">
+            <option value="">--</option>
+            <option value="ON">ON</option>
+            <option value="OFF">OFF</option>
+        </select>
+    </div>
+</div>
+
+<div id="inputGroupGrade9SiliconPath" class="input-group" style="display: none; flex-direction: column; padding-left: 25px;">
+    
     <div style="display: flex; align-items: center; margin-bottom: 15px;">
         <label style="min-width: 100px; margin-bottom: 0; text-align: left; margin-right: 10px;">
             <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>TP1</sub> =</span>
         </label> 
-        <input type="text" id="g9SilTP1" class="form-control" style="width: 130px;" placeholder="e.g. 11.3">
+        <input type="number" step="0.1" id="g9SilTP1" class="form-control" style="width: 130px;" placeholder="e.g. 11.3">
         <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
     </div>
     
@@ -1097,25 +1131,15 @@
         <label style="min-width: 100px; margin-bottom: 0; text-align: left; margin-right: 10px;">
             <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>TP2</sub> =</span>
         </label> 
-        <input type="text" id="g9SilTP2" class="form-control" style="width: 130px;" placeholder="e.g. 0">
+        <input type="number" step="0.1" id="g9SilTP2" class="form-control" style="width: 130px;" placeholder="e.g. 0">
         <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
     </div>
-</div>
 
-<div id="inputGroupGrade9SiliconReverse" class="input-group" style="display: none; flex-direction: column; padding-left: 25px;">
     <div style="display: flex; align-items: center; margin-bottom: 15px;">
-        <label style="min-width: 130px; margin-bottom: 0; text-align: left; margin-right: 10px;">
-            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>Diode</sub> =</span>
+        <label style="min-width: 100px; margin-bottom: 0; text-align: left; margin-right: 10px;">
+            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>OUT</sub> =</span>
         </label> 
-        <input type="text" id="g9SilRevVDiode" class="form-control" style="width: 130px;" placeholder="e.g. 12">
-        <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
-    </div>
-    
-    <div style="display: flex; align-items: center; margin-bottom: 15px;">
-        <label style="min-width: 130px; margin-bottom: 0; text-align: left; margin-right: 10px;">
-            <span style="font-weight: bold; font-size: 16px; color: #E64097;">V<sub>Component</sub> =</span>
-        </label> 
-        <input type="text" id="g9SilRevVComp" class="form-control" style="width: 130px;" placeholder="e.g. 0">
+        <input type="number" step="0.1" id="g9SilOut" class="form-control" style="width: 130px;" placeholder="e.g. 11.3">
         <span style="font-size: 20px; font-weight: bold; margin-left: 5px;">V</span>
     </div>
 </div>
@@ -4840,7 +4864,7 @@ function generateGrade9SiliconProblem() {
     const isOrGate = (qType === 0);
 
     // Set a distinct currentMode so your checkAnswers() function knows which one to grade!
-    currentMode = isOrGate ? 'grade9silicon_orgate' : 'grade9silicon_reverse';
+    currentMode = isOrGate ? 'grade9silicon_orgate' : 'grade9silicon_reverse'; // Wait, we should rename this below!
     
     // Keep the Smart Rocket visible!
     if (document.getElementById('mainGrade9Btn')) {
@@ -4868,10 +4892,8 @@ function generateGrade9SiliconProblem() {
     if (currentMode === 'grade9silicon_orgate') {
         const groupOrGate = document.getElementById('inputGroupGrade9Silicon');
         if (groupOrGate) groupOrGate.style.display = 'flex';
-    } else if (currentMode === 'grade9silicon_reverse') {
-        const groupReverse = document.getElementById('inputGroupGrade9SiliconReverse');
-        if (groupReverse) groupReverse.style.display = 'flex';
-    }
+    } 
+    // Note: We don't need to unhide the Reverse group here anymore, because we do it inside the Pathfinder block below!
 
     // ==========================================
     // Setup Canvas
@@ -4972,72 +4994,133 @@ function generateGrade9SiliconProblem() {
             `;
         }
     } 
-    // ==========================================
-    // BRANCH 2: THE REVERSE BIAS LEAKAGE PROBLEM
+   // ==========================================
+    // BRANCH 2: THE PATHFINDER CHALLENGE
     // ==========================================
     else {
-        // Math
-        const vSupplyList = [5, 9, 12, 15, 24];
+        currentMode = 'grade9silicon_pathfinder';
+        
+        // Math & Logic Setup
+        const vSupplyList = [6, 9, 12, 15, 24];
         let v_in = vSupplyList[Math.floor(Math.random() * vSupplyList.length)];
-        let v_diode = v_in;
-        let v_comp = 0;
+        
+        // Randomize Directions (true = Forward/East, false = Reverse/West)
+        let d1Forward = Math.random() > 0.5;
+        let d2Forward = Math.random() > 0.5;
 
-        currentAnswers = { vDiode: v_diode, vComp: v_comp };
+        // Calculate Voltages
+        let v_tp1 = d1Forward ? +(v_in - 0.7).toFixed(1) : 0;
+        let v_tp2 = d2Forward ? +(v_in - 0.7).toFixed(1) : 0;
+        let v_out = Math.max(v_tp1, v_tp2); // Highest voltage gets through
+
+        // Store answers for the check function
+        currentAnswers = { tp1: v_tp1, tp2: v_tp2, out: v_out };
 
         // Text Update
         if (qText) {
             qText.innerHTML = 
-                `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge: Reverse Leakage</strong></div>` +
-                `A silicon diode is connected in series with a load component, but it has been installed backward.<br><br>` +
-                `1) Calculate the voltage measured across the diode (V<sub>Diode</sub>).<br>` +
-                `2) Calculate the voltage measured across the component (V<sub>Component</sub>).`;
+                `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge: The Pathfinder</strong></div>` +
+                `Analyze the diode directions in this parallel circuit.<br><br>` +
+                `1) Calculate the voltage at <b>TP1</b> (Top Branch).<br>` +
+                `2) Calculate the voltage at <b>TP2</b> (Bottom Branch).<br>` +
+                `3) Determine the final voltage at <b>OUT</b>.`;
             qText.style.display = 'block';
         }
         if (hintDiv) {
-            hintDiv.innerHTML = "<strong>Hint:</strong> Think of a reverse-biased diode as an open switch (infinite resistance). In a series circuit, where does the supply voltage drop if the circuit is broken?";
+            hintDiv.innerHTML = "<strong>Hint:</strong> A reverse-biased diode acts like an open switch (0V passes). If both branches are open, what happens to the output?";
         }
 
-        // Draw: Vertical Series Circuit
-        drawLine(ctx, 200, 60, 400, 60);
-        ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.font = "bold 16px Arial";
-        ctx.fillText("V_supply = " + v_in + "V", 300, 45);
+        // --- DRAWING: PARALLEL CIRCUIT ---
+        // Supply Text
+        ctx.fillStyle = "black"; ctx.textAlign = "right"; ctx.font = "bold 16px Arial";
+        ctx.fillText(v_in + "V", 90, 155);
 
-        drawLine(ctx, 300, 60, 300, 120);
+        // Main wire in & Vertical Fork
+        drawLine(ctx, 100, 150, 150, 150); 
+        drawLine(ctx, 150, 100, 150, 200); 
 
-        // Draw Diode (Reverse Biased - pointing UP)
+        // -- TOP BRANCH --
+        drawLine(ctx, 150, 100, 200, 100);
+        // Top Diode (Center: 220, 100)
         ctx.beginPath();
-        ctx.moveTo(280, 160); ctx.lineTo(320, 160); ctx.lineTo(300, 120); ctx.closePath();
+        if (d1Forward) {
+            ctx.moveTo(200, 90); ctx.lineTo(240, 100); ctx.lineTo(200, 110);
+        } else {
+            ctx.moveTo(240, 90); ctx.lineTo(200, 100); ctx.lineTo(240, 110);
+        }
+        ctx.closePath();
         ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
-        drawLine(ctx, 280, 120, 320, 120); // Cathode line
-        drawLine(ctx, 300, 160, 300, 120); // <-- GCSE STANDARD: Line straight through the middle
-        ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("V_Diode = ?", 340, 145);
+        drawLine(ctx, d1Forward ? 240 : 200, 90, d1Forward ? 240 : 200, 110); // Cathode line
+        drawLine(ctx, 200, 100, 240, 100); // Middle wire
+        
+        drawLine(ctx, 240, 100, 350, 100);
+        
+        // TP1 Marker
+        ctx.beginPath(); ctx.arc(300, 100, 4, 0, 2*Math.PI); ctx.fillStyle = "red"; ctx.fill(); ctx.stroke();
+        ctx.fillStyle = pink; ctx.textAlign = "center"; ctx.fillText("TP1", 300, 85);
 
-        drawLine(ctx, 300, 160, 300, 220);
+        // -- BOTTOM BRANCH --
+        drawLine(ctx, 150, 200, 200, 200);
+        // Bottom Diode (Center: 220, 200)
+        ctx.beginPath();
+        if (d2Forward) {
+            ctx.moveTo(200, 190); ctx.lineTo(240, 200); ctx.lineTo(200, 210);
+        } else {
+            ctx.moveTo(240, 190); ctx.lineTo(200, 200); ctx.lineTo(240, 210);
+        }
+        ctx.closePath();
+        ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
+        drawLine(ctx, d2Forward ? 240 : 200, 190, d2Forward ? 240 : 200, 210); // Cathode line
+        drawLine(ctx, 200, 200, 240, 200); // Middle wire
+        
+        drawLine(ctx, 240, 200, 350, 200);
+        
+        // TP2 Marker
+        ctx.beginPath(); ctx.arc(300, 200, 4, 0, 2*Math.PI); ctx.fillStyle = "red"; ctx.fill(); ctx.stroke();
+        ctx.fillStyle = pink; ctx.textAlign = "center"; ctx.fillText("TP2", 300, 185);
 
-        // Draw Component
-        ctx.fillStyle = "white"; ctx.fillRect(285, 220, 30, 60); ctx.strokeRect(285, 220, 30, 60);
-        ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("V_Component = ?", 340, 255);
+        // -- REJOIN & OUTPUT --
+        drawLine(ctx, 350, 100, 350, 200); // Vertical Rejoin
+        drawLine(ctx, 350, 150, 400, 150); // Wire to component
 
-        // Ground
-        drawLine(ctx, 300, 280, 300, 340);
-        drawLine(ctx, 200, 340, 400, 340); // Bottom Ground Rail
-        ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("0V (GND)", 300, 365);
+        // Component (Load)
+        ctx.fillStyle = "white"; ctx.fillRect(400, 135, 40, 30); ctx.strokeRect(400, 135, 40, 30);
+        drawLine(ctx, 440, 150, 520, 150); // Final wire
+
+        // OUT Marker
+        ctx.beginPath(); ctx.arc(480, 150, 4, 0, 2*Math.PI); ctx.fillStyle = "red"; ctx.fill(); ctx.stroke();
+        ctx.fillStyle = pink; ctx.textAlign = "center"; ctx.fillText("OUT", 480, 135);
+
+        // Ground Symbol
+        drawLine(ctx, 520, 150, 520, 180);
+        drawLine(ctx, 505, 180, 535, 180);
+        drawLine(ctx, 512, 185, 528, 185);
+        drawLine(ctx, 518, 190, 522, 190);
 
         // Solution Text
         if (solText) {
-            solText.innerHTML = `
-                <strong>Step 1: Check Diode Orientation</strong><br>
-                The diode is pointing <em>against</em> the positive supply. It is reverse-biased and acts like an open switch with effectively infinite resistance.<br><br>
-                <strong>Step 2: Component Voltage</strong><br>
-                Because the diode acts as an open switch, <strong>0 A</strong> of current flows through the circuit. With no current flowing through the load component, there is no voltage drop across it (Ohm's Law: V = I &times; R &rarr; V = 0 &times; R = 0V).<br>
-                V<sub>Component</sub> = <strong>0 V</strong>.<br><br>
-                <strong>Step 3: Diode Voltage</strong><br>
-                By Kirchhoff's Voltage Law, the sum of voltage drops must equal the supply voltage. Since the component drops 0V, the entire supply voltage must be dropping across the "open switch" (the diode).<br>
-                V<sub>Diode</sub> = <strong>${v_in} V</strong>.
-            `;
+            let s = `<strong>Step 1: Top Branch (TP1)</strong><br>`;
+            s += `The top diode is <b>${d1Forward ? 'Forward' : 'REVERSE'}</b> biased. `;
+            s += d1Forward ? `It drops 0.7V. TP1 = ${v_in} - 0.7 = <b>${v_tp1}V</b>.<br><br>` : `It blocks current. TP1 = <b>0V</b>.<br><br>`;
+            
+            s += `<strong>Step 2: Bottom Branch (TP2)</strong><br>`;
+            s += `The bottom diode is <b>${d2Forward ? 'Forward' : 'REVERSE'}</b> biased. `;
+            s += d2Forward ? `It drops 0.7V. TP2 = ${v_in} - 0.7 = <b>${v_tp2}V</b>.<br><br>` : `It blocks current. TP2 = <b>0V</b>.<br><br>`;
+
+            s += `<strong>Step 3: Output Node (OUT)</strong><br>`;
+            if (d1Forward || d2Forward) {
+                s += `Since at least one path is open, current flows and the voltage at the junction is <b>${v_out}V</b>.`;
+            } else {
+                s += `Both paths are blocked! No current flows to the output, so OUT = <b>0V</b>.`;
+            }
+            solText.innerHTML = s;
         }
+
+        // Show the new input group (You will need to add this to your HTML!)
+        const pathInputGroup = document.getElementById('inputGroupGrade9SiliconPath');
+        if (pathInputGroup) pathInputGroup.style.display = 'flex'; // Use flex if your CSS needs it
     }
-}
+} 
 
     
 // ==========================================
@@ -6387,16 +6470,15 @@ function hideAllInputGroups() {
 
     // 2b. BULLETPROOF FORCED HIDE: Specifically targeting persistent Grade 9 groups
     const ghostGroups = [
-        'inputGroupColorVal', 
-        'inputGroupColorNames', 
-        'inputGroupZener', 
-        'inputGroupGrade9Zener', 
-        'inputGroupGrade9Power',
-        'inputGroupPowerRating', 
-        'inputGroupIPOSort',
-        'inputGroupGrade9Silicon',         // Added
-        'inputGroupGrade9SiliconReverse',  // Added
-        'inputGroupGrade9SiliconParallel'  // Added (Ready for Branch 3)
+    'inputGroupColorVal', 
+    'inputGroupColorNames', 
+    'inputGroupZener', 
+    'inputGroupGrade9Zener', 
+    'inputGroupGrade9Power',
+    'inputGroupPowerRating', 
+    'inputGroupIPOSort',
+    'inputGroupGrade9Silicon',         // For the OR-Gate Payload
+    'inputGroupGrade9SiliconPath'      // For the new Pathfinder Challenge
     ];
 
     ghostGroups.forEach(id => {
