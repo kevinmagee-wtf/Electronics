@@ -4781,6 +4781,9 @@ function generateGrade9SiliconProblem() {
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups(); 
     
     // Set the tracker if it doesn't exist yet
+    if (typeof scenarioTracker === 'undefined') {
+        window.scenarioTracker = {}; // Safety fallback
+    }
     if (typeof scenarioTracker.grade9silicon === 'undefined') {
         scenarioTracker.grade9silicon = 0;
     }
@@ -4806,7 +4809,27 @@ function generateGrade9SiliconProblem() {
     const hintDiv = document.getElementById('hintText');
     const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
+    // ==========================================
+    // UI REVEAL LOGIC (Fix for Blank Canvas/Inputs)
+    // ==========================================
+    
+    // 1. Bring the Question Text container back to life
+    if (qText) {
+        qText.style.display = 'block';
+    }
+
+    // 2. Unhide the specific Input Group based on our current tracker mode
+    if (currentMode === 'grade9silicon_orgate') {
+        const groupOrGate = document.getElementById('inputGroupGrade9Silicon');
+        if (groupOrGate) groupOrGate.style.display = 'flex';
+    } else if (currentMode === 'grade9silicon_reverse') {
+        const groupReverse = document.getElementById('inputGroupGrade9SiliconReverse');
+        if (groupReverse) groupReverse.style.display = 'flex';
+    }
+
+    // ==========================================
     // Setup Canvas
+    // ==========================================
     ctx.setTransform(1, 0, 0, 1, 0, 0); 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "black"; 
