@@ -179,16 +179,17 @@
         height: auto;      /* <-- Added this so it can stretch */
     }
     
-    .quiz-section { 
-        background-color: #fdf4f8; 
-        padding: 15px 20px; 
-        border-radius: 8px; 
-        border: 1px solid #f2c7db; 
-        display: flex; 
-        flex-direction: column; 
-        height: 100%; 
-        box-sizing: border-box;
-    }
+    /* Shrunk Dropdowns - UPDATED to be legible */
+    .quiz-section select {
+    height: 38px !important;       /* Standard height */
+    width: 160px !important;      /* Wide enough for "Select..." and the arrow */
+    margin-left: 8px !important;
+    background-color: white !important;
+    border: 2px solid #ccc !important;
+    border-radius: 6px !important;
+    font-size: 15px !important;
+    flex-shrink: 0 !important;
+}
     
     .quiz-header { 
         display: flex; 
