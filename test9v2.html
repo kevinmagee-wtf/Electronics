@@ -1217,6 +1217,7 @@
                     </div>   
             </div>
         </div>
+        
 <!-- Bottom Controls, Feedback, and Solutions -->
         <div style="flex: 0 0 auto; margin-top: 5px; padding-top: 5px; border-top: 1px solid #eee;">
             <div id="feedback" style="font-weight: bold; margin-bottom: 5px; text-align: center; min-height: 0px; font-size: 0.95em;"></div>
@@ -1224,7 +1225,7 @@
             <button id="checkansBtn" class="btn-check" onclick="checkAnswers()" style="width: 100%; margin-bottom: 10px; padding: 12px; font-size: 18px;">🎯 Check Answers</button>
             
             <div style="display: flex; gap: 8px; width: 100%;">
-                <button class="btn-new-question" onclick="handleGenerateClick()">❓ New Question</button>
+                <button class="btn-new-question" onclick="handleNewQuestionClick()">❓ New Question</button>
                 <button id="mainGrade9Btn" class="btn-grade9" style="display: none;" onclick="handleGrade9Click()">🚀 Grade 9</button>
             </div>
 
@@ -1506,6 +1507,33 @@ function handleGrade9Click() {
     // Safety check: Log to console so you can see the state
     console.log("Rocket launched. Transitioned from/to mode: " + currentMode);
 }
+//***********************************************************************************************
+
+function handleNewQuestionClick() {
+    // 1. THE UNIVERSAL ESCAPE HATCH
+    // This looks at currentMode and strips "grade9" out of it.
+    // e.g., 'grade9silicon_orgate' becomes 'silicon'
+    // e.g., 'grade9power' becomes 'power'
+    if (currentMode.includes('grade9')) {
+        currentMode = currentMode.replace('grade9', '');
+        
+        // If there's a sub-mode like '_orgate', strip that too
+        if (currentMode.includes('_')) {
+            currentMode = currentMode.split('_')[0];
+        }
+    }
+
+    // 2. Clear the screen and UI
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas ? canvas.getContext('2d') : null;
+
+    // 3. Hand over to the Hub to generate the BASIC version
+    if (typeof hubController === "function") {
+        hubController(ctx, canvas);
+    }
+}
+
+//***********************************************************************************************
 // ==================================================================================================================
 // FUNCTION 0: SMALL UTILITIES (HELPERS)   
 // ==================================================================================================================
@@ -1553,10 +1581,8 @@ const scenarioTracker = {
     power: 0
     // add any others you need here!
 };
-
-// ==========================================
+//**********************************************************************
 // GRADE 9 TRANSITION WARNING
-// ==========================================
 function transitionToGrade9(generatorFunction) {
     // If they have actually started doing problems, show the warning
     if (problemsAttempted > 0) {
@@ -1581,8 +1607,8 @@ function transitionToGrade9(generatorFunction) {
     }
 }
 
+//**************************************************************************
     // SAFE TAB SWITCHING (Warns before reset)
-// ==========================================
 function safeSwitchTab(tabName) {
     // If they have a score, warn them before switching tabs
     if (problemsAttempted > 0) {
@@ -1601,9 +1627,9 @@ function safeSwitchTab(tabName) {
     
     switchTab(tabName);
 }
-// ==========================================
+//*****************************************************************
+
 // SAFE HOME NAVIGATION
-// ==========================================
 function safeGoHome() {
     if (problemsAttempted > 0) {
         const wantsToProceed = confirm("Warning: Returning home will reset your current score to 0. Do you want to continue?");
@@ -1619,10 +1645,8 @@ function safeGoHome() {
     
     goHome();
 }
-
-// ==========================================
+//********************************************************************
 // SAFE MODULE SWITCHING
-// ==========================================
 function safeOpenModule(moduleName) {
     if (problemsAttempted > 0) {
         const wantsToProceed = confirm("Warning: Changing modules will reset your current score to 0. Do you want to continue?");
@@ -6341,26 +6365,27 @@ function hideAllInputGroups() {
     // 1. Reset all the grading locks
     isCurrentProblemSolved = false;
     hasCheckedCurrentProblem = false;
-    viewedSolution = false;
+    viewSolution = false; // Synchronized with your global variable name
     unitErrorMade = false;
     canEarnPoints = true; 
 
-    // 2. Hide every div that has the 'input-group' class
-    // This is the "General Sweep"
+    // 2. Hide every div that has the 'input-group' class (General Sweep)
     document.querySelectorAll('.input-group').forEach(el => {
         el.style.display = 'none';
     });
 
-    // 2b. BULLETPROOF FORCED HIDE: Specifically targeting persistent groups
-    // We use setProperty to override any stubborn CSS
+    // 2b. BULLETPROOF FORCED HIDE: Specifically targeting persistent Grade 9 groups
     const ghostGroups = [
         'inputGroupColorVal', 
         'inputGroupColorNames', 
         'inputGroupZener', 
         'inputGroupGrade9Zener', 
         'inputGroupGrade9Power',
-        'inputGroupPowerRating', // THE GHOST BULB DROPDOWN
-        'inputGroupIPOSort'
+        'inputGroupPowerRating', 
+        'inputGroupIPOSort',
+        'inputGroupGrade9Silicon',         // Added
+        'inputGroupGrade9SiliconReverse',  // Added
+        'inputGroupGrade9SiliconParallel'  // Added (Ready for Branch 3)
     ];
 
     ghostGroups.forEach(id => {
@@ -6392,18 +6417,18 @@ function hideAllInputGroups() {
     // 5. Clear all instruction prompts
     document.querySelectorAll('.instruction-text').forEach(p => p.innerHTML = "");
 
-    // 6. THE ULTIMATE WIPER
+    // 6. THE ULTIMATE WIPER (Text boxes)
     document.querySelectorAll('input').forEach(input => {
         if (input.type === 'text' || input.type === 'number') {
-            input.value = "";                     
+            input.value = "";                      
             input.style.borderColor = "#ccc";     
             input.style.borderWidth = "1px";      
             input.style.backgroundColor = "";     
-            input.placeholder = "";               
+            input.placeholder = "";                
         }
     });
 
-    // 7. DROPDOWN RESET (Crucial for the Bulb Dropdown)
+    // 7. DROPDOWN RESET
     document.querySelectorAll('select').forEach(select => {
         if (select.id !== 'teacherSelect') {
             select.selectedIndex = 0; 
@@ -6427,6 +6452,7 @@ function hideAllInputGroups() {
     if (checkansBtn) checkansBtn.style.display = 'block';
     if (showsolutionsBtn) showsolutionsBtn.style.display = 'block';
 }
+
 // Master Switch on Load
 window.onload = function() {
     hideAllInputGroups(); 
