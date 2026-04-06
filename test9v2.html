@@ -4708,7 +4708,7 @@ function generateSiliconProblem() {
         currentAnswers = { l1: l1_state, l2: l2_state, l3: l3_state };
     }
 
-    // ==========================================
+// ==========================================
     // SCENARIO 2: Series Staircase (Voltage Math)
     // ==========================================
     else if (scenario === 2) {
@@ -4723,21 +4723,21 @@ function generateSiliconProblem() {
         let v_tp1 = 11.3; // 12V - 0.7V
         let v_tp2 = d2Forward ? 10.6 : 0; // If reverse, it's 0V!
 
-        // Draw Line to D1
-        drawLine(ctx, 250, 40, 250, 70);
+        // Draw Line to D1 (Stops exactly at 85 - 12 = 73)
+        drawLine(ctx, 250, 40, 250, 73);
         drawDiode(ctx, 250, 85, "down", 12); // D1 is always forward
         
-        // Draw TP1
-        drawLine(ctx, 250, 100, 250, 140);
+        // Draw TP1 (Starts exactly at 85 + 12 = 97)
+        drawLine(ctx, 250, 97, 250, 140);
         if(typeof drawNode === 'function') drawNode(ctx, 250, 140);
         ctx.fillStyle = "black"; ctx.fillText("TP1", 270, 145);
         
-        // Draw Line to D2
-        drawLine(ctx, 250, 140, 250, 180);
+        // Draw Line to D2 (Stops exactly at 195 - 12 = 183)
+        drawLine(ctx, 250, 140, 250, 183);
         drawDiode(ctx, 250, 195, d2Forward ? "down" : "up", 12); // The Twist Diode
         
-        // Draw TP2
-        drawLine(ctx, 250, 210, 250, 250);
+        // Draw TP2 (Starts exactly at 195 + 12 = 207)
+        drawLine(ctx, 250, 207, 250, 250);
         if(typeof drawNode === 'function') drawNode(ctx, 250, 250);
         ctx.fillStyle = "black"; ctx.fillText("TP2", 270, 255);
 
