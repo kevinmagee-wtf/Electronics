@@ -6637,19 +6637,21 @@ function hideAllInputGroups() {
         el.style.display = 'none';
     });
 
-    // 2b. BULLETPROOF FORCED HIDE: Specifically targeting persistent Grade 9 groups
+    // 2b. BULLETPROOF FORCED HIDE: Specifically targeting persistent groups
     const ghostGroups = [
-    'inputGroupColorVal', 
-    'inputGroupColorNames', 
-    'inputGroupZener', 
-    'inputGroupGrade9Zener', 
-    'inputGroupGrade9Power',
-    'inputGroupPowerRating', 
-    'inputGroupIPOSort',
-    'inputGroupSilicon',               // Added to clear Standard Logic
-    'inputGroupSiliconVoltage',        // Added to clear Standard Math
-    'inputGroupGrade9Silicon',         // For the OR-Gate Payload
-    'inputGroupGrade9SiliconPath'      // For the new Pathfinder Challenge
+        'inputGroupColorVal', 
+        'inputGroupColorNames', 
+        'inputGroupZener', 
+        'inputGroupGrade9Zener', 
+        'inputGroupGrade9Power',
+        'inputGroupPowerRating', 
+        'inputGroupIPOSort',
+        'inputGroupSilicon',               // Standard Logic
+        'inputGroupSiliconVoltage',        // Standard Math
+        'inputGroupGrade9Silicon',         // Grade 9 OR-Gate
+        'inputGroupGrade9SiliconPath',     // Grade 9 Pathfinder
+        'oscilloscopeInputs',              // Oscilloscope wrapper
+        'inputGroupMonostable'             // Monostable wrapper
     ];
 
     ghostGroups.forEach(id => {
@@ -6666,10 +6668,11 @@ function hideAllInputGroups() {
     if (document.getElementById('canvasIPOWorkstation')) document.getElementById('canvasIPOWorkstation').style.display = 'none';
     if (document.getElementById('circuitContainer')) document.getElementById('circuitContainer').style.display = 'block';
 
-    // 3. Clear common UI elements
+    // 3. Clear common UI elements & Hints
     if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = "";
     if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'none';
     if (document.getElementById('solText')) document.getElementById('solText').innerHTML = "";
+    if (document.getElementById('hintText')) document.getElementById('hintText').innerHTML = ""; // Added to clear new hints!
 
     // 4. Hide and wipe Question Text
     const qText = document.getElementById('questionText');
