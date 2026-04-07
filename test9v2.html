@@ -4933,12 +4933,13 @@ function generateGrade9SiliconProblem() {
             groupOrGate.style.alignItems = 'flex-start'; 
         }
         
-        // --- ADD OR-GATE PLACEHOLDERS ---
-        // NOTE: Replace 'grade9OrVoltage' with your actual HTML ID!
-        let orVoltInput = document.getElementById('grade9OrVoltage');
+        let orVoltInput = document.getElementById('g9SilPayload');
         if (orVoltInput) {
-            orVoltInput.placeholder = "e.g. 14.3 V";
+            orVoltInput.value = "";
+            orVoltInput.placeholder = "e.g. 11.3 V";
         }
+        if (document.getElementById('g9SilD1')) document.getElementById('g9SilD1').value = "";
+        if (document.getElementById('g9SilD2')) document.getElementById('g9SilD2').value = "";
         
     } else {
         const pathInputGroup = document.getElementById('inputGroupGrade9SiliconPath');
@@ -4948,15 +4949,12 @@ function generateGrade9SiliconProblem() {
             pathInputGroup.style.alignItems = 'flex-start'; 
         }
         
-        // --- ADD PATHFINDER PLACEHOLDERS ---
-        // NOTE: Replace these IDs with your actual HTML IDs!
-        let pathTP1 = document.getElementById('grade9PathTP1');
-        let pathTP2 = document.getElementById('grade9PathTP2');
-        let pathVLoad = document.getElementById('grade9PathVLoad');
-
-        if (pathTP1) pathTP1.placeholder = "e.g. 11.3 V";
-        if (pathTP2) pathTP2.placeholder = "e.g. 0 V";
-        if (pathVLoad) pathVLoad.placeholder = "e.g. 11.3 V";
+        // --- ADD PATHFINDER CLEARING ---
+        const pathIds = ['g9SilPathID1', 'g9SilPathID2', 'g9SilPathVD1', 'g9SilPathVD2', 'g9SilPathVLoad'];
+        pathIds.forEach(id => {
+            let el = document.getElementById(id);
+            if (el) el.value = "";
+        });
     }
 
     // ==========================================
@@ -5121,27 +5119,72 @@ function generateGrade9SiliconProblem() {
         }
     } 
     // ==========================================
-    // BRANCH 2: THE PATHFINDER CHALLENGE
+    // BRANCH 2: THE PATHFINDER CHALLENGE (OPTION B)
     // ==========================================
     else {
         const vSupplyList = [6, 9, 12, 15, 24];
         let v_in = vSupplyList[Math.floor(Math.random() * vSupplyList.length)];
-        let d1Forward = Math.random() > 0.5;
-        let d2Forward = Math.random() > 0.5;
+        
+        // Option B Logic: Never Both Reverse
+        let bothForward = Math.random() < 0.5;
+        let d1Forward = true;
+        let d2Forward = true;
 
-        let v_tp1 = d1Forward ? +(v_in - 0.7).toFixed(1) : 0;
-        let v_tp2 = d2Forward ? +(v_in - 0.7).toFixed(1) : 0;
-        let v_out = Math.max(v_tp1, v_tp2);
+        if (!bothForward) {
+            if (Math.random() < 0.5) d1Forward = false;
+            else d2Forward = false;
+        }
 
-        currentAnswers = { tp1: v_tp1, tp2: v_tp2, out: v_out };
+        let i_load = Math.floor(Math.random() * 19 + 2) * 10; // 20mA to 200mA
+        let v_load = Number((v_in - 0.7).toFixed(1));
+
+        let i_d1 = 0, i_d2 = 0;
+        let v_d1 = 0, v_d2 = 0;
+        let logicHTML = "";
+
+        if (bothForward) {
+            i_d1 = i_load / 2;
+            i_d2 = i_load / 2;
+            v_d1 = 0.7;
+            v_d2 = 0.7;
+            
+            logicHTML += `<strong>Both diodes are Forward-Biased!</strong><br>`;
+            logicHTML += `They share the load current equally: ${i_load}mA / 2 = <strong>${i_d1}mA each</strong>.<br><br>`;
+            logicHTML += `Both are conducting, so both drop <strong>0.7V</strong>.<br>`;
+        } else {
+            if (d1Forward) {
+                i_d1 = i_load;
+                i_d2 = 0;
+                v_d1 = 0.7;
+                v_d2 = -0.7; 
+                
+                logicHTML += `<strong>D1 is Forward-Biased and D2 is Reverse-Biased.</strong><br>`;
+                logicHTML += `D1 takes the full load current (<strong>${i_load}mA</strong>), leaving D2 blocked (<strong>0mA</strong>).<br><br>`;
+            } else {
+                i_d1 = 0;
+                i_d2 = i_load;
+                v_d1 = -0.7; 
+                v_d2 = 0.7;
+                
+                logicHTML += `<strong>D2 is Forward-Biased and D1 is Reverse-Biased.</strong><br>`;
+                logicHTML += `D2 takes the full load current (<strong>${i_load}mA</strong>), leaving D1 blocked (<strong>0mA</strong>).<br><br>`;
+            }
+            logicHTML += `The conducting diode drops <strong>0.7V</strong>.<br>`;
+            logicHTML += `The reverse-biased diode blocks the circuit, seeing a drop of <strong>-0.7V</strong>.<br>`;
+        }
+        
+        logicHTML += `V<sub>Load</sub> = ${v_in}V - 0.7V = <strong>${v_load}V</strong>.`;
+
+        // Store answers mapped to the new HTML IDs
+        currentAnswers = { id1: i_d1, id2: i_d2, vd1: v_d1, vd2: v_d2, vload: v_load };
 
         if (qText) {
             qText.innerHTML = 
                 `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge: The Pathfinder</strong></div>` +
-                `Calculate the load voltage and the test point voltages.`; 
+                `Calculate the Branch Currents and Diode Voltages.`; 
         }
         if (hintDiv) {
-            hintDiv.innerHTML = "<strong>Hint:</strong> A reverse-biased diode acts like an open switch (0V passes). If both branches are open, the output is 0V.";
+            hintDiv.innerHTML = "<strong>Hint:</strong> Current will take the path of least resistance. If both open, they share it. Forward diodes drop 0.7V. Reverse diodes drop -0.7V.";
         }
 
         // Drawing Pathfinder
@@ -5152,7 +5195,7 @@ function generateGrade9SiliconProblem() {
         ctx.font = "bold 16px Arial"; ctx.fillText(" = " + v_in + "V", 248, 40);
         drawLine(ctx, 150, 60, 350, 60);
 
-        // Branch 1
+        // Branch 1 (D1)
         drawLine(ctx, 200, 60, 200, 100);
         ctx.beginPath();
         if (d1Forward) { ctx.moveTo(185, 100); ctx.lineTo(215, 100); ctx.lineTo(200, 130); } 
@@ -5160,10 +5203,9 @@ function generateGrade9SiliconProblem() {
         ctx.closePath(); ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
         drawLine(ctx, 185, d1Forward ? 130 : 100, 215, d1Forward ? 130 : 100);
         drawLine(ctx, 200, 100, 200, 220);
-        ctx.beginPath(); ctx.arc(200, 175, 4, 0, 2*Math.PI); ctx.fillStyle = "red"; ctx.fill(); ctx.stroke();
-        ctx.fillStyle = pink; ctx.textAlign = "right"; ctx.fillText("TP1", 185, 180);
+        ctx.fillStyle = pink; ctx.textAlign = "right"; ctx.fillText("D1", 175, 120);
 
-        // Branch 2
+        // Branch 2 (D2)
         drawLine(ctx, 300, 60, 300, 100);
         ctx.beginPath();
         if (d2Forward) { ctx.moveTo(285, 100); ctx.lineTo(315, 100); ctx.lineTo(300, 130); } 
@@ -5171,20 +5213,27 @@ function generateGrade9SiliconProblem() {
         ctx.closePath(); ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
         drawLine(ctx, 285, d2Forward ? 130 : 100, 315, d2Forward ? 130 : 100);
         drawLine(ctx, 300, 100, 300, 220);
-        ctx.beginPath(); ctx.arc(300, 175, 4, 0, 2*Math.PI); ctx.fillStyle = "red"; ctx.fill(); ctx.stroke();
-        ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("TP2", 315, 180);
+        ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("D2", 325, 120);
 
+        // Recombine
         drawLine(ctx, 200, 220, 300, 220);
         if(typeof drawNode === 'function') drawNode(ctx, 250, 220);
         drawLine(ctx, 250, 220, 250, 250);
 
+        // Draw I_Load Text
+        ctx.fillStyle = pink;
+        ctx.textAlign = "center";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(`I_Load = ${i_load}mA`, 250, 240);
+
         ctx.fillStyle = "#f8f9fa"; ctx.fillRect(215, 250, 70, 50); ctx.strokeRect(215, 250, 70, 50);
         ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("Load", 250, 280);
+        
         // Draw V_Load = ? with a canvas subscript
         ctx.fillStyle = pink; 
         ctx.textAlign = "left"; 
         ctx.font = "bold 16px Arial"; 
-        ctx.fillText("V", 135, 280);           // Normal V
+        ctx.fillText("V", 135, 280);            // Normal V
         ctx.font = "bold 12px Arial"; 
         ctx.fillText("Load", 147, 285);        // Smaller, shifted down and right
         ctx.font = "bold 16px Arial"; 
@@ -5195,7 +5244,7 @@ function generateGrade9SiliconProblem() {
         ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("0V (GND)", 250, 375);
 
         if (solText) {
-            solText.innerHTML = `<strong>TP1:</strong> ${d1Forward ? v_tp1 + 'V' : '0V'}<br><strong>TP2:</strong> ${d2Forward ? v_tp2 + 'V' : '0V'}<br><strong>V<sub>Load</sub>:</strong> ${v_out}V`;
+            solText.innerHTML = logicHTML;
         }
     }
 }
