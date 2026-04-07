@@ -5124,7 +5124,7 @@ function generateGrade9SiliconProblem() {
         if (qText) {
             qText.innerHTML = 
                 `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge: The Pathfinder</strong></div>` +
-                `Calculate the voltages at TP1, TP2, and across the load.`; 
+                `Calculate the load voltage and the test point voltages.`; 
         }
         if (hintDiv) {
             hintDiv.innerHTML = "<strong>Hint:</strong> A reverse-biased diode acts like an open switch (0V passes). If both branches are open, the output is 0V.";
@@ -5166,7 +5166,15 @@ function generateGrade9SiliconProblem() {
 
         ctx.fillStyle = "#f8f9fa"; ctx.fillRect(215, 250, 70, 50); ctx.strokeRect(215, 250, 70, 50);
         ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("Load", 250, 280);
-        ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("VLoad = ?", 135, 280);
+        // Draw V_Load = ? with a canvas subscript
+        ctx.fillStyle = pink; 
+        ctx.textAlign = "left"; 
+        ctx.font = "bold 16px Arial"; 
+        ctx.fillText("V", 135, 280);           // Normal V
+        ctx.font = "bold 12px Arial"; 
+        ctx.fillText("Load", 147, 285);        // Smaller, shifted down and right
+        ctx.font = "bold 16px Arial"; 
+        ctx.fillText(" = ?", 180, 280);        // Back to normal
 
         drawLine(ctx, 250, 300, 250, 340);
         drawLine(ctx, 230, 340, 270, 340); drawLine(ctx, 240, 345, 260, 345); drawLine(ctx, 245, 350, 255, 350);
