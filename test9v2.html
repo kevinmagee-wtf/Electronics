@@ -5972,9 +5972,21 @@ function checkAnswers() {
         
     } else if (currentMode === 'silicon') {
         if (document.getElementById('inputGroupSilicon').style.display !== 'none') {
-            results.push(document.getElementById('basicL1State').value === currentAnswers.l1State ? 'correct' : 'wrongval');
-            results.push(document.getElementById('basicL2State').value === currentAnswers.l2State ? 'correct' : 'wrongval');
-            results.push(document.getElementById('basicL3State').value === currentAnswers.l3State ? 'correct' : 'wrongval');
+            
+            // Helper function to translate ANY answer key format into a strict "ON" or "OFF"
+            const checkState = (elementId, answerKeyVal) => {
+                let userVal = document.getElementById(elementId).value.trim().toUpperCase();
+                
+                // If the generator saved true, 1, or "on", we treat it as "ON". Otherwise, "OFF".
+                let correctVal = (answerKeyVal === true || answerKeyVal === 1 || String(answerKeyVal).trim().toUpperCase() === 'ON') ? 'ON' : 'OFF';
+                
+                return userVal === correctVal ? 'correct' : 'wrongval';
+            };
+
+            // Grade the dropdowns
+            results.push(checkState('basicL1State', currentAnswers.l1State));
+            results.push(checkState('basicL2State', currentAnswers.l2State));
+            results.push(checkState('basicL3State', currentAnswers.l3State));
         }
         if (document.getElementById('inputGroupSiliconVoltage').style.display !== 'none') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('siliconTP1').value)), currentAnswers.tp1, 'V'));
