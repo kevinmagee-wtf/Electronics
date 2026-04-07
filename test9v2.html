@@ -5195,14 +5195,14 @@ function generateGrade9SiliconProblem() {
         ctx.font = "bold 16px Arial"; ctx.fillText(" = " + v_in + "V", 248, 40);
         drawLine(ctx, 150, 60, 350, 60);
 
-        // Branch 1 (D1)
+// Branch 1 (D1)
         drawLine(ctx, 200, 60, 200, 100);
         ctx.beginPath();
         if (d1Forward) { ctx.moveTo(185, 100); ctx.lineTo(215, 100); ctx.lineTo(200, 130); } 
         else { ctx.moveTo(185, 130); ctx.lineTo(215, 130); ctx.lineTo(200, 100); }
         ctx.closePath(); ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
         drawLine(ctx, 185, d1Forward ? 130 : 100, 215, d1Forward ? 130 : 100);
-        drawLine(ctx, 200, 100, 200, 210); // Moved up
+        drawLine(ctx, 200, 100, 200, 170); // Moved UP to 170
         ctx.fillStyle = pink; ctx.textAlign = "right"; ctx.fillText("D1", 175, 120);
 
         // Branch 2 (D2)
@@ -5212,30 +5212,43 @@ function generateGrade9SiliconProblem() {
         else { ctx.moveTo(285, 130); ctx.lineTo(315, 130); ctx.lineTo(300, 100); }
         ctx.closePath(); ctx.fillStyle = "white"; ctx.fill(); ctx.stroke();
         drawLine(ctx, 285, d2Forward ? 130 : 100, 315, d2Forward ? 130 : 100);
-        drawLine(ctx, 300, 100, 300, 210); // Moved up
+        drawLine(ctx, 300, 100, 300, 170); // Moved UP to 170
         ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("D2", 325, 120);
 
         // Recombine
-        drawLine(ctx, 200, 210, 300, 210); // Moved up
-        if(typeof drawNode === 'function') drawNode(ctx, 250, 210);
-        drawLine(ctx, 250, 210, 250, 260); // Wire to load
+        drawLine(ctx, 200, 170, 300, 170); // Recombination horizontal wire moved UP to 170
+        if(typeof drawNode === 'function') drawNode(ctx, 250, 170);
+        drawLine(ctx, 250, 170, 250, 260); // Longer vertical wire connecting to the load
 
         // --- DRAW CURRENT ARROW ---
         if (typeof drawArrowOnWire === 'function') {
             ctx.strokeStyle = "black";
-            drawArrowOnWire(ctx, 250, 210, 250, 240); 
+            // Centers the arrow ending roughly halfway down the new longer wire
+            drawArrowOnWire(ctx, 250, 170, 250, 215); 
         }
 
-        // --- DRAW I_LOAD TEXT (Black & placed to the left) ---
+        // --- DRAW I_Load TEXT (Black, placed left with canvas subscript) ---
         ctx.fillStyle = "black"; 
-        ctx.textAlign = "right";
-        ctx.font = "bold 14px Arial";
-        ctx.fillText(`I_Load = ${i_load}mA`, 240, 240);
+        ctx.textAlign = "left"; 
+        
+        // Base "I"
+        ctx.font = "bold 14px Arial"; 
+        ctx.fillText("I", 145, 220);            
+        
+        // Subscript "Load" (Smaller font, shifted right and slightly down)
+        ctx.font = "bold 11px Arial"; 
+        ctx.fillText("Load", 152, 225);        
+        
+        // The value string
+        ctx.font = "bold 14px Arial"; 
+        ctx.fillText(" = " + i_load + "mA", 182, 220);        
 
-        // Load Box (Moved down)
+        // Load Box (Stays where it is at Y=260)
         ctx.fillStyle = "#f8f9fa"; ctx.fillRect(215, 260, 70, 50); ctx.strokeRect(215, 260, 70, 50);
         ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("Load", 250, 290);
-        
+
+
+                                 
         // Draw V_Load = ? (Shifted Y coordinates down)
         ctx.fillStyle = pink; 
         ctx.textAlign = "left"; 
