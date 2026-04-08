@@ -4926,18 +4926,29 @@ function generateGrade9SiliconProblem() {
     const hintDiv = document.getElementById('hintText');
     const pink = (typeof brandPink !== 'undefined') ? brandPink : "#E64097";
 
-    // ==========================================
+// ==========================================
     // UI REVEAL LOGIC
     // ==========================================
     if (qText) qText.style.display = 'block';
 
+    // 1. Reveal the Master Container so the children are visible
+    const masterGroup = document.getElementById('inputGroupGrade9SiliconMaster');
+    if (masterGroup) {
+        masterGroup.style.display = 'flex';
+    }
+
+    // 2. Grab both sub-containers
+    const groupOrGate = document.getElementById('inputGroupGrade9Silicon');
+    const pathInputGroup = document.getElementById('inputGroupGrade9SiliconPath');
+
     if (isOrGate) {
-        const groupOrGate = document.getElementById('inputGroupGrade9Silicon');
+        // Show OR-Gate, Hide Pathfinder
         if (groupOrGate) {
             groupOrGate.style.display = 'flex';
             groupOrGate.style.flexDirection = 'column';
             groupOrGate.style.alignItems = 'flex-start'; 
         }
+        if (pathInputGroup) pathInputGroup.style.display = 'none';
         
         let orVoltInput = document.getElementById('g9SilPayload');
         if (orVoltInput) {
@@ -4948,12 +4959,13 @@ function generateGrade9SiliconProblem() {
         if (document.getElementById('g9SilD2')) document.getElementById('g9SilD2').value = "";
         
     } else {
-        const pathInputGroup = document.getElementById('inputGroupGrade9SiliconPath');
+        // Show Pathfinder, Hide OR-Gate
         if (pathInputGroup) {
             pathInputGroup.style.display = 'flex';
             pathInputGroup.style.flexDirection = 'column';
             pathInputGroup.style.alignItems = 'flex-start'; 
         }
+        if (groupOrGate) groupOrGate.style.display = 'none';
         
         // --- ADD PATHFINDER CLEARING ---
         const pathIds = ['g9SilPathID1', 'g9SilPathID2', 'g9SilPathVD1', 'g9SilPathVD2', 'g9SilPathVLoad'];
