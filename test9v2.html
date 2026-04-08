@@ -4801,24 +4801,31 @@ function generateSiliconProblem() {
             qText.style.display = 'block'; 
         }
 
-        // CORRECTED PHYSICS LOGIC!
-        const d2Forward = Math.random() < 0.5; // The Twist!
+        // CORRECTED PHYSICS LOGIC! Both diodes can flip now
+        const d1Forward = Math.random() < 0.5; // Top diode twist
+        const d2Forward = Math.random() < 0.5; // Bottom diode twist
         let v_tp1, v_tp2;
 
-        if (d2Forward) {
+        if (d1Forward && d2Forward) {
             // Current flows! Both diodes drop 0.7V
             v_tp1 = Number((supplyVoltage - 0.7).toFixed(1)); 
             v_tp2 = Number((v_tp1 - 0.7).toFixed(1)); 
+        } else if (!d1Forward) {
+            // Circuit is broken at the TOP diode. No current flows.
+            // TP1 and TP2 are completely isolated from the supply and pulled to ground.
+            v_tp1 = 0; 
+            v_tp2 = 0; 
         } else {
-            // Circuit is broken! No current flows. 
-            // The top diode cannot drop voltage without current.
+            // Top is forward, Bottom is reverse. 
+            // Circuit is broken at the bottom! No current flows. 
+            // Top diode cannot drop voltage without current.
             v_tp1 = supplyVoltage; 
             v_tp2 = 0; 
         }
 
         // Draw Line to D1 (Stops exactly at 85 - 12 = 73)
         drawLine(ctx, 250, 40, 250, 73);
-        drawDiode(ctx, 250, 85, "down", 12); // D1 is always forward
+        drawDiode(ctx, 250, 85, d1Forward ? "down" : "up", 12); // Now dynamically drawn
         
         // Draw TP1 (Starts exactly at 85 + 12 = 97)
         drawLine(ctx, 250, 97, 250, 140);
@@ -4835,7 +4842,7 @@ function generateSiliconProblem() {
         
         // Draw Line to D2 (Stops exactly at 195 - 12 = 183)
         drawLine(ctx, 250, 140, 250, 183);
-        drawDiode(ctx, 250, 195, d2Forward ? "down" : "up", 12); // The Twist Diode
+        drawDiode(ctx, 250, 195, d2Forward ? "down" : "up", 12); 
         
         // Draw TP2 (Starts exactly at 195 + 12 = 207)
         drawLine(ctx, 250, 207, 250, 250);
@@ -4857,15 +4864,18 @@ function generateSiliconProblem() {
         drawLine(ctx, 250, 330, 250, 360);
 
         // CORRECTED SOLUTION TEXT
-        if (d2Forward) {
-            logicHTML += `<strong>TP1:</strong> The circuit is complete, and the top diode is forward-biased. It consumes 0.7V of the supply voltage to operate.<br>`;
+        if (d1Forward && d2Forward) {
+            logicHTML += `<strong>TP1:</strong> The circuit is complete, and both diodes are forward-biased. The top diode consumes 0.7V of the supply voltage to operate.<br>`;
             logicHTML += `${supplyVoltage}V - 0.7V = <strong>${v_tp1.toFixed(1)}V at TP1</strong>.<br><br>`;
-            logicHTML += `<strong>TP2:</strong> The second diode is also forward-biased! It consumes another 0.7V.<br>`;
+            logicHTML += `<strong>TP2:</strong> The second diode is also forward-biased and consumes another 0.7V.<br>`;
             logicHTML += `${v_tp1.toFixed(1)}V - 0.7V = <strong>${v_tp2.toFixed(1)}V at TP2</strong>.`;
+        } else if (!d1Forward) {
+            logicHTML += `<strong>The Trick!</strong> The top diode is pointing backwards (Reverse-Biased) and acts as an open switch. Because the circuit is broken right at the start, <strong>no current flows</strong>.<br><br>`;
+            logicHTML += `<strong>TP1 & TP2:</strong> Since the top diode blocks the supply entirely, the rest of the circuit is pulled to ground through the load resistor. <strong>0V at TP1</strong> and <strong>0V at TP2</strong>.`;
         } else {
             logicHTML += `<strong>The Trick!</strong> The second diode is pointing backwards (Reverse-Biased) and acts as an open switch. Because the circuit is broken, <strong>no current flows</strong>.<br><br>`;
             logicHTML += `<strong>TP1:</strong> Because absolutely no current flows through the top diode, it cannot drop 0.7V! An ideal voltmeter placed here would read the full supply voltage: <strong>${v_tp1}V at TP1</strong>.<br><br>`;
-            logicHTML += `<strong>TP2:</strong> Since the circuit is blocked by the reverse-biased diode, no voltage reaches the load. <strong>0V at TP2</strong>.`;
+            logicHTML += `<strong>TP2:</strong> Since the circuit is blocked by the reverse-biased second diode, no voltage reaches the load. <strong>0V at TP2</strong>.`;
         }
 
         // Store answers to be checked later
