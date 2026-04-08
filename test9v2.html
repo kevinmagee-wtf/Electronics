@@ -1396,12 +1396,14 @@ let currentAnswers = {};
 //*****************************************************
 // --- 2. MAIN CONTROLLER --- 
 //*****************************************************
-function handleGenerateClick() {
+function handleNewQuestionClick() {
+    console.log("1. New Question Button Clicked. Starting Mode:", currentMode);
 
     // 1. RESET SCORING & UI FOR THE NEW PROBLEM ************
     canEarnPoints = true;      // Student can earn points again
     viewedSolution = false;    // Reset the peek flag
     
+    // ... the rest of the code stays exactly the same ...
     // Hide the solution box
     const sol = document.getElementById('solutions');
     if (sol) sol.style.display = 'none';
