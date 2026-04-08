@@ -1501,9 +1501,9 @@ function handleGenerateClick() {
 // *********************************************************************
     
 function handleGrade9Click() {
-    // 1. We keep the hide logic commented out so the button stays visible 
-    // const rocket = document.getElementById('mainGrade9Btn');
-    // if (rocket) rocket.style.display = 'none';
+    // 1. Run the standard hide logic first to clean the slate
+    // This wipes old points, colors, and standard inputs
+    hideAllInputGroups();
 
     // 2. Routing Logic
     if (currentMode === 'divider' || currentMode === 'potentialDivider' || currentMode === 'grade9divider') {
@@ -1518,7 +1518,7 @@ function handleGrade9Click() {
     else if (currentMode === 'power' || currentMode === 'grade9power') {
         generateGrade9PowerProblem(); 
     }
-    // 👇 UPGRADED SILICON ROUTING: Includes Master Container Visibility 👇
+    // 👇 RE-VERIFIED SILICON ROUTING 👇
     else if (
         currentMode === 'silicon' || 
         currentMode === 'grade9silicon' || 
@@ -1527,15 +1527,21 @@ function handleGrade9Click() {
         currentMode === 'grade9silicon_parallel' ||
         currentMode === 'grade9silicon_pathfinder'
     ) { 
-        currentMode = 'grade9silicon';
+        currentMode = 'grade9silicon'; 
 
-        // FIX: Ensure the master container and the pathfinder group are set to display
+        // 3. THE OVERRIDE: 
+        // We use setProperty with "important" to beat the hideAllInputGroups rule
         const g9Master = document.getElementById('inputGroupGrade9SiliconMaster');
         const g9Path = document.getElementById('inputGroupGrade9SiliconPath');
         
-        if (g9Master) g9Master.style.display = 'flex';
-        if (g9Path) g9Path.style.display = 'flex';
+        if (g9Master) {
+            g9Master.style.setProperty("display", "flex", "important");
+        }
+        if (g9Path) {
+            g9Path.style.setProperty("display", "flex", "important");
+        }
 
+        // 4. Trigger the circuit drawing/logic
         const canvas = document.getElementById('circuitCanvas');
         const ctx = canvas ? canvas.getContext('2d') : null;
         
@@ -1549,7 +1555,12 @@ function handleGrade9Click() {
         console.warn("Rocket clicked, but currentMode was not recognized: " + currentMode);
     }
     
-    console.log("Rocket launched. Transitioned from/to mode: " + currentMode);
+    // Final Safety: Ensure the rocket button itself stays visible 
+    // (since hideAllInputGroups hides it)
+    const rocket = document.getElementById('mainGrade9Btn');
+    if (rocket) rocket.style.display = 'block';
+
+    console.log("Rocket launched. Transitioned to: " + currentMode);
 }
 //***********************************************************************************************
 
