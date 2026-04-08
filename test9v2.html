@@ -6153,6 +6153,15 @@ function parseInput(str, dropdownUnit = null) {
 
 //*****************************************************************************************
 function validateMatch(parsedInput, expectedVal, expectedUnit) {
+    // 1. HANDLE DROPDOWNS / STATE-BASED ANSWERS FIRST
+    // If expectedUnit is null or "state", we are doing a direct string comparison (ON/OFF)
+    if (expectedUnit === 'state' || expectedUnit === null) {
+        // If it's a dropdown, parsedInput might just be a string or a simple object
+        let userString = typeof parsedInput === 'string' ? parsedInput : (parsedInput.val || "");
+        return userString.toString().toUpperCase() === expectedVal.toString().toUpperCase() ? 'correct' : 'wrongval';
+    }
+
+    // 2. BASELINE VALIDATION FOR NUMERIC INPUTS
     if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
     
     let userVal = parsedInput.val;
@@ -6163,100 +6172,75 @@ function validateMatch(parsedInput, expectedVal, expectedUnit) {
     let userTol = parsedInput.tol !== undefined ? parsedInput.tol : 0;
     let userDp = parsedInput.dp !== undefined ? parsedInput.dp : 0;
 
+    // 3. SPECIAL CASE: RATIO
     if (targetUnit === 'ratio') {
         return Math.abs(userVal - expectedVal) < 0.01 ? 'correct' : 'wrongval';
     }
     
-    // AUTO-CONVERT UNITS (Now scaling the userTol as well!)
-    if (targetUnit === 'mA' && userUnit === 'A') {
-        userVal *= 1000; userTol *= 1000; userUnit = 'mA';
-    } else if (targetUnit === 'A' && userUnit === 'mA') {
-        userVal /= 1000; userTol /= 1000; userUnit = 'A';
-    } else if (targetUnit === 'mW' && userUnit === 'W') {
-        userVal *= 1000; userTol *= 1000; userUnit = 'mW';
-    } else if (targetUnit === 'W' && userUnit === 'mW') {
-        userVal /= 1000; userTol /= 1000; userUnit = 'W';
-    } else if (targetUnit === 'mV' && userUnit === 'V') {
-        userVal *= 1000; userTol *= 1000; userUnit = 'mV';
-    } else if (targetUnit === 'V' && userUnit === 'mV') {
-        userVal /= 1000; userTol /= 1000; userUnit = 'V';
-    } else if (targetUnit === 'kΩ' && userUnit === 'Ω') {
-        userVal /= 1000; userTol /= 1000; userUnit = 'kΩ';
-    } else if (targetUnit === 'Ω' && userUnit === 'kΩ') {
-        userVal *= 1000; userTol *= 1000; userUnit = 'Ω';
-    // NEW: Auto-convert Farads, milliFarads, and microFarads
-    } else if (targetUnit === 'μF' && userUnit === 'F') {
-        userVal *= 1000000; userTol *= 1000000; userUnit = 'μF';
-    } else if (targetUnit === 'F' && userUnit === 'μF') {
-        userVal /= 1000000; userTol /= 1000000; userUnit = 'F';
-    } else if (targetUnit === 'mF' && userUnit === 'F') {
-        userVal *= 1000; userTol *= 1000; userUnit = 'mF';
-    } else if (targetUnit === 'F' && userUnit === 'mF') {
-        userVal /= 1000; userTol /= 1000; userUnit = 'F';
-    } else if (targetUnit === 'μF' && userUnit === 'mF') {
-        userVal *= 1000; userTol *= 1000; userUnit = 'μF';
-    } else if (targetUnit === 'mF' && userUnit === 'μF') {
-        userVal /= 1000; userTol /= 1000; userUnit = 'mF';
-    // NEW: Auto-convert nanoFarads and picoFarads added here!
-    } else if (targetUnit === 'μF' && userUnit === 'nF') {
-        userVal /= 1000; userTol /= 1000; userUnit = 'μF';
-    } else if (targetUnit === 'nF' && userUnit === 'μF') {
-        userVal *= 1000; userTol *= 1000; userUnit = 'nF';
-    } else if (targetUnit === 'μF' && userUnit === 'pF') {
-        userVal /= 1000000; userTol /= 1000000; userUnit = 'μF';
-    } else if (targetUnit === 'pF' && userUnit === 'μF') {
-        userVal *= 1000000; userTol *= 1000000; userUnit = 'pF';
-    } else if (targetUnit === 'nF' && userUnit === 'pF') {
-        userVal /= 1000; userTol /= 1000; userUnit = 'nF';
-    } else if (targetUnit === 'pF' && userUnit === 'nF') {
-        userVal *= 1000; userTol *= 1000; userUnit = 'pF';
+    // 4. AUTO-CONVERT UNITS (Scaling userVal and userTol)
+    const conversions = [
+        { t: 'mA', u: 'A', factor: 1000 }, { t: 'A', u: 'mA', factor: 0.001 },
+        { t: 'mW', u: 'W', factor: 1000 }, { t: 'W', u: 'mW', factor: 0.001 },
+        { t: 'mV', u: 'V', factor: 1000 }, { t: 'V', u: 'mV', factor: 0.001 },
+        { t: 'kΩ', u: 'Ω', factor: 0.001 }, { t: 'Ω', u: 'kΩ', factor: 1000 },
+        { t: 'μF', u: 'F', factor: 1000000 }, { t: 'F', u: 'μF', factor: 0.000001 },
+        { t: 'mF', u: 'F', factor: 1000 }, { t: 'F', u: 'mF', factor: 0.001 },
+        { t: 'μF', u: 'mF', factor: 1000 }, { t: 'mF', u: 'μF', factor: 0.001 },
+        { t: 'μF', u: 'nF', factor: 0.001 }, { t: 'nF', u: 'μF', factor: 1000 },
+        { t: 'μF', u: 'pF', factor: 0.000001 }, { t: 'pF', u: 'μF', factor: 1000000 },
+        { t: 'nF', u: 'pF', factor: 0.001 }, { t: 'pF', u: 'nF', factor: 1000 }
+    ];
+
+    for (let conv of conversions) {
+        if (targetUnit === conv.t && userUnit === conv.u) {
+            userVal *= conv.factor;
+            userTol *= conv.factor;
+            userUnit = conv.t;
+            break;
+        }
     }
 
+    // 5. MATH COMPARISON
     const diff = Math.abs(userVal - expectedVal);
     
-    // REQUIREMENT 1: Must be mathematically correctly rounded! (Fails truncators)
+    // REQUIREMENT 1: Correctly rounded (within tolerance)
     const correctlyRounded = diff <= (userTol + 0.000001); 
     
-    // REQUIREMENT 2: Must not be over-rounded (e.g., typing '2' for '1.66')
-    const reasonablePrecision = diff < (Math.abs(expectedVal) * 0.025);
+    // REQUIREMENT 2: Must not be over-rounded
+    const reasonablePrecision = diff < (Math.abs(expectedVal) * 0.025) || expectedVal === 0;
     
     let valMatch = correctlyRounded && reasonablePrecision;
     
-    // --- NEW: THE SYSTEM ROUNDING FALLBACK ---
-    // If the system generated a pre-rounded answer (like 13.3) 
-    // and the user typed exact math (13.333333), the strict check fails.
-    // This safely rounds the user's answer down to the system's decimal level to see if they match!
+    // FALLBACK: System rounding match (e.g. 13.333 vs 13.3)
     if (!valMatch) {
         let expectedStr = expectedVal.toString();
         let expectedDp = expectedStr.includes('.') ? expectedStr.split('.')[1].length : 0;
 
-        // If user provided MORE decimals than the system's answer key...
         if (userDp > expectedDp) {
-            // ...round the user's answer to match the system's decimal places
             let userRoundedToSystem = Number(userVal.toFixed(expectedDp));
-            // If it perfectly matches the system's answer key now, they are right!
             if (Math.abs(userRoundedToSystem - expectedVal) < 0.000001) {
                 valMatch = true;
             }
         }
     }
-    // -----------------------------------------
     
+    // 6. UNIT MATCHING
     let unitMatch = (userUnit === targetUnit);
-    if ((targetUnit === "Ω" || targetUnit === "V" || targetUnit === "A" || targetUnit === "W") && userUnit === "") {
+    // Allow blank units for standard base units
+    if (["Ω", "V", "A", "W"].includes(targetUnit) && userUnit === "") {
         unitMatch = true;
     }
 
+    // 7. FINAL RETURN
     if (valMatch && unitMatch) {
-        // If they wrote more than 3 decimal places, trigger the soft warning
-        if (userDp > 3) return 'manydecimals'; 
-        return 'correct';
+        return (userDp > 3) ? 'manydecimals' : 'correct';
     }
     
     if (valMatch && !unitMatch) return 'wrongunit';
     
     return 'wrongval';
 }
+    
 // **********************************************************************       
 function updateScoreboard() {
     const scoreDisplay = document.getElementById('scoreDisplay');
