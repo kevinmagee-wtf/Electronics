@@ -6149,9 +6149,7 @@ function parseInput(str, dropdownUnit = null) {
 //*****************************************************************************************
 function validateMatch(parsedInput, expectedVal, expectedUnit) {
     // 1. HANDLE DROPDOWNS / STATE-BASED ANSWERS FIRST
-    // If expectedUnit is null or "state", we are doing a direct string comparison (ON/OFF)
     if (expectedUnit === 'state' || expectedUnit === null) {
-        // If it's a dropdown, parsedInput might just be a string or a simple object
         let userString = typeof parsedInput === 'string' ? parsedInput : (parsedInput.val || "");
         return userString.toString().toUpperCase() === expectedVal.toString().toUpperCase() ? 'correct' : 'wrongval';
     }
@@ -6160,7 +6158,7 @@ function validateMatch(parsedInput, expectedVal, expectedUnit) {
     if (!parsedInput || isNaN(parsedInput.val)) return 'wrongval';
     
     let userVal = parsedInput.val;
-    let userUnit = (parsedInput.unit || "").trim();
+    let userUnit = (parsedInput.unit || "").trim(); // Kept .trim() for safety against accidental spaces
     let targetUnit = (expectedUnit || "").trim(); 
     
     // Pull the calculated tolerance and decimals from the parser
@@ -6172,7 +6170,7 @@ function validateMatch(parsedInput, expectedVal, expectedUnit) {
         return Math.abs(userVal - expectedVal) < 0.01 ? 'correct' : 'wrongval';
     }
     
-    // 4. AUTO-CONVERT UNITS (Scaling userVal and userTol)
+    // 4. AUTO-CONVERT UNITS (Scaling userVal and userTol) - Kept your FULL list!
     const conversions = [
         { t: 'mA', u: 'A', factor: 1000 }, { t: 'A', u: 'mA', factor: 0.001 },
         { t: 'mW', u: 'W', factor: 1000 }, { t: 'W', u: 'mW', factor: 0.001 },
@@ -6219,10 +6217,11 @@ function validateMatch(parsedInput, expectedVal, expectedUnit) {
         }
     }
     
-    // 6. UNIT MATCHING
+    // 6. STRICT UNIT MATCHING (This is the ONLY part that changed)
     let unitMatch = (userUnit === targetUnit);
-    // Allow blank units for standard base units
-    if (["Ω", "V", "A", "W"].includes(targetUnit) && userUnit === "") {
+    
+    // Allow blank units ONLY for the Ohms symbol
+    if (targetUnit === "Ω" && userUnit === "") {
         unitMatch = true;
     }
 
