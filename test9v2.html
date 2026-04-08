@@ -6025,14 +6025,9 @@ function checkAnswers() {
             el.style.borderWidth = "2px";
             el.style.borderStyle = "solid";
 
-            // If the input is a dropdown, apply a background tint to force the browser to show the styling
-            if (el.tagName.toUpperCase() === 'SELECT') {
-                el.style.backgroundColor = bgColor;
-                el.style.color = textColor;
-            } else {
-                // For regular text boxes, just color the typed text to match the border
-                el.style.color = mainColor;
-            }
+           // Apply text color, but force the background to stay white
+            el.style.setProperty('color', mainColor, 'important');
+            el.style.setProperty('background-color', 'white', 'important');
         }
     });
 
