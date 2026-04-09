@@ -2043,6 +2043,22 @@ function drawDiode(ctx, x, y, direction = "down", size = 18) {
     }
     ctx.stroke();
 }
+
+// GLOBAL CANVAS SUBSCRIPT HELPER
+// Automatically measures text width so suffixes never overlap the subscript!
+function drawCanvasSubscript(ctx, mainStr, subStr, suffixStr, x, y, size, color) {
+    ctx.fillStyle = color;
+    ctx.font = "bold " + size + "px Arial";
+    ctx.fillText(mainStr, x, y);
+    let w1 = ctx.measureText(mainStr).width;
+    
+    ctx.font = "bold " + (size * 0.75) + "px Arial";
+    ctx.fillText(subStr, x + w1, y + (size * 0.25)); // Drop the subscript down slightly
+    let w2 = ctx.measureText(subStr).width;
+    
+    ctx.font = "bold " + size + "px Arial";
+    ctx.fillText(suffixStr, x + w1 + w2, y); // Perfectly placed suffix
+}
   
 // =========================================================================================================      
 // FUNCTION 2. PROBLEM GENERATORS (THE CONTENT CREATORS) 
@@ -4650,7 +4666,7 @@ function generateSiliconProblem() {
     const loadR = Math.floor(Math.random() * 40) + 10; 
     
     // Select a random component for the math scenarios and update the cycle
-    const loadTypes = ['variable', 'motor', 'bulb']; // image_3.png uses variable resistor
+    const loadTypes = ['variable', 'motor', 'bulb']; 
     const compTypeLetter = ['R', 'M', 'B'];
     const compName = ['Resistor', 'Motor', 'Bulb'];
     
@@ -4727,7 +4743,7 @@ function generateSiliconProblem() {
     let logicHTML = "<strong>Step-by-Step Logic:</strong><br><br>";
 
     // ==========================================
-    // SCENARIO 0: Parallel Bypass (Existing Logic Question)
+    // SCENARIO 0: Parallel Bypass
     // ==========================================
     if (scenario === 0) {
         if (qText) {
@@ -4772,7 +4788,7 @@ function generateSiliconProblem() {
     }
 
     // ==========================================
-    // SCENARIO 1: Single Forward Diode + Load (New Math Question)
+    // SCENARIO 1: Single Forward Diode + Load
     // ==========================================
     else if (scenario === 1) {
         if (qText) {
@@ -4785,31 +4801,34 @@ function generateSiliconProblem() {
         // Larger Filled Diode Symbol (direction: down)
         drawDiode(ctx, 250, 100, "down", 18); 
         
-        // Draw Continuous Wire to Component
-        drawLine(ctx, 250, 115, 250, 180);
+        // Draw Continuous Wire stretching safely down to the component bounds
+        drawLine(ctx, 250, 115, 250, 205);
         
-        // Draw Pink Schematic Labels for V and I
-        drawLabel(ctx, `V${compType} = ?`, 180, 220, 16, pink);
+        // Global Canvas Subscript tool handles V label, moved far left to avoid wire
+        drawCanvasSubscript(ctx, "V", compType, " = ?", 140, 230, 16, pink);
         
-        // Use Smart Label Helper for Subscript R/M/B
+        // Pink downwards arrow moved slightly up
         if (typeof drawArrowOnWire === 'function') {
             ctx.strokeStyle = pink;
-            drawArrowOnWire(ctx, 250, 130, 250, 170); // Add pink downwards arrow over the wire
+            drawArrowOnWire(ctx, 250, 125, 250, 165); 
         }
-        drawLabel(ctx, `I${compType} = ?`, 290, 150, 16, pink);
+        
+        // Global Canvas Subscript tool handles I label, visually centered next to the arrow
+        drawCanvasSubscript(ctx, "I", compType, " = ?", 280, 150, 16, pink);
         
         // Draw Load Component (Motor, Bulb, Variable Resistor)
         if (loadType === 'variable') drawComponent(ctx, 'variable', 250, 225);
         else if (loadType === 'bulb') drawFilamentBulb(ctx, 250, 225);
         else drawMotor(ctx, 250, 225);
         
-        // Draw Labels & Ground Wire
-        drawLabel(ctx, "R = " + loadR + " Ω", 290, 230, 16, "black"); // Resistance value in black
+        // Clean Ohm Label (no "R ="), shifted right
+        drawLabel(ctx, loadR + " Ω", 300, 230, 16, "black"); 
+        
+        // Ground wire
         drawLine(ctx, 250, 250, 250, 360);
 
         // Math Calculations for Forward Bias
         let v_load = Number((supplyVoltage - 0.7).toFixed(1)); 
-        // Grading handles mA/A, placeholder shows A
         let current = Number((v_load / loadR).toFixed(2));
 
         logicHTML += `<strong>Step 1: Calculate Component Voltage (V<sub>${compType}</sub>)</strong><br>`;
@@ -4819,13 +4838,11 @@ function generateSiliconProblem() {
         logicHTML += `Apply Ohm's law (I = V / R) using the remaining voltage across the component.<br>`;
         logicHTML += `I = ${v_load.toFixed(1)}V ÷ ${loadR}Ω = <strong>${current.toFixed(2)}A</strong>.`;
         
-
-        // Answers for grading
-            currentAnswers = { tp1: v_load, tp2: current };
-        }
+        currentAnswers = { tp1: v_load, tp2: current };
+    }
 
     // ==========================================
-    // SCENARIO 2: Master Gate (Existing Logic Question)
+    // SCENARIO 2: Master Gate 
     // ==========================================
     else if (scenario === 2) {
         if (qText) {
@@ -4889,7 +4906,7 @@ function generateSiliconProblem() {
     }
 
     // ==========================================
-    // SCENARIO 3: Single Reverse Diode + Load (New Math Question - this image)
+    // SCENARIO 3: Single Reverse Diode + Load
     // ==========================================
     else if (scenario === 3) {
         if (qText) {
@@ -4902,26 +4919,30 @@ function generateSiliconProblem() {
         // Larger Filled Diode Symbol (direction: up)
         drawDiode(ctx, 250, 100, "up", 18); // Reverse Biased!
         
-        // Draw Continuous Wire to Component
-        drawLine(ctx, 250, 115, 250, 180);
+        // Draw Continuous Wire stretching safely down to the component bounds
+        drawLine(ctx, 250, 115, 250, 205);
         
-        // Draw Pink Schematic Labels for V and I
-        drawLabel(ctx, `V${compType} = ?`, 180, 220, 16, pink);
+        // Global Canvas Subscript tool handles V label, moved far left to avoid wire
+        drawCanvasSubscript(ctx, "V", compType, " = ?", 140, 230, 16, pink);
         
-        // Add pink downwards arrow over the wire, beside it label. Use Smart Label Helper for Subscript R/M/B
+        // Pink downwards arrow moved slightly up
         if (typeof drawArrowOnWire === 'function') {
             ctx.strokeStyle = pink;
-            drawArrowOnWire(ctx, 250, 130, 250, 170); // Add pink downwards arrow over the wire
+            drawArrowOnWire(ctx, 250, 125, 250, 165); 
         }
-        drawLabel(ctx, `I${compType} = ?`, 290, 150, 16, pink);
+        
+        // Global Canvas Subscript tool handles I label, visually centered next to the arrow
+        drawCanvasSubscript(ctx, "I", compType, " = ?", 280, 150, 16, pink);
         
         // Draw Load Component (Motor, Bulb, Variable Resistor)
         if (loadType === 'variable') drawComponent(ctx, 'variable', 250, 225);
         else if (loadType === 'bulb') drawFilamentBulb(ctx, 250, 225);
         else drawMotor(ctx, 250, 225);
         
-        // Draw Labels & Ground Wire
-        drawLabel(ctx, "R = " + loadR + " Ω", 290, 230, 16, "black"); // Resistance value in black
+        // Clean Ohm Label (no "R ="), shifted right
+        drawLabel(ctx, loadR + " Ω", 300, 230, 16, "black"); 
+        
+        // Ground wire
         drawLine(ctx, 250, 250, 250, 360);
 
         // Math Calculations for Reverse Bias (It's blocked!)
@@ -4932,7 +4953,6 @@ function generateSiliconProblem() {
         logicHTML += `It is <strong>Reverse-Biased</strong> and acts as an open switch. Because the circuit is broken, no current can flow to the component.<br><br>`;
         logicHTML += `Therefore, the voltage across the component is <strong>0V</strong> and the current is <strong>0A</strong>.`;
         
-        // Answers for grading
         currentAnswers = { tp1: v_load, tp2: current };
     }
 
