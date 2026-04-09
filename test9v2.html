@@ -4787,8 +4787,8 @@ function generateSiliconProblem() {
         currentAnswers = { l1: l1_state, l2: l2_state, l3: l3_state };
     }
 
-    // ==========================================
-    // SCENARIO 1: Single Forward Diode + Load
+// ==========================================
+    // SCENARIO 1: Single Forward Diode + Load (2nd Scenario)
     // ==========================================
     else if (scenario === 1) {
         if (qText) {
@@ -4804,8 +4804,8 @@ function generateSiliconProblem() {
         // Draw Continuous Wire stretching safely down to the component bounds
         drawLine(ctx, 250, 115, 250, 205);
         
-        // Global Canvas Subscript tool handles V label, moved far left to avoid wire
-        drawCanvasSubscript(ctx, "V", compType, " = ?", 140, 230, 16, pink);
+        // Global Canvas Subscript tool handles V label, shifted slightly to the right (was 140, now 165)
+        drawCanvasSubscript(ctx, "V", compType, " = ?", 165, 230, 16, pink);
         
         // Pink downwards arrow moved slightly up
         if (typeof drawArrowOnWire === 'function') {
@@ -4813,9 +4813,13 @@ function generateSiliconProblem() {
             drawArrowOnWire(ctx, 250, 125, 250, 165); 
         }
         
-        // Global Canvas Subscript tool handles I label, visually centered next to the arrow
-        drawCanvasSubscript(ctx, "I", compType, " = ?", 280, 150, 16, pink);
+        // Global Canvas Subscript tool handles I label, moved down to sit next to the arrow (was 150, now 160)
+        drawCanvasSubscript(ctx, "I", compType, " = ?", 280, 160, 16, pink);
         
+        // FIX: Reset stroke to black before drawing the component so the resistor box isn't pink!
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "black";
+
         // Draw Load Component (Motor, Bulb, Variable Resistor)
         if (loadType === 'variable') drawComponent(ctx, 'variable', 250, 225);
         else if (loadType === 'bulb') drawFilamentBulb(ctx, 250, 225);
@@ -4905,8 +4909,8 @@ function generateSiliconProblem() {
         currentAnswers = { l1: l1_state, l2: l2_state, l3: l3_state };
     }
 
-    // ==========================================
-    // SCENARIO 3: Single Reverse Diode + Load
+// ==========================================
+    // SCENARIO 3: Single Reverse Diode + Load (4th Scenario)
     // ==========================================
     else if (scenario === 3) {
         if (qText) {
@@ -4922,8 +4926,8 @@ function generateSiliconProblem() {
         // Draw Continuous Wire stretching safely down to the component bounds
         drawLine(ctx, 250, 115, 250, 205);
         
-        // Global Canvas Subscript tool handles V label, moved far left to avoid wire
-        drawCanvasSubscript(ctx, "V", compType, " = ?", 140, 230, 16, pink);
+        // Global Canvas Subscript tool handles V label, shifted slightly to the right (was 140, now 165)
+        drawCanvasSubscript(ctx, "V", compType, " = ?", 165, 230, 16, pink);
         
         // Pink downwards arrow moved slightly up
         if (typeof drawArrowOnWire === 'function') {
@@ -4931,9 +4935,13 @@ function generateSiliconProblem() {
             drawArrowOnWire(ctx, 250, 125, 250, 165); 
         }
         
-        // Global Canvas Subscript tool handles I label, visually centered next to the arrow
-        drawCanvasSubscript(ctx, "I", compType, " = ?", 280, 150, 16, pink);
+        // Global Canvas Subscript tool handles I label, moved down to sit next to the arrow (was 150, now 160)
+        drawCanvasSubscript(ctx, "I", compType, " = ?", 280, 160, 16, pink);
         
+        // FIX: Reset stroke to black before drawing the component so the resistor box isn't pink!
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "black";
+
         // Draw Load Component (Motor, Bulb, Variable Resistor)
         if (loadType === 'variable') drawComponent(ctx, 'variable', 250, 225);
         else if (loadType === 'bulb') drawFilamentBulb(ctx, 250, 225);
