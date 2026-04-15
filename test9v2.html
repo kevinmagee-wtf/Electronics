@@ -1463,13 +1463,7 @@ function handleNewQuestionClick() {
     } else if (currentMode === 'grade9power') {
         currentMode = 'power';
         escapedGrade9 = true;
-    } else if (
-        currentMode === 'grade9silicon' || 
-        currentMode === 'grade9silicon_orgate' || 
-        currentMode === 'grade9silicon_reverse' || 
-        currentMode === 'grade9silicon_parallel' ||
-        currentMode === 'grade9silicon_pathfinder' // <- Catches the new mode!
-    ) {  
+    } else if (currentMode === 'grade9silicon') {  
         currentMode = 'silicon';
         escapedGrade9 = true;
     }
@@ -1533,16 +1527,10 @@ function handleGrade9Click() {
     else if (currentMode === 'power' || currentMode === 'grade9power') {
         generateGrade9PowerProblem(); 
     }
-    // 👇 RESTORED EXACT SILICON ROUTING 👇
-    else if (
-        currentMode === 'silicon' || 
-        currentMode === 'grade9silicon' || 
-        currentMode === 'grade9silicon_orgate' || 
-        currentMode === 'grade9silicon_reverse' || 
-        currentMode === 'grade9silicon_parallel' ||
-        currentMode === 'grade9silicon_pathfinder'
-    ) { 
-        currentMode = 'grade9silicon'; 
+    // 👇 UNIFIED SILICON ROUTING 👇
+    else if (currentMode === 'silicon' || currentMode === 'grade9silicon') { 
+        currentMode = 'grade9silicon';
+        
 
         // 3. THE OVERRIDE: Set BEFORE generator runs
         const g9Master = document.getElementById('inputGroupGrade9SiliconMaster');
@@ -5790,8 +5778,8 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateSiliconProblem is not defined!");
         }
         
-    // *** UPDATED LINE HERE: Added 'grade9silicon_pathfinder' ***
-    } else if (currentMode === 'grade9silicon' || currentMode === 'grade9silicon_orgate' || currentMode === 'grade9silicon_pathfinder' || currentMode === 'grade9silicon_reverse' || currentMode === 'grade9silicon_parallel') {
+        } else if (currentMode === 'grade9silicon') {
+        
         // 1. Keep rocket VISIBLE so they can cycle through the Grade 9 problems
         if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         
