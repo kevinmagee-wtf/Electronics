@@ -4992,8 +4992,8 @@ function generateGrade9SiliconProblem() {
     scenarioTracker.grade9silicon = (scenarioTracker.grade9silicon + 1) % 2;
     const isOrGate = (qType === 0);
 
-    // Set distinct modes for checkAnswers()
-    currentMode = isOrGate ? 'grade9silicon_orgate' : 'grade9silicon_pathfinder';
+    // Set a single mode so the spreadsheet logs them together
+    currentMode = 'grade9silicon';
     
     // Keep the Smart Rocket visible
     if (document.getElementById('mainGrade9Btn')) {
@@ -5938,11 +5938,16 @@ function checkAnswers() {
             activeInputs.push('siliconTP1', 'siliconTP2');
         }
     }
-    else if (currentMode === 'grade9silicon_orgate') {
-        activeInputs = ['g9SilPayload', 'g9SilD1', 'g9SilD2'];
-    }
-    else if (currentMode === 'grade9silicon_pathfinder') {
-        activeInputs = ['g9SilPathID1', 'g9SilPathID2', 'g9SilPathVD1', 'g9SilPathVD2', 'g9SilPathVLoad'];
+    else if (currentMode === 'grade9silicon') {
+        activeInputs = [];
+        // If the OR-Gate inputs are showing:
+        if (document.getElementById('inputGroupGrade9Silicon') && document.getElementById('inputGroupGrade9Silicon').style.display !== 'none') {
+            activeInputs.push('g9SilPayload', 'g9SilD1', 'g9SilD2');
+        } 
+        // If the Pathfinder inputs are showing:
+        else if (document.getElementById('inputGroupGrade9SiliconPath') && document.getElementById('inputGroupGrade9SiliconPath').style.display !== 'none') {
+            activeInputs.push('g9SilPathID1', 'g9SilPathID2', 'g9SilPathVD1', 'g9SilPathVD2', 'g9SilPathVLoad');
+        }
     }
 
     // 3. Check for empty boxes
@@ -6584,6 +6589,27 @@ function toggleSolutions() {
     if (checkansBtn) checkansBtn.style.display = 'none';
 }
 
+// 1. Move the topicMap OUTSIDE the function for better performance
+// It will only load once when the script runs, rather than every time a student clicks submit.
+const topicMap = {
+    'analysis': 'Cct Analysis',
+    'divider': 'Pot Divider',
+    'grade9divider': 'G9 Divider',
+    'resistance': 'Tot Resistance',
+    'grade9resistance': 'G9 Resistance',
+    'colorcode': 'Colour Codes', 
+    'power': 'Power',
+    'grade9power': 'G9 Power',
+    'oscilloscope': 'Oscilloscopes',
+    'astable': 'Astable', 
+    'monostable': 'Monostable',
+    'zener': 'Zener Diodes',
+    'grade9zener': 'G9 Zener',
+    'silicon': 'Silicon Diodes',
+    'grade9silicon': 'Grade 9 Silicon Diodes',
+    'iposort': 'IPO Sort'    
+};
+
 async function processSubmission() {
     const studentName = document.getElementById('studentNameInput').value.trim();
     const teacherName = document.getElementById('teacherSelect').value;
@@ -6591,33 +6617,14 @@ async function processSubmission() {
     if (!studentName) { alert("Please enter your name."); return; }
     if (!teacherName) { alert("Please select your teacher."); return; }
 
-    // Map the technical mode name to a readable topic string
-    // Update this section in your processSubmission function:
-    const topicMap = {
-            'analysis': 'Cct Analysis',
-            'divider': 'Pot Divider',
-            'grade9divider': 'G9 Divider',
-            'resistance': 'Tot Resistance',
-            'grade9resistance': 'G9 Resistance',
-            'colorcode': 'Colour Codes', 
-            'power': 'Power',
-            'grade9power': 'G9 Power',
-            'oscilloscope': 'Oscilloscopes',
-            'astable': 'Astable', 
-            'monostable': 'Monostable',
-            'zener': 'Zener Diodes',
-            'grade9zener': 'G9 Zener',
-            'silicon': 'Silicon Diodes',
-            'grade9silicon_orgate': 'G9 Silicon (OR-Gate)',  
-            'grade9silicon_pathfinder': 'G9 Silicon (Pathfinder)',
-            'iposort': 'IPO Sort'    
-        };
     const currentTopic = topicMap[currentMode] || 'Unknown Topic';
 
-    closeModal();
+    // Added a safety check to ensure closeModal exists before calling it
+    if (typeof closeModal === 'function') {
+        closeModal();
+    }
 
     // 1. Loading State
-    // Note: We need to use confirmSubmitBtn here, as that is the ID of the button in your HTML
     const submitBtn = document.getElementById('confirmSubmitBtn');
     let originalText = "Submit Score"; // Fallback text
     if (submitBtn) {
@@ -6707,7 +6714,8 @@ async function processSubmission() {
         }
     }
 }
-    window.processSubmission = processSubmission;
+
+window.processSubmission = processSubmission;
 
 // **********************************************************************   
 // ==========================================
