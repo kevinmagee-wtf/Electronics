@@ -5530,8 +5530,8 @@ function openModule(module) {
     // Hide Home Menu
     document.getElementById('mainMenu').style.display = 'none';
     
-    // Hide all sub-menus first
-    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuPlaceholder'];
+    // Hide all sub-menus first (Added 'menuLogic' to this list)
+    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuLogic', 'menuPlaceholder'];
     menus.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -5553,12 +5553,14 @@ function openModule(module) {
     } else if (module === 'systems') {
         if (document.getElementById('menuSystems')) document.getElementById('menuSystems').style.display = 'flex';
         switchTab('iposort'); 
+    } else if (module === 'logic') {
+        if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'flex';
+        switchTab('logic_boolean'); // Automatically opens the Boolean mode to start!
     } else {
         document.getElementById('menuPlaceholder').style.display = 'flex';
         document.getElementById('contentArea').style.display = 'none';
     }
 }
-
 //*****************************************************************************************
  
 // TAB SWITCHER & GLOBAL CLEANUP
