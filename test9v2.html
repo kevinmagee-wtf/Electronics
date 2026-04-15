@@ -795,7 +795,15 @@
     <button class="tab" id="tab-zener" onclick="safeSwitchTab('zener')">Zener Diodes</button>
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
 </div>
-    
+
+<div id="menuLogic" class="tabs" style="display:none;">
+    <button class="tab" id="tab-logic_ic" onclick="safeSwitchTab('logic_ic')">Logic Gates</button>
+    <button class="tab" id="tab-logic_system" onclick="safeSwitchTab('logic_system')">Logic Systems</button>
+    <button class="tab" id="tab-logic_boolean" onclick="safeSwitchTab('logic_boolean')">Boolean</button>
+    <button class="tab" id="tab-logic_nand" onclick="safeSwitchTab('logic_nand')">NAND Equivalents</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
+</div>
+
 <div id="menuPlaceholder" class="tabs" style="display:none;">
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Module Under Construction - Return Home</button>
 </div>
@@ -1224,6 +1232,41 @@
             </div>
         </div>
     </div>
+<!-- Input group Boolean -->   
+
+<div id="inputGroupBoolean" style="display: none; text-align: center; margin-top: 15px;">
+    <div id="booleanDropdownContainer" style="display:none; margin-bottom: 10px;">
+        <label for="booleanSelect" style="font-weight: bold; margin-right: 10px; color: #E64097;">Select the correct equation:</label>
+        <select id="booleanSelect" style="padding: 8px; border-radius: 5px; border: 2px solid #ccc; font-size: 16px;">
+            <option value="">-- Choose --</option>
+            <option value="A">Equation A</option>
+            <option value="B">Equation B</option>
+            <option value="C">Equation C</option>
+            <option value="D">Equation D</option>
+        </select>
+    </div>
+
+    <div id="booleanCheckboxContainer" style="display:none; margin-bottom: 10px;">
+        <label style="font-weight: bold; display: block; margin-bottom: 10px; color: #E64097;">Tick the TWO correct equations:</label>
+        <div style="display: flex; justify-content: center; gap: 20px; font-size: 18px; font-weight: bold;">
+            <label><input type="checkbox" id="boolCheckA" value="A" style="transform: scale(1.5); margin-right: 5px;"> A</label>
+            <label><input type="checkbox" id="boolCheckB" value="B" style="transform: scale(1.5); margin-right: 5px;"> B</label>
+            <label><input type="checkbox" id="boolCheckC" value="C" style="transform: scale(1.5); margin-right: 5px;"> C</label>
+            <label><input type="checkbox" id="boolCheckD" value="D" style="transform: scale(1.5); margin-right: 5px;"> D</label>
+            <label><input type="checkbox" id="boolCheckE" value="E" style="transform: scale(1.5); margin-right: 5px;"> E</label>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                
 <!-- Input group colour code-->  
                 <div class="input-group" id="inputGroupColorVal" style="display: none; justify-content: center; gap: 5px;">
                     <input type="number" id="inputResValue" placeholder="Value" style="width: 80px;"> <strong>Ω ±</strong> 
@@ -5567,8 +5610,6 @@ function openModule(module) {
 //switchTab runs when you click the navigation menu at the very top of the page   
 function switchTab(mode) {
     // 1. FORCE THE MODE
-    // When a tab is clicked, we set currentMode to exactly what that tab says (e.g., 'silicon').
-    // This naturally replaces any 'grade9silicon_xxx' because we aren't using "replace" logic anymore.
     currentMode = mode;
 
     // WIPES THE SCORE FOR THE NEW TOPIC
@@ -5604,7 +5645,8 @@ function switchTab(mode) {
         'mainGrade9Btn', 'showsolutionsBtn', 
         'inputGroupGrade9Zener', 'g9ZenerClosed', 'g9ZenerOpen',
         'inputGroupIPOSort', 'inputGroupSilicon', 'inputGroupSiliconVoltage', 
-        'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse', 'inputGroupGrade9SiliconParallel'
+        'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse', 'inputGroupGrade9SiliconParallel',
+        'inputGroupBoolean' // <-- ADDED THIS FOR LOGIC GATES
     ];
 
     elementsToHide.forEach(id => {
@@ -5620,6 +5662,7 @@ function switchTab(mode) {
         else if (mode === 'iposort') subtitle.innerText = "Module 4: Systems";
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
         else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
+        else if (['logic_ic', 'logic_system', 'logic_boolean', 'logic_nand'].includes(mode)) subtitle.innerText = "Module 2: Logic Gates"; // <-- ADDED THIS!
     }
 
     // 5. Global Cleanup
@@ -5629,7 +5672,7 @@ function switchTab(mode) {
     document.querySelectorAll('input').forEach(i => {
         i.value = '';
         i.style.backgroundColor = ''; 
-        if(i.type === 'radio') i.checked = false;
+        if(i.type === 'radio' || i.type === 'checkbox') i.checked = false; // Added checkbox clearing
     });
 
     document.querySelectorAll('select').forEach(s => {
@@ -5647,12 +5690,11 @@ function switchTab(mode) {
         return; 
     }
 
-    // Call the hub. Since currentMode is now exactly 'silicon', it will load the basics!
+    // Call the hub
     if (typeof hubController === "function") {
         hubController(ctx, canvas);
     }
 }
-
 //*****************************************************************************************
     
 // =============================
