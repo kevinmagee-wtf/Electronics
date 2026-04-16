@@ -3703,10 +3703,16 @@ function generateGrade9PowerProblem() {
 //*****************************************************************************************
 
 function generateBooleanProblem(ctx, canvas) {
-    // 1. Clear Canvas and Setup
+    // 1. Clear Canvas, Setup, and Reset UI
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '&nbsp;';
     
+    // Clear old feedback and hide solutions instantly
+    const feedback = document.getElementById('feedback');
+    if (feedback) feedback.innerHTML = '&nbsp;';
+    const solutions = document.getElementById('solutions');
+    if (solutions) solutions.style.display = 'none';
+    
+    currentMode = 'logic_boolean'; 
     currentBooleanMode = 'old'; // Starting with Old Spec style
 
     // Show Dropdown, Hide Checkboxes
@@ -3827,6 +3833,36 @@ function generateBooleanProblem(ctx, canvas) {
             ctx.stroke();
         }
     }
+
+    // ==========================================
+    // 8. BUILD SOLUTION HTML
+    // ==========================================
+    let logicHTML = `<strong>Solution: Option ${currentBooleanAnswer}</strong><br><br>`;
+    
+    if (targetGate.id === 'AND') {
+        logicHTML += "<em>Explanation:</em> Look at the truth table. The output is 1 <strong>ONLY when both A and B are 1</strong>. This is the standard behavior of an <strong>AND</strong> gate (A . B).";
+    } else if (targetGate.id === 'OR') {
+        logicHTML += "<em>Explanation:</em> Look at the truth table. The output is 1 <strong>whenever ANY of the inputs (A or B) are 1</strong>. This is the standard behavior of an <strong>OR</strong> gate (A + B).";
+    } else if (targetGate.id === 'NAND') {
+        logicHTML += "<em>Explanation:</em> The output is 0 ONLY when both A and B are 1. This is the exact opposite of an AND gate, making it a <strong>NAND (Not-AND)</strong> gate (A . B with a line over the whole expression).";
+    } else if (targetGate.id === 'NOR') {
+        logicHTML += "<em>Explanation:</em> The output is 1 ONLY when both inputs are 0. This is the exact opposite of an OR gate, making it a <strong>NOR (Not-OR)</strong> gate (A + B with a line over the whole expression).";
+    } else if (targetGate.id === 'NOT_A_AND_B') {
+        logicHTML += "<em>Explanation:</em> The output is 1 ONLY when A is 0 and B is 1. This matches the expression <strong>(NOT A) AND B</strong>.";
+    } else if (targetGate.id === 'A_AND_NOT_B') {
+        logicHTML += "<em>Explanation:</em> The output is 1 ONLY when A is 1 and B is 0. This matches the expression <strong>A AND (NOT B)</strong>.";
+    } else if (targetGate.id === 'NOT_A_OR_B') {
+        logicHTML += "<em>Explanation:</em> The output is 0 ONLY when A is 1 and B is 0. This matches the expression <strong>(NOT A) OR B</strong>.";
+    } else if (targetGate.id === 'A_OR_NOT_B') {
+        logicHTML += "<em>Explanation:</em> The output is 0 ONLY when A is 0 and B is 1. This matches the expression <strong>A OR (NOT B)</strong>.";
+    } else if (targetGate.id === 'DEMORGAN_NOR') {
+        logicHTML += "<em>Explanation:</em> The truth table shows a NOR gate (output is 1 only when both inputs are 0). According to <strong>De Morgan's Laws</strong>, a NOR gate is equivalent to an AND gate with inverted inputs (NOT A . NOT B).";
+    } else if (targetGate.id === 'DEMORGAN_NAND') {
+        logicHTML += "<em>Explanation:</em> The truth table shows a NAND gate (output is 0 only when both inputs are 1). According to <strong>De Morgan's Laws</strong>, a NAND gate is equivalent to an OR gate with inverted inputs (NOT A + NOT B).";
+    }
+
+    const solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = logicHTML;
 }
 //*****************************************************************************************
 function generateAstableProblem() {
