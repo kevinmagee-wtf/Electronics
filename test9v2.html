@@ -1432,6 +1432,10 @@ let canEarnPoints = true;
 
 // This allows the variable to hold ANY data we throw at it (Voltage, Resistors, Colour Codes, etc.)
 let currentAnswers = {};
+
+// ---> NEW BOOLEAN GLOBAL VARIABLES <---
+let currentBooleanAnswer = "";
+let currentBooleanMode = "";
 //*****************************************************
 // --- 2. MAIN CONTROLLER --- 
 //*****************************************************
@@ -3695,7 +3699,98 @@ function generateGrade9PowerProblem() {
         `;
     }
 }
+//*****************************************************************************************
 
+function generateBooleanProblem(ctx, canvas) {
+    // 1. Clear Canvas and Setup
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '';
+    
+    currentBooleanMode = 'old'; // Starting with Old Spec style
+
+    // Show Dropdown, Hide Checkboxes
+    document.getElementById('booleanDropdownContainer').style.display = 'block';
+    document.getElementById('booleanCheckboxContainer').style.display = 'none';
+    document.getElementById('booleanSelect').value = ''; 
+
+    // 2. Define the Gates
+    const gates = [
+        { name: 'AND', text: 'A . B', overline: false, outputs: [0, 0, 0, 1] },
+        { name: 'OR', text: 'A + B', overline: false, outputs: [0, 1, 1, 1] },
+        { name: 'NAND', text: 'A . B', overline: true, outputs: [1, 1, 1, 0] },
+        { name: 'NOR', text: 'A + B', overline: true, outputs: [1, 0, 0, 0] },
+        { name: 'XOR', text: 'A ⊕ B', overline: false, outputs: [0, 1, 1, 0] }
+    ];
+
+    // 3. Shuffle and pick 4 random options
+    const shuffledGates = gates.sort(() => 0.5 - Math.random());
+    const options = shuffledGates.slice(0, 4);
+    
+    // Pick one of those 4 to be the actual question
+    const targetGate = options[Math.floor(Math.random() * 4)];
+    const labels = ['A', 'B', 'C', 'D'];
+    currentBooleanAnswer = labels[options.indexOf(targetGate)]; // Save correct letter
+
+    // ==========================================
+    // 4. DRAWING: The Truth Table (Left Side)
+    // ==========================================
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 20px Arial";
+    ctx.fillText("Truth Table", 40, 40);
+
+    ctx.font = "bold 18px Arial";
+    ctx.fillText("A", 50, 80);
+    ctx.fillText("B", 90, 80);
+    ctx.fillText("Q", 140, 80);
+
+    // Draw table lines
+    ctx.beginPath();
+    ctx.moveTo(30, 90); ctx.lineTo(170, 90); // Horizontal line
+    ctx.moveTo(80, 60); ctx.lineTo(80, 220); // Vertical line 1
+    ctx.moveTo(120, 60); ctx.lineTo(120, 220); // Vertical line 2
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#333";
+    ctx.stroke();
+
+    // Fill in the 1s and 0s
+    const inputsA = [0, 0, 1, 1];
+    const inputsB = [0, 1, 0, 1];
+    ctx.font = "18px Arial";
+    for(let i = 0; i < 4; i++) {
+        let y = 120 + (i * 30);
+        ctx.fillText(inputsA[i], 50, y);
+        ctx.fillText(inputsB[i], 90, y);
+        ctx.fillStyle = "#E64097"; // Highlight output column
+        ctx.font = "bold 18px Arial";
+        ctx.fillText(targetGate.outputs[i], 140, y);
+        ctx.fillStyle = "#333";
+        ctx.font = "18px Arial";
+    }
+
+    // ==========================================
+    // 5. DRAWING: The Options (Right Side)
+    // ==========================================
+    ctx.font = "bold 20px Arial";
+    ctx.fillText("Options:", 220, 40);
+    ctx.font = "18px Arial";
+
+    for(let i = 0; i < 4; i++) {
+        let y = 90 + (i * 40);
+        let prefix = labels[i] + ")   Q = ";
+        ctx.fillText(prefix + options[i].text, 220, y);
+        
+        // If it's NAND or NOR, draw the overline!
+        if (options[i].overline) {
+            let startX = 220 + ctx.measureText(prefix).width;
+            let textWidth = ctx.measureText(options[i].text).width;
+            ctx.beginPath();
+            ctx.moveTo(startX, y - 16); // 16px above the text baseline
+            ctx.lineTo(startX + textWidth, y - 16);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    }
+}
 //*****************************************************************************************
 function generateAstableProblem() {
     // 1. UI RESET
