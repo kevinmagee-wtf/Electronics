@@ -5715,6 +5715,7 @@ function goHome() {
     document.getElementById('menuTiming').style.display = 'none';
     document.getElementById('menuDiodes').style.display = 'none';
     if (document.getElementById('menuSystems')) document.getElementById('menuSystems').style.display = 'none'; 
+    if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'none'; // <-- NEW FIX
     document.getElementById('menuPlaceholder').style.display = 'none';
 
     // 2. Show the main 8-button grid
@@ -5727,7 +5728,6 @@ function goHome() {
     // 4. Reset subtitles/branding
     document.getElementById('moduleSubtitle').innerText = "Mastering the GCSE Course";
 }
-
 //*****************************************************************************************
 
 //this handles switching between the main menu modules
