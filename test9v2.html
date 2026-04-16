@@ -1524,6 +1524,9 @@ function handleNewQuestionClick() {
     } else if (currentMode === 'grade9silicon') {  
         currentMode = 'silicon';
         escapedGrade9 = true;
+    } else if (currentMode === 'grade9boolean') {  // 👇 NEW BOOLEAN ESCAPE
+        currentMode = 'logic_boolean';
+        escapedGrade9 = true;
     }
 
     // If we are dropping out of a Grade 9 mode AND they have a score, warn them!
