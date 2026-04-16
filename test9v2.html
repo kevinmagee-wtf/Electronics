@@ -1258,6 +1258,24 @@
     </div>
 </div>
 
+<!-- GRADE 9 BOOLEAN: Sum of Products -->
+<div id="inputGroupGrade9BooleanSOP" class="input-group" style="display: none; flex-direction: column; align-items: flex-start; margin-top: 15px;">
+    <div style="margin-bottom: 10px; font-size: 16px;"><strong>1. Select the correct Boolean equation for each row where Q = 1 (Top to Bottom):</strong></div>
+    
+    <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+        <select id="g9boolRow1" class="form-select" style="width: auto; padding: 5px; font-weight: bold;"></select>
+        <select id="g9boolRow2" class="form-select" style="width: auto; padding: 5px; font-weight: bold;"></select>
+        <select id="g9boolRow3" class="form-select" style="width: auto; padding: 5px; font-weight: bold;"></select>
+    </div>
+    
+    <div style="margin-bottom: 10px; font-size: 16px;"><strong>2. How do you combine these to make the final system equation?</strong></div>
+    <select id="g9boolFinal" class="form-select" style="width: auto; padding: 5px; font-weight: bold;">
+        <option value="">Select final combination...</option>
+        <option value="AND">(Row 1) . (Row 2) . (Row 3)</option>
+        <option value="OR">(Row 1) + (Row 2) + (Row 3)</option>
+        <option value="XOR">(Row 1) ⊕ (Row 2) ⊕ (Row 3)</option>
+    </select>
+</div>
                 
 <!-- Input group colour code-->  
                 <div class="input-group" id="inputGroupColorVal" style="display: none; justify-content: center; gap: 5px;">
@@ -3870,6 +3888,106 @@ function generateBooleanProblem(ctx, canvas) {
     if (solText) solText.innerHTML = logicHTML;
 }
 //*****************************************************************************************
+
+function generateGrade9booleanProblem(ctx, canvas) {
+    // 1. Clear Canvas & Setup UI
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const feedback = document.getElementById('feedback');
+    if (feedback) feedback.innerHTML = '&nbsp;';
+    const solutions = document.getElementById('solutions');
+    if (solutions) solutions.style.display = 'none';
+    
+    currentMode = 'grade9boolean'; 
+
+    // Show only the G9 Boolean Group
+    document.getElementById('inputGroupGrade9BooleanSOP').style.display = 'flex';
+
+    // 2. Setup the Truth Table Values
+    const rows = [
+        [0,0,0], [0,0,1], [0,1,0], [0,1,1],
+        [1,0,0], [1,0,1], [1,1,0], [1,1,1]
+    ];
+    
+    // Pick 3 random, distinct rows to equal '1'
+    let activeIndices = [];
+    while(activeIndices.length < 3) {
+        let r = Math.floor(Math.random() * 8);
+        if(!activeIndices.includes(r)) activeIndices.push(r);
+    }
+    activeIndices.sort(); // Crucial: Sort so they are top-to-bottom
+
+    // 3. Draw the Truth Table
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 20px Arial";
+    ctx.fillText("Truth Table (3 Inputs)", 40, 40);
+
+    ctx.font = "bold 18px Arial";
+    ctx.fillText("A", 50, 80); ctx.fillText("B", 100, 80); 
+    ctx.fillText("C", 150, 80); ctx.fillText("Q", 210, 80);
+
+    ctx.beginPath();
+    ctx.moveTo(30, 90); ctx.lineTo(240, 90); 
+    ctx.moveTo(80, 60); ctx.lineTo(80, 360); 
+    ctx.moveTo(130, 60); ctx.lineTo(130, 360); 
+    ctx.moveTo(180, 60); ctx.lineTo(180, 360); 
+    ctx.lineWidth = 2; ctx.strokeStyle = "#333"; ctx.stroke();
+
+    let correctRowStrings = [];
+    
+    for(let i=0; i<8; i++) {
+        let y = 120 + (i * 30);
+        ctx.fillStyle = "#333";
+        ctx.fillText(rows[i][0], 50, y);
+        ctx.fillText(rows[i][1], 100, y);
+        ctx.fillText(rows[i][2], 150, y);
+
+        let qVal = activeIndices.includes(i) ? 1 : 0;
+        ctx.fillStyle = qVal ? "#E64097" : "#333";
+        if (qVal) ctx.font = "bold 18px Arial";
+        ctx.fillText(qVal, 210, y);
+        ctx.font = "18px Arial";
+
+        // Generate the mathematical string for the correct answers!
+        if(qVal) {
+            let AStr = rows[i][0] ? "A" : "A\u0305"; // \u0305 is the unicode overline!
+            let BStr = rows[i][1] ? "B" : "B\u0305";
+            let CStr = rows[i][2] ? "C" : "C\u0305";
+            correctRowStrings.push(`${AStr} . ${BStr} . ${CStr}`);
+        }
+    }
+    
+    // Save to global variables for grading
+    window.g9boolAnswers = correctRowStrings;
+
+    // 4. Populate the Dropdowns Dynamically
+    const allOptions = [
+        "A\u0305 . B\u0305 . C\u0305", "A\u0305 . B\u0305 . C", "A\u0305 . B . C\u0305", "A\u0305 . B . C",
+        "A . B\u0305 . C\u0305", "A . B\u0305 . C", "A . B . C\u0305", "A . B . C"
+    ];
+
+    ['g9boolRow1', 'g9boolRow2', 'g9boolRow3'].forEach(id => {
+        let sel = document.getElementById(id);
+        sel.innerHTML = '<option value="">Select row equation...</option>';
+        allOptions.forEach(opt => {
+            sel.innerHTML += `<option value="${opt}">${opt}</option>`;
+        });
+    });
+
+    // 5. Build Solution HTML
+    let logicHTML = `<strong>Solution: Sum of Products</strong><br><br>`;
+    logicHTML += `<em>Step 1:</em> Find the three rows where Q = 1.<br>`;
+    logicHTML += `- Top match: <strong>${correctRowStrings[0]}</strong><br>`;
+    logicHTML += `- Middle match: <strong>${correctRowStrings[1]}</strong><br>`;
+    logicHTML += `- Bottom match: <strong>${correctRowStrings[2]}</strong><br><br>`;
+    logicHTML += `<em>Step 2:</em> Combine them using OR logic (+).<br>`;
+    logicHTML += `<strong>Q = (${correctRowStrings[0]}) + (${correctRowStrings[1]}) + (${correctRowStrings[2]})</strong>`;
+
+    const solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = logicHTML;
+}
+    
+//******************************************************************************************
+    
 function generateAstableProblem() {
     // 1. UI RESET
     hideAllInputGroups();
@@ -6143,7 +6261,61 @@ function checkAnswers() {
         return; 
     }
 
-    
+    // ==========================================
+    // GRADE 9 BOOLEAN INTERCEPTOR (Sum of Products)
+    // ==========================================
+    if (currentMode === 'grade9boolean') {
+        const r1 = document.getElementById('g9boolRow1');
+        const r2 = document.getElementById('g9boolRow2');
+        const r3 = document.getElementById('g9boolRow3');
+        const finalEq = document.getElementById('g9boolFinal');
+
+        if (!r1.value || !r2.value || !r3.value || !finalEq.value) {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Please select an option for all 4 dropdowns.</span>";
+            return;
+        }
+        
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        // Check against the global array (Top to Bottom)
+        let r1Correct = r1.value === window.g9boolAnswers[0];
+        let r2Correct = r2.value === window.g9boolAnswers[1];
+        let r3Correct = r3.value === window.g9boolAnswers[2];
+        let finalCorrect = finalEq.value === "OR"; // Sum of Products uses OR (+)
+
+        let allCorrect = r1Correct && r2Correct && r3Correct && finalCorrect;
+
+        // Apply visual feedback borders
+        r1.style.border = r1Correct ? "2px solid #28a745" : "2px solid #dc3545";
+        r2.style.border = r2Correct ? "2px solid #28a745" : "2px solid #dc3545";
+        r3.style.border = r3Correct ? "2px solid #28a745" : "2px solid #dc3545";
+        finalEq.style.border = finalCorrect ? "2px solid #28a745" : "2px solid #dc3545";
+
+        const checkansBtn = document.getElementById('checkansBtn');
+        const showsolutionsBtn = document.getElementById('showsolutionsBtn');
+
+        if (allCorrect) {
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            feedback.innerHTML = "<span style='color: #198754;'>Perfect! You successfully derived the Sum of Products equation!</span>";
+            canEarnPoints = false;
+        } else {
+            canEarnPoints = false; 
+            feedback.innerHTML = `<span style='color: #dc3545;'>Not quite. Look at the red boxes. (Hint: A '0' means you need a NOT bar. Combine using OR.)</span>`;
+            const solDiv = document.getElementById('solutions');
+            if (solDiv) solDiv.style.display = 'block';
+            if (typeof viewedSolution !== 'undefined') viewedSolution = true;
+        }
+        
+        if (checkansBtn && isCurrentProblemSolved) checkansBtn.style.display = 'none';
+        if (showsolutionsBtn && isCurrentProblemSolved) showsolutionsBtn.style.display = 'none';
+        
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; 
+    }
 
     // 2. Identify which inputs are currently active
     let activeInputs = [];
@@ -6835,7 +7007,16 @@ function provideHint() {
                     <strong>💡 Hint:</strong> Look closely at the output column. Does it output a 1 when BOTH are 1? Or when ANY are 1? Don't forget to check if the whole output is inverted (NOT).
                 </div>`;
         }
-    } else {
+    } else if (currentMode === 'grade9boolean') {
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong><br>
+                1. Look only at the rows where Q=1.<br>
+                2. If an input is 0, it gets a NOT bar (e.g. A̅). If it's 1, it stays normal (A).<br>
+                3. Combine the individual rows together using OR logic (+).
+            </div>`;
+    } 
+    else {
         // Potential Divider & General
         helpText = `
             <div style="${blueBox}">
@@ -7069,7 +7250,8 @@ function hideAllInputGroups() {
         'oscilloscopeInputs',               // Oscilloscope wrapper
         'inputGroupMonostable',             // Monostable wrapper
         'booleanDropdownContainer',         // NEW: Boolean Logic Dropdown
-        'booleanCheckboxContainer'          // NEW: Boolean Logic Checkboxes
+        'booleanCheckboxContainer',         // NEW: Boolean Logic Checkboxes
+        'inputGroupGrade9BooleanSOP'    // NEW: Grade 9 Boolean SOP
     ];
 
     ghostGroups.forEach(id => {
