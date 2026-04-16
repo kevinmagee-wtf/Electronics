@@ -3902,100 +3902,99 @@ function generateBooleanProblem(ctx, canvas) {
 //*****************************************************************************************
 
 function generateGrade9booleanProblem(ctx, canvas) {
-    // 1. Clear Canvas & Setup UI
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerHTML = '&nbsp;';
-    const solutions = document.getElementById('solutions');
-    if (solutions) solutions.style.display = 'none';
+    // 1. Setup UI
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
     
-    currentMode = 'grade9boolean'; 
+    // Show the SOP container we added in Task 2
+    const sopContainer = document.getElementById('inputGroupGrade9BooleanSOP');
+    if (sopContainer) sopContainer.style.display = 'flex';
 
-    // Show only the G9 Boolean Group
-    document.getElementById('inputGroupGrade9BooleanSOP').style.display = 'flex';
-
-    // 2. Setup the Truth Table Values
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 2. Logic: Create the Truth Table Data
     const rows = [
         [0,0,0], [0,0,1], [0,1,0], [0,1,1],
         [1,0,0], [1,0,1], [1,1,0], [1,1,1]
     ];
     
-    // Pick 3 random, distinct rows to equal '1'
+    // Randomly pick 3 rows to be '1'
     let activeIndices = [];
     while(activeIndices.length < 3) {
         let r = Math.floor(Math.random() * 8);
         if(!activeIndices.includes(r)) activeIndices.push(r);
     }
-    activeIndices.sort(); // Crucial: Sort so they are top-to-bottom
+    activeIndices.sort((a, b) => a - b); // Keep them in table order
 
-    // 3. Draw the Truth Table
+    // 3. Drawing: Render the Table on Canvas
     ctx.fillStyle = "#333";
-    ctx.font = "bold 20px Arial";
-    ctx.fillText("Truth Table (3 Inputs)", 40, 40);
-
     ctx.font = "bold 18px Arial";
-    ctx.fillText("A", 50, 80); ctx.fillText("B", 100, 80); 
-    ctx.fillText("C", 150, 80); ctx.fillText("Q", 210, 80);
+    ctx.fillText("Truth Table", 40, 30);
 
+    ctx.font = "bold 15px Arial";
+    ctx.fillText("A", 40, 65); ctx.fillText("B", 80, 65); 
+    ctx.fillText("C", 120, 65); ctx.fillText("Q", 170, 65);
+
+    // Draw the grid lines
     ctx.beginPath();
-    ctx.moveTo(30, 90); ctx.lineTo(240, 90); 
-    ctx.moveTo(80, 60); ctx.lineTo(80, 360); 
-    ctx.moveTo(130, 60); ctx.lineTo(130, 360); 
-    ctx.moveTo(180, 60); ctx.lineTo(180, 360); 
-    ctx.lineWidth = 2; ctx.strokeStyle = "#333"; ctx.stroke();
+    ctx.moveTo(30, 75); ctx.lineTo(200, 75); // Header line
+    ctx.moveTo(65, 50); ctx.lineTo(65, 330); // Vertical A|B
+    ctx.moveTo(105, 50); ctx.lineTo(105, 330); // Vertical B|C
+    ctx.moveTo(145, 50); ctx.lineTo(145, 330); // Vertical C|Q
+    ctx.strokeStyle = "#ccc"; ctx.lineWidth = 1; ctx.stroke();
 
-    let correctRowStrings = [];
-    
-    for(let i=0; i<8; i++) {
-        let y = 120 + (i * 30);
+    let correctStrings = [];
+
+    // Draw the 1s and 0s
+    rows.forEach((row, i) => {
+        let y = 100 + (i * 28);
         ctx.fillStyle = "#333";
-        ctx.fillText(rows[i][0], 50, y);
-        ctx.fillText(rows[i][1], 100, y);
-        ctx.fillText(rows[i][2], 150, y);
+        ctx.font = "15px Arial";
+        ctx.fillText(row[0], 40, y);
+        ctx.fillText(row[1], 80, y);
+        ctx.fillText(row[2], 120, y);
 
-        let qVal = activeIndices.includes(i) ? 1 : 0;
-        ctx.fillStyle = qVal ? "#E64097" : "#333";
-        if (qVal) ctx.font = "bold 18px Arial";
-        ctx.fillText(qVal, 210, y);
-        ctx.font = "18px Arial";
-
-        // Generate the mathematical string for the correct answers!
-        if(qVal) {
-            let AStr = rows[i][0] ? "A" : "A\u0305"; // \u0305 is the unicode overline!
-            let BStr = rows[i][1] ? "B" : "B\u0305";
-            let CStr = rows[i][2] ? "C" : "C\u0305";
-            correctRowStrings.push(`${AStr} . ${BStr} . ${CStr}`);
+        let isOne = activeIndices.includes(i);
+        if (isOne) {
+            ctx.fillStyle = "#E64097"; // Brand pink for 1s
+            ctx.font = "bold 16px Arial";
+            // Create the answer string (e.g., A̅ . B . C̅)
+            // \u0305 is the Unicode overline
+            let aPart = row[0] ? "A" : "A\u0305";
+            let bPart = row[1] ? "B" : "B\u0305";
+            let cPart = row[2] ? "C" : "C\u0305";
+            correctStrings.push(`${aPart} . ${bPart} . ${cPart}`);
+        } else {
+            ctx.fillStyle = "#999";
         }
-    }
-    
-    // Save to global variables for grading
-    window.g9boolAnswers = correctRowStrings;
+        ctx.fillText(isOne ? "1" : "0", 170, y);
+    });
 
-    // 4. Populate the Dropdowns Dynamically
-    const allOptions = [
+    // Save correct answers to a global variable for the checker
+    window.g9boolAnswers = correctStrings;
+
+    // 4. Populate the Dropdowns
+    const allPossibleCombos = [
         "A\u0305 . B\u0305 . C\u0305", "A\u0305 . B\u0305 . C", "A\u0305 . B . C\u0305", "A\u0305 . B . C",
         "A . B\u0305 . C\u0305", "A . B\u0305 . C", "A . B . C\u0305", "A . B . C"
     ];
 
     ['g9boolRow1', 'g9boolRow2', 'g9boolRow3'].forEach(id => {
         let sel = document.getElementById(id);
-        sel.innerHTML = '<option value="">Select row equation...</option>';
-        allOptions.forEach(opt => {
-            sel.innerHTML += `<option value="${opt}">${opt}</option>`;
+        sel.innerHTML = '<option value="">Select Row...</option>';
+        allPossibleCombos.forEach(opt => {
+            let el = document.createElement("option");
+            el.textContent = opt;
+            el.value = opt;
+            sel.appendChild(el);
         });
     });
 
-    // 5. Build Solution HTML
-    let logicHTML = `<strong>Solution: Sum of Products</strong><br><br>`;
-    logicHTML += `<em>Step 1:</em> Find the three rows where Q = 1.<br>`;
-    logicHTML += `- Top match: <strong>${correctRowStrings[0]}</strong><br>`;
-    logicHTML += `- Middle match: <strong>${correctRowStrings[1]}</strong><br>`;
-    logicHTML += `- Bottom match: <strong>${correctRowStrings[2]}</strong><br><br>`;
-    logicHTML += `<em>Step 2:</em> Combine them using OR logic (+).<br>`;
-    logicHTML += `<strong>Q = (${correctRowStrings[0]}) + (${correctRowStrings[1]}) + (${correctRowStrings[2]})</strong>`;
-
-    const solText = document.getElementById('solText');
-    if (solText) solText.innerHTML = logicHTML;
+    // 5. Build Solution Text
+    let solHTML = `1. Identify rows where Q=1.<br>`;
+    solHTML += `2. For each row, write the inputs as a product (AND). Use a bar if the input is 0.<br>`;
+    solHTML += `Rows found: <b>${correctStrings.join(", ")}</b><br>`;
+    solHTML += `3. Combine them with + (OR) for the final system equation.`;
+    document.getElementById('solText').innerHTML = solHTML;
 }
     
 //******************************************************************************************
