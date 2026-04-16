@@ -1585,6 +1585,13 @@ function handleGrade9Click() {
     else if (currentMode === 'power' || currentMode === 'grade9power') {
         generateGrade9PowerProblem(); 
     }
+    // 👇 NEW BOOLEAN ROUTING 👇
+    else if (currentMode === 'logic_boolean' || currentMode === 'grade9boolean') {
+        currentMode = 'grade9boolean';
+        if (typeof generateGrade9booleanProblem === "function") {
+            generateGrade9booleanProblem(ctx, canvas);
+        }
+    }
     // 👇 UNIFIED SILICON ROUTING 👇
     else if (currentMode === 'silicon' || currentMode === 'grade9silicon') { 
         currentMode = 'grade9silicon';
