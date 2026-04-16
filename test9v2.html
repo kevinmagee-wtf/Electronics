@@ -3721,22 +3721,27 @@ function generateGrade9PowerProblem() {
 //*****************************************************************************************
 
 function generateBooleanProblem(ctx, canvas) {
-    // 1. Clear Canvas, Setup, and Reset UI
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 1. INSTANT UI STABILIZATION & WIPE
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups(); 
     
-    // Clear old feedback and hide solutions instantly
-    const feedback = document.getElementById('feedback');
-    if (feedback) feedback.innerHTML = '&nbsp;';
-    const solutions = document.getElementById('solutions');
-    if (solutions) solutions.style.display = 'none';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     currentMode = 'logic_boolean'; 
     currentBooleanMode = 'old'; // Starting with Old Spec style
 
-    // Show Dropdown, Hide Checkboxes
-    document.getElementById('booleanDropdownContainer').style.display = 'block';
-    document.getElementById('booleanCheckboxContainer').style.display = 'none';
-    document.getElementById('booleanSelect').value = ''; 
+    // SHOW THE SMART ROCKET (Grade 9)
+    const smartRocket = document.getElementById('mainGrade9Btn');
+    if (smartRocket) {
+        smartRocket.style.display = 'inline-block';
+    }
+
+    // Show EXACTLY the containers we need for this module
+    const boolDropdown = document.getElementById('booleanDropdownContainer');
+    if (boolDropdown) boolDropdown.style.display = 'block';
+    
+    // Make sure dropdown starts empty
+    const boolSelect = document.getElementById('booleanSelect');
+    if (boolSelect) boolSelect.value = ''; 
 
     // 2. Define the Gates (Expanded for Old Spec AND De Morgan's variants)
     const gates = [
