@@ -3979,8 +3979,10 @@ function generateBooleanProblem(ctx, canvas) {
         // Helper to grab text or return "___" if nothing is selected
         const getText = (dropdown) => {
             if (!dropdown || dropdown.selectedIndex <= 0) return '___';
-            // Grabs the actual equation text instead of the 'row1_1' value
-            return dropdown.options[dropdown.selectedIndex].text; 
+            
+            // Grabs the text and uses RegEx to strip out ALL blank spaces
+            let rawText = dropdown.options[dropdown.selectedIndex].text;
+            return rawText.replace(/\s+/g, ''); 
         };
 
         const t1 = getText(drop1);
