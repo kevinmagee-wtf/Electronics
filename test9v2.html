@@ -6054,7 +6054,48 @@ function checkAnswers() {
         
         if (typeof updateScoreboard === "function") updateScoreboard();
         return; 
+    } // <-- This is the end of the iposort interceptor
+
+    // BOOLEAN LOGIC GRADING INTERCEPTOR
+    if (currentMode === 'logic_boolean') {
+        const selected = document.getElementById('booleanSelect').value;
+        
+        if (selected === "") {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Please select an option from the dropdown.</span>";
+            return;
+        }
+
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        const checkansBtn = document.getElementById('checkansBtn');
+
+        if (selected === currentBooleanAnswer) {
+            // SUCCESS
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            feedback.innerHTML = "<span style='color: #198754;'>Correct! Well done. Click 'New Problem' to continue.</span>";
+            canEarnPoints = false;
+            
+            if (checkansBtn) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+            
+        } else {
+            // FAILURE
+            canEarnPoints = false; 
+            feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. The correct answer was ${currentBooleanAnswer}. Click 'New Problem' to try another.</span>`;
+            
+            if (checkansBtn) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+        }
+        
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; 
     }
+
+    
 
     // 2. Identify which inputs are currently active
     let activeInputs = [];
