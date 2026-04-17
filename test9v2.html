@@ -7159,7 +7159,9 @@ const topicMap = {
     'silicon': 'Silicon Diodes',
     'grade9silicon': 'Grade 9 Silicon Diodes',
     'iposort': 'IPO Sort',  
-    'logic_boolean': 'Boolean Logic'
+    'boolean': 'Boolean Logic',          
+    'logic_boolean': 'Boolean Logic',
+    'grade9boolean': 'G9 Boolean Logic'  
 };
 
 async function processSubmission() {
@@ -7342,9 +7344,10 @@ function hideAllInputGroups() {
         'inputGroupGrade9SiliconMaster',
         'oscilloscopeInputs',               // Oscilloscope wrapper
         'inputGroupMonostable',             // Monostable wrapper
+        'inputGroupBoolean',                // NEW: Parent Boolean wrapper
         'booleanDropdownContainer',         // NEW: Boolean Logic Dropdown
         'booleanCheckboxContainer',         // NEW: Boolean Logic Checkboxes
-        'inputGroupGrade9BooleanSOP'    // NEW: Grade 9 Boolean SOP
+        'inputGroupGrade9BooleanSOP'        // NEW: Grade 9 Boolean SOP
     ];
 
     ghostGroups.forEach(id => {
