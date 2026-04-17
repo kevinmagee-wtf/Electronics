@@ -3889,7 +3889,16 @@ function generateBooleanProblem(ctx, canvas) {
     
     currentMode = 'logic_boolean'; 
     currentBooleanMode = 'old'; // Starting with Old Spec style
+    
+    // ==========================================
+    // NEW FIX: TURN THE STANDARD UI BACK ON
+    // ==========================================
+    const boolParent = document.getElementById('inputGroupBoolean');
+    if (boolParent) boolParent.style.display = 'block';
 
+    const qText = document.getElementById('questionText');
+    if (qText) qText.style.display = 'block';
+    
     // SHOW THE SMART ROCKET (Grade 9)
     const smartRocket = document.getElementById('mainGrade9Btn');
     if (smartRocket) {
