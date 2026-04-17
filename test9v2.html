@@ -4100,12 +4100,7 @@ function generateBooleanProblem(ctx, canvas) {
 //*****************************************************************************************
 
 function generateGrade9booleanProblem(ctx, canvas) {
-
-
-
-
-    
-// 1. Setup UI
+    // 1. Setup UI
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -4242,54 +4237,50 @@ function generateGrade9booleanProblem(ctx, canvas) {
         ctx.font = "bold 20px Arial";
         ctx.fillText("A", 20, 62);
         ctx.fillText("B", 20, 82);
-        ctx.fillText("C", 20, 172);
+        ctx.fillText("C", 20, 167); // Adjusted for better alignment
 
         // Draw Input Wires
-        drawLine(ctx, 40, 55, 110, 55); // Wire A
-        drawLine(ctx, 40, 75, 110, 75); // Wire B
-        drawLine(ctx, 40, 165, 110, 165); // Wire C
+        drawLine(ctx, 40, 55, 120, 55); 
+        drawLine(ctx, 40, 75, 120, 75); 
+        drawLine(ctx, 40, 160, 120, 160); 
 
         // 3. Drawing: Gates
         if (topGateIsOR) drawORGate(ctx, 120, 40);
         else drawANDGate(ctx, 120, 40);
 
-        drawNOTGate(ctx, 120, 140); // Bottom gate is always NOT C for this topology
+        drawNOTGate(ctx, 120, 140); 
 
         if (finalGateIsOR) drawORGate(ctx, 230, 95);
         else drawANDGate(ctx, 230, 95);
 
         // 4. Drawing: Intermediate Wires & Nodes
-        // Top Gate Output (180, 65) to Final Gate Top Input (220, 110)
-        drawLine(ctx, 180, 65, 205, 65);
+        drawLine(ctx, 170, 65, 205, 65);
         drawLine(ctx, 205, 65, 205, 110);
-        drawLine(ctx, 205, 110, 220, 110);
+        drawLine(ctx, 205, 110, 230, 110);
         
-        // Bottom Gate Output (190, 165) to Final Gate Bottom Input (220, 130)
-        drawLine(ctx, 190, 165, 205, 165);
-        drawLine(ctx, 205, 165, 205, 130);
-        drawLine(ctx, 205, 130, 220, 130);
+        drawLine(ctx, 170, 160, 205, 160);
+        drawLine(ctx, 205, 160, 205, 130);
+        drawLine(ctx, 205, 130, 230, 130);
 
-        // Final Output Wire
-        drawLine(ctx, 290, 120, 330, 120);
+        drawLine(ctx, 280, 120, 320, 120);
 
         // Draw Wire Labels (X, Y, Q)
-        ctx.fillStyle = "#E64097"; // Brand pink for intermediate test points
-        ctx.fillText("X", 185, 55);
-        ctx.fillText("Y", 195, 155);
+        ctx.fillStyle = "#E64097"; 
+        ctx.fillText("X", 180, 55);
+        ctx.fillText("Y", 180, 150);
         ctx.fillStyle = "#333";
-        ctx.fillText("Q", 340, 127);
+        ctx.fillText("Q", 330, 127);
 
         // 5. Calculate the Correct Answers
         let topSym = topGateIsOR ? "+" : ".";
         let finalSym = finalGateIsOR ? "+" : ".";
 
         let ansX = `A ${topSym} B`;
-        let ansY = `C\u0305`; // Overline C
+        let ansY = `C\u0305`; 
         let ansQ = `(A ${topSym} B) ${finalSym} C\u0305`;
 
-        // Store them globally for checkAnswers
         window.g9boolPathAnswers = { x: ansX, y: ansY, q: ansQ };
-        window.g9boolActiveMode = 'pathfinder'; // Tag the active mode
+        window.g9boolActiveMode = 'pathfinder'; 
 
         // 6. Build Solution Text
         let solHTML = `<b>Step 1:</b> Gate X is an ${topGateIsOR ? 'OR' : 'AND'} gate with inputs A and B. So, X = ${ansX}.<br>`;
@@ -4298,8 +4289,25 @@ function generateGrade9booleanProblem(ctx, canvas) {
         solHTML += `<b>Final:</b> Q = X ${finalSym} Y = <b>${ansQ}</b>.`;
         document.getElementById('solText').innerHTML = solHTML;
         
-        // Setup dropdowns for Mode 2
-        setupPathfinderDropdowns(ansX, ansY, ansQ);
+        // 7. Setup Dropdowns Inline (Replaces the external setupPathfinderDropdowns call)
+        const xOptions = ["A . B", "A + B", "A\u0305 . B", "A + B\u0305"];
+        const yOptions = ["C", "C\u0305", "A", "B"];
+        const qOptions = [
+            "(A . B) . C\u0305", "(A . B) + C\u0305", 
+            "(A + B) . C\u0305", "(A + B) + C\u0305",
+            "(A . B) . C", "(A + B) + C"
+        ];
+
+        function fillSelect(id, options) {
+            let el = document.getElementById(id);
+            if(!el) return;
+            el.innerHTML = '<option value="">Select expression...</option>';
+            options.forEach(o => el.innerHTML += `<option value="${o}">${o}</option>`);
+        }
+        
+        fillSelect('g9boolPathX', xOptions);
+        fillSelect('g9boolPathY', yOptions);
+        fillSelect('g9boolPathQ', qOptions);
     }
 }
     
