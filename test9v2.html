@@ -4100,9 +4100,24 @@ function generateBooleanProblem(ctx, canvas) {
 //*****************************************************************************************
 
 function generateGrade9booleanProblem(ctx, canvas) {
-    // 1. Setup UI
+
+
+
+
+    
+// 1. Setup UI
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Unhide the Master Container!
+    const masterContainer = document.getElementById('inputGroupGrade9BooleanMaster');
+    if (masterContainer) masterContainer.style.display = 'flex';
+
+    // Hide both sub-modes initially so we can turn on just the one we need
+    const sopContainer = document.getElementById('inputGroupGrade9BooleanSOP');
+    const pathContainer = document.getElementById('inputGroupGrade9BooleanPath');
+    if (sopContainer) sopContainer.style.display = 'none';
+    if (pathContainer) pathContainer.style.display = 'none';
 
     // ==========================================
     // THE MODE SWITCHER
@@ -4114,8 +4129,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
         // ==========================================
         // MODE 1: TRUTH TABLE (Sum of Products)
         // ==========================================
-        const sopContainer = document.getElementById('inputGroupGrade9BooleanSOP');
-        if (sopContainer) sopContainer.style.display = 'flex';
+        if (sopContainer) sopContainer.style.display = 'flex'; // Turn on SOP UI
 
         // 2. Logic: Create the Truth Table Data
         const rows = [
@@ -4213,13 +4227,11 @@ function generateGrade9booleanProblem(ctx, canvas) {
         solHTML += `3. Combine them with + (OR) for the final system equation.`;
         document.getElementById('solText').innerHTML = solHTML;
 
-    } else {
+   } else {
         // ==========================================
         // MODE 2: CIRCUIT PATHFINDER (Expressions)
         // ==========================================
-        // Note: We will need to build the HTML for this ID next!
-        const pathContainer = document.getElementById('inputGroupGrade9BooleanPath');
-        if (pathContainer) pathContainer.style.display = 'flex';
+        if (pathContainer) pathContainer.style.display = 'flex'; // Turn on Path UI
 
         // 1. Logic: Randomize the gates
         const topGateIsOR = Math.random() > 0.5;
