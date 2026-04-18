@@ -1294,7 +1294,7 @@
     <div id="inputGroupGrade9BooleanPath" style="display: none; flex-direction: column !important; gap: 10px !important; width: 100%; text-align: left; margin-top: -10px !important;">
         <div style="background-color: #f8f9fa !important; padding: 12px !important; border-radius: 8px; border: 1px solid #dee2e6;">
             <p style="margin-top: 0 !important; margin-bottom: 15px !important; font-weight: 600; font-size: 16px; color: #333; line-height: 1.2 !important;">
-                Trace the logic circuit and identify the Boolean expressions:
+                Identify the Boolean expressions at the gate outputs:
             </p>
             <div style="display: flex; flex-direction: column !important; gap: 10px !important;">
                 
@@ -4272,22 +4272,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
         drawLine(ctx, 40, 75, 120, 75); 
         drawLine(ctx, 40, 160, 120, 160); 
 
-        // 3. Drawing: Gates
-        // Call the specific drawing function based on the randomizer
-        if (topGate === 'OR') drawORGate(ctx, 120, 40);
-        else if (topGate === 'AND') drawANDGate(ctx, 120, 40);
-        else if (topGate === 'NAND') drawNANDGate(ctx, 120, 40);
-        else if (topGate === 'NOR') drawNORGate(ctx, 120, 40);
-
-        // Fixed NOT gate Y-alignment (changed from 140 to 160 to match wire C)
-        drawNOTGate(ctx, 120, 160); 
-
-        if (finalGate === 'OR') drawORGate(ctx, 230, 95);
-        else if (finalGate === 'AND') drawANDGate(ctx, 230, 95);
-        else if (finalGate === 'NAND') drawNANDGate(ctx, 230, 95);
-        else if (finalGate === 'NOR') drawNORGate(ctx, 230, 95);
-
-        // 4. Drawing: Intermediate Wires & Nodes
+        // 3. Drawing: Intermediate Wires & Nodes (Moved to be behind the gates!)
         drawLine(ctx, 170, 65, 205, 65);
         drawLine(ctx, 205, 65, 205, 110);
         drawLine(ctx, 205, 110, 230, 110);
@@ -4298,12 +4283,18 @@ function generateGrade9booleanProblem(ctx, canvas) {
 
         drawLine(ctx, 280, 120, 320, 120);
 
-        // Draw Wire Labels (X, Y, Q)
-        ctx.fillStyle = "#E64097"; 
-        ctx.fillText("X", 180, 55);
-        ctx.fillText("Y", 180, 150);
-        
-        ctx.fillText("Q", 330, 127); // Q is now Pink!
+        // 4. Drawing: Gates (Drawn last so the white bubbles mask the wires)
+        if (topGate === 'OR') drawORGate(ctx, 120, 40);
+        else if (topGate === 'AND') drawANDGate(ctx, 120, 40);
+        else if (topGate === 'NAND') drawNANDGate(ctx, 120, 40);
+        else if (topGate === 'NOR') drawNORGate(ctx, 120, 40);
+
+        drawNOTGate(ctx, 120, 160); 
+
+        if (finalGate === 'OR') drawORGate(ctx, 230, 95);
+        else if (finalGate === 'AND') drawANDGate(ctx, 230, 95);
+        else if (finalGate === 'NAND') drawNANDGate(ctx, 230, 95);
+        else if (finalGate === 'NOR') drawNORGate(ctx, 230, 95);
 
         // 5. Calculate the Correct Answers
         let ansX = getExp(topGate, "A", "B");
