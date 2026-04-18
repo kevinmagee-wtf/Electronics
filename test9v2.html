@@ -4231,20 +4231,34 @@ function generateGrade9booleanProblem(ctx, canvas) {
             });
         });
 
-        // ---------------------------------------------------------
-        // BULLETPROOF RADIO RESET & VALUE INJECTION
+// ---------------------------------------------------------
+        // BULLETPROOF RADIO RESET, VALUE INJECTION & TEXT WIPE
         // ---------------------------------------------------------
         const boolRadios = document.querySelectorAll('input[name="g9boolCombineRadio"]');
+        
+        // 1. Reset the text placeholders back to "___" (Clears previous problem inputs)
+        const placeholders = [
+            'sopPlaceholder1a', 'sopPlaceholder2a', 'sopPlaceholder3a',
+            'sopPlaceholder1b', 'sopPlaceholder2b', 'sopPlaceholder3b'
+        ];
+        placeholders.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = "___";
+        });
+
         if (boolRadios.length >= 2) {
+            // 2. Ensure values are hardcoded (Prevents logic break)
             boolRadios[0].value = "OR";  
             boolRadios[1].value = "AND"; 
             
-            // 👇 NEW: Clear the green/red border from the container box
+            // 3. Clear the green/red border from the container box
             const radioBox = boolRadios[0].closest('div');
             if (radioBox) {
                 radioBox.style.borderColor = "transparent"; 
             }
         }
+
+        // 4. Uncheck the actual radio buttons
         boolRadios.forEach(radio => radio.checked = false);
 
         // 5. Build Solution Text
