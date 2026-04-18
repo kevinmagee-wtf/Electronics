@@ -2164,9 +2164,19 @@ function drawCanvasSubscript(ctx, mainStr, subStr, suffixStr, x, y, size, color)
 // Helper to add an overbar to an entire expression using Unicode \u0305
 const applyOverbar = (str) => {
     if (!str) return "";
-    // Remove existing outer brackets for the bar if they exist to prevent double-bracketing
+    // Remove existing outer brackets for the bar if they exist
     let clean = str.replace(/^\((.*)\)$/, '$1');
-    return clean.split('').map(char => char + '\u0305').join('');
+    let result = "";
+    
+    // Loop through characters safely
+    for (let i = 0; i < clean.length; i++) {
+        result += clean[i];
+        // Only add an overbar if the character isn't ALREADY an overbar
+        if (clean[i] !== '\u0305') {
+            result += '\u0305';
+        }
+    }
+    return result;
 };
     
 // ==========================================
@@ -4190,7 +4200,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
                 let aPart = row[0] ? "A" : "A\u0305";
                 let bPart = row[1] ? "B" : "B\u0305";
                 let cPart = row[2] ? "C" : "C\u0305";
-                // Tightened notation (no spaces)
+                // NO SPACES for tight fit
                 correctStrings.push(`${aPart}.${bPart}.${cPart}`); 
             } else {
                 ctx.fillStyle = "#999"; 
@@ -4201,6 +4211,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
         window.g9boolAnswers = correctStrings;
         window.g9boolActiveMode = 'sop'; 
 
+        // NO SPACES in options
         const allPossibleCombos = [
             "A\u0305.B\u0305.C\u0305", "A\u0305.B\u0305.C", "A\u0305.B.C\u0305", "A\u0305.B.C",
             "A.B\u0305.C\u0305", "A.B\u0305.C", "A.B.C\u0305", "A.B.C"
@@ -4232,8 +4243,9 @@ function generateGrade9booleanProblem(ctx, canvas) {
         }
         boolRadios.forEach(radio => radio.checked = false);
 
-        let solHTML = `1. Identify rows where Q=1.<br>2. For each row, use a bar if the input is 0.<br>`;
-        solHTML += `Rows found: <b>${correctStrings.join(", ")}</b><br>3. Combine with + (OR) for the system.`;
+        // Teaching instructions restored
+        let solHTML = `1. Identify rows where Q=1.<br>2. For each row, write the inputs as a product (AND). Use a bar if the input is 0.<br>`;
+        solHTML += `Rows found: <b>${correctStrings.join(", ")}</b><br>3. Combine them with + (OR) for the final system equation.`;
         document.getElementById('solText').innerHTML = solHTML;
 
     } else {
@@ -4246,12 +4258,12 @@ function generateGrade9booleanProblem(ctx, canvas) {
         const topGate = gateTypes[Math.floor(Math.random() * gateTypes.length)];
         const finalGate = gateTypes[Math.floor(Math.random() * gateTypes.length)];
 
-        // Helper uses the new global applyOverbar
+        // SPACES INCLUDED here!
         function getExp(gate, a, b) {
-            if (gate === 'AND') return `${a}.${b}`;
-            if (gate === 'OR') return `${a}+${b}`;
-            if (gate === 'NAND') return applyOverbar(`${a}.${b}`);
-            if (gate === 'NOR') return applyOverbar(`${a}+${b}`);
+            if (gate === 'AND') return `${a} . ${b}`;
+            if (gate === 'OR') return `${a} + ${b}`;
+            if (gate === 'NAND') return applyOverbar(`${a} . ${b}`);
+            if (gate === 'NOR') return applyOverbar(`${a} + ${b}`);
         }
 
         // Draw inputs and wires
@@ -4283,7 +4295,8 @@ function generateGrade9booleanProblem(ctx, canvas) {
 
         document.getElementById('solText').innerHTML = `<b>X:</b> ${ansX}<br><b>Y:</b> ${ansY}<br><b>Q:</b> ${ansQ}`;
         
-        const xOptions = ["A.B", "A+B", applyOverbar("A.B"), applyOverbar("A+B")];
+        // SPACES INCLUDED here!
+        const xOptions = ["A . B", "A + B", applyOverbar("A . B"), applyOverbar("A + B")];
         const yOptions = ["C", "C\u0305", "A", "B"];
         
         let qSet = new Set();
