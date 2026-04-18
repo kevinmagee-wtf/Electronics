@@ -2168,7 +2168,7 @@ function drawCanvasSubscript(ctx, mainStr, subStr, suffixStr, x, y, size, color)
 // Helper to draw the little inversion bubble for NOT, NAND, and NOR
 function drawInversionBubble(ctx, x, y) {
     ctx.beginPath();
-    ctx.arc(x + 55, y + 25, 5, 0, 2 * Math.PI); // 5px radius bubble at the output
+    ctx.arc(x + 55, y, 5, 0, 2 * Math.PI); // Now perfectly centered on 'y'
     ctx.fillStyle = "white";
     ctx.fill();
     ctx.stroke();
@@ -2225,20 +2225,24 @@ function drawNOTGate(ctx, x, y) {
     ctx.lineWidth = 2;
     ctx.strokeStyle = "black";
 
-    // Triangle body
-    ctx.moveTo(x, y + 5);
-    ctx.lineTo(x + 50, y + 25); // Tip
-    ctx.lineTo(x, y + 45);
+    // Triangle body (Centered on 'y')
+    ctx.moveTo(x, y - 20);
+    ctx.lineTo(x + 50, y);
+    ctx.lineTo(x, y + 20);
     ctx.closePath();
     ctx.stroke();
 
+    // Call your inversion bubble function!
     drawInversionBubble(ctx, x, y);
 
-    // Input wire stub (Single input centered)
+    // Input wire stub 
     ctx.beginPath();
-    ctx.moveTo(x - 10, y + 25); ctx.lineTo(x, y + 25);
-    // Output wire stub (starts after the bubble)
-    ctx.moveTo(x + 60, y + 25); ctx.lineTo(x + 70, y + 25);
+    ctx.moveTo(x - 10, y); 
+    ctx.lineTo(x, y);
+    
+    // Output wire stub (starts after the bubble at x + 60)
+    ctx.moveTo(x + 60, y); 
+    ctx.lineTo(x + 70, y);
     ctx.stroke();
 }
 
