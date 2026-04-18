@@ -4153,7 +4153,7 @@ function generateBooleanProblem(ctx, canvas) {
 //*****************************************************************************************
 
 function generateGrade9booleanProblem(ctx, canvas) {
-    // 1. Setup UI
+    // 1. Setup UI & Global Reset
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -4165,6 +4165,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
     if (sopContainer) sopContainer.style.display = 'none';
     if (pathContainer) pathContainer.style.display = 'none';
 
+    // Randomize between Truth Table (SOP) or Circuit Pathfinder
     const isPathfinder = Math.random() > 0.5;
 
     if (!isPathfinder) {
@@ -4185,11 +4186,8 @@ function generateGrade9booleanProblem(ctx, canvas) {
         activeIndices.sort((a, b) => a - b); 
 
         // Drawing Table Headers
-        ctx.fillStyle = "#333";
-        ctx.font = "bold 20px Arial";
-        ctx.fillText("Truth Table", 40, 40);
-        ctx.font = "bold 18px Arial";
-        ctx.fillText("A", 40, 80); ctx.fillText("B", 80, 80); ctx.fillText("C", 120, 80); ctx.fillText("Q", 170, 80);
+        ctx.fillStyle = "#333"; ctx.font = "bold 20px Arial"; ctx.fillText("Truth Table", 40, 40);
+        ctx.font = "bold 18px Arial"; ctx.fillText("A", 40, 80); ctx.fillText("B", 80, 80); ctx.fillText("C", 120, 80); ctx.fillText("Q", 170, 80);
 
         ctx.beginPath();
         ctx.moveTo(30, 90); ctx.lineTo(200, 90);   
@@ -4201,8 +4199,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
         let correctStrings = [];
         rows.forEach((row, i) => {
             let y = 120 + (i * 30); 
-            ctx.fillStyle = "#333";
-            ctx.font = "18px Arial";
+            ctx.fillStyle = "#333"; ctx.font = "18px Arial";
             ctx.fillText(row[0], 40, y); ctx.fillText(row[1], 80, y); ctx.fillText(row[2], 120, y);
 
             let isOne = activeIndices.includes(i);
@@ -4212,7 +4209,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
                 let aPart = row[0] ? "A" : "A\u0305";
                 let bPart = row[1] ? "B" : "B\u0305";
                 let cPart = row[2] ? "C" : "C\u0305";
-                // NO SPACES for tight fit
+                // GCSE STALKER: NO SPACES for tight notation in SOP
                 correctStrings.push(`${aPart}.${bPart}.${cPart}`); 
             } else {
                 ctx.fillStyle = "#999"; 
@@ -4223,7 +4220,6 @@ function generateGrade9booleanProblem(ctx, canvas) {
         window.g9boolAnswers = correctStrings;
         window.g9boolActiveMode = 'sop'; 
 
-        // NO SPACES in options
         const allPossibleCombos = [
             "A\u0305.B\u0305.C\u0305", "A\u0305.B\u0305.C", "A\u0305.B.C\u0305", "A\u0305.B.C",
             "A.B\u0305.C\u0305", "A.B\u0305.C", "A.B.C\u0305", "A.B.C"
@@ -4241,11 +4237,10 @@ function generateGrade9booleanProblem(ctx, canvas) {
             }
         });
 
-        // Reset Part 2 (Radio and Text)
+        // Reset Part 2 (Combine logic)
         const boolRadios = document.querySelectorAll('input[name="g9boolCombineRadio"]');
         ['sopPlaceholder1a', 'sopPlaceholder2a', 'sopPlaceholder3a', 'sopPlaceholder1b', 'sopPlaceholder2b', 'sopPlaceholder3b'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = "___";
+            const el = document.getElementById(id); if (el) el.textContent = "___";
         });
 
         if (boolRadios.length >= 2) {
@@ -4255,10 +4250,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
         }
         boolRadios.forEach(radio => radio.checked = false);
 
-        // Teaching instructions restored
-        let solHTML = `1. Identify rows where Q=1.<br>2. For each row, write the inputs as a product (AND). Use a bar if the input is 0.<br>`;
-        solHTML += `Rows found: <b>${correctStrings.join(", ")}</b><br>3. Combine them with + (OR) for the final system equation.`;
-        document.getElementById('solText').innerHTML = solHTML;
+        document.getElementById('solText').innerHTML = `Rows found: <b>${correctStrings.join(", ")}</b><br>Combine them with + (OR) for the final system equation.`;
 
     } else {
         // ==========================================
@@ -4270,7 +4262,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
         const topGate = gateTypes[Math.floor(Math.random() * gateTypes.length)];
         const finalGate = gateTypes[Math.floor(Math.random() * gateTypes.length)];
 
-        // SPACES INCLUDED here!
+        // Local helper for Circuit notation (uses spaces for clarity)
         function getExp(gate, a, b) {
             if (gate === 'AND') return `${a} . ${b}`;
             if (gate === 'OR') return `${a} + ${b}`;
@@ -4278,7 +4270,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
             if (gate === 'NOR') return applyOverbar(`${a} + ${b}`);
         }
 
-        // Draw inputs and wires
+        // Render diagram (Assuming drawLine, drawANDGate, etc., are available)
         ctx.fillStyle = "#333"; ctx.font = "bold 20px Arial";
         ctx.fillText("A", 20, 62); ctx.fillText("B", 20, 82); ctx.fillText("C", 20, 167);
         drawLine(ctx, 40, 55, 120, 55); drawLine(ctx, 40, 75, 120, 75); drawLine(ctx, 40, 160, 120, 160); 
@@ -4286,7 +4278,6 @@ function generateGrade9booleanProblem(ctx, canvas) {
         drawLine(ctx, 170, 160, 205, 160); drawLine(ctx, 205, 160, 205, 130); drawLine(ctx, 205, 130, 230, 130);
         drawLine(ctx, 280, 120, 320, 120);
 
-        // Draw Gates
         if (topGate === 'OR') drawORGate(ctx, 120, 40);
         else if (topGate === 'AND') drawANDGate(ctx, 120, 40);
         else if (topGate === 'NAND') drawNANDGate(ctx, 120, 40);
@@ -4307,7 +4298,6 @@ function generateGrade9booleanProblem(ctx, canvas) {
 
         document.getElementById('solText').innerHTML = `<b>X:</b> ${ansX}<br><b>Y:</b> ${ansY}<br><b>Q:</b> ${ansQ}`;
         
-        // SPACES INCLUDED here!
         const xOptions = ["A . B", "A + B", applyOverbar("A . B"), applyOverbar("A + B")];
         const yOptions = ["C", "C\u0305", "A", "B"];
         
