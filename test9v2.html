@@ -4362,6 +4362,13 @@ function generateGrade9booleanProblem(ctx, canvas) {
 
         if (radioContainer) {
             radioContainer.innerHTML = ''; // Clear old radios
+            
+            // --- NEW: Reset any grading styles from the previous question ---
+            radioContainer.style.border = 'none'; 
+            radioContainer.style.backgroundColor = 'transparent';
+            radioContainer.className = ''; // Clears any custom CSS classes like 'correct' or 'incorrect'
+            // ----------------------------------------------------------------
+
             qArray.forEach((htmlExp, idx) => {
                 let wrapper = document.createElement('label');
                 wrapper.style.display = 'flex';
