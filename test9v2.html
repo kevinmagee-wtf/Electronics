@@ -2251,13 +2251,16 @@ function drawNANDGate(ctx, x, y) {
     drawANDGate(ctx, x, y); 
     
     // Erase the standard output stub to make room for the bubble
-    ctx.clearRect(x + 50, y + 20, 10, 10); 
+    // Made the clear width slightly larger to ensure the old line is fully wiped
+    ctx.clearRect(x + 49, y + 20, 22, 10); 
     
-    drawInversionBubble(ctx, x, y);
+    // Call the newly centered bubble, shifting it down to the AND gate's tip
+    drawInversionBubble(ctx, x, y + 25);
     
     // Redraw the output stub extending from the bubble
     ctx.beginPath();
-    ctx.moveTo(x + 60, y + 25); ctx.lineTo(x + 70, y + 25);
+    ctx.moveTo(x + 60, y + 25); 
+    ctx.lineTo(x + 70, y + 25);
     ctx.stroke();
 }
 
@@ -2266,13 +2269,15 @@ function drawNORGate(ctx, x, y) {
     drawORGate(ctx, x, y);
     
     // Erase the standard output stub to make room for the bubble
-    ctx.clearRect(x + 50, y + 20, 10, 10); 
+    ctx.clearRect(x + 49, y + 20, 22, 10); 
     
-    drawInversionBubble(ctx, x, y);
+    // Call the newly centered bubble, shifting it down to the OR gate's tip
+    drawInversionBubble(ctx, x, y + 25);
     
     // Redraw the output stub extending from the bubble
     ctx.beginPath();
-    ctx.moveTo(x + 60, y + 25); ctx.lineTo(x + 70, y + 25);
+    ctx.moveTo(x + 60, y + 25); 
+    ctx.lineTo(x + 70, y + 25);
     ctx.stroke();
 }
   
