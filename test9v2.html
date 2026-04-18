@@ -4236,8 +4236,14 @@ function generateGrade9booleanProblem(ctx, canvas) {
         // ---------------------------------------------------------
         const boolRadios = document.querySelectorAll('input[name="g9boolCombineRadio"]');
         if (boolRadios.length >= 2) {
-            boolRadios[0].value = "OR";  // Force the first button to equal OR
-            boolRadios[1].value = "AND"; // Force the second button to equal AND
+            boolRadios[0].value = "OR";  
+            boolRadios[1].value = "AND"; 
+            
+            // 👇 NEW: Clear the green/red border from the container box
+            const radioBox = boolRadios[0].closest('div');
+            if (radioBox) {
+                radioBox.style.borderColor = "transparent"; 
+            }
         }
         boolRadios.forEach(radio => radio.checked = false);
 
