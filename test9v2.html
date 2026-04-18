@@ -3933,70 +3933,144 @@ function generateGrade9PowerProblem() {
 //****************************************************************************************
 
 // ==========================================
-    // LOGIC SYSTEMS INTERCEPTOR (TRUTH TABLE)
-    // ==========================================
-    if (currentMode === 'logic_system') {
-        let allCorrect = true;
-        let hasEmpty = false;
+// LOGIC SYSTEMS (FULL TRUTH TABLE)
+// ==========================================
+function generateLogicSystemProblem(ctx, canvas) {
+    // Setup UI & Global Reset
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // 1. Safety Check: Did they fill out all 24 boxes?
-        for (let i = 0; i < 8; i++) {
-            let dVal = document.getElementById(`sysD_${i}`).value.trim();
-            let eVal = document.getElementById(`sysE_${i}`).value.trim();
-            let qVal = document.getElementById(`sysQ_${i}`).value.trim();
-            if (dVal === "" || eVal === "" || qVal === "") {
-                hasEmpty = true;
-                break;
-            }
-        }
+    const container = document.getElementById('inputGroupLogicSystem');
+    if (container) container.style.display = 'block';
 
-        if (hasEmpty) {
-            feedback.innerHTML = "<span style='color: #dc3545;'>Please fill in all 0s and 1s in the table!</span>";
-            return;
-        }
+    // Gate Logic
+    const gateTypes = ['AND', 'OR', 'NAND', 'NOR'];
+    const topGate = gateTypes[Math.floor(Math.random() * gateTypes.length)];
+    const bottomGate = Math.random() > 0.5 ? 'NOT' : 'WIRE'; // Variety: Sometimes a NOT gate, sometimes just a wire!
+    const finalGate = gateTypes[Math.floor(Math.random() * gateTypes.length)];
 
-        if (!hasCheckedCurrentProblem) { 
-            problemsAttempted++; 
-            hasCheckedCurrentProblem = true; 
-        }
+    // Boolean Logic Helper
+    const compute = (gate, in1, in2) => {
+        if (gate === 'AND') return (in1 & in2);
+        if (gate === 'OR') return (in1 | in2);
+        if (gate === 'NAND') return !(in1 & in2) ? 1 : 0;
+        if (gate === 'NOR') return !(in1 | in2) ? 1 : 0;
+        if (gate === 'NOT') return in1 ? 0 : 1;
+        if (gate === 'WIRE') return in1; // Passes the value straight through
+    };
 
-        // 2. Grade every single cell independently
-        for (let i = 0; i < 8; i++) {
-            ['D', 'E', 'Q'].forEach(col => {
-                let inputEl = document.getElementById(`sys${col}_${i}`);
-                let correctAns = window.logicSystemAnswers[col.toLowerCase()][i]; // Pulls from the array we saved earlier
-                
-                if (inputEl.value == correctAns) {
-                    inputEl.style.backgroundColor = "#d4edda"; // Light Green Background
-                    inputEl.style.borderColor = "#28a745";
-                } else {
-                    inputEl.style.backgroundColor = "#f8d7da"; // Light Red Background
-                    inputEl.style.borderColor = "#dc3545";
-                    allCorrect = false;
-                }
-            });
-        }
+    // Calculate Answers for all 8 rows
+    window.logicSystemAnswers = { d: [], e: [], q: [] };
+    
+    let tableHTML = `
+        <table class="table table-bordered text-center" style="width:100%; max-width: 380px; margin: 0 auto; background: white;">
+            <thead style="background-color: #f8f9fa;">
+                <tr>
+                    <th style="color: #c83377;">C</th>
+                    <th style="color: #c83377;">B</th>
+                    <th style="color: #c83377;">A</th>
+                    <th style="color: #c83377;">D</th>
+                    <th style="color: #c83377;">E</th>
+                    <th style="color: #c83377;">Q</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
-        const checkansBtn = document.getElementById('checkansBtn');
+    for (let i = 0; i < 8; i++) {
+        // Generates C,B,A descending from 000 to 111 perfectly
+        let c = (i >> 2) & 1;
+        let b = (i >> 1) & 1;
+        let a = i & 1;
 
-        if (allCorrect) {
-            isCurrentProblemSolved = true;
-            if (canEarnPoints) { problemsCorrect++; }
-            feedback.innerHTML = "<span style='color: #198754;'>Perfect! You successfully mapped the entire logic system!</span>";
-            canEarnPoints = false;
-            if (checkansBtn) checkansBtn.style.display = 'none';
-            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
-        } else {
-            canEarnPoints = false; 
-            feedback.innerHTML = "<span style='color: #dc3545;'>Some outputs are incorrect. Trace the red boxes back to the circuit diagram to fix your errors!</span>";
-            const solDiv = document.getElementById('solutions');
-            if (solDiv) solDiv.style.display = 'block';
-            if (typeof viewedSolution !== 'undefined') viewedSolution = true;
-        }
-        
-        if (typeof updateScoreboard === "function") updateScoreboard();
-        return; 
+        // D connects to A and B. E connects to C.
+        let d = compute(topGate, a, b);
+        let e = compute(bottomGate, c, 0); 
+        let q = compute(finalGate, d, e);
+
+        window.logicSystemAnswers.d.push(d);
+        window.logicSystemAnswers.e.push(e);
+        window.logicSystemAnswers.q.push(q);
+
+        tableHTML += `
+            <tr>
+                <td style="vertical-align: middle; font-weight: bold;">${c}</td>
+                <td style="vertical-align: middle; font-weight: bold;">${b}</td>
+                <td style="vertical-align: middle; font-weight: bold;">${a}</td>
+                <td style="padding: 4px;"><input type="text" id="sysD_${i}" maxlength="1" style="width: 40px; height: 30px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;"></td>
+                <td style="padding: 4px;"><input type="text" id="sysE_${i}" maxlength="1" style="width: 40px; height: 30px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;"></td>
+                <td style="padding: 4px;"><input type="text" id="sysQ_${i}" maxlength="1" style="width: 40px; height: 30px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;"></td>
+            </tr>
+        `;
     }
+    tableHTML += `</tbody></table>`;
+
+    const tableContainer = document.getElementById('logicSystemTableContainer');
+    if (tableContainer) tableContainer.innerHTML = tableHTML;
+    
+    // Safety Lock: Prevent students from typing letters or numbers other than 0 or 1
+    for (let i = 0; i < 8; i++) {
+        ['sysD', 'sysE', 'sysQ'].forEach(prefix => {
+            let inputEl = document.getElementById(`${prefix}_${i}`);
+            if(inputEl) {
+                inputEl.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^01]/g, ''); // Instantly deletes anything that isn't 0 or 1
+                    this.style.backgroundColor = 'white'; // Clears red/green feedback if they edit it
+                    this.style.borderColor = '#ccc';
+                });
+            }
+        });
+    }
+
+    // DRAW THE CIRCUIT
+    ctx.fillStyle = "#333"; 
+    ctx.font = "bold 18px Arial"; 
+    
+    // Pink Labels
+    ctx.fillStyle = "#c83377"; 
+    ctx.fillText("A", 20, 60); 
+    ctx.fillText("B", 20, 80); 
+    ctx.fillText("C", 20, 165); 
+    ctx.fillText("D", 180, 55);  
+    ctx.fillText("E", 180, 150); 
+    ctx.fillText("Q", 290, 110); 
+    ctx.fillStyle = "#333"; 
+
+    // Wires
+    if (typeof drawLine === 'function') {
+        drawLine(ctx, 40, 55, 120, 55);  // A to Top Gate
+        drawLine(ctx, 40, 75, 120, 75);  // B to Top Gate
+        drawLine(ctx, 170, 65, 205, 65);   // D wire out
+        drawLine(ctx, 205, 65, 205, 105);  // D wire down
+        drawLine(ctx, 205, 105, 230, 105); // D wire into Final Gate
+
+        drawLine(ctx, 40, 160, 120, 160);  // C to Bottom Gate
+        if (bottomGate === 'WIRE') {
+            drawLine(ctx, 120, 160, 170, 160); // Straight through instead of gate
+        }
+        drawLine(ctx, 170, 160, 205, 160);   // E wire out
+        drawLine(ctx, 205, 160, 205, 125);   // E wire up
+        drawLine(ctx, 205, 125, 230, 125);   // E wire into Final Gate
+
+        drawLine(ctx, 280, 115, 320, 115); // Q wire out
+    }
+
+    // Draw Gates based on random selection
+    if (topGate === 'AND' && typeof drawANDGate === 'function') drawANDGate(ctx, 120, 40);
+    else if (topGate === 'OR' && typeof drawORGate === 'function') drawORGate(ctx, 120, 40);
+    else if (topGate === 'NAND' && typeof drawNANDGate === 'function') drawNANDGate(ctx, 120, 40);
+    else if (topGate === 'NOR' && typeof drawNORGate === 'function') drawNORGate(ctx, 120, 40);
+
+    if (bottomGate === 'NOT' && typeof drawNOTGate === 'function') drawNOTGate(ctx, 120, 160);
+
+    if (finalGate === 'AND' && typeof drawANDGate === 'function') drawANDGate(ctx, 230, 90);
+    else if (finalGate === 'OR' && typeof drawORGate === 'function') drawORGate(ctx, 230, 90);
+    else if (finalGate === 'NAND' && typeof drawNANDGate === 'function') drawNANDGate(ctx, 230, 90);
+    else if (finalGate === 'NOR' && typeof drawNORGate === 'function') drawNORGate(ctx, 230, 90);
+
+    let solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = `Work through the columns logically. Calculate <b>D</b> using A and B. Then calculate <b>E</b> using C. Finally, combine D and E for <b>Q</b>.`;
+}
 //*****************************************************************************************
 
 function generateBooleanProblem(ctx, canvas) {
