@@ -4045,11 +4045,13 @@ function generateLogic_icProblem(ctx, canvas) {
         if (typeof fn === 'function') {
             ctx.save();
             ctx.translate(x, y);
-            ctx.scale(0.32, 0.32); // <-- The Goldilocks zone (32% size)
             
-            // Adjust line width so it still looks like 1.5px after scaling
+            // CRANK THIS UP TO 0.7 
+            ctx.scale(0.7, 0.7); 
+            
+            // Adjust line width to look normal at this new larger scale
             ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 5; 
+            ctx.lineWidth = 2.5; 
             
             fn(ctx, 0, 0);
             ctx.restore();
