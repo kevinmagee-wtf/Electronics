@@ -4021,7 +4021,7 @@ function generateLogic_icProblem(ctx, canvas) {
     ctx.arc(icX + 15, icY + icH - 15, 3, 0, Math.PI*2);
     ctx.fill();
 
-    // 4. Draw Internal Logic Gates & Routing
+// 4. Draw Internal Logic Gates & Routing
     ctx.strokeStyle = "#000000"; 
     ctx.lineWidth = 1.5;
     ctx.lineCap = "round";
@@ -4045,18 +4045,21 @@ function generateLogic_icProblem(ctx, canvas) {
     };
 
     if (type === 'NOT') {
+        // --- HEX INVERTER ALIGNMENT (Slightly left, 0px output wire) ---
         const notPairsBottom = [[0,1], [2,3], [4,5]]; 
         notPairsBottom.forEach(pair => {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
             
-            const gateX = px0 + 8; // Pushed left for better alignment with pin A
+            const gateX = px0 + 7; // Moved slightly left (back)
             const gateY = icY + icH - 35; 
 
             drawWire(px0, icY + icH, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
             drawGateSymbol('NOT', gateX, gateY); 
-            drawWire(gateX + 34.5, gateY, px1, gateY); 
+            
+            // 35.5 hits the next pin (42.5 spacing) perfectly with a 7px offset
+            drawWire(gateX + 35.5, gateY, px1, gateY); 
             drawWire(px1, gateY, px1, icY + icH); 
         });
         
@@ -4065,47 +4068,46 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
 
-            const gateX = px0 + 8; // Pushed left for better alignment with pin A
+            const gateX = px0 + 7; 
             const gateY = icY + 35; 
 
             drawWire(px0, icY, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
             drawGateSymbol('NOT', gateX, gateY); 
-            drawWire(gateX + 34.5, gateY, px1, gateY); 
+            drawWire(gateX + 35.5, gateY, px1, gateY); 
             drawWire(px1, gateY, px1, icY); 
         });
     } else {
+        // --- QUAD GATE ALIGNMENT (Cleaned up spacing) ---
         const quadBottom = [[0,1,2], [3,4,5]];
         quadBottom.forEach(group => {
             const px0 = pinXs[group[0]]; // Pin A
             const px1 = pinXs[group[1]]; // Pin B
             const px2 = pinXs[group[2]]; // Output
 
-            const gateX = px0 + 18; // Pulled left slightly for symmetric Quad alignment
+            const gateX = px0 + 20; // Better centering for larger chip
             const gateY = icY + icH - 35; 
             const topInY = gateY - 5.5;   
             const botInY = gateY + 5.5;   
-            const outY = gateY;           
 
-            // Pin A (Left) -> Top Input
+            // Pin A -> Top Input
             drawWire(px0, icY + icH, px0, topInY); 
             drawWire(px0, topInY, gateX, topInY); 
             
-            // Pin B (Right) -> Bottom Input 
-            const turnY_B = icY + icH - 10;                
-            const routeX_B = px0 + (pinSpacing / 2); // Perfectly centered vertical drop
+            // Pin B -> Bottom Input (Symmetric centered drop)
+            const turnY_B = icY + icH - 12;                
+            const routeX_B = px0 + (pinSpacing / 2); 
             
             drawWire(px1, icY + icH, px1, turnY_B); 
             drawWire(px1, turnY_B, routeX_B, turnY_B); 
             drawWire(routeX_B, turnY_B, routeX_B, botInY); 
             drawWire(routeX_B, botInY, gateX, botInY); 
             
-            // Draw Gate
             drawGateSymbol(type, gateX, gateY); 
 
             // Output -> Pin Y
-            drawWire(gateX + 34.5, outY, px2, outY); 
-            drawWire(px2, outY, px2, icY + icH); 
+            drawWire(gateX + 34.5, gateY, px2, gateY); 
+            drawWire(px2, gateY, px2, icY + icH); 
         });
         
         const quadTop = [[1,2,3], [4,5,6]]; 
@@ -4114,31 +4116,29 @@ function generateLogic_icProblem(ctx, canvas) {
             const px1 = pinXs[group[1]]; // Pin B
             const px2 = pinXs[group[2]]; // Output
 
-            const gateX = px0 + 18; // Pulled left slightly for symmetric Quad alignment
+            const gateX = px0 + 20; 
             const gateY = icY + 35;       
             const topInY = gateY - 5.5;   
             const botInY = gateY + 5.5;   
-            const outY = gateY;           
 
-            // Pin A (Left) -> Bottom Input
+            // Pin A -> Bottom Input
             drawWire(px0, icY, px0, botInY); 
             drawWire(px0, botInY, gateX, botInY); 
             
-            // Pin B (Right) -> Top Input 
-            const turnY_T = icY + 10;                 
-            const routeX_T = px0 + (pinSpacing / 2);  // Perfectly centered vertical drop
+            // Pin B -> Top Input 
+            const turnY_T = icY + 12;                 
+            const routeX_T = px0 + (pinSpacing / 2);  
             
             drawWire(px1, icY, px1, turnY_T); 
             drawWire(px1, turnY_T, routeX_T, turnY_T); 
             drawWire(routeX_T, turnY_T, routeX_T, topInY); 
             drawWire(routeX_T, topInY, gateX, topInY); 
             
-            // Draw Gate
             drawGateSymbol(type, gateX, gateY); 
 
             // Output -> Pin Y
-            drawWire(gateX + 34.5, outY, px2, outY); 
-            drawWire(px2, outY, px2, icY); 
+            drawWire(gateX + 34.5, gateY, px2, gateY); 
+            drawWire(px2, gateY, px2, icY); 
         });
     }
     ctx.restore();
