@@ -3938,14 +3938,19 @@ function generateGrade9PowerProblem() {
 // LOGIC SYSTEMS (FULL TRUTH TABLE)
 // ==========================================
 function generateLogicSystemProblem(ctx, canvas) {
-    // 1. Setup UI & Global Reset
+    // 1. Topic Map & Progress Tracking
+    if (typeof updateTopicMap === 'function') {
+        updateTopicMap('logicsystem'); 
+    }
+
+    // 2. Setup UI & Global Reset
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const container = document.getElementById('inputGroupLogicSystem');
     if (container) container.style.display = 'block';
 
-    // 2. Gate Logic Selection
+    // 3. Gate Logic Selection
     const gateTypes = ['AND', 'OR', 'NAND', 'NOR'];
     const topGate = gateTypes[Math.floor(Math.random() * gateTypes.length)];
     const bottomGate = Math.random() > 0.5 ? 'NOT' : 'WIRE'; 
@@ -3961,7 +3966,7 @@ function generateLogicSystemProblem(ctx, canvas) {
         if (gate === 'WIRE') return in1; 
     };
 
-    // 3. Calculate Answers and Build the Compact Table
+    // 4. Calculate Answers & Build Table
     window.logicSystemAnswers = { d: [], e: [], q: [] };
     
     let tableHTML = `
@@ -3994,41 +3999,25 @@ function generateLogicSystemProblem(ctx, canvas) {
 
         tableHTML += `
             <tr>
-                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; width: 30px; background: #fff;">${c}</td>
-                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; width: 30px; background: #fff;">${b}</td>
-                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; width: 30px; background: #fff;">${a}</td>
-                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;">
-                    <div style="width: 30px; margin: 0 auto;">
-                        <input type="text" id="sysD_${i}" maxlength="1" 
-                            style="width: 100% !important; height: 22px !important; line-height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; display: block; padding: 0;">
-                    </div>
-                </td>
-                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;">
-                    <div style="width: 30px; margin: 0 auto;">
-                        <input type="text" id="sysE_${i}" maxlength="1" 
-                            style="width: 100% !important; height: 22px !important; line-height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; display: block; padding: 0;">
-                    </div>
-                </td>
-                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;">
-                    <div style="width: 30px; margin: 0 auto;">
-                        <input type="text" id="sysQ_${i}" maxlength="1" 
-                            style="width: 100% !important; height: 22px !important; line-height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; display: block; padding: 0;">
-                    </div>
-                </td>
+                <td style="font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${c}</td>
+                <td style="font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${b}</td>
+                <td style="font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${a}</td>
+                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;"><input type="text" id="sysD_${i}" maxlength="1" style="width: 30px; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;"></td>
+                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;"><input type="text" id="sysE_${i}" maxlength="1" style="width: 30px; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;"></td>
+                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;"><input type="text" id="sysQ_${i}" maxlength="1" style="width: 30px; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;"></td>
             </tr>
         `;
     }
     tableHTML += `</tbody></table>`;
-
     const tableContainer = document.getElementById('logicSystemTableContainer');
     if (tableContainer) tableContainer.innerHTML = tableHTML;
     
-    // 4. Input Safety Lock & Feedback Reset
+    // 5. Input Safety Lock
     for (let i = 0; i < 8; i++) {
         ['sysD', 'sysE', 'sysQ'].forEach(prefix => {
-            let inputEl = document.getElementById(`${prefix}_${i}`);
-            if(inputEl) {
-                inputEl.addEventListener('input', function() {
+            let el = document.getElementById(`${prefix}_${i}`);
+            if(el) {
+                el.addEventListener('input', function() {
                     this.value = this.value.replace(/[^01]/g, ''); 
                     this.style.backgroundColor = 'white'; 
                     this.style.borderColor = '#ccc';
@@ -4037,62 +4026,50 @@ function generateLogicSystemProblem(ctx, canvas) {
         });
     }
 
-    // 5. DRAW THE CIRCUIT
-    // First, set up the text labels
+    // 6. DRAW THE CIRCUIT
     ctx.font = "bold 18px Arial"; 
-    
-    // Pink Labels
     ctx.fillStyle = "#c83377"; 
-    ctx.fillText("A", 20, 60); 
-    ctx.fillText("B", 20, 80); 
-    ctx.fillText("C", 20, 165); 
-    ctx.fillText("D", 180, 55);  
-    ctx.fillText("E", 180, 150); 
-    ctx.fillText("Q", 290, 110); 
+    ctx.fillText("A", 20, 60); ctx.fillText("B", 20, 80); ctx.fillText("C", 20, 165); 
+    ctx.fillText("D", 180, 55); ctx.fillText("E", 180, 150); ctx.fillText("Q", 290, 110); 
 
-    // --- CRISP WIRE OVERRIDE (The "Sandwich") ---
+    // --- CRISP WIRE OVERRIDE ---
     ctx.save();
-    ctx.strokeStyle = "#000000"; // Hard Black
-    ctx.lineWidth = 2;           // Matches Grade 9 "Perfect" thickness
-    ctx.globalAlpha = 1.0;
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 2;
     ctx.lineCap = "round";
 
     if (typeof drawLine === 'function') {
-        drawLine(ctx, 40, 55, 120, 55);  // A to Top Gate
-        drawLine(ctx, 40, 75, 120, 75);  // B to Top Gate
-        drawLine(ctx, 170, 65, 205, 65);   // D wire out
-        drawLine(ctx, 205, 65, 205, 105);  // D wire down
-        drawLine(ctx, 205, 105, 230, 105); // D wire into Final Gate
+        drawLine(ctx, 40, 55, 120, 55);  // A
+        drawLine(ctx, 40, 75, 120, 75);  // B
+        
+        // FIXED CONNECTION POINT D (165 instead of 170 closes the gap)
+        drawLine(ctx, 165, 65, 205, 65);   
+        drawLine(ctx, 205, 65, 205, 105);  
+        drawLine(ctx, 205, 105, 230, 105); 
 
-        drawLine(ctx, 40, 160, 120, 160);  // C to Bottom Gate
-        if (bottomGate === 'WIRE') {
-            drawLine(ctx, 120, 160, 170, 160); // Straight through instead of gate
-        }
-        drawLine(ctx, 170, 160, 205, 160);   // E wire out
-        drawLine(ctx, 205, 160, 205, 125);   // E wire up
-        drawLine(ctx, 205, 125, 230, 125);   // E wire into Final Gate
+        drawLine(ctx, 40, 160, 120, 160);  // C
+        if (bottomGate === 'WIRE') drawLine(ctx, 120, 160, 170, 160); 
+        
+        drawLine(ctx, 170, 160, 205, 160); // E
+        drawLine(ctx, 205, 160, 205, 125); 
+        drawLine(ctx, 205, 125, 230, 125); 
 
-        drawLine(ctx, 280, 115, 320, 115); // Q wire out
+        drawLine(ctx, 280, 115, 320, 115); // Q
     }
-    ctx.restore(); // Settings return to normal for the Gates themselves
-    // --------------------------------------------
+    ctx.restore();
 
-    // 6. Draw Gates
-    ctx.strokeStyle = "#333"; // Reset stroke for gate borders if needed
-    if (topGate === 'AND' && typeof drawANDGate === 'function') drawANDGate(ctx, 120, 40);
-    else if (topGate === 'OR' && typeof drawORGate === 'function') drawORGate(ctx, 120, 40);
-    else if (topGate === 'NAND' && typeof drawNANDGate === 'function') drawNANDGate(ctx, 120, 40);
-    else if (topGate === 'NOR' && typeof drawNORGate === 'function') drawNORGate(ctx, 120, 40);
+    // 7. Draw Gates
+    const draw = (type, x, y) => {
+        const fn = window[`draw${type}Gate`];
+        if (typeof fn === 'function') fn(ctx, x, y);
+    };
 
-    if (bottomGate === 'NOT' && typeof drawNOTGate === 'function') drawNOTGate(ctx, 120, 160);
-
-    if (finalGate === 'AND' && typeof drawANDGate === 'function') drawANDGate(ctx, 230, 90);
-    else if (finalGate === 'OR' && typeof drawORGate === 'function') drawORGate(ctx, 230, 90);
-    else if (finalGate === 'NAND' && typeof drawNANDGate === 'function') drawNANDGate(ctx, 230, 90);
-    else if (finalGate === 'NOR' && typeof drawNORGate === 'function') drawNORGate(ctx, 230, 90);
+    draw(topGate, 120, 40);
+    if (bottomGate === 'NOT') draw('NOT', 120, 160);
+    draw(finalGate, 230, 90);
 
     let solText = document.getElementById('solText');
-    if (solText) solText.innerHTML = `Work through the columns logically. Calculate <b>D</b> using A and B. Then calculate <b>E</b> using C. Finally, combine D and E for <b>Q</b>.`;
+    if (solText) solText.innerHTML = `Calculate <b>D</b> using A and B. Then calculate <b>E</b> using C. Finally, combine D and E for <b>Q</b>.`;
 }
 //*****************************************************************************************
 
