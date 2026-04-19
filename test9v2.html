@@ -3964,21 +3964,17 @@ function generateGrade9PowerProblem() {
 //****************************************************************************************
 
 function generateLogic_icProblem(ctx, canvas) {
-    // 1. Topic Map & Progress Tracking
-    if (typeof updateTopicMap === 'function') updateTopicMap('logic_ic');
-    if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
+    currentProblem = { type: 'logic_ic' };
     
-    // Clear canvas
+    // 1. Pick a random gate type
+    const gates = ['AND', 'OR', 'NOT', 'NAND', 'NOR', 'XOR'];
+    const type = gates[Math.floor(Math.random() * gates.length)];
+    currentProblem.gateType = type;
+
+    // 2. Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const container = document.getElementById('inputGroupLogic_ic');
-    if (container) container.style.display = 'block';
-
-    // 2. Select Random Gate Type
-    const gateTypes = ['AND', 'OR', 'NAND', 'NOR', 'NOT'];
-    const type = gateTypes[Math.floor(Math.random() * gateTypes.length)];
-
-// 3. DRAW THE IC (Dual In-line Package) - Wireframe Style
+    // 3. DRAW THE IC (Dual In-line Package) - Wireframe Style
     ctx.save();
     const icX = 60, icY = 80, icW = 280, icH = 100;
     
@@ -4032,7 +4028,7 @@ function generateLogic_icProblem(ctx, canvas) {
     ctx.arc(icX + 15, icY + icH - 15, 3, 0, Math.PI*2);
     ctx.fill();
 
-// 4. Draw Internal Logic Gates & Wiring (Exam-Style Black & White)
+    // 4. Draw Internal Logic Gates & Wiring (Exam-Style Black & White)
     ctx.strokeStyle = "#000000"; 
     ctx.lineWidth = 1.5;
     ctx.fillStyle = "#000000";
@@ -4116,72 +4112,85 @@ function generateLogic_icProblem(ctx, canvas) {
     ctx.fillText("GND", pinXs[6], icY+icH-5);
     ctx.restore();
 
-    // 5. Generate Probe Question & Answers
-    const probeAnsEl = document.getElementById('ic_probeAns');
-    const vccEl = document.getElementById('ic_vcc');
-    const typeEl = document.getElementById('ic_gateType');
-    if(probeAnsEl) { probeAnsEl.value = ""; probeAnsEl.style.backgroundColor = "white"; }
-    if(vccEl) { vccEl.value = ""; vccEl.style.backgroundColor = "white"; }
-    if(typeEl) { typeEl.value = ""; typeEl.style.backgroundColor = "white"; }
-
-    let in1 = Math.random() > 0.5 ? 1 : 0;
-    let in2 = Math.random() > 0.5 ? 1 : 0;
-    let outVal = 0;
-
-    let probeText = "";
-    if (type === 'NOT') {
-        outVal = in1 === 1 ? 0 : 1;
-        probeText = `If logic ${in1} is applied to Pin 1, what logic state will be on Pin 2?`;
-    } else {
-        if (type === 'AND') outVal = (in1 & in2);
-        if (type === 'OR') outVal = (in1 | in2);
-        if (type === 'NAND') outVal = !(in1 & in2) ? 1 : 0;
-        if (type === 'NOR') outVal = !(in1 | in2) ? 1 : 0;
-        probeText = `If logic ${in1} is on Pin 4, and logic ${in2} is on Pin 5, what outputs on Pin 6?`;
-    }
-    document.getElementById('ic_probeText').textContent = probeText;
-
-    // 6. Generate Truth Table UI
-    window.logic_icAnswers = { vcc: "14", type: type, probe: outVal.toString(), table: [] };
+    // 5. Build the UI in the Right Panel using Flexbox
+    const qContainer = document.getElementById('inputGroupLogic_ic');
     
-    let tableHTML = `<table style="width: 100%; max-width: 250px; margin: 10px 0; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em;">
-        <thead style="background-color: #f8f9fa;">
-            <tr>
-                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px;">A</th>
-                ${type !== 'NOT' ? `<th style="color: #c83377; border: 1px solid #ccc; padding: 4px;">B</th>` : ''}
-                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px;">Q</th>
-            </tr>
-        </thead><tbody>`;
+    // Create a flexible container: Questions on the left, Table on the right
+    qContainer.innerHTML = `
+        <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-top: 10px;">
+            
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label><strong>1. Which logic gate is inside this IC?</strong></label><br>
+                    <select id="icGateSelect" style="margin-top: 5px; padding: 5px; width: 100%;">
+                        <option value="">-- Select Gate --</option>
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                        <option value="NOT">NOT</option>
+                        <option value="NAND">NAND</option>
+                        <option value="NOR">NOR</option>
+                        <option value="XOR">XOR</option>
+                    </select>
+                </div>
+                <div>
+                    <label><strong>2. How many of these gates are inside the IC?</strong></label><br>
+                    <input type="number" id="icGateCount" min="1" max="6" style="margin-top: 5px; padding: 5px; width: 100%;">
+                </div>
+                <div>
+                    <label><strong>3. Which pins are used for Power (Vcc) and Ground (GND)?</strong></label><br>
+                    <select id="icPowerSelect" style="margin-top: 5px; padding: 5px; width: 100%;">
+                        <option value="">-- Select Pins --</option>
+                        <option value="14,7">Vcc = 14, GND = 7</option>
+                        <option value="1,8">Vcc = 1, GND = 8</option>
+                        <option value="16,8">Vcc = 16, GND = 8</option>
+                    </select>
+                </div>
+            </div>
 
-    const rows = type === 'NOT' ? [[0], [1]] : [[0,0], [0,1], [1,0], [1,1]];
-    
-    rows.forEach((row, i) => {
-        let expectedQ;
-        if (type === 'NOT') expectedQ = row[0] ? 0 : 1;
-        if (type === 'AND') expectedQ = row[0] & row[1];
-        if (type === 'OR') expectedQ = row[0] | row[1];
-        if (type === 'NAND') expectedQ = !(row[0] & row[1]) ? 1 : 0;
-        if (type === 'NOR') expectedQ = !(row[0] | row[1]) ? 1 : 0;
-        window.logic_icAnswers.table.push(expectedQ.toString());
-
-        tableHTML += `<tr>
-            <td style="font-weight:bold; border:1px solid #ccc; padding:2px;">${row[0]}</td>
-            ${type !== 'NOT' ? `<td style="font-weight:bold; border:1px solid #ccc; padding:2px;">${row[1]}</td>` : ''}
-            <td style="padding:2px; border:1px solid #ccc;">
-                <input type="text" id="icQ_${i}" maxlength="1" style="width:30px !important; text-align:center; color:#c83377; font-weight:bold; border:1px solid #ccc; border-radius:4px; margin:0 auto; display:block;">
-            </td>
-        </tr>`;
-    });
-    
-    document.getElementById('ic_tableContainer').innerHTML = tableHTML + "</tbody></table>";
-
-    // Enforce 0/1 inputs
-    rows.forEach((_, i) => {
-        let el = document.getElementById(`icQ_${i}`);
-        if(el) { el.addEventListener('input', function() { this.value = this.value.replace(/[^01]/g, ''); this.style.backgroundColor = 'white'; }); }
-    });
-    let probeEl = document.getElementById('ic_probeAns');
-    if (probeEl) probeEl.addEventListener('input', function() { this.value = this.value.replace(/[^01]/g, ''); this.style.backgroundColor = 'white'; });
+            <div style="flex: 1; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd; text-align: center;">
+                <label><strong>4. Complete the Truth Table</strong></label>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px; background: white;">
+                    <tr>
+                        <th style="border: 1px solid #ccc; padding: 5px; background: #eee;">Input A</th>
+                        ${type !== 'NOT' ? '<th style="border: 1px solid #ccc; padding: 5px; background: #eee;">Input B</th>' : ''}
+                        <th style="border: 1px solid #ccc; padding: 5px; background: #eee;">Output Q</th>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 5px;">0</td>
+                        ${type !== 'NOT' ? '<td style="border: 1px solid #ccc; padding: 5px;">0</td>' : ''}
+                        <td style="border: 1px solid #ccc; padding: 5px;">
+                            <select id="tt_row1"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 5px;">${type === 'NOT' ? '1' : '0'}</td>
+                        ${type !== 'NOT' ? '<td style="border: 1px solid #ccc; padding: 5px;">1</td>' : ''}
+                        <td style="border: 1px solid #ccc; padding: 5px;">
+                            <select id="tt_row2"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                        </td>
+                    </tr>
+                    ${type !== 'NOT' ? `
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 5px;">1</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">0</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">
+                            <select id="tt_row3"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 5px;">1</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">1</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">
+                            <select id="tt_row4"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                        </td>
+                    </tr>
+                    ` : ''}
+                </table>
+            </div>
+            
+        </div>
+    `;
+    qContainer.style.display = 'block';
 }
 
 //****************************************************************************************
