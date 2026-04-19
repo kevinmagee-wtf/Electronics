@@ -4037,6 +4037,23 @@ function generateLogic_icProblem(ctx, canvas) {
             ctx.save();
             ctx.translate(x, y);
             ctx.scale(0.55, 0.55); 
+            
+            // --- MANUALLY FORCE WHITE FILL BEHIND NOT GATE ---
+            // This guarantees the triangle and bubble completely overwrite any wires beneath!
+            if (gateType === 'NOT') {
+                ctx.fillStyle = "#FFFFFF";
+                ctx.beginPath();
+                ctx.moveTo(-2, -20);
+                ctx.lineTo(40, 0);
+                ctx.lineTo(-2, 20);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(46, 0, 8, 0, Math.PI * 2); // The bubble mask
+                ctx.fill();
+            }
+
             ctx.strokeStyle = "#000000";
             ctx.lineWidth = 2.5; 
             fn(ctx, 0, 0);
@@ -4051,16 +4068,22 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
             
-            const gateX = px0 + 6; // Gate remains perfectly at +6
+            const gateX = px0 + 6; 
             const gateY = icY + icH - 35; 
 
+            // 1. Draw input/vertical wires first
             drawWire(px0, icY + icH, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
-            drawGateSymbol('NOT', gateX, gateY); 
-            
-            // Reduced by exactly 4px (34.5 -> 30.5) to pull the wire back flush with the vertical pin
-            drawWire(gateX + 30.5, gateY, px1, gateY); 
             drawWire(px1, gateY, px1, icY + icH); 
+            
+            // 2. ONLY draw horizontal output wire if the gate doesn't already overhang px1
+            const outX = gateX + 27; // Approximate right edge of the bubble
+            if (outX < px1) {
+                drawWire(outX, gateY, px1, gateY); 
+            }
+            
+            // 3. Draw Gate Symbol LAST (with white mask to overwrite vertical line)
+            drawGateSymbol('NOT', gateX, gateY); 
         });
         
         const notPairsTop = [[1,2], [3,4], [5,6]]; 
@@ -4068,16 +4091,22 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
 
-            const gateX = px0 + 6; // Gate remains perfectly at +6
+            const gateX = px0 + 6; 
             const gateY = icY + 35; 
 
+            // 1. Draw input/vertical wires first
             drawWire(px0, icY, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
-            drawGateSymbol('NOT', gateX, gateY); 
-            
-            // Reduced by exactly 4px (34.5 -> 30.5) to pull the wire back flush with the vertical pin
-            drawWire(gateX + 30.5, gateY, px1, gateY); 
             drawWire(px1, gateY, px1, icY); 
+
+            // 2. ONLY draw horizontal output wire if the gate doesn't already overhang px1
+            const outX = gateX + 27;
+            if (outX < px1) {
+                drawWire(outX, gateY, px1, gateY); 
+            }
+
+            // 3. Draw Gate Symbol LAST (with white mask to overwrite vertical line)
+            drawGateSymbol('NOT', gateX, gateY); 
         });
     } else {
         // --- QUAD GATE ALIGNMENT ---
@@ -4103,10 +4132,14 @@ function generateLogic_icProblem(ctx, canvas) {
             drawWire(routeX_B, turnY_B, routeX_B, botInY); 
             drawWire(routeX_B, botInY, gateX, botInY); 
             
-            drawGateSymbol(type, gateX, gateY); 
-
-            drawWire(gateX + 34.5, gateY, px2, gateY); 
             drawWire(px2, gateY, px2, icY + icH); 
+            
+            const outX = gateX + 34.5;
+            if (outX < px2) {
+                drawWire(outX, gateY, px2, gateY); 
+            }
+            
+            drawGateSymbol(type, gateX, gateY); 
         });
         
         const quadTop = [[1,2,3], [4,5,6]]; 
@@ -4131,10 +4164,14 @@ function generateLogic_icProblem(ctx, canvas) {
             drawWire(routeX_T, turnY_T, routeX_T, topInY); 
             drawWire(routeX_T, topInY, gateX, topInY); 
             
-            drawGateSymbol(type, gateX, gateY); 
-
-            drawWire(gateX + 34.5, gateY, px2, gateY); 
             drawWire(px2, gateY, px2, icY); 
+            
+            const outX = gateX + 34.5;
+            if (outX < px2) {
+                drawWire(outX, gateY, px2, gateY); 
+            }
+            
+            drawGateSymbol(type, gateX, gateY); 
         });
     }
     ctx.restore();
