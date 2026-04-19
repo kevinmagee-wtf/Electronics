@@ -3966,23 +3966,24 @@ function generateGrade9PowerProblem() {
 function generateLogic_icProblem(ctx, canvas) {
     currentProblem = { type: 'logic_ic' };
     
-    // 1. Pick a random gate type
-    const gates = ['AND', 'OR', 'NOT', 'NAND', 'NOR', 'XOR'];
+    // 1. Pick a random gate type (Removed XOR to prevent blank drawings)
+    const gates = ['AND', 'OR', 'NOT', 'NAND', 'NOR'];
     const type = gates[Math.floor(Math.random() * gates.length)];
     currentProblem.gateType = type;
 
     // 2. Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 3. DRAW THE IC (Dual In-line Package)
+    // 3. DRAW THE IC (Made taller and wider for better routing!)
     ctx.save();
-    const icX = 60, icY = 80, icW = 280, icH = 100;
+    const icX = 40, icY = 60;
+    const icW = 340, icH = 140; // Increased width and height significantly
     
     // Draw Pins
     ctx.fillStyle = "#ccc";
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 1;
-    const pinSpacing = icW / 8;
+    const pinSpacing = icW / 8; // Dynamically calculated spacing
     const pinXs = [];
     
     for (let i = 0; i < 7; i++) {
@@ -4023,7 +4024,6 @@ function generateLogic_icProblem(ctx, canvas) {
     // 4. Draw Internal Logic Gates & Routing
     ctx.strokeStyle = "#000000"; 
     ctx.lineWidth = 1.5;
-    ctx.fillStyle = "#000000";
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
@@ -4050,8 +4050,8 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
             
-            const gateX = px0 + 10;
-            const gateY = icY + icH - 25; // Adjusted to match your spacing
+            const gateX = px0 + 15;
+            const gateY = icY + icH - 35; // Moved further up from bottom
 
             drawWire(px0, icY + icH, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
@@ -4065,8 +4065,8 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
 
-            const gateX = px0 + 10;
-            const gateY = icY + 25; // Adjusted to match your spacing
+            const gateX = px0 + 15;
+            const gateY = icY + 35; // Moved further down from top
 
             drawWire(px0, icY, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
@@ -4077,12 +4077,12 @@ function generateLogic_icProblem(ctx, canvas) {
     } else {
         const quadBottom = [[0,1,2], [3,4,5]];
         quadBottom.forEach(group => {
-            const px0 = pinXs[group[0]]; // Pin A (Left)
-            const px1 = pinXs[group[1]]; // Pin B (Right)
+            const px0 = pinXs[group[0]]; // Pin A
+            const px1 = pinXs[group[1]]; // Pin B
             const px2 = pinXs[group[2]]; // Output
 
-            const gateX = px0 + 24; 
-            const gateY = icY + icH - 25; // Adjusted to +25
+            const gateX = px0 + 25; 
+            const gateY = icY + icH - 35; // Positioned comfortably in the lower half
             const topInY = gateY - 5.5;   
             const botInY = gateY + 5.5;   
             const outY = gateY;           
@@ -4092,8 +4092,8 @@ function generateLogic_icProblem(ctx, canvas) {
             drawWire(px0, topInY, gateX, topInY); 
             
             // Pin B (Right) -> Bottom Input 
-            const turnY_B = icY + icH - 6; // Hugs the bottom edge to avoid the gate!
-            const routeX_B = px0 + 12;     // Exactly centered between the two pins
+            const turnY_B = icY + icH - 10;                // Hugs the bottom inside edge
+            const routeX_B = px0 + (pinSpacing / 2);       // EXACTLY centered between the pins dynamically!
             
             drawWire(px1, icY + icH, px1, turnY_B); 
             drawWire(px1, turnY_B, routeX_B, turnY_B); 
@@ -4110,12 +4110,12 @@ function generateLogic_icProblem(ctx, canvas) {
         
         const quadTop = [[1,2,3], [4,5,6]]; 
         quadTop.forEach(group => {
-            const px0 = pinXs[group[0]]; // Pin A (Left)
-            const px1 = pinXs[group[1]]; // Pin B (Right)
+            const px0 = pinXs[group[0]]; // Pin A
+            const px1 = pinXs[group[1]]; // Pin B
             const px2 = pinXs[group[2]]; // Output
 
-            const gateX = px0 + 24; 
-            const gateY = icY + 25;        // Adjusted to +25
+            const gateX = px0 + 25; 
+            const gateY = icY + 35;       // Positioned comfortably in the upper half
             const topInY = gateY - 5.5;   
             const botInY = gateY + 5.5;   
             const outY = gateY;           
@@ -4125,8 +4125,8 @@ function generateLogic_icProblem(ctx, canvas) {
             drawWire(px0, botInY, gateX, botInY); 
             
             // Pin B (Right) -> Top Input 
-            const turnY_T = icY + 6;     // Hugs the top edge to avoid the gate!
-            const routeX_T = px0 + 12;   // Exactly centered between the two pins
+            const turnY_T = icY + 10;                 // Hugs the top inside edge
+            const routeX_T = px0 + (pinSpacing / 2);  // EXACTLY centered between the pins dynamically!
             
             drawWire(px1, icY, px1, turnY_T); 
             drawWire(px1, turnY_T, routeX_T, turnY_T); 
@@ -4143,9 +4143,8 @@ function generateLogic_icProblem(ctx, canvas) {
     }
     ctx.restore();
 
-    // 5. Build the UI in the Right Panel
+    // 5. Build the UI (unchanged, still includes XOR in the dropdown so students can guess it if they want)
     const qContainer = document.getElementById('inputGroupLogic_ic');
-    
     qContainer.innerHTML = `
         <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-top: 10px;">
             <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
@@ -4175,7 +4174,6 @@ function generateLogic_icProblem(ctx, canvas) {
                     </select>
                 </div>
             </div>
-
             <div style="flex: 1; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #ddd; text-align: center;">
                 <label><strong>4. Complete the Truth Table</strong></label>
                 <table style="width: 100%; border-collapse: collapse; margin-top: 10px; background: white;">
