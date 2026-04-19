@@ -4045,20 +4045,21 @@ function generateLogic_icProblem(ctx, canvas) {
     };
 
     if (type === 'NOT') {
-        // --- HEX INVERTER ALIGNMENT (Tucked left, minimal output wire) ---
+        // --- HEX INVERTER ALIGNMENT (Nudged right to clear overlap) ---
         const notPairsBottom = [[0,1], [2,3], [4,5]]; 
         notPairsBottom.forEach(pair => {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
             
-            const gateX = px0 + 4; // Minimal offset from input pin
+            const gateX = px0 + 6; // Moved +2px to the right
             const gateY = icY + icH - 35; 
 
             drawWire(px0, icY + icH, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
             drawGateSymbol('NOT', gateX, gateY); 
             
-            // 36.5 creates a very short 2px tail before hitting the vertical pin line
+            // The +36.5 remains the anchor, but because gateX moved right, 
+            // the resulting wire to px1 is now shorter.
             drawWire(gateX + 36.5, gateY, px1, gateY); 
             drawWire(px1, gateY, px1, icY + icH); 
         });
@@ -4068,7 +4069,7 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
 
-            const gateX = px0 + 4; 
+            const gateX = px0 + 6; 
             const gateY = icY + 35; 
 
             drawWire(px0, icY, px0, gateY); 
