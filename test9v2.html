@@ -4057,15 +4057,14 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
             
-            const outY = icY+icH - 25;
-            const gateY = icY+icH - 33.25;
+            const outY = icY+icH - 33;
+            const gateY = icY+icH - 41.25;
 
             drawWire(px0, icY+icH, px0, outY); 
-            drawWire(px0, outY, px0+8, outY); 
             
-            drawGateSymbol('NOT', px0 + 8, gateY); 
+            drawGateSymbol('NOT', px0, gateY); 
 
-            drawWire(px0+23, outY, px1, outY); 
+            drawWire(px0+34.5, outY, px1, outY); 
             drawWire(px1, outY, px1, icY+icH); 
         });
         
@@ -4074,15 +4073,14 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
 
-            const outY = icY + 25;
-            const gateY = icY + 16.75;
+            const outY = icY + 33;
+            const gateY = icY + 24.75;
 
             drawWire(px0, icY, px0, outY); 
-            drawWire(px0, outY, px0+8, outY); 
             
-            drawGateSymbol('NOT', px0 + 8, gateY); 
+            drawGateSymbol('NOT', px0, gateY); 
 
-            drawWire(px0+23, outY, px1, outY); 
+            drawWire(px0+34.5, outY, px1, outY); 
             drawWire(px1, outY, px1, icY); 
         });
     } else {
@@ -4092,24 +4090,24 @@ function generateLogic_icProblem(ctx, canvas) {
             const px1 = pinXs[group[1]]; // e.g. Pin 2
             const px2 = pinXs[group[2]]; // e.g. Pin 3
 
-            // Exact offsets accounting for 0.55 scaling
-            const outY = icY+icH - 25;
-            const topInY = icY+icH - 30.5;
-            const botInY = icY+icH - 19.5;
-            const gateY = icY+icH - 33.25;
+            // Shifted UP to give more breathing room from bottom edge
+            const outY = icY+icH - 33;
+            const topInY = icY+icH - 38.5;
+            const botInY = icY+icH - 27.5;
+            const gateY = icY+icH - 41.25;
 
-            // Pin A -> Top Input
+            // Pin A -> Top Input (wraps cleanly over)
             drawWire(px0, icY+icH, px0, topInY); 
-            drawWire(px0, topInY, px0+15, topInY); 
+            drawWire(px0, topInY, px1, topInY); 
             
-            // Pin B -> Bottom Input (Clean left-turn under the gate)
+            // Pin B -> Bottom Input (straight up, no horizontal necessary)
             drawWire(px1, icY+icH, px1, botInY); 
-            drawWire(px1, botInY, px0+15, botInY); 
             
-            drawGateSymbol(type, px0 + 15, gateY); 
+            // Gate is placed exactly AT the second pin to eliminate left-routing
+            drawGateSymbol(type, px1, gateY); 
 
-            // Output
-            drawWire(px0+34.5, outY, px2, outY); 
+            // Output bridges the 0.5px mathematical gap to Pin 3 seamlessly
+            drawWire(px1+34.5, outY, px2, outY); 
             drawWire(px2, outY, px2, icY+icH); 
         });
         
@@ -4119,24 +4117,24 @@ function generateLogic_icProblem(ctx, canvas) {
             const px1 = pinXs[group[1]]; // e.g. Pin 12
             const px2 = pinXs[group[2]]; // e.g. Pin 11
 
-            // Exact offsets accounting for 0.55 scaling
-            const outY = icY + 25;
-            const topInY = icY + 19.5;
-            const botInY = icY + 30.5;
-            const gateY = icY + 16.75;
+            // Shifted DOWN to mirror bottom alignment
+            const outY = icY + 33;
+            const topInY = icY + 27.5;
+            const botInY = icY + 38.5;
+            const gateY = icY + 24.75;
 
-            // Pin 13 / 10 -> Bottom Input (eliminates crossover!)
+            // Pin 13 / 10 -> Bottom Input (wraps cleanly under)
             drawWire(px0, icY, px0, botInY); 
-            drawWire(px0, botInY, px0+15, botInY); 
+            drawWire(px0, botInY, px1, botInY); 
             
-            // Pin 12 / 9 -> Top Input (Clean left-turn over the gate)
+            // Pin 12 / 9 -> Top Input (straight down)
             drawWire(px1, icY, px1, topInY); 
-            drawWire(px1, topInY, px0+15, topInY); 
             
-            drawGateSymbol(type, px0 + 15, gateY); 
+            // Gate is placed exactly AT Pin 12
+            drawGateSymbol(type, px1, gateY); 
 
             // Output
-            drawWire(px0+34.5, outY, px2, outY); 
+            drawWire(px1+34.5, outY, px2, outY); 
             drawWire(px2, outY, px2, icY); 
         });
     }
@@ -4157,6 +4155,7 @@ function generateLogic_icProblem(ctx, canvas) {
                         <option value="NOT">NOT</option>
                         <option value="NAND">NAND</option>
                         <option value="NOR">NOR</option>
+                        <option value="XOR">XOR</option>
                     </select>
                 </div>
                 <div>
