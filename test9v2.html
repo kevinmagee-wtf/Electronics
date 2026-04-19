@@ -4038,8 +4038,14 @@ function generateLogic_icProblem(ctx, canvas) {
             ctx.translate(x, y);
             ctx.scale(0.55, 0.55); 
             
-            // --- MANUALLY FORCE WHITE FILL BEHIND NOT GATE ---
             if (gateType === 'NOT') {
+                // --- THE MAGIC SCISSORS (CLIPPING MASK) ---
+                // Cuts off the built-in tail from the base drawNOTGate exactly at the end of the bubble (x=55)
+                ctx.beginPath();
+                ctx.rect(-50, -50, 105, 100); 
+                ctx.clip();
+
+                // --- MANUALLY FORCE WHITE FILL BEHIND NOT GATE ---
                 ctx.fillStyle = "#FFFFFF";
                 ctx.beginPath();
                 ctx.moveTo(-2, -20);
@@ -4075,10 +4081,10 @@ function generateLogic_icProblem(ctx, canvas) {
             drawWire(px0, gateY, gateX, gateY);
             drawWire(px1, gateY, px1, icY + icH); 
             
-            // 2. Draw horizontal output wire slightly short (-4) to hide the rounded line cap
+            // 2. Draw horizontal output wire slightly short (-1) for a clean corner
             const outX = gateX + 27; 
             if (outX < px1) {
-                drawWire(outX, gateY, px1 - 20, gateY); 
+                drawWire(outX, gateY, px1 - 1, gateY); 
             }
             
             // 3. Draw Gate Symbol LAST 
@@ -4098,10 +4104,10 @@ function generateLogic_icProblem(ctx, canvas) {
             drawWire(px0, gateY, gateX, gateY);
             drawWire(px1, gateY, px1, icY); 
 
-            // 2. Draw horizontal output wire slightly short (-4) to hide the rounded line cap
+            // 2. Draw horizontal output wire slightly short (-1) for a clean corner
             const outX = gateX + 27;
             if (outX < px1) {
-                drawWire(outX, gateY, px1 - 20, gateY); 
+                drawWire(outX, gateY, px1 - 1, gateY); 
             }
 
             // 3. Draw Gate Symbol LAST 
