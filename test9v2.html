@@ -3969,16 +3969,16 @@ function generateLogicSystemProblem(ctx, canvas) {
     // 4. Calculate Answers & Build Table
     window.logicSystemAnswers = { d: [], e: [], q: [] };
     
-    let tableHTML = `
-        <table style="width:100%; max-width: 380px; margin: -15px auto 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em;">
+let tableHTML = `
+        <table style="margin: -15px auto 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em;">
             <thead style="background-color: #f8f9fa;">
                 <tr>
-                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px;">C</th>
-                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px;">B</th>
-                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px;">A</th>
-                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px;">D</th>
-                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px;">E</th>
-                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px;">Q</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 25px;">C</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 25px;">B</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 25px;">A</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 40px;">D</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 40px;">E</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 40px;">Q</th>
                 </tr>
             </thead>
             <tbody>
@@ -3994,18 +3994,18 @@ function generateLogicSystemProblem(ctx, canvas) {
 
         tableHTML += `
             <tr>
-                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; width: 30px; background: #fff;">${c}</td>
-                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; width: 30px; background: #fff;">${b}</td>
-                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; width: 30px; background: #fff;">${a}</td>
+                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${c}</td>
+                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${b}</td>
+                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${a}</td>
                 
-                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;">
-                    <input type="text" id="sysD_${i}" maxlength="1" style="width: 30px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block;">
+                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                    <input type="text" id="sysD_${i}" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                 </td>
-                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;">
-                    <input type="text" id="sysE_${i}" maxlength="1" style="width: 30px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block;">
+                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                    <input type="text" id="sysE_${i}" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                 </td>
-                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;">
-                    <input type="text" id="sysQ_${i}" maxlength="1" style="width: 30px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block;">
+                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                    <input type="text" id="sysQ_${i}" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                 </td>
             </tr>
         `;
