@@ -3966,8 +3966,8 @@ function generateGrade9PowerProblem() {
 function generateLogic_icProblem(ctx, canvas) {
     currentProblem = { type: 'logic_ic' };
     
-    // 1. Pick a random gate type
-    const gates = ['AND', 'OR', 'NOT', 'NAND', 'NOR', 'XOR'];
+    // 1. Pick a random gate type (REMOVED XOR)
+    const gates = ['AND', 'OR', 'NOT', 'NAND', 'NOR'];
     const type = gates[Math.floor(Math.random() * gates.length)];
     currentProblem.gateType = type;
 
@@ -3978,7 +3978,7 @@ function generateLogic_icProblem(ctx, canvas) {
     ctx.save();
     const icX = 60, icY = 80, icW = 280, icH = 100;
     
-    // Draw Pins (Silver/Grey rectangles)
+    // Draw Pins
     ctx.fillStyle = "#ccc";
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 1;
@@ -4005,122 +4005,125 @@ function generateLogic_icProblem(ctx, canvas) {
         ctx.fillStyle = "#ccc"; 
     }
 
-    // Draw Chip Body (Wireframe Outline with Notch)
-    ctx.fillStyle = "#ffffff"; // White inside
-    ctx.strokeStyle = "#000000"; // Black border
+    // Draw Chip Body
+    ctx.fillStyle = "#ffffff"; 
+    ctx.strokeStyle = "#000000"; 
     ctx.lineWidth = 2;
 
     ctx.beginPath();
-    ctx.moveTo(icX, icY); // Top Left
-    ctx.lineTo(icX + icW, icY); // Top Edge
-    ctx.lineTo(icX + icW, icY + icH); // Right Edge
-    ctx.lineTo(icX, icY + icH); // Bottom Edge
-    ctx.lineTo(icX, icY + (icH / 2) + 15); // Up to bottom of notch
-    ctx.arc(icX, icY + (icH / 2), 15, Math.PI/2, -Math.PI/2, true); // The Notch
-    ctx.lineTo(icX, icY); // Up to Top Left
-    
+    ctx.moveTo(icX, icY); 
+    ctx.lineTo(icX + icW, icY); 
+    ctx.lineTo(icX + icW, icY + icH); 
+    ctx.lineTo(icX, icY + icH); 
+    ctx.lineTo(icX, icY + (icH / 2) + 15); 
+    ctx.arc(icX, icY + (icH / 2), 15, Math.PI/2, -Math.PI/2, true); 
+    ctx.lineTo(icX, icY); 
     ctx.fill();
     ctx.stroke();
 
-    // Draw Pin 1 Dot (Bottom Left)
+    // Draw Pin 1 Dot
     ctx.fillStyle = "#000";
     ctx.beginPath();
     ctx.arc(icX + 15, icY + icH - 15, 3, 0, Math.PI*2);
     ctx.fill();
 
-    // 4. Draw Internal Logic Gates & Wiring (Exam-Style Black & White)
+    // 4. Draw Internal Logic Gates & Wiring (Perfectly Aligned)
     ctx.strokeStyle = "#000000"; 
     ctx.lineWidth = 1.5;
     ctx.fillStyle = "#000000";
     ctx.lineCap = "round";
 
-    // Helper to draw lines
     const drawWire = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     };
 
-    // Helper to draw your existing gates, sized perfectly for the IC
     const drawGateSymbol = (gateType, x, y) => {
         const fn = window[`draw${gateType}Gate`];
         if (typeof fn === 'function') {
             ctx.save();
             ctx.translate(x, y);
-            
-            // CRANK THIS UP TO 0.7 
-            ctx.scale(0.7, 0.7); 
-            
-            // Adjust line width to look normal at this new larger scale
+            ctx.scale(0.7, 0.7); // Kept the size you liked!
             ctx.strokeStyle = "#000000";
             ctx.lineWidth = 2.5; 
-            
             fn(ctx, 0, 0);
             ctx.restore();
-        } else {
-            ctx.font = "bold 10px Arial";
-            ctx.fillText(gateType, x, y + 10);
         }
+        // NOTE: Text fallback completely removed. If a gate is missing, it will just draw wires.
     };
 
     if (type === 'NOT') {
-        // Bottom: 1->2, 3->4, 5->6 (Indices: 0->1, 2->3, 4->5)
         const notPairsBottom = [[0,1], [2,3], [4,5]]; 
         notPairsBottom.forEach(pair => {
-            drawWire(pinXs[pair[0]], icY+icH, pinXs[pair[0]], icY+icH-25); // In up
-            drawWire(pinXs[pair[0]], icY+icH-25, pinXs[pair[0]]+10, icY+icH-25); // In right
-            drawWire(pinXs[pair[1]], icY+icH-25, pinXs[pair[1]], icY+icH); // Out down
+            const px0 = pinXs[pair[0]];
+            const px1 = pinXs[pair[1]];
             
-            // Draw gate neatly attached to the wires
-            drawGateSymbol('NOT', pinXs[pair[0]] + 8, icY+icH-38); 
+            drawWire(px0, icY+icH, px0, icY+icH-27); // In up
+            drawWire(px0, icY+icH-27, px0+10, icY+icH-27); // In right (stops at gate)
+            
+            drawGateSymbol('NOT', px0 + 10, icY+icH-38); // Draw Gate
+
+            drawWire(px0+40, icY+icH-27, px1, icY+icH-27); // Out right (starts after gate)
+            drawWire(px1, icY+icH-27, px1, icY+icH); // Out down to pin
         });
         
-        // Top: 13->12, 11->10, 9->8 (Indices: 1->2, 3->4, 5->6)
         const notPairsTop = [[1,2], [3,4], [5,6]]; 
         notPairsTop.forEach(pair => {
-            drawWire(pinXs[pair[0]], icY, pinXs[pair[0]], icY+25); // In down
-            drawWire(pinXs[pair[0]], icY+25, pinXs[pair[0]]+10, icY+25); // In right
-            drawWire(pinXs[pair[1]], icY+25, pinXs[pair[1]], icY); // Out up
+            const px0 = pinXs[pair[0]];
+            const px1 = pinXs[pair[1]];
+
+            drawWire(px0, icY, px0, icY+27); // In down
+            drawWire(px0, icY+27, px0+10, icY+27); // In right (stops at gate)
             
-            drawGateSymbol('NOT', pinXs[pair[0]] + 8, icY+12); 
+            drawGateSymbol('NOT', px0 + 10, icY+15); // Draw Gate
+
+            drawWire(px0+40, icY+27, px1, icY+27); // Out right (starts after gate)
+            drawWire(px1, icY+27, px1, icY); // Out up to pin
         });
     } else {
-        // Quad 2-Input Bottom: 1,2->3 | 4,5->6 
         const quadBottom = [[0,1,2], [3,4,5]];
         quadBottom.forEach(group => {
-            drawWire(pinXs[group[0]], icY+icH, pinXs[group[0]], icY+icH-35); // Pin A up
-            drawWire(pinXs[group[1]], icY+icH, pinXs[group[1]], icY+icH-25); // Pin B up
-            drawWire(pinXs[group[0]], icY+icH-35, pinXs[group[0]]+15, icY+icH-35); // Pin A over
-            drawWire(pinXs[group[1]], icY+icH-25, pinXs[group[0]]+15, icY+icH-25); // Pin B over
-            drawWire(pinXs[group[2]], icY+icH-30, pinXs[group[2]], icY+icH); // Output down
+            const px0 = pinXs[group[0]];
+            const px1 = pinXs[group[1]];
+            const px2 = pinXs[group[2]];
+
+            drawWire(px0, icY+icH, px0, icY+icH-35); // Pin A up
+            drawWire(px0, icY+icH-35, px0+12, icY+icH-35); // Pin A right (stops at gate)
             
-            drawGateSymbol(type, pinXs[group[0]] + 12, icY+icH-46);
+            drawWire(px1, icY+icH, px1, icY+icH-20); // Pin B up
+            drawWire(px1, icY+icH-20, px0+12, icY+icH-20); // Pin B left (reaches back to gate)
+            
+            drawGateSymbol(type, px0 + 12, icY+icH-43); // Draw Gate
+
+            drawWire(px0+45, icY+icH-27.5, px2, icY+icH-27.5); // Output right (starts after gate)
+            drawWire(px2, icY+icH-27.5, px2, icY+icH); // Output down to pin
         });
         
-        // Quad 2-Input Top: 13,12->11 | 10,9->8 (Indices: 1,2->3 | 4,5->6)
         const quadTop = [[1,2,3], [4,5,6]]; 
         quadTop.forEach(group => {
-            drawWire(pinXs[group[0]], icY, pinXs[group[0]], icY+35); // Pin A down
-            drawWire(pinXs[group[1]], icY, pinXs[group[1]], icY+25); // Pin B down
-            drawWire(pinXs[group[0]], icY+35, pinXs[group[0]]+15, icY+35); // Pin A over
-            drawWire(pinXs[group[1]], icY+25, pinXs[group[0]]+15, icY+25); // Pin B over
-            drawWire(pinXs[group[2]], icY+30, pinXs[group[2]], icY); // Output up
+            const px0 = pinXs[group[0]];
+            const px1 = pinXs[group[1]];
+            const px2 = pinXs[group[2]];
+
+            drawWire(px0, icY, px0, icY+35); // Pin A down
+            drawWire(px0, icY+35, px0+12, icY+35); // Pin A right (stops at gate)
             
-            drawGateSymbol(type, pinXs[group[0]] + 12, icY+14);
+            drawWire(px1, icY, px1, icY+20); // Pin B down
+            drawWire(px1, icY+20, px0+12, icY+20); // Pin B left (reaches back to gate)
+            
+            drawGateSymbol(type, px0 + 12, icY+12); // Draw Gate
+
+            drawWire(px0+45, icY+27.5, px2, icY+27.5); // Output right (starts after gate)
+            drawWire(px2, icY+27.5, px2, icY); // Output up to pin
         });
     }
-    
-    // Power & GND Labels
-    ctx.font = "bold 12px Arial";
-    ctx.fillStyle = "#000000"; ctx.fillText("Vcc", pinXs[0], icY+15);
-    ctx.fillText("GND", pinXs[6], icY+icH-5);
     ctx.restore();
+    // (Vcc and GND labels have been completely removed)
 
-    // 5. Build the UI in the Right Panel using Flexbox
+    // 5. Build the UI in the Right Panel
     const qContainer = document.getElementById('inputGroupLogic_ic');
     
-    // Create a flexible container: Questions on the left, Table on the right
     qContainer.innerHTML = `
         <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-top: 10px;">
-            
             <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
                 <div>
                     <label><strong>1. Which logic gate is inside this IC?</strong></label><br>
@@ -4131,8 +4134,7 @@ function generateLogic_icProblem(ctx, canvas) {
                         <option value="NOT">NOT</option>
                         <option value="NAND">NAND</option>
                         <option value="NOR">NOR</option>
-                        <option value="XOR">XOR</option>
-                    </select>
+                        </select>
                 </div>
                 <div>
                     <label><strong>2. How many of these gates are inside the IC?</strong></label><br>
@@ -4189,7 +4191,6 @@ function generateLogic_icProblem(ctx, canvas) {
                     ` : ''}
                 </table>
             </div>
-            
         </div>
     `;
     qContainer.style.display = 'block';
