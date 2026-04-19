@@ -4051,15 +4051,15 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
             
-            const gateX = px0 + 6; // NOT gate stays exactly where it was
+            const gateX = px0 + 6; // Gate remains perfectly at +6
             const gateY = icY + icH - 35; 
 
             drawWire(px0, icY + icH, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
             drawGateSymbol('NOT', gateX, gateY); 
             
-            // SHORTENED: Reduced from 40.5 to 34.5 to stop the wire at the gate edge
-            drawWire(gateX + 34.5, gateY, px1, gateY); 
+            // Reduced by exactly 4px (34.5 -> 30.5) to pull the wire back flush with the vertical pin
+            drawWire(gateX + 30.5, gateY, px1, gateY); 
             drawWire(px1, gateY, px1, icY + icH); 
         });
         
@@ -4068,19 +4068,19 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
 
-            const gateX = px0 + 6; 
+            const gateX = px0 + 6; // Gate remains perfectly at +6
             const gateY = icY + 35; 
 
             drawWire(px0, icY, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
             drawGateSymbol('NOT', gateX, gateY); 
             
-            // SHORTENED: Reduced from 40.5 to 34.5 to stop the wire at the gate edge
-            drawWire(gateX + 34.5, gateY, px1, gateY); 
+            // Reduced by exactly 4px (34.5 -> 30.5) to pull the wire back flush with the vertical pin
+            drawWire(gateX + 30.5, gateY, px1, gateY); 
             drawWire(px1, gateY, px1, icY); 
         });
     } else {
-        // --- QUAD GATE ALIGNMENT (Unchanged) ---
+        // --- QUAD GATE ALIGNMENT ---
         const quadBottom = [[0,1,2], [3,4,5]];
         quadBottom.forEach(group => {
             const px0 = pinXs[group[0]]; 
