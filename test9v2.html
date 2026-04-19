@@ -3994,15 +3994,23 @@ function generateLogicSystemProblem(ctx, canvas) {
 
         tableHTML += `
             <tr>
-                <td style="font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${c}</td>
-                <td style="font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${b}</td>
-                <td style="font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${a}</td>
-                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;"><input type="text" id="sysD_${i}" maxlength="1" style="width: 30px; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;"></td>
-                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;"><input type="text" id="sysE_${i}" maxlength="1" style="width: 30px; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;"></td>
-                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;"><input type="text" id="sysQ_${i}" maxlength="1" style="width: 30px; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;"></td>
+                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; width: 30px; background: #fff;">${c}</td>
+                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; width: 30px; background: #fff;">${b}</td>
+                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; width: 30px; background: #fff;">${a}</td>
+                
+                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;">
+                    <input type="text" id="sysD_${i}" maxlength="1" style="width: 30px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block;">
+                </td>
+                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;">
+                    <input type="text" id="sysE_${i}" maxlength="1" style="width: 30px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block;">
+                </td>
+                <td style="padding: 3px; border: 1px solid #ccc; background: #fff;">
+                    <input type="text" id="sysQ_${i}" maxlength="1" style="width: 30px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block;">
+                </td>
             </tr>
         `;
     }
+    
     tableHTML += `</tbody></table>`;
     const tableContainer = document.getElementById('logicSystemTableContainer');
     if (tableContainer) tableContainer.innerHTML = tableHTML;
@@ -7790,7 +7798,7 @@ const topicMap = {
     'boolean': 'Boolean Logic',          
     'logic_boolean': 'Boolean Logic',
     'grade9boolean': 'G9 Boolean Logic',
-    'logicSystem': 'Logic Systems'
+    'logic_system': 'Logic Systems'
 };
 
 async function processSubmission() {
