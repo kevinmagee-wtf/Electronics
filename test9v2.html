@@ -4051,32 +4051,32 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
             
-            const gateX = px0 + 6; // Perfect +6 placement
+            const gateX = px0 + 6; // Kept exactly at +6
             const gateY = icY + icH - 35; 
 
             drawWire(px0, icY + icH, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
             drawGateSymbol('NOT', gateX, gateY); 
             
-            // Output wire shortened (starting at 40.5 instead of 38.5)
-            drawWire(gateX + 40.5, gateY, px1, gateY); 
+            // Shortened wire: Start point increased to 48.5 for a visible change
+            drawWire(gateX + 48.5, gateY, px1, gateY); 
             drawWire(px1, gateY, px1, icY + icH); 
         });
         
         const notPairsTop = [[1,2], [3,4], [5,6]]; 
         notPairsTop.forEach(pair => {
             const px0 = pinXs[pair[0]];
-            const px1 = pinXs[pair[1]]; // FIXED: Changed pxXs back to pinXs
+            const px1 = pinXs[pair[1]];
 
-            const gateX = px0 + 6; 
+            const gateX = px0 + 6; // Kept exactly at +6
             const gateY = icY + 35; 
 
             drawWire(px0, icY, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
             drawGateSymbol('NOT', gateX, gateY); 
             
-            // Output wire shortened (starting at 40.5 instead of 38.5)
-            drawWire(gateX + 40.5, gateY, px1, gateY); 
+            // Shortened wire: Start point increased to 48.5 for a visible change
+            drawWire(gateX + 48.5, gateY, px1, gateY); 
             drawWire(px1, gateY, px1, icY); 
         });
     } else {
