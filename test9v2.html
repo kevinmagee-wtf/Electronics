@@ -3966,7 +3966,7 @@ function generateGrade9PowerProblem() {
 function generateLogic_icProblem(ctx, canvas) {
     currentProblem = { type: 'logic_ic' };
     
-    // 1. Pick a random gate type (Removed XOR to prevent blank drawings)
+    // 1. Pick a random gate type (STRICTLY NO XOR)
     const gates = ['AND', 'OR', 'NOT', 'NAND', 'NOR'];
     const type = gates[Math.floor(Math.random() * gates.length)];
     currentProblem.gateType = type;
@@ -3974,16 +3974,16 @@ function generateLogic_icProblem(ctx, canvas) {
     // 2. Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 3. DRAW THE IC (Made taller and wider for better routing!)
+    // 3. DRAW THE IC
     ctx.save();
     const icX = 40, icY = 60;
-    const icW = 340, icH = 140; // Increased width and height significantly
+    const icW = 340, icH = 140; 
     
     // Draw Pins
     ctx.fillStyle = "#ccc";
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 1;
-    const pinSpacing = icW / 8; // Dynamically calculated spacing
+    const pinSpacing = icW / 8; 
     const pinXs = [];
     
     for (let i = 0; i < 7; i++) {
@@ -4050,8 +4050,8 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
             
-            const gateX = px0 + 15;
-            const gateY = icY + icH - 35; // Moved further up from bottom
+            const gateX = px0 + 8; // Pushed left for better alignment with pin A
+            const gateY = icY + icH - 35; 
 
             drawWire(px0, icY + icH, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
@@ -4065,8 +4065,8 @@ function generateLogic_icProblem(ctx, canvas) {
             const px0 = pinXs[pair[0]];
             const px1 = pinXs[pair[1]];
 
-            const gateX = px0 + 15;
-            const gateY = icY + 35; // Moved further down from top
+            const gateX = px0 + 8; // Pushed left for better alignment with pin A
+            const gateY = icY + 35; 
 
             drawWire(px0, icY, px0, gateY); 
             drawWire(px0, gateY, gateX, gateY);
@@ -4081,8 +4081,8 @@ function generateLogic_icProblem(ctx, canvas) {
             const px1 = pinXs[group[1]]; // Pin B
             const px2 = pinXs[group[2]]; // Output
 
-            const gateX = px0 + 25; 
-            const gateY = icY + icH - 35; // Positioned comfortably in the lower half
+            const gateX = px0 + 18; // Pulled left slightly for symmetric Quad alignment
+            const gateY = icY + icH - 35; 
             const topInY = gateY - 5.5;   
             const botInY = gateY + 5.5;   
             const outY = gateY;           
@@ -4092,8 +4092,8 @@ function generateLogic_icProblem(ctx, canvas) {
             drawWire(px0, topInY, gateX, topInY); 
             
             // Pin B (Right) -> Bottom Input 
-            const turnY_B = icY + icH - 10;                // Hugs the bottom inside edge
-            const routeX_B = px0 + (pinSpacing / 2);       // EXACTLY centered between the pins dynamically!
+            const turnY_B = icY + icH - 10;                
+            const routeX_B = px0 + (pinSpacing / 2); // Perfectly centered vertical drop
             
             drawWire(px1, icY + icH, px1, turnY_B); 
             drawWire(px1, turnY_B, routeX_B, turnY_B); 
@@ -4114,8 +4114,8 @@ function generateLogic_icProblem(ctx, canvas) {
             const px1 = pinXs[group[1]]; // Pin B
             const px2 = pinXs[group[2]]; // Output
 
-            const gateX = px0 + 25; 
-            const gateY = icY + 35;       // Positioned comfortably in the upper half
+            const gateX = px0 + 18; // Pulled left slightly for symmetric Quad alignment
+            const gateY = icY + 35;       
             const topInY = gateY - 5.5;   
             const botInY = gateY + 5.5;   
             const outY = gateY;           
@@ -4125,8 +4125,8 @@ function generateLogic_icProblem(ctx, canvas) {
             drawWire(px0, botInY, gateX, botInY); 
             
             // Pin B (Right) -> Top Input 
-            const turnY_T = icY + 10;                 // Hugs the top inside edge
-            const routeX_T = px0 + (pinSpacing / 2);  // EXACTLY centered between the pins dynamically!
+            const turnY_T = icY + 10;                 
+            const routeX_T = px0 + (pinSpacing / 2);  // Perfectly centered vertical drop
             
             drawWire(px1, icY, px1, turnY_T); 
             drawWire(px1, turnY_T, routeX_T, turnY_T); 
@@ -4143,7 +4143,7 @@ function generateLogic_icProblem(ctx, canvas) {
     }
     ctx.restore();
 
-    // 5. Build the UI (unchanged, still includes XOR in the dropdown so students can guess it if they want)
+    // 5. Build the UI
     const qContainer = document.getElementById('inputGroupLogic_ic');
     qContainer.innerHTML = `
         <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-top: 10px;">
@@ -4157,7 +4157,6 @@ function generateLogic_icProblem(ctx, canvas) {
                         <option value="NOT">NOT</option>
                         <option value="NAND">NAND</option>
                         <option value="NOR">NOR</option>
-                        <option value="XOR">XOR</option>
                     </select>
                 </div>
                 <div>
