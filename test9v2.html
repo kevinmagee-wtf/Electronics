@@ -4137,21 +4137,46 @@ const drawGateSymbol = (gateType, x, y) => {
             // Increase '48' to move the gate further UP (away from the bottom edge)
             const gateY = icY + icH - 48; 
 
+            // --- INPUT WIRE HEIGHT ADJUSTMENTS ---
+            // These determine exactly where the wires plug into the gate symbol.
+            // Change 5.5 to a higher number to spread the wires further apart.
             const topInY = gateY - 5.5;   
             const botInY = gateY + 5.5;   
 
-            // Route Pin 1 (Top Input)
+            // ==========================================
+            // --- INPUT WIRE ADJUSTMENTS (BOTTOM) ---
+            // ==========================================
+
+            // 1. ROUTE PIN 1 (Top Input)
+            // Vertical line from pin up to topInY
             drawWire(px0, icY + icH, px0, topInY); 
+            // Horizontal line into the gate
             drawWire(px0, topInY, gateX, topInY); 
             
-            // Route Pin 2 (Bottom Input)
-            const turnY_B = icY + icH - 10; // How close the wire drops to the bottom edge before turning                
-            const routeX_B = px0 + (pinSpacing / 2); // Routes exactly between pin 1 and 2
+            // 2. ROUTE PIN 2 (Bottom Input - The "S-Shape")
             
+            // --- Tweak 'turnY_B': Controls the first horizontal turn after leaving the pin ---
+            // To move the turn vertically UP (deeper into the chip): INCREASE the '10' (e.g., - 20)
+            // To move the turn vertically DOWN (closer to the pin): DECREASE the '10' (e.g., - 5)
+            const turnY_B = icY + icH - 1; 
+            
+            // --- Tweak 'routeX_B': Controls the vertical "jog" position between pins ---
+            // To move the jog horizontally RIGHT: INCREASE the fraction (e.g., pinSpacing / 1.5)
+            // To move the jog horizontally LEFT: DECREASE the fraction (e.g., pinSpacing / 3)
+            // Or use a hard number: px0 + 15;
+            const routeX_B = px0 + (pinSpacing / 2); 
+            
+            // Vertical up from pin to the turn point
             drawWire(px1, icY + icH, px1, turnY_B); 
+            
+            // Horizontal over to the "jog" position
             drawWire(px1, turnY_B, routeX_B, turnY_B); 
+            
+            // Vertical up to the bottom input height
             drawWire(routeX_B, turnY_B, routeX_B, botInY); 
-            drawWire(routeX_B, botInY, gateX, botInY); 
+            
+            // Horizontal into the gate
+            drawWire(routeX_B, botInY, gateX, botInY);
             
             // ==========================================
             // --- OUTPUT WIRE ADJUSTMENTS (BOTTOM) ---
@@ -4194,20 +4219,33 @@ const drawGateSymbol = (gateType, x, y) => {
             // Decrease '20' to move the gate further UP (closer to the top edge)
             const gateY = icY + 20;       
 
+            // --- INPUT WIRE HEIGHT ADJUSTMENTS ---
             const topInY = gateY - 5.5;   
             const botInY = gateY + 5.5;   
 
-            // Route Top Input (from leftmost pin of the group)
+            // ==========================================
+            // --- INPUT WIRE ADJUSTMENTS (TOP) ---
+            // ==========================================
+
+            // 1. ROUTE PIN 1 (Bottom Input - Leftmost pin of group)
+            // Vertical down from pin to botInY
             drawWire(px0, icY, px0, botInY); 
+            // Horizontal into the gate
             drawWire(px0, botInY, gateX, botInY); 
             
-            // Route Bottom Input (from middle pin of the group)
-            const turnY_T = icY + 10; // How close the wire drops to the top edge before turning                 
+            // 2. ROUTE PIN 2 (Top Input - Middle pin of group)
+            // Tweak '10': Controls how far the wire drops before turning.
+            const turnY_T = icY + 10; 
+            // Controls the X position of the "jog"
             const routeX_T = px0 + (pinSpacing / 2);  
             
+            // Vertical down from pin to turn point
             drawWire(px1, icY, px1, turnY_T); 
+            // Horizontal over to jog position
             drawWire(px1, turnY_T, routeX_T, turnY_T); 
+            // Vertical down to top input height
             drawWire(routeX_T, turnY_T, routeX_T, topInY); 
+            // Horizontal into the gate
             drawWire(routeX_T, topInY, gateX, topInY); 
             
             // ==========================================
