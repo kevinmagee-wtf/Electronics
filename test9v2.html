@@ -4286,7 +4286,7 @@ const drawGateSymbol = (gateType, x, y) => {
     
     const themePink = "#d65093"; 
 
-    // --- FIX 1: Bulletproof container boundaries ---
+    // --- FIX 1: Robust question panel container boundaries ---
     // Added 100% width, a max-width, and auto margins to prevent parent divs from shifting it off-screen
     qContainer.style.width = "100%";
     qContainer.style.maxWidth = "800px";
@@ -4295,13 +4295,12 @@ const drawGateSymbol = (gateType, x, y) => {
     qContainer.style.boxSizing = "border-box";
     qContainer.style.overflowX = "hidden";
 
-    // Used 'flex: 1 1 300px' on the children to force clean wrapping without bleeding left
     qContainer.innerHTML = `
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; align-items: flex-start; margin-top: 10px; font-family: 'Segoe UI', sans-serif;">
+        <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; margin-top: 10px; font-family: 'Segoe UI', sans-serif;">
             
-            <div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 25px; text-align: left;">
+            <div style="flex: 1; min-width: 280px; max-width: 320px; display: flex; flex-direction: column; gap: 25px; text-align: left;">
                 <div>
-                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 10px;">1. Which logic gate is inside this IC?</label>
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 10px; text-align: left;">1. Which logic gate is inside this IC?</label>
                     <select id="icGateSelect" style="padding: 10px; width: 100%; max-width: 220px; border: 1.5px solid #eee; border-radius: 10px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
                         <option value="">-- Select Gate --</option>
                         <option value="AND">AND</option>
@@ -4313,12 +4312,12 @@ const drawGateSymbol = (gateType, x, y) => {
                 </div>
 
                 <div>
-                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 10px;">2. How many of these gates are inside the IC?</label>
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 10px; text-align: left;">2. How many of these gates are inside the IC?</label>
                     <input type="number" id="icGateCount" min="1" max="6" placeholder="e.g. 4" style="padding: 10px; width: 120px; border: 1.5px solid #eee; border-radius: 10px; color: #555; outline: none;">
                 </div>
 
                 <div>
-                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 10px;">3. Which pins are used for Power and Ground?</label>
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 10px; text-align: left;">3. Which pins are used for Power and Ground?</label>
                     <select id="icPowerSelect" style="padding: 10px; width: 100%; max-width: 220px; border: 1.5px solid #eee; border-radius: 10px; background: white; color: #555; outline: none;">
                         <option value="">-- Select Pins --</option>
                         <option value="14,7">Vcc = 14, GND = 7</option>
@@ -4328,10 +4327,10 @@ const drawGateSymbol = (gateType, x, y) => {
                 </div>
             </div>
 
-            <div style="flex: 1 1 240px; max-width: 320px; background: white; padding: 20px; border-radius: 20px; border: 1px solid #f0f0f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+            <div style="flex: 0 1 auto; background: white; padding: 25px; border-radius: 20px; border: 1px solid #f0f0f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); min-width: 240px;">
                 <label style="display: block; text-align: left; margin-bottom: 15px; color: ${themePink}; font-weight: bold; font-size: 1.2rem;">4. Truth Table</label>
                 
-                <table style="margin: 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em; width: 100%;">
+                <table style="margin: 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em; width: 100%; border: 1px solid #ccc;">
                     <thead style="background-color: #f8f9fa;">
                         <tr>
                             <th style="color: #c83377; border: 1px solid #ccc; padding: 6px; width: 30%;">A</th>
@@ -4377,7 +4376,8 @@ const drawGateSymbol = (gateType, x, y) => {
     `;
     qContainer.style.display = 'block';
 
-    // --- Input Safety Lock ---
+    // --- Added Input Safety Lock for Truth Table Boxes ---
+    // Ensure this block of code is present to prevent non-binary input.
     for (let i = 1; i <= 4; i++) {
         let el = document.getElementById(`tt_row${i}`);
         if (el) {
