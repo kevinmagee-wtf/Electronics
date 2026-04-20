@@ -4153,20 +4153,21 @@ const drawGateSymbol = (gateType, x, y) => {
             // This draws the line straight down from the gate's center (gateY) to the pin.
             // If you want to shift this vertical line slightly left or right, change `px2` below 
             // (e.g., to `px2 + 2` or `px2 - 2`).
-            drawWire(px2, gateY + 10, px2, icY + icH); 
+            drawWire(px2, gateY + 14, px2, icY + icH); 
             
             // 2. HORIZONTAL CONNECTION
             // 'outX' is the starting point of the horizontal line coming off the gate.
             // TWEAK '34.5':
             // - Decrease it (e.g., 30) if there's a gap between the gate tip and the wire.
             // - Increase it (e.g., 38) if the wire is drawing backwards into the gate symbol.
-            const outX = gateX + 34.5;
+            //ALL COMMENTED OUT AS NOT USED
+            /*const outX = gateX + 34.5;
             
             if (outX < px2) {
                 // This draws the line from the gate tip to the vertical drop.
                 // If you shifted the vertical line above, make sure you match the change to `px2` here!
                 drawWire(outX, gateY, px2, gateY); 
-            }
+            }*/
             // ==========================================
             
             drawGateSymbol(type, gateX, gateY); 
