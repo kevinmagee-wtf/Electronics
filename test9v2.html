@@ -4234,9 +4234,9 @@ const drawGateSymbol = (gateType, x, y) => {
             // 1. ROUTE PIN 1 (Bottom Input - Leftmost pin of group)
             // Vertical down from pin to botInY
             // To increase the vertical line DOWN into bottom PIN INcrease botInY
-            drawWire(px0, icY, px0, botInY +14.5); 
+            drawWire(px0, icY, px0, botInY +14); 
             // Horizontal into the gate
-            drawWire(px0, botInY +14.5, gateX, botInY +14.5); 
+            drawWire(px0, botInY +14, gateX, botInY +14); 
             
             // 2. ROUTE PIN 2 (Top Input - Middle pin of group)
             // Tweak '10': Controls how far the wire drops before turning.
