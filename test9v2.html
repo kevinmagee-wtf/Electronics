@@ -4150,11 +4150,11 @@ const drawGateSymbol = (gateType, x, y) => {
             // 1. ROUTE PIN 1 (Top Input)
             // Vertical line from pin up to topInY
             // To shorten the vertical line DOWN into TOP PIN INcrease topInY
-            drawWire(px0, icY + icH, px0, topInY + 4); 
+            drawWire(px0, icY + icH, px0, topInY + 14); 
             
             // Top Horizontal line into the gate
             // To move the top horizontal line into TOP Pin vertically DOWN INcrease topInY
-            drawWire(px0, topInY + 4, gateX, topInY + 4); 
+            drawWire(px0, topInY + 14, gateX, topInY + 14); 
             
             // 2. ROUTE PIN 2 (Bottom Input - The "S-Shape")
             
@@ -4179,7 +4179,7 @@ const drawGateSymbol = (gateType, x, y) => {
             drawWire(routeX_B, turnY_B, routeX_B, botInY + 13.5); 
             
             // Horizontal into the gate
-            // To move the top horizontal line into BOTTOM Pin vertically DOWN INcrease botInY
+            // To move the BOTTOM horizontal line into BOTTOM Pin vertically DOWN INcrease botInY
             drawWire(routeX_B, botInY +13.5 , gateX, botInY +13.5);
             
             // ==========================================
