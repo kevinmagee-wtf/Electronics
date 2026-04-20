@@ -4136,7 +4136,7 @@ const drawGateSymbol = (gateType, x, y) => {
             drawWire(px0, topInY, gateX, topInY); 
             
             // Route Pin 2 (Bottom Input)
-            const turnY_B = icY + icH - 10; // How close the wire drops to the bottom edge before turning               
+            const turnY_B = icY + icH - 10; // How close the wire drops to the bottom edge before turning                
             const routeX_B = px0 + (pinSpacing / 2); // Routes exactly between pin 1 and 2
             
             drawWire(px1, icY + icH, px1, turnY_B); 
@@ -4144,14 +4144,29 @@ const drawGateSymbol = (gateType, x, y) => {
             drawWire(routeX_B, turnY_B, routeX_B, botInY); 
             drawWire(routeX_B, botInY, gateX, botInY); 
             
-            // Route Pin 3 (Output vertical drop)
+            // ==========================================
+            // --- OUTPUT WIRE ADJUSTMENTS (BOTTOM) ---
+            // ==========================================
+            
+            // 1. VERTICAL DROP
+            // This draws the line straight down from the gate's center (gateY) to the pin.
+            // If you want to shift this vertical line slightly left or right, change `px2` below 
+            // (e.g., to `px2 + 2` or `px2 - 2`).
             drawWire(px2, gateY, px2, icY + icH); 
             
-            // Output horizontal connection
+            // 2. HORIZONTAL CONNECTION
+            // 'outX' is the starting point of the horizontal line coming off the gate.
+            // TWEAK '34.5':
+            // - Decrease it (e.g., 30) if there's a gap between the gate tip and the wire.
+            // - Increase it (e.g., 38) if the wire is drawing backwards into the gate symbol.
             const outX = gateX + 34.5;
+            
             if (outX < px2) {
+                // This draws the line from the gate tip to the vertical drop.
+                // If you shifted the vertical line above, make sure you match the change to `px2` here!
                 drawWire(outX, gateY, px2, gateY); 
             }
+            // ==========================================
             
             drawGateSymbol(type, gateX, gateY); 
         });
@@ -4184,14 +4199,25 @@ const drawGateSymbol = (gateType, x, y) => {
             drawWire(routeX_T, turnY_T, routeX_T, topInY); 
             drawWire(routeX_T, topInY, gateX, topInY); 
             
-            // Route Output vertical drop
+            // ==========================================
+            // --- OUTPUT WIRE ADJUSTMENTS (TOP) ---
+            // ==========================================
+            
+            // 1. VERTICAL DROP
+            // Draws straight UP from the gate's center (gateY) to the pin (icY).
+            // Tweak `px2` (e.g., `px2 - 1`) if you need to budge the vertical line left/right.
             drawWire(px2, gateY, px2, icY); 
             
-            // Output horizontal connection
+            // 2. HORIZONTAL CONNECTION
+            // TWEAK '34.5': Controls where the wire starts relative to the gate.
             const outX = gateX + 34.5;
+            
             if (outX < px2) {
+                // Draws from the gate tip to the vertical drop.
+                // Match any tweaks to `px2` here as well.
                 drawWire(outX, gateY, px2, gateY); 
             }
+            // ==========================================
             
             drawGateSymbol(type, gateX, gateY); 
         });
