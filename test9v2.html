@@ -4283,13 +4283,21 @@ const drawGateSymbol = (gateType, x, y) => {
 
 // 5. Build the UI
     const qContainer = document.getElementById('inputGroupLogic_ic');
+    
+    // Exact pink from your screenshot for the theme
+    const themePink = "#d65093"; 
+
+    // Reset the container style to ensure it doesn't clip content
+    qContainer.style.padding = "10px 20px"; // Adds a 20px buffer on the left/right
+    qContainer.style.boxSizing = "border-box";
+
     qContainer.innerHTML = `
-        <div style="display: flex; justify-content: space-between; gap: 30px; align-items: flex-start; margin-top: 15px; font-family: sans-serif;">
+        <div style="display: flex; justify-content: center; gap: 30px; align-items: flex-start; margin-top: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
             
-            <div style="flex: 1.2; display: flex; flex-direction: column; gap: 20px;">
+            <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 20px;">
                 <div>
-                    <label style="color: #333; font-size: 0.95rem;"><strong>1. Which logic gate is inside this IC?</strong></label>
-                    <select id="icGateSelect" style="margin-top: 8px; padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.05rem; display: block; margin-bottom: 8px;">1. Which logic gate is inside this IC?</label>
+                    <select id="icGateSelect" style="padding: 10px; width: 100%; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; cursor: pointer;">
                         <option value="">-- Select Gate --</option>
                         <option value="AND">AND</option>
                         <option value="OR">OR</option>
@@ -4298,59 +4306,62 @@ const drawGateSymbol = (gateType, x, y) => {
                         <option value="NOR">NOR</option>
                     </select>
                 </div>
+
                 <div>
-                    <label style="color: #333; font-size: 0.95rem;"><strong>2. How many of these gates are inside the IC?</strong></label>
-                    <input type="number" id="icGateCount" min="1" max="6" placeholder="e.g. 4" style="margin-top: 8px; padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.05rem; display: block; margin-bottom: 8px;">2. How many of these gates are inside the IC?</label>
+                    <input type="number" id="icGateCount" min="1" max="6" placeholder="e.g. 4" style="padding: 10px; width: 100%; border: 1.5px solid #eee; border-radius: 8px; box-sizing: border-box; color: #555;">
                 </div>
+
                 <div>
-                    <label style="color: #333; font-size: 0.95rem;"><strong>3. Which pins are used for Power (Vcc) and Ground (GND)?</strong></label>
-                    <select id="icPowerSelect" style="margin-top: 8px; padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.05rem; display: block; margin-bottom: 8px;">3. Which pins are used for Power (Vcc) and Ground (GND)?</label>
+                    <select id="icPowerSelect" style="padding: 10px; width: 100%; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; cursor: pointer;">
                         <option value="">-- Select Pins --</option>
-                        <option value="14,7">Vcc = Pin 14, GND = Pin 7</option>
-                        <option value="1,8">Vcc = Pin 1, GND = Pin 8</option>
-                        <option value="16,8">Vcc = Pin 16, GND = Pin 8</option>
+                        <option value="14,7">Vcc = 14, GND = 7</option>
+                        <option value="1,8">Vcc = 1, GND = 8</option>
+                        <option value="16,8">Vcc = 16, GND = 8</option>
                     </select>
                 </div>
             </div>
 
-            <div style="flex: 1; background: #fdfdfd; padding: 15px; border-radius: 10px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <label style="display: block; text-align: center; margin-bottom: 10px; color: #333;"><strong>4. Truth Table</strong></label>
-                <table style="width: 100%; border-collapse: collapse; background: white; text-align: center; font-size: 0.9rem;">
+            <div style="flex: 1; min-width: 200px; background: white; padding: 20px; border-radius: 15px; border: 1.5px solid #f5f5f5; box-shadow: 0 4px 15px rgba(0,0,0,0.06);">
+                <label style="display: block; text-align: left; margin-bottom: 15px; color: ${themePink}; font-weight: bold; font-size: 1.1rem;">4. Truth Table</label>
+                
+                <table style="width: 100%; border-collapse: collapse; text-align: center; border-radius: 8px; overflow: hidden;">
                     <thead>
-                        <tr style="background: #f2f2f2;">
-                            <th style="border: 1px solid #ccc; padding: 8px;">A</th>
-                            ${type !== 'NOT' ? '<th style="border: 1px solid #ccc; padding: 8px;">B</th>' : ''}
-                            <th style="border: 1px solid #ccc; padding: 8px; background: #eef2ff;">Q</th>
+                        <tr style="background: #fdfdfd;">
+                            <th style="border: 1px solid #f0f0f0; padding: 12px; color: #444;">A</th>
+                            ${type !== 'NOT' ? '<th style="border: 1px solid #f0f0f0; padding: 12px; color: #444;">B</th>' : ''}
+                            <th style="border: 1px solid #f0f0f0; padding: 12px; color: #444;">Q</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="border: 1px solid #ccc; padding: 6px;">0</td>
-                            ${type !== 'NOT' ? '<td style="border: 1px solid #ccc; padding: 6px;">0</td>' : ''}
-                            <td style="border: 1px solid #ccc; padding: 6px;">
-                                <select id="tt_row1" style="width: 45px; padding: 2px;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                            <td style="border: 1px solid #f0f0f0; padding: 10px; color: #666;">0</td>
+                            ${type !== 'NOT' ? '<td style="border: 1px solid #f0f0f0; padding: 10px; color: #666;">0</td>' : ''}
+                            <td style="border: 1px solid #f0f0f0; padding: 10px;">
+                                <select id="tt_row1" style="padding: 5px; border-radius: 4px; border: 1px solid #ddd; width: 65px;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
                             </td>
                         </tr>
                         <tr>
-                            <td style="border: 1px solid #ccc; padding: 6px;">${type === 'NOT' ? '1' : '0'}</td>
-                            ${type !== 'NOT' ? '<td style="border: 1px solid #ccc; padding: 6px;">1</td>' : ''}
-                            <td style="border: 1px solid #ccc; padding: 6px;">
-                                <select id="tt_row2" style="width: 45px; padding: 2px;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                            <td style="border: 1px solid #f0f0f0; padding: 10px; color: #666;">${type === 'NOT' ? '1' : '0'}</td>
+                            ${type !== 'NOT' ? '<td style="border: 1px solid #f0f0f0; padding: 10px; color: #666;">1</td>' : ''}
+                            <td style="border: 1px solid #f0f0f0; padding: 10px;">
+                                <select id="tt_row2" style="padding: 5px; border-radius: 4px; border: 1px solid #ddd; width: 65px;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
                             </td>
                         </tr>
                         ${type !== 'NOT' ? `
                         <tr>
-                            <td style="border: 1px solid #ccc; padding: 6px;">1</td>
-                            <td style="border: 1px solid #ccc; padding: 6px;">0</td>
-                            <td style="border: 1px solid #ccc; padding: 6px;">
-                                <select id="tt_row3" style="width: 45px; padding: 2px;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                            <td style="border: 1px solid #f0f0f0; padding: 10px; color: #666;">1</td>
+                            <td style="border: 1px solid #f0f0f0; padding: 10px; color: #666;">0</td>
+                            <td style="border: 1px solid #f0f0f0; padding: 10px;">
+                                <select id="tt_row3" style="padding: 5px; border-radius: 4px; border: 1px solid #ddd; width: 65px;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
                             </td>
                         </tr>
                         <tr>
-                            <td style="border: 1px solid #ccc; padding: 6px;">1</td>
-                            <td style="border: 1px solid #ccc; padding: 6px;">1</td>
-                            <td style="border: 1px solid #ccc; padding: 6px;">
-                                <select id="tt_row4" style="width: 45px; padding: 2px;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                            <td style="border: 1px solid #f0f0f0; padding: 10px; color: #666;">1</td>
+                            <td style="border: 1px solid #f0f0f0; padding: 10px; color: #666;">1</td>
+                            <td style="border: 1px solid #f0f0f0; padding: 10px;">
+                                <select id="tt_row4" style="padding: 5px; border-radius: 4px; border: 1px solid #ddd; width: 65px;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
                             </td>
                         </tr>
                         ` : ''}
@@ -4360,7 +4371,7 @@ const drawGateSymbol = (gateType, x, y) => {
         </div>
     `;
     qContainer.style.display = 'block';
-}
+    }
 
 //****************************************************************************************
 
