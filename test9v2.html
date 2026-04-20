@@ -4379,18 +4379,22 @@ function generateLogic_icProblem(ctx, canvas) {
         });
     }
 
-    // 6. SOLUTION LOGIC PANEL (For Logic ICs)
+// 6. SOLUTION LOGIC PANEL (For Logic ICs)
     const solText = document.getElementById('solText');
     if (solText) {
-        let logicHTML = "<strong>Pin " + qPin + " = " + q2CorrectAnswer + " | Gate = " + type + "</strong><br><br>";
+        // I also swapped the title string to show the Gate first, matching your UI!
+        let logicHTML = "<strong>Gate = " + type + " | Pin " + qPin + " = " + q2CorrectAnswer + "</strong><br><br>";
 
-        // --- Step 1: Pin Identification ---
+        // --- Step 1: Gate Identification ---
+        logicHTML += "<em>Step 1:</em> Identify the logic gate. The symbols shown inside the IC are <strong>" + type + "</strong> gates.<br><br>";
+
+        // --- Step 2: Pin Identification ---
         if (qPin === 7) {
-            logicHTML += "<em>Step 1:</em> Pin 7 on standard 14-pin logic ICs is always the <strong>Ground (0V)</strong> connection.<br><br>";
+            logicHTML += "<em>Step 2:</em> Pin 7 on standard 14-pin logic ICs is always the <strong>Ground (0V)</strong> connection.<br><br>";
         } else if (qPin === 14) {
-            logicHTML += "<em>Step 1:</em> Pin 14 on standard 14-pin logic ICs is always the <strong>VCC (+Ve Supply)</strong> connection.<br><br>";
+            logicHTML += "<em>Step 2:</em> Pin 14 on standard 14-pin logic ICs is always the <strong>VCC (+Ve Supply)</strong> connection.<br><br>";
         } else {
-            logicHTML += "<em>Step 1:</em> Trace the line from Pin " + qPin + " into the internal diagram. ";
+            logicHTML += "<em>Step 2:</em> Trace the line from Pin " + qPin + " into the internal diagram. ";
             if (q2CorrectAnswer === "Input") {
                 logicHTML += "It connects to the flat/back side of the gate, making it an <strong>Input</strong>.<br><br>";
             } else {
@@ -4398,8 +4402,7 @@ function generateLogic_icProblem(ctx, canvas) {
             }
         }
 
-        // --- Step 2 & 3: Gate & Truth Table Identification ---
-        logicHTML += "<em>Step 2:</em> Identify the logic gate. The symbols shown inside the IC are <strong>" + type + "</strong> gates.<br><br>";
+        // --- Step 3: Truth Table Identification ---
         logicHTML += "<em>Step 3:</em> Apply the standard truth table for a(n) " + type + " gate:<br>";
         
         let inputsText = (type === 'NOT') ? ["0", "1"] : ["0, 0", "0, 1", "1, 0", "1, 1"];
