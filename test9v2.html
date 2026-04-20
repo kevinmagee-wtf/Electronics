@@ -4160,13 +4160,13 @@ const drawGateSymbol = (gateType, x, y) => {
             // TWEAK '34.5':
             // - Decrease it (e.g., 30) if there's a gap between the gate tip and the wire.
             // - Increase it (e.g., 38) if the wire is drawing backwards into the gate symbol.
-            //ALL COMMENTED OUT AS NOT USED
+    
             const outX = gateX + 34.5;
             
             if (outX < px2) {
                 // This draws the line from the gate tip to the vertical drop.
                 // If you shifted the vertical line above, make sure you match the change to `px2` or "gate Y + 14" here!
-                drawWire(outX, gateY +14, px2, gateY); 
+                drawWire(outX, gateY + 14, px2, gateY); 
             }
             // ==========================================
             
