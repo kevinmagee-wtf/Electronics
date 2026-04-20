@@ -4220,9 +4220,7 @@ function generateLogic_icProblem(ctx, canvas) {
             <div style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 20px; text-align: left; padding-top: 10px; min-width: 200px;">
                 
                 <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 10px;">
-                    
                     <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; flex: 0 0 140px; text-align: right;">IC logic gate =</label>
-                    
                     <select id="icGateSelect" style="padding: 8px; flex: 0 0 100px; width: 100px; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
                         <option value="">-- Select --</option>
                         <option value="AND">AND</option>
@@ -4234,12 +4232,10 @@ function generateLogic_icProblem(ctx, canvas) {
                 </div>
 
                 <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 10px;">
-                    
                     <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; flex: 0 0 140px; text-align: right;">${q2Text}</label>
-                    
                     <select id="icPinAnswer" style="padding: 8px; flex: 0 0 100px; width: 100px; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
                         <option value="">-- Select --</option>
-                        <option value="VCC">Vcc</option>
+                        <option value="VCC">VCC</option>
                         <option value="Ground">Ground</option>
                         <option value="Input">Input</option>
                         <option value="Output">Output</option>
@@ -4252,75 +4248,118 @@ function generateLogic_icProblem(ctx, canvas) {
                 
                 <label id="ttTitle" style="display: block; text-align: center; margin-bottom: 10px; color: ${themePink}; font-weight: bold; font-size: 1.1rem;"> Truth Table</label>
                 
-                <table style="margin: 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em;">
-                    <thead style="background-color: #f8f9fa;">
-                        <tr>
-                            <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 35px;">A</th>
-                            ${type !== 'NOT' ? '<th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 35px;">B</th>' : ''}
-                            <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 45px;">Q</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
-                            ${type !== 'NOT' ? '<td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>' : ''}
-                            <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
-                                <input type="text" id="tt_row1" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">${type === 'NOT' ? '1' : '0'}</td>
-                            ${type !== 'NOT' ? '<td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>' : ''}
-                            <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
-                                <input type="text" id="tt_row2" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
-                            </td>
-                        </tr>
-                        ${type !== 'NOT' ? `
-                        <tr>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
-                            <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
-                                <input type="text" id="tt_row3" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
-                            <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
-                                <input type="text" id="tt_row4" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
-                            </td>
-                        </tr>
-                        ` : ''}
-                    </tbody>
-                </table>
+                <div id="ttContainer"></div>
+
             </div>
         </div>
     `;
 
-    // --- Dynamic Truth Table Title Logic ---
+    // --- Dynamic Truth Table Logic ---
     const gateSelect = document.getElementById('icGateSelect');
     const ttTitle = document.getElementById('ttTitle');
-    if (gateSelect && ttTitle) {
-        gateSelect.addEventListener('change', function() {
-            const selectedGate = this.value;
-            if (selectedGate) {
-                ttTitle.innerText = `${selectedGate} Truth Table`;
-            } else {
-                ttTitle.innerText = ` Truth Table`; // Default state with a leading space
+    const ttContainer = document.getElementById('ttContainer');
+
+    // Helper function to re-apply the 0/1 locks after a table is drawn
+    function applyInputLocks() {
+        for (let i = 1; i <= 4; i++) {
+            let el = document.getElementById(`tt_row${i}`);
+            if (el) {
+                el.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^01]/g, ''); 
+                    this.style.backgroundColor = 'white'; 
+                    this.style.borderColor = '#ccc';
+                });
             }
-        });
+        }
     }
 
-    // --- Input Safety Locks ---
-    for (let i = 1; i <= 4; i++) {
-        let el = document.getElementById(`tt_row${i}`);
-        if (el) {
-            el.addEventListener('input', function() {
-                this.value = this.value.replace(/[^01]/g, ''); 
-                this.style.backgroundColor = 'white'; 
-                this.style.borderColor = '#ccc';
-            });
-        }
+    if (gateSelect && ttTitle && ttContainer) {
+        gateSelect.addEventListener('change', function() {
+            const selectedGate = this.value;
+            
+            if (!selectedGate) {
+                // If they go back to "-- Select --", clear it
+                ttTitle.innerText = ` Truth Table`;
+                ttContainer.innerHTML = ''; 
+                return;
+            }
+
+            // Update Title
+            ttTitle.innerText = `${selectedGate} Truth Table`;
+
+            // Draw the appropriate table
+            if (selectedGate === 'NOT') {
+                ttContainer.innerHTML = `
+                    <table style="margin: 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em;">
+                        <thead style="background-color: #f8f9fa;">
+                            <tr>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 35px;">A</th>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 45px;">Q</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row1" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row2" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                ttContainer.innerHTML = `
+                    <table style="margin: 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em;">
+                        <thead style="background-color: #f8f9fa;">
+                            <tr>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 35px;">A</th>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 35px;">B</th>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 45px;">Q</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row1" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row2" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row3" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row4" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            // Important: Re-attach the event listeners to the new inputs!
+            applyInputLocks(); 
+        });
     }
 }
 //****************************************************************************************
