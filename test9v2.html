@@ -8164,7 +8164,6 @@ function provideHint() {
                 <strong>💡 Hint:</strong> Use the monostable formula on the data sheet!
             </div>`;
     } else if (currentMode === 'zener') {
-        // Original standard Zener hints
         const isSwitchOpen = document.getElementById('zenerOpenQuestions') && document.getElementById('zenerOpenQuestions').style.display !== 'none';
         if (isSwitchOpen) {
             helpText = `
@@ -8179,13 +8178,11 @@ function provideHint() {
                 <div style="${blueBox}">
                     <strong>💡 Hint (Switch CLOSED):</strong> The Zener is in parallel with the load.<br>
                     1. The load voltage will always match the Zener voltage.<br>
-                    2. The Zener diode only passes the current that the load doesn't use. The load current reaches its maximum when the Zener current drops to the minimum holding current needed to maintain the Zener voltage."
+                    2. The Zener diode only passes the current that the load doesn't use. The load current reaches its maximum when the Zener current drops to the minimum holding current needed to maintain the Zener voltage.
                 </div>`;
         }
   
     } else if (currentMode === 'grade9zener') {
-        // Grade 9 specific hints
-        // Check the Grade 9 specific ID to see if the switch is open
         const isG9SwitchOpen = document.getElementById('g9ZenerOpen') && document.getElementById('g9ZenerOpen').style.display !== 'none';
         
         if (isG9SwitchOpen) {
@@ -8232,8 +8229,7 @@ function provideHint() {
     } else if (currentMode === 'grade9power') {
         helpText = `
             <div style="${blueBox}">
-                <strong>💡 Hint:</strong> Once the E24 resistor is used, the current no longer matches the target value. Howeveer, no need to calculate the <em>new</em> actual current as the LED will clamp the voltage at the given value. Therefore you can use the resistor voltage in the power equation (on the data sheet!) as it stays constant. 
-                </div>
+                <strong>💡 Hint:</strong> Once the E24 resistor is used, the current no longer matches the target value. However, no need to calculate the <em>new</em> actual current as the LED will clamp the voltage at the given value. Therefore you can use the resistor voltage in the power equation (on the data sheet!) as it stays constant. 
             </div>`;
     } else if (currentMode === 'diode') {
         helpText = `
@@ -8250,25 +8246,32 @@ function provideHint() {
                 • <b>Voltage Math:</b> Every forward-biased diode uses up exactly 0.7V. If a reverse-biased diode breaks the circuit, no current reaches the load!
             </div>`;
     } else if (currentMode === 'grade9silicon') {
-        // If OR-Gate is visible
         if (document.getElementById('inputGroupGrade9Silicon') && document.getElementById('inputGroupGrade9Silicon').style.display !== 'none') {
             helpText = `
                 <div style="${blueBox}">
                     <strong>💡 Hint:</strong> When the switch is CLOSED, the battery with the highest voltage takes over and blocks the other. If the switch is OPEN, the main power is disconnected—which battery is left? (Don't forget the 0.7V diode drop!)
                 </div>`;
         } 
-        // If Pathfinder is visible
         else if (document.getElementById('inputGroupGrade9SiliconPath') && document.getElementById('inputGroupGrade9SiliconPath').style.display !== 'none') {
             helpText = `
                 <div style="${blueBox}">
                     <strong>💡 Hint:</strong> Current takes the path of least resistance. A forward-biased diode drops 0.7V. To find the voltage across the blocked diode, figure out the voltage at the wire above it and the wire below it first!
                 </div>`;
         }
-   } else if (currentMode === 'logic_boolean') {
+    } else if (currentMode === 'logic_ic') {
+        // --- NEW IC HINT BLOCK ---
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong><br>
+                • <b>Power & Ground:</b> Pin 14 is VCC and Pin 7 is Ground on these standard chips.<br>
+                • <b>Pin Type:</b> Follow the wire from the pin you are asked about. Does it go <i>into</i> a logic gate (Input) or come <i>out</i> of one (Output)?<br>
+                • <b>Truth Table:</b> Look closely at the shape of the gates inside the chip to figure out the right output logic.
+            </div>`;
+    } else if (currentMode === 'logic_boolean') {
         if (isDeMorganQuestion) {
             helpText = `
                 <div style="${blueBox}">
-                    <strong>💡 Hint:</strong> You might know the standard name for this truth table, but the answer uses an alternative expression. Check the Boolean Equiavalent Expressions (AKA De Morgan's Laws) section on your Data Sheet!
+                    <strong>💡 Hint:</strong> You might know the standard name for this truth table, but the answer uses an alternative expression. Check the Boolean Equivalent Expressions (AKA De Morgan's Laws) section on your Data Sheet!
                 </div>`;
         } else {
             helpText = `
@@ -8296,7 +8299,7 @@ function provideHint() {
         // Potential Divider & General
         helpText = `
             <div style="${blueBox}">
-                <strong>💡 Use the <b>Potential Divider equation</b> from the Data Sheet.
+                <strong>💡 Hint:</strong> Use the <b>Potential Divider equation</b> from the Data Sheet.
             </div>`;
     }
 
