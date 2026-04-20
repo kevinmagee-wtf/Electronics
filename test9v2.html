@@ -4234,11 +4234,12 @@ const drawGateSymbol = (gateType, x, y) => {
             // 1. ROUTE PIN 1 (Bottom Input - Leftmost pin of group)
             // Vertical down from pin to botInY
             // To increase the vertical line DOWN into bottom PIN INcrease botInY
-            drawWire(px0, icY, px0, botInY +14); 
+            drawWire(px0, icY, px0, botInY +13.5); 
+            // To increase the y value of the bottom of the vertical line into bottom PIN INcrease botInY
             // Horizontal into the gate
-            drawWire(px0, botInY +14, gateX, botInY +14); 
+            drawWire(px0, botInY +13.5, gateX, botInY +13.5); 
             
-            // 2. ROUTE PIN 2 (Top Input - Middle pin of group)
+            // 2. ROUTE PIN 2 (The "S-Shape") (Top Input - Middle pin of group)
             // Tweak '10': Controls how far the wire drops before turning.
             const turnY_T = icY + 10; 
             // Controls the X position of the "jog"
@@ -4249,9 +4250,10 @@ const drawGateSymbol = (gateType, x, y) => {
             // Horizontal over to jog position
             drawWire(px1, turnY_T, routeX_T, turnY_T); 
             // Vertical down to top input height
-            drawWire(routeX_T, turnY_T, routeX_T, topInY); 
+            drawWire(routeX_T, turnY_T, routeX_T, topInY +15); 
+            // To increase the y value of the bottom of the vertical line into bottom top INcrease topInY
             // Horizontal into the gate
-            drawWire(routeX_T, topInY, gateX, topInY); 
+            drawWire(routeX_T, topInY +15, gateX, topInY +15); 
             
             // ==========================================
             // --- OUTPUT WIRE ADJUSTMENTS (TOP) ---
