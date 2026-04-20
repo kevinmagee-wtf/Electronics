@@ -4032,40 +4032,49 @@ function generateLogic_icProblem(ctx, canvas) {
     };
 
 const drawGateSymbol = (gateType, x, y) => {
-        const fn = window[`draw${gateType}Gate`];
-        if (typeof fn === 'function') {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.scale(0.55, 0.55); 
+    const fn = window[`draw${gateType}Gate`];
+    if (typeof fn === 'function') {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(0.55, 0.55); 
+        
+        if (gateType === 'NOT') {
+            // --- THE MAGIC SCISSORS (CLIPPING MASK) ---
+            ctx.beginPath();
+            // The third number (111) is the width of the cutout. 
+            // Tweak this up or down by 1-2 pixels if the bubble is clipped or the tail returns!
+            ctx.rect(-50, -50, 111, 100); 
+            ctx.clip();
+
+            // --- MANUALLY FORCE WHITE FILL BEHIND NOT GATE ---
+            ctx.fillStyle = "#FFFFFF";
+            ctx.beginPath();
+            ctx.moveTo(-2, -20);
+            ctx.lineTo(40, 0);
+            ctx.lineTo(-2, 20);
+            ctx.closePath();
+            ctx.fill();
             
-            if (gateType === 'NOT') {
-                // --- THE MAGIC SCISSORS (CLIPPING MASK) ---
-                ctx.beginPath();
-                // The third number (108) is the width of the cutout. 
-                // Tweak this up or down by 1-2 pixels if the bubble is clipped or the tail returns!
-                ctx.rect(-50, -50, 111, 100); 
-                ctx.clip();
-
-                // --- MANUALLY FORCE WHITE FILL BEHIND NOT GATE ---
-                ctx.fillStyle = "#FFFFFF";
-                ctx.beginPath();
-                ctx.moveTo(-2, -20);
-                ctx.lineTo(40, 0);
-                ctx.lineTo(-2, 20);
-                ctx.closePath();
-                ctx.fill();
-                
-                ctx.beginPath();
-                ctx.arc(46, 0, 8, 0, Math.PI * 2); // The bubble mask
-                ctx.fill();
-            }
-
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 2.5; 
-            fn(ctx, 0, 0);
-            ctx.restore();
+            ctx.beginPath();
+            ctx.arc(46, 0, 8, 0, Math.PI * 2); // The bubble mask
+            ctx.fill();
+        } 
+        // --- NEW CLIPPING FOR NAND AND NOR ---
+        else if (gateType === 'NAND' || gateType === 'NOR') {
+            ctx.beginPath();
+            // This rectangle clips the gate tip so it doesn't bleed into the vertical wire.
+            // Tweak '112' down (e.g., 110) if the bubble still pokes through the wire.
+            // Tweak '112' up (e.g., 114) if there is a gap between the bubble and wire.
+            ctx.rect(-50, -50, 112, 100); 
+            ctx.clip();
         }
-    };
+
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 2.5; 
+        fn(ctx, 0, 0);
+        ctx.restore();
+    }
+};
 
     if (type === 'NOT') {
         // --- HEX INVERTER ALIGNMENT ---
