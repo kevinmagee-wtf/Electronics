@@ -3998,6 +3998,25 @@ function generateLogic_icProblem(ctx, canvas) {
     // Save the correct answer if your external grading script needs it
     currentProblem.q2CorrectAnswer = q2CorrectAnswer;
 
+    // --- GENERATE TRUTH TABLE ANSWERS ---
+    let ttAnswers = [];
+    switch(type) {
+        case 'AND':  ttAnswers = [0, 0, 0, 1]; break;
+        case 'OR':   ttAnswers = [0, 1, 1, 1]; break;
+        case 'NOT':  ttAnswers = [1, 0]; break;
+        case 'NAND': ttAnswers = [1, 1, 1, 0]; break;
+        case 'NOR':  ttAnswers = [1, 0, 0, 0]; break;
+    }
+
+    // --- SAVE TO THE GLOBAL OBJECT FOR THE GRADER ---
+    window.currentICAnswers = {
+        gate: type,
+        pinAnswer: q2CorrectAnswer,
+        truthTable: ttAnswers
+    };
+
+
+    
     // 2. Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -7155,7 +7174,7 @@ function hubController(ctx, canvas) {
 
 //*****************************************************************************************
 // ==============================================================
-// FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
+// INPUT PROCESS AND SCORING SECTION (THE GRADERS) 
 // ==============================================================
     
 function checkAnswers() {
@@ -7399,6 +7418,99 @@ function checkAnswers() {
         }
     }
 
+   // ==========================================
+    // LOGIC IC INTERCEPTOR
+    // ==========================================
+    if (currentMode === 'logic_ic') {
+        const feedback = document.getElementById('feedback');
+        const gateSel = document.getElementById('icGateSelect');
+        const pinSel = document.getElementById('icPinAnswer');
+
+        // 1. Safety Check: Did they select from the dropdowns?
+        if (!gateSel || !pinSel || gateSel.value === "" || pinSel.value === "") {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Please select options for both dropdowns!</span>";
+            return;
+        }
+
+        // Determine how many rows the current Truth Table has
+        const ttRowsCount = gateSel.value === 'NOT' ? 2 : 4;
+        let ttFilled = true;
+
+        // 2. Safety Check: Did they fill out the Truth Table?
+        for (let i = 1; i <= ttRowsCount; i++) {
+            let el = document.getElementById(`tt_row${i}`);
+            if (!el || el.value.trim() === "") {
+                ttFilled = false;
+                break;
+            }
+        }
+
+        if (!ttFilled) {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Please fill in all outputs (Q) for the Truth Table!</span>";
+            return;
+        }
+
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        // 3. Grade the Dropdowns
+        // (Assuming you saved the answers in an object like window.currentICAnswers)
+        let gateCorrect = gateSel.value === window.currentICAnswers.gate;
+        let pinCorrect = pinSel.value === window.currentICAnswers.pinAnswer;
+
+        gateSel.style.border = gateCorrect ? "2px solid #28a745" : "2px solid #dc3545";
+        pinSel.style.border = pinCorrect ? "2px solid #28a745" : "2px solid #dc3545";
+
+        // 4. Grade the Truth Table
+        let ttCorrect = true;
+        for (let i = 1; i <= ttRowsCount; i++) {
+            let el = document.getElementById(`tt_row${i}`);
+            // Check against the expected array (e.g., [0, 0, 0, 1] for AND)
+            let expectedVal = window.currentICAnswers.truthTable[i - 1]; 
+            
+            if (expectedVal !== undefined && el.value === String(expectedVal)) {
+                el.style.backgroundColor = "#d4edda"; // Light Green
+                el.style.borderColor = "#28a745";
+            } else {
+                el.style.backgroundColor = "#f8d7da"; // Light Red
+                el.style.borderColor = "#dc3545";
+                ttCorrect = false;
+            }
+        }
+
+        // Catch-all: If they selected NOT but the answer is AND, the table size is wrong
+        if (ttRowsCount !== window.currentICAnswers.truthTable.length) {
+            ttCorrect = false;
+        }
+
+        let allCorrect = gateCorrect && pinCorrect && ttCorrect;
+
+        const checkansBtn = document.getElementById('checkansBtn');
+        const showsolutionsBtn = document.getElementById('showsolutionsBtn');
+
+        // 5. Final Feedback
+        if (allCorrect) {
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            feedback.innerHTML = "<span style='color: #198754;'>Perfect! You correctly identified the IC gate, pin, and Truth Table!</span>";
+            canEarnPoints = false;
+            
+            if (checkansBtn) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+        } else {
+            canEarnPoints = false; 
+            feedback.innerHTML = "<span style='color: #dc3545;'>Not quite. Look at the red boxes and try again!</span>";
+            
+            const solDiv = document.getElementById('solutions');
+            if (solDiv) solDiv.style.display = 'block';
+            if (typeof viewedSolution !== 'undefined') viewedSolution = true;
+        }
+        
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; 
+    }
 
     // ==========================================
     // LOGIC SYSTEMS INTERCEPTOR (TRUTH TABLE)
