@@ -4204,25 +4204,21 @@ function generateLogic_icProblem(ctx, canvas) {
     }
     ctx.restore();
 
-    // 5. Build the UI
+// 5. Build the UI
     const qContainer = document.getElementById('inputGroupLogic_ic');
 
+    // Make the container fluid
     qContainer.style.width = "100%";
-    qContainer.style.maxWidth = "680px"; 
-    qContainer.style.margin = "-15px auto 0 auto"; 
-    qContainer.style.position = "relative"; 
-    qContainer.style.zIndex = "10";
-    qContainer.style.padding = "0 15px"; 
-    qContainer.style.boxSizing = "border-box";
+    qContainer.style.display = 'block';
 
     qContainer.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; align-items: start; font-family: 'Segoe UI', sans-serif;">
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-around; align-items: flex-start; font-family: 'Segoe UI', sans-serif; width: 100%; box-sizing: border-box;">
             
-            <div style="display: flex; flex-direction: column; gap: 20px; text-align: left; box-sizing: border-box; padding-top: 10px;">
+            <div style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 20px; text-align: left; padding-top: 10px; min-width: 200px;">
                 
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; white-space: nowrap;">IC logic gate =</label>
-                    <select id="icGateSelect" style="padding: 8px; width: 100%; max-width: 150px; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; flex: 1 0 auto;">IC logic gate =</label>
+                    <select id="icGateSelect" style="padding: 8px; flex: 1 1 120px; min-width: 120px; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
                         <option value="">-- Select --</option>
                         <option value="AND">AND</option>
                         <option value="OR">OR</option>
@@ -4232,9 +4228,9 @@ function generateLogic_icProblem(ctx, canvas) {
                     </select>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; white-space: nowrap;">${q2Text}</label>
-                    <select id="icPinAnswer" style="padding: 8px; width: 100%; max-width: 150px; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; flex: 1 0 auto;">${q2Text}</label>
+                    <select id="icPinAnswer" style="padding: 8px; flex: 1 1 120px; min-width: 120px; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
                         <option value="">-- Select --</option>
                         <option value="VCC">VCC</option>
                         <option value="Ground">Ground</option>
@@ -4245,45 +4241,45 @@ function generateLogic_icProblem(ctx, canvas) {
 
             </div>
 
-            <div style="background: white; padding: 20px; border-radius: 15px; border: 1px solid #f0f0f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin: 0 auto; width: 100%; max-width: 300px; box-sizing: border-box;">
-                <label style="display: block; text-align: left; margin-bottom: 15px; color: ${themePink}; font-weight: bold; font-size: 1.1rem;">Truth Table</label>
+            <div style="flex: 1 1 250px; background: white; padding: 15px; border-radius: 15px; border: 1px solid #f0f0f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 300px; box-sizing: border-box; min-width: 220px;">
+                <label style="display: block; text-align: left; margin-bottom: 10px; color: ${themePink}; font-weight: bold; font-size: 1rem;">Truth Table</label>
                 
                 <table style="margin: 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em; width: 100%; border: 1px solid #ccc;">
                     <thead style="background-color: #f8f9fa;">
                         <tr>
-                            <th style="color: #c83377; border: 1px solid #ccc; padding: 6px; width: 30%;">A</th>
-                            ${type !== 'NOT' ? '<th style="color: #c83377; border: 1px solid #ccc; padding: 6px; width: 30%;">B</th>' : ''}
-                            <th style="color: #c83377; border: 1px solid #ccc; padding: 6px; width: 40%;">Q</th>
+                            <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 30%;">A</th>
+                            ${type !== 'NOT' ? '<th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 30%;">B</th>' : ''}
+                            <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 40%;">Q</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 4px; background: #fff; color: #333;">0</td>
-                            ${type !== 'NOT' ? '<td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 4px; background: #fff; color: #333;">0</td>' : ''}
-                            <td style="padding: 4px; border: 1px solid #ccc; background: #fff;">
-                                <input type="text" id="tt_row1" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                            ${type !== 'NOT' ? '<td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>' : ''}
+                            <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                <input type="text" id="tt_row1" maxlength="1" style="width: 24px !important; box-sizing: border-box; height: 20px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                             </td>
                         </tr>
                         <tr>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 4px; background: #fff; color: #333;">${type === 'NOT' ? '1' : '0'}</td>
-                            ${type !== 'NOT' ? '<td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 4px; background: #fff; color: #333;">1</td>' : ''}
-                            <td style="padding: 4px; border: 1px solid #ccc; background: #fff;">
-                                <input type="text" id="tt_row2" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">${type === 'NOT' ? '1' : '0'}</td>
+                            ${type !== 'NOT' ? '<td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>' : ''}
+                            <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                <input type="text" id="tt_row2" maxlength="1" style="width: 24px !important; box-sizing: border-box; height: 20px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                             </td>
                         </tr>
                         ${type !== 'NOT' ? `
                         <tr>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 4px; background: #fff; color: #333;">1</td>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 4px; background: #fff; color: #333;">0</td>
-                            <td style="padding: 4px; border: 1px solid #ccc; background: #fff;">
-                                <input type="text" id="tt_row3" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                            <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                <input type="text" id="tt_row3" maxlength="1" style="width: 24px !important; box-sizing: border-box; height: 20px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                             </td>
                         </tr>
                         <tr>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 4px; background: #fff; color: #333;">1</td>
-                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 4px; background: #fff; color: #333;">1</td>
-                            <td style="padding: 4px; border: 1px solid #ccc; background: #fff;">
-                                <input type="text" id="tt_row4" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                            <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                            <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                <input type="text" id="tt_row4" maxlength="1" style="width: 24px !important; box-sizing: border-box; height: 20px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                             </td>
                         </tr>
                         ` : ''}
@@ -4292,7 +4288,6 @@ function generateLogic_icProblem(ctx, canvas) {
             </div>
         </div>
     `;
-    qContainer.style.display = 'block';
 
     // --- Input Safety Locks ---
     for (let i = 1; i <= 4; i++) {
