@@ -4286,17 +4286,20 @@ const drawGateSymbol = (gateType, x, y) => {
     
     const themePink = "#d65093"; 
 
-    // --- FIX 1: Add substantial left padding to the main container to push text off the wall ---
-    qContainer.style.padding = "20px 40px"; 
+    // --- FIX 1: Adjust padding and box-sizing to prevent pushing off the edge ---
+    qContainer.style.padding = "20px"; 
     qContainer.style.boxSizing = "border-box";
+    qContainer.style.overflowX = "hidden";
 
+    // Changed 'justify-content: center' to 'flex-start' and added 'flex-wrap: wrap' 
+    // to prevent the flex children from bleeding out of the left side of the container.
     qContainer.innerHTML = `
-        <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-start; margin-top: 10px; font-family: 'Segoe UI', sans-serif;">
+        <div style="display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 40px; align-items: flex-start; margin-top: 10px; font-family: 'Segoe UI', sans-serif;">
             
-            <div style="width: 320px; display: flex; flex-direction: column; gap: 25px;">
+            <div style="flex: 1; min-width: 280px; max-width: 320px; display: flex; flex-direction: column; gap: 25px;">
                 <div>
                     <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 10px;">1. Which logic gate is inside this IC?</label>
-                    <select id="icGateSelect" style="padding: 10px; width: 220px; border: 1.5px solid #eee; border-radius: 10px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
+                    <select id="icGateSelect" style="padding: 10px; width: 100%; max-width: 220px; border: 1.5px solid #eee; border-radius: 10px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
                         <option value="">-- Select Gate --</option>
                         <option value="AND">AND</option>
                         <option value="OR">OR</option>
@@ -4313,7 +4316,7 @@ const drawGateSymbol = (gateType, x, y) => {
 
                 <div>
                     <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 10px;">3. Which pins are used for Power and Ground?</label>
-                    <select id="icPowerSelect" style="padding: 10px; width: 220px; border: 1.5px solid #eee; border-radius: 10px; background: white; color: #555; outline: none;">
+                    <select id="icPowerSelect" style="padding: 10px; width: 100%; max-width: 220px; border: 1.5px solid #eee; border-radius: 10px; background: white; color: #555; outline: none;">
                         <option value="">-- Select Pins --</option>
                         <option value="14,7">Vcc = 14, GND = 7</option>
                         <option value="1,8">Vcc = 1, GND = 8</option>
@@ -4322,7 +4325,7 @@ const drawGateSymbol = (gateType, x, y) => {
                 </div>
             </div>
 
-            <div style="flex: 0 1 auto; background: white; padding: 25px; border-radius: 20px; border: 1px solid #f0f0f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); min-width: 240px;">
+            <div style="flex: 1; min-width: 240px; background: white; padding: 25px; border-radius: 20px; border: 1px solid #f0f0f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
                 <label style="display: block; text-align: left; margin-bottom: 15px; color: ${themePink}; font-weight: bold; font-size: 1.2rem;">4. Truth Table</label>
                 
                 <table style="width: 100%; border-collapse: collapse; text-align: center;">
@@ -4338,14 +4341,14 @@ const drawGateSymbol = (gateType, x, y) => {
                             <td style="padding: 12px; color: #666; font-weight: bold;">0</td>
                             ${type !== 'NOT' ? '<td style="padding: 12px; color: #666; font-weight: bold;">0</td>' : ''}
                             <td style="padding: 12px;">
-                                <select id="tt_row1" style="padding: 6px; border-radius: 8px; border: 1.2px solid #ddd; width: 70px; background: #fafafa;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                                <input type="text" id="tt_row1" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                             </td>
                         </tr>
                         <tr>
                             <td style="padding: 12px; color: #666; font-weight: bold;">${type === 'NOT' ? '1' : '0'}</td>
                             ${type !== 'NOT' ? '<td style="padding: 12px; color: #666; font-weight: bold;">1</td>' : ''}
                             <td style="padding: 12px;">
-                                <select id="tt_row2" style="padding: 6px; border-radius: 8px; border: 1.2px solid #ddd; width: 70px; background: #fafafa;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                                <input type="text" id="tt_row2" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                             </td>
                         </tr>
                         ${type !== 'NOT' ? `
@@ -4353,14 +4356,14 @@ const drawGateSymbol = (gateType, x, y) => {
                             <td style="padding: 12px; color: #666; font-weight: bold;">1</td>
                             <td style="padding: 12px; color: #666; font-weight: bold;">0</td>
                             <td style="padding: 12px;">
-                                <select id="tt_row3" style="padding: 6px; border-radius: 8px; border: 1.2px solid #ddd; width: 70px; background: #fafafa;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                                <input type="text" id="tt_row3" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                             </td>
                         </tr>
                         <tr>
                             <td style="padding: 12px; color: #666; font-weight: bold;">1</td>
                             <td style="padding: 12px; color: #666; font-weight: bold;">1</td>
                             <td style="padding: 12px;">
-                                <select id="tt_row4" style="padding: 6px; border-radius: 8px; border: 1.2px solid #ddd; width: 70px; background: #fafafa;"><option value=""></option><option value="0">0</option><option value="1">1</option></select>
+                                <input type="text" id="tt_row4" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
                             </td>
                         </tr>
                         ` : ''}
@@ -4370,6 +4373,19 @@ const drawGateSymbol = (gateType, x, y) => {
         </div>
     `;
     qContainer.style.display = 'block';
+
+    // --- Added Input Safety Lock for Truth Table Boxes ---
+    for (let i = 1; i <= 4; i++) {
+        let el = document.getElementById(`tt_row${i}`);
+        if (el) {
+            el.addEventListener('input', function() {
+                // Strips out any characters that are not a 0 or 1
+                this.value = this.value.replace(/[^01]/g, ''); 
+                this.style.backgroundColor = 'white'; 
+                this.style.borderColor = '#ccc';
+            });
+        }
+    }
 }
 
 //****************************************************************************************
