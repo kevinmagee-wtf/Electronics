@@ -5169,21 +5169,26 @@ function generateLogic_nandProblem(ctx, canvas) {
             let box1X = offsetX + 70, boxY = offsetY + 65;
             let box2X = offsetX + 170;
             
-            let pinTopY = boxY + 12; // 77
-            let pinBotY = boxY + 28; // 93
-            let pinMidY = boxY + 20; // 85
+            // Pin locations strictly matching the Standard & Joined SVGs
+            let pinTopY = boxY + 12; // Top pin for Standard NAND
+            let pinBotY = boxY + 28; // Bottom pin for Standard NAND
+            let pinMidY = boxY + 20; // Middle pin for outputs/Joined NAND
 
+            // 'A' Input hits the TOP pin of the first box
             ctx.fillText("A", offsetX + 15, pinTopY);
             drawWire(offsetX + 30, pinTopY, box1X, pinTopY);
             
+            // 'B' Input hits the BOTTOM pin of the first box
             ctx.fillText("B", offsetX + 15, pinBotY);
             drawWire(offsetX + 30, pinBotY, box1X, pinBotY);
             
             createDropZone(bp, 1, box1X, boxY, 60, 40);
             
+            // Output of box 1 hits the MIDDLE pin of box 2 (Joined NAND)
             drawWire(box1X + 60, pinMidY, box2X, pinMidY); 
             createDropZone(bp, 2, box2X, boxY, 60, 40);
             
+            // Final Output
             drawWire(box2X + 60, pinMidY, offsetX + 260, pinMidY);
             ctx.fillText("Q", offsetX + 270, pinMidY);
         }
