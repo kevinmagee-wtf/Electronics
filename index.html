@@ -14,7 +14,7 @@
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
         max-width: 1100px; 
         margin: 0 auto; 
-        padding: 10px 20px; 
+        padding: 0px 20px; 
         line-height: 1.6; 
         color: #333; 
         background-color: #f0f4f7; 
@@ -28,7 +28,7 @@
    
     .header { 
         text-align: center; 
-        margin-bottom: 15px; 
+        margin-bottom: 5px; 
     }
     .header h1 { 
         color: #000; 
@@ -67,7 +67,7 @@
         display: flex; 
         justify-content: center; 
         gap: 15px; 
-        margin-bottom: 25px; 
+        margin-bottom: 10px; 
         flex-wrap: wrap; 
     }
     
@@ -169,13 +169,13 @@
         height: auto; 
     }
     
-/* FORCE PANEL VISIBILITY */
+/* --- The Right Panel (The Pink Container) --- */
 .right-panel {
     flex: 1 1 300px;
     display: flex !important;
     flex-direction: column !important;
-    background-color: #fdf4f8 !important; /* This is your pink background */
-    padding: 20px !important;
+    background-color: #fdf4f8 !important; 
+    padding: 10px 20px 20px 20px !important; /* CHANGED: Top padding from 20px to 10px */
     border-radius: 12px !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
     min-height: 520px;
@@ -203,12 +203,14 @@
     appearance: auto !important;
 }
     
+    /* --- 2. The Quiz Header (Area above the scoreboard) --- */
     .quiz-header { 
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
         border-bottom: 2px solid #f2c7db; 
         padding-bottom: 10px; 
+        margin-top: 0px !important;    /* ADDED: Ensures no hidden gap at the top */
         margin-bottom: 10px; 
         flex-wrap: wrap; 
         gap: 10px; 
@@ -799,11 +801,11 @@
 <div id="menuLogic" class="tabs" style="display:none;">
     <button class="tab" id="tab-logic_ic" onclick="safeSwitchTab('logic_ic')">Logic Gates</button>
     <button class="tab" id="tab-logic_system" onclick="safeSwitchTab('logic_system')">Logic Systems</button>
-    <button class="tab" id="tab-logic_boolean" onclick="safeSwitchTab('logic_boolean')">Boolean</button>
     <button class="tab" id="tab-logic_nand" onclick="safeSwitchTab('logic_nand')">NAND Equivalents</button>
+    <button class="tab" id="tab-logic_boolean" onclick="safeSwitchTab('logic_boolean')">Boolean</button>
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
 </div>
-    
+
 <div id="menuPlaceholder" class="tabs" style="display:none;">
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Module Under Construction - Return Home</button>
 </div>
@@ -1232,6 +1234,128 @@
             </div>
         </div>
     </div>
+
+<!-- Input group LOGIC GATES -->  
+
+<div id="inputGroupLogic_ic" class="input-group" style="display: none; padding: 10px;">
+    <h3 style="color: #c83377; margin-top: 0;">IC Logic Gates</h3>
+    
+    <div style="text-align: left; font-size: 14px; margin-bottom: 10px;">
+        <p style="margin: 5px 0;"><b>1. Power:</b> Which pin connects to +V (Vcc)? 
+            <input type="text" id="ic_vcc" maxlength="2" style="width: 35px; text-align: center; border: 1px solid #ccc; border-radius: 4px;">
+        </p>
+        
+        <p style="margin: 5px 0;"><b>2. Identify:</b> Name the logic gate shown inside the IC:
+            <select id="ic_gateType" style="padding: 2px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">-- Select Gate --</option>
+                <option value="AND">AND</option>
+                <option value="OR">OR</option>
+                <option value="NOT">NOT</option>
+                <option value="NAND">NAND</option>
+                <option value="NOR">NOR</option>
+            </select>
+        </p>
+
+        <p style="margin: 5px 0;"><b>3. Trace:</b> <span id="ic_probeText">If logic 1 is on Pin X...</span>
+            <input type="text" id="ic_probeAns" maxlength="1" style="width: 30px; text-align: center; border: 1px solid #ccc; border-radius: 4px;">
+        </p>
+    </div>
+
+    <div id="ic_tableContainer"></div>
+</div>
+                
+<!-- Input group LOGIC SYSTEM -->  
+<div id="inputGroupLogicSystem" style="display: none; width: 100%; margin-top: 10px;">
+    <div id="logicSystemTableContainer"></div>
+</div>
+<!-- Input group Boolean -->   
+<div id="inputGroupBoolean" style="display: none; text-align: left; margin-top: 15px;">
+    <div id="booleanDropdownContainer" style="display:none; margin-bottom: 10px;">
+        <label for="booleanSelect" style="font-weight: bold; display: block; margin-bottom: 10px; color: #E64097;">Select the correct equation:</label>
+        <select id="booleanSelect" style="padding: 8px; border-radius: 5px; border: 2px solid #ccc; font-size: 16px;">
+            <option value="">-- Choose --</option>
+            <option value="A">Equation A</option>
+            <option value="B">Equation B</option>
+            <option value="C">Equation C</option>
+            <option value="D">Equation D</option>
+        </select>
+    </div>
+
+    <div id="booleanCheckboxContainer" style="display:none; margin-bottom: 10px;">
+        <label style="font-weight: bold; display: block; margin-bottom: 10px; color: #E64097;">Tick the TWO correct equations:</label>
+        <div style="display: flex; justify-content: flex-start; gap: 20px; font-size: 18px; font-weight: bold;">
+            <label><input type="checkbox" id="boolCheckA" value="A" style="transform: scale(1.5); margin-right: 5px;"> A</label>
+            <label><input type="checkbox" id="boolCheckB" value="B" style="transform: scale(1.5); margin-right: 5px;"> B</label>
+            <label><input type="checkbox" id="boolCheckC" value="C" style="transform: scale(1.5); margin-right: 5px;"> C</label>
+            <label><input type="checkbox" id="boolCheckD" value="D" style="transform: scale(1.5); margin-right: 5px;"> D</label>
+            <label><input type="checkbox" id="boolCheckE" value="E" style="transform: scale(1.5); margin-right: 5px;"> E</label>
+        </div>
+    </div>
+</div>
+
+<!-- GRADE 9 BOOLEAN--> 
+<div id="inputGroupGrade9BooleanMaster" style="display: none; flex-direction: column; gap: 15px;">
+    <!-- Sum of Products --> 
+<div id="inputGroupGrade9BooleanSOP" style="display: none; flex-direction: column !important; gap: 5px !important; width: 100%; text-align: left; margin-top: -35px !important; margin-bottom: 0px !important; position: relative;">
+        
+        <div style="background-color: #f8f9fa !important; padding: 8px !important; border-radius: 8px; border: 1px solid #dee2e6;">
+            <p style="margin-top: 0 !important; margin-bottom: 5px !important; font-weight: 600; font-size: 16px; color: #333; line-height: 1.2 !important;">
+                1. Select the correct Boolean expression for each row where Q = 1 (Top to Bottom):
+            </p>
+            <div style="display: flex; flex-direction: column !important; gap: 4px !important;">
+                <select id="g9boolRow1" style="width: 100%; padding: 6px !important; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; margin: 0 !important; height: auto !important;"></select>
+                <select id="g9boolRow2" style="width: 100%; padding: 6px !important; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; margin: 0 !important; height: auto !important;"></select>
+                <select id="g9boolRow3" style="width: 100%; padding: 6px !important; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; margin: 0 !important; height: auto !important;"></select>
+            </div>
+        </div>
+
+        <div style="background-color: #f8f9fa !important; padding: 10px !important; border-radius: 8px; border: 1px solid #dee2e6;">
+            <p style="margin-top: 0 !important; margin-bottom: 8px !important; font-weight: 600; font-size: 16px; color: #333; line-height: 1.2 !important;">
+                2. Select (click on button) the full Boolean equation for the system:
+            </p>
+            <div style="display: flex; flex-direction: column !important; gap: 12px !important; font-size: 16px; font-family: monospace; padding: 12px 15px; margin-top: 5px; background-color: #f8f9fa; border-radius: 8px; border: 2px solid transparent; box-shadow: inset 0 0 0 1px #e9ecef;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0; white-space: nowrap;">
+                    <input type="radio" name="g9boolCombineRadio" value="OR" style="margin: 0; width: 16px; height: 16px; cursor: pointer; flex-shrink: 0;">
+                    <span style="line-height: 1;">Q = (<span id="sopPlaceholder1a" style="color: #d63384;">___</span>)+(<span id="sopPlaceholder2a" style="color: #d63384;">___</span>)+(<span id="sopPlaceholder3a" style="color: #d63384;">___</span>)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0; white-space: nowrap;">
+                    <input type="radio" name="g9boolCombineRadio" value="AND" style="margin: 0; width: 16px; height: 16px; cursor: pointer; flex-shrink: 0;">
+                    <span style="line-height: 1;">Q = (<span id="sopPlaceholder1b" style="color: #d63384;">___</span>)&middot;(<span id="sopPlaceholder2b" style="color: #d63384;">___</span>)&middot;(<span id="sopPlaceholder3b" style="color: #d63384;">___</span>)</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <!-- Canvas Circuit --> 
+    <div id="inputGroupGrade9BooleanPath" style="display: none; flex-direction: column !important; gap: 10px !important; width: 100%; text-align: left; margin-top: -10px !important;">
+        <div style="background-color: #f8f9fa !important; padding: 12px !important; border-radius: 8px; border: 1px solid #dee2e6;">
+            <p style="margin-top: 0 !important; margin-bottom: 15px !important; font-weight: 600; font-size: 16px; color: #333; line-height: 1.2 !important;">
+                Identify the Boolean expressions at the gate outputs:
+            </p>
+            <div style="display: flex; flex-direction: column !important; gap: 10px !important;">
+                
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label for="g9boolPathX" style="font-weight: bold; flex-shrink: 0; width: 90px; white-space: nowrap; color: #E64097; text-align: right;">Output X =</label>
+                <select id="g9boolPathX" style="width: 165px !important; min-width: 165px; flex-shrink: 0; padding: 6px !important; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; margin: 0 !important;"></select>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label for="g9boolPathY" style="font-weight: bold; flex-shrink: 0; width: 90px; white-space: nowrap; color: #E64097; text-align: right;">Output Y =</label>
+                <select id="g9boolPathY" style="width: 165px !important; min-width: 165px; flex-shrink: 0; padding: 6px !important; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; margin: 0 !important;"></select>
+            </div>
+            
+            <hr style="margin: 5px 0; border: 0; border-top: 1px solid #ddd;">
+            
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label for="g9boolPathQ" style="font-weight: bold; flex-shrink: 0; width: 90px; white-space: nowrap; color: #E64097; text-align: right;">Output Q =</label>
+                <select id="g9boolPathQ" style="width: 165px !important; min-width: 165px; flex-shrink: 0; padding: 6px !important; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; margin: 0 !important;"></select>
+            </div>
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+         
 <!-- Input group colour code-->  
                 <div class="input-group" id="inputGroupColorVal" style="display: none; justify-content: center; gap: 5px;">
                     <input type="number" id="inputResValue" placeholder="Value" style="width: 80px;"> <strong>Ω ±</strong> 
@@ -1405,6 +1529,11 @@ let canEarnPoints = true;
 
 // This allows the variable to hold ANY data we throw at it (Voltage, Resistors, Colour Codes, etc.)
 let currentAnswers = {};
+
+// ---> NEW BOOLEAN GLOBAL VARIABLES <---
+let currentBooleanAnswer = "";
+let currentBooleanMode = "";
+let isDeMorganQuestion = false;
 //*****************************************************
 // --- 2. MAIN CONTROLLER --- 
 //*****************************************************
@@ -1415,7 +1544,6 @@ function handleNewQuestionClick() {
     canEarnPoints = true;      // Student can earn points again
     viewedSolution = false;    // Reset the peek flag
     
-    // ... the rest of the code stays exactly the same ...
     // Hide the solution box
     const sol = document.getElementById('solutions');
     if (sol) sol.style.display = 'none';
@@ -1447,15 +1575,15 @@ function handleNewQuestionClick() {
     const canvasIPOWorkstation = document.getElementById('canvasIPOWorkstation');
     if (canvasIPOWorkstation) canvasIPOWorkstation.style.display = 'none';
 
-    // 👇 ---> NEW FIX: REMOVE THE GRADE 9 CSS LOCKS <--- 👇 ********************
+    // ---> NEW FIX: REMOVE THE GRADE 9 CSS LOCKS <--- 
     // This stops the Pathfinder/Master UI from permanently blocking standard questions
     const g9Master = document.getElementById('inputGroupGrade9SiliconMaster');
     const g9Path = document.getElementById('inputGroupGrade9SiliconPath');
     if (g9Master) g9Master.style.removeProperty("display");
     if (g9Path) g9Path.style.removeProperty("display");
-    // 👆 ------------------------------------------------ 👆
+   
 
-    // ---> ESCAPE THE GRADE 9 LOOPS & RESET SCORE <--- ********************
+    // ---> ESCAPE THE GRADE 9 LOOPS & RESET SCORE <--- 
     let escapedGrade9 = false;
     let previousMode = currentMode; // Remember where we were just in case they cancel!
 
@@ -1473,6 +1601,9 @@ function handleNewQuestionClick() {
         escapedGrade9 = true;
     } else if (currentMode === 'grade9silicon') {  
         currentMode = 'silicon';
+        escapedGrade9 = true;
+    } else if (currentMode === 'grade9boolean') {  
+        currentMode = 'logic_boolean';
         escapedGrade9 = true;
     }
 
@@ -1507,6 +1638,9 @@ function handleNewQuestionClick() {
         if (typeof generateAnalysisProblem === "function") generateAnalysisProblem(ctx, canvas); 
     } else if (currentMode === 'power' || currentMode === 'grade9power') { 
         if (typeof generatePowerProblem === "function") generatePowerProblem(ctx, canvas);
+    } else if (currentMode === 'logic_system') { 
+        // 👇 NEW BLOCK FOR LOGIC SYSTEMS
+        if (typeof generateLogicSystemProblem === "function") generateLogicSystemProblem(ctx, canvas);
     } else {
         // Handles Astable, Monostable, Oscilloscope, Divider, Resistance, Silicon, AND Grade 9 Silicon
         // We route them to hubController so it can perfectly clean up the UI menus!
@@ -1522,6 +1656,10 @@ function handleGrade9Click() {
         hideAllInputGroups();
     }
 
+    // 👇 MOVED TO THE TOP: Now everyone can use them! 👇
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas ? canvas.getContext('2d') : null;
+
     // 2. Routing Logic (Restored exact explicit matches)
     if (currentMode === 'divider' || currentMode === 'potentialDivider' || currentMode === 'grade9divider') {
         generateGrade9DividerProblem(); 
@@ -1535,11 +1673,17 @@ function handleGrade9Click() {
     else if (currentMode === 'power' || currentMode === 'grade9power') {
         generateGrade9PowerProblem(); 
     }
+    // 👇 NEW BOOLEAN ROUTING 👇
+    else if (currentMode === 'logic_boolean' || currentMode === 'grade9boolean') {
+        currentMode = 'grade9boolean';
+        if (typeof generateGrade9booleanProblem === "function") {
+            generateGrade9booleanProblem(ctx, canvas); // Now it knows what ctx and canvas are!
+        }
+    }
     // 👇 UNIFIED SILICON ROUTING 👇
     else if (currentMode === 'silicon' || currentMode === 'grade9silicon') { 
         currentMode = 'grade9silicon';
         
-
         // 3. THE OVERRIDE: Set BEFORE generator runs
         const g9Master = document.getElementById('inputGroupGrade9SiliconMaster');
         const g9Path = document.getElementById('inputGroupGrade9SiliconPath');
@@ -1552,9 +1696,7 @@ function handleGrade9Click() {
         }
 
         // 4. Trigger the circuit drawing/logic AFTER UI is prepped
-        const canvas = document.getElementById('circuitCanvas');
-        const ctx = canvas ? canvas.getContext('2d') : null;
-        
+        // (Removed the canvas/ctx declarations from here since they are at the top now)
         if (typeof hubController === "function") {
             hubController(ctx, canvas);
         } else if (typeof generateGrade9SiliconProblem === "function") {
@@ -2054,6 +2196,156 @@ function drawCanvasSubscript(ctx, mainStr, subStr, suffixStr, x, y, size, color)
     
     ctx.font = "bold " + size + "px Arial";
     ctx.fillText(suffixStr, x + w1 + w2, y); // Perfectly placed suffix
+}
+
+// Helper to add an overbar to an entire expression using Unicode \u0305
+
+const applyOverbar = (str) => {
+    if (!str) return "";
+    let clean = str.replace(/^\((.*)\)$/, '$1');
+    let result = "";
+    
+    for (let i = 0; i < clean.length; i++) {
+        let char = clean[i];
+        
+        // 1. If the character is ALREADY an overbar, just keep it and move on
+        if (char === '\u0305') {
+            result += char;
+            continue;
+        }
+        
+        result += char;
+        
+        // 2. Look ahead: is the NEXT character an overbar? 
+        // If yes, don't add a new one here.
+        if (i + 1 < clean.length && clean[i+1] === '\u0305') {
+            continue; 
+        } else {
+            // It is safe to add our overbar
+            result += '\u0305';
+        }
+    }
+    return result;
+};
+    
+// ==========================================
+// LOGIC GATE DRAWING HELPERS
+// ==========================================
+
+// Helper to draw the little inversion bubble for NOT, NAND, and NOR
+function drawInversionBubble(ctx, x, y) {
+    ctx.beginPath();
+    ctx.arc(x + 55, y, 5, 0, 2 * Math.PI); // Now perfectly centered on 'y'
+    ctx.fillStyle = "white";
+    ctx.fill();
+    ctx.stroke();
+}
+
+// 1. AND GATE
+function drawANDGate(ctx, x, y) {
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "black";
+    
+    // Gate body
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 25, y); // Top straight
+    ctx.arc(x + 25, y + 25, 25, -Math.PI / 2, Math.PI / 2); // Right curve
+    ctx.lineTo(x, y + 50); // Bottom straight
+    ctx.closePath(); // Back straight edge
+    ctx.stroke();
+
+    // Input wire stubs (Two inputs)
+    ctx.beginPath();
+    ctx.moveTo(x - 10, y + 15); ctx.lineTo(x, y + 15); // Top input
+    ctx.moveTo(x - 10, y + 35); ctx.lineTo(x, y + 35); // Bottom input
+    // Output wire stub
+    ctx.moveTo(x + 50, y + 25); ctx.lineTo(x + 60, y + 25);
+    ctx.stroke();
+}
+
+// 2. OR GATE
+function drawORGate(ctx, x, y) {
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "black";
+
+    // Gate body (curves)
+    ctx.moveTo(x, y);
+    ctx.quadraticCurveTo(x + 35, y, x + 50, y + 25);      // Top curve to point
+    ctx.quadraticCurveTo(x + 35, y + 50, x, y + 50);      // Bottom curve from point
+    ctx.quadraticCurveTo(x + 15, y + 25, x, y);           // Inner back curve
+    ctx.stroke();
+
+    // Input wire stubs
+    ctx.beginPath();
+    ctx.moveTo(x - 10, y + 15); ctx.lineTo(x + 5, y + 15); // Top input (reaches into the curve)
+    ctx.moveTo(x - 10, y + 35); ctx.lineTo(x + 5, y + 35); // Bottom input
+    // Output wire stub
+    ctx.moveTo(x + 50, y + 25); ctx.lineTo(x + 60, y + 25);
+    ctx.stroke();
+}
+
+// 3. NOT GATE
+function drawNOTGate(ctx, x, y) {
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "black";
+
+    // Triangle body (Centered on 'y')
+    ctx.moveTo(x, y - 20);
+    ctx.lineTo(x + 50, y);
+    ctx.lineTo(x, y + 20);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Call your inversion bubble function!
+    drawInversionBubble(ctx, x, y);
+
+    // Input wire stub 
+    ctx.beginPath();
+    ctx.moveTo(x - 10, y); 
+    ctx.lineTo(x, y);
+    
+    // Output wire stub (starts after the bubble at x + 60)
+    ctx.moveTo(x + 60, y); 
+    ctx.lineTo(x + 70, y);
+    ctx.stroke();
+}
+
+// 4. NAND GATE (AND + Bubble)
+function drawNANDGate(ctx, x, y) {
+    drawANDGate(ctx, x, y); 
+    
+    // Erase the standard output stub to make room for the bubble
+    // Made the clear width slightly larger to ensure the old line is fully wiped
+    ctx.clearRect(x + 49, y + 20, 22, 10); 
+    
+    // Call the newly centered bubble, shifting it down to the AND gate's tip
+    drawInversionBubble(ctx, x, y + 25);
+    
+    // Redraw the output stub extending from the bubble
+    ctx.beginPath();
+    ctx.moveTo(x + 60, y + 25); 
+    ctx.lineTo(x + 70, y + 25);
+    ctx.stroke();
+}
+
+// 5. NOR GATE (OR + Bubble)
+function drawNORGate(ctx, x, y) {
+    drawORGate(ctx, x, y);
+    
+    // Erase the standard output stub to make room for the bubble
+    ctx.clearRect(x + 49, y + 20, 22, 10); 
+    
+    // Call the newly centered bubble, shifting it down to the OR gate's tip
+    drawInversionBubble(ctx, x, y + 25);
+    
+    // Redraw the output stub extending from the bubble
+    ctx.beginPath();
+    ctx.moveTo(x + 60, y + 25); 
+    ctx.lineTo(x + 70, y + 25);
+    ctx.stroke();
 }
   
 // =========================================================================================================      
@@ -3669,7 +3961,1075 @@ function generateGrade9PowerProblem() {
     }
 }
 
+//****************************************************************************************
+
+function generateLogic_icProblem(ctx, canvas) {
+    currentProblem = { type: 'logic_ic' };
+    
+    // --- Global Theme Color ---
+    const themePink = "#d65093"; 
+    
+    // 1. Pick a random gate type (STRICTLY NO XOR)
+    const gates = ['AND', 'OR', 'NOT', 'NAND', 'NOR'];
+    const type = gates[Math.floor(Math.random() * gates.length)];
+    currentProblem.gateType = type;
+
+    // --- DYNAMIC QUESTION 2 SETUP (NEW PIN APPROACH) ---
+    const qPin = Math.floor(Math.random() * 14) + 1; // Random pin 1 to 14
+    let pinType = "";
+
+    if (qPin === 7) {
+        pinType = "Ground";
+    } else if (qPin === 14) {
+        pinType = "VCC";
+    } else {
+        if (type === 'NOT') {
+            const notInputs = [1, 3, 5, 9, 11, 13];
+            pinType = notInputs.includes(qPin) ? "Input" : "Output";
+        } else {
+            const quadOutputs = [3, 6, 8, 11];
+            pinType = quadOutputs.includes(qPin) ? "Output" : "Input";
+        }
+    }
+    
+    const q2Text = `Pin ${qPin} =`;
+    const q2CorrectAnswer = pinType;
+    
+    // Save the correct answer if your external grading script needs it
+    currentProblem.q2CorrectAnswer = q2CorrectAnswer;
+
+    // --- GENERATE TRUTH TABLE ANSWERS ---
+    let ttAnswers = [];
+    switch(type) {
+        case 'AND':  ttAnswers = [0, 0, 0, 1]; break;
+        case 'OR':   ttAnswers = [0, 1, 1, 1]; break;
+        case 'NOT':  ttAnswers = [1, 0]; break;
+        case 'NAND': ttAnswers = [1, 1, 1, 0]; break;
+        case 'NOR':  ttAnswers = [1, 0, 0, 0]; break;
+    }
+
+    // --- SAVE TO THE GLOBAL OBJECT FOR THE GRADER ---
+    window.currentICAnswers = {
+        gate: type,
+        pinAnswer: q2CorrectAnswer,
+        truthTable: ttAnswers
+    };
+
+    // 2. Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 3. DRAW THE IC
+    ctx.save();
+    const icX = 40, icY = 60;
+    const icW = 340, icH = 140; 
+    
+    // Draw Pins
+    ctx.fillStyle = "#ccc";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 1;
+    const pinSpacing = icW / 8; 
+    const pinXs = [];
+    
+    for (let i = 0; i < 7; i++) {
+        let px = icX + pinSpacing * (i + 1);
+        pinXs.push(px);
+        
+        // Bottom Pins (1-7)
+        ctx.fillRect(px - 6, icY + icH, 12, 20);
+        ctx.strokeRect(px - 6, icY + icH, 12, 20);
+        
+        // Top Pins (14-8)
+        ctx.fillRect(px - 6, icY - 20, 12, 20);
+        ctx.strokeRect(px - 6, icY - 20, 12, 20);
+    }
+
+    // Draw Chip Body
+    ctx.fillStyle = "#ffffff"; 
+    ctx.strokeStyle = "#000000"; 
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(icX, icY); 
+    ctx.lineTo(icX + icW, icY); 
+    ctx.lineTo(icX + icW, icY + icH); 
+    ctx.lineTo(icX, icY + icH); 
+    ctx.lineTo(icX, icY + (icH / 2) + 15); 
+    ctx.arc(icX, icY + (icH / 2), 15, Math.PI/2, -Math.PI/2, true); 
+    ctx.lineTo(icX, icY); 
+    ctx.fill();
+    ctx.stroke();
+
+    // Draw Pin 1 Dot
+    ctx.fillStyle = "#000";
+    ctx.beginPath();
+    ctx.arc(icX + 15, icY + icH - 15, 3, 0, Math.PI*2);
+    ctx.fill();
+
+    // 4. Draw Internal Logic Gates & Routing (No text labels)
+    ctx.strokeStyle = "#000000"; 
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    const drawWire = (x1, y1, x2, y2) => {
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+
+    const drawGateSymbol = (gateType, x, y) => {
+        const fn = window[`draw${gateType}Gate`];
+        if (typeof fn === 'function') {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(0.55, 0.55); 
+            
+            if (gateType === 'NOT') {
+                ctx.beginPath();
+                ctx.rect(-50, -50, 111, 100); 
+                ctx.clip();
+
+                ctx.fillStyle = "#FFFFFF";
+                ctx.beginPath();
+                ctx.moveTo(-2, -20);
+                ctx.lineTo(40, 0);
+                ctx.lineTo(-2, 20);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(46, 0, 8, 0, Math.PI * 2); 
+                ctx.fill();
+            } 
+            else if (gateType === 'NAND' || gateType === 'NOR') {
+                ctx.beginPath();
+                ctx.rect(-50, -50, 112, 100); 
+                ctx.clip();
+            }
+
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 2.5; 
+            fn(ctx, 0, 0);
+            ctx.restore();
+        }
+    };
+
+    if (type === 'NOT') {
+        const notPairsBottom = [[0,1], [2,3], [4,5]]; 
+        notPairsBottom.forEach((pair) => {
+            const px0 = pinXs[pair[0]];
+            const px1 = pinXs[pair[1]];
+            
+            const gateX = px0 + 6; 
+            const gateY = icY + icH - 35; 
+
+            drawWire(px0, icY + icH, px0, gateY); 
+            drawWire(px0, gateY, gateX, gateY);
+            drawWire(px1, gateY, px1, icY + icH); 
+            
+            const outX = gateX + 27; 
+            if (outX < px1) {
+                drawWire(outX, gateY, px1 - 1, gateY); 
+            }
+            
+            drawGateSymbol('NOT', gateX, gateY); 
+        });
+        
+        const notPairsTop = [[1,2], [3,4], [5,6]]; 
+        notPairsTop.forEach((pair) => {
+            const px0 = pinXs[pair[0]];
+            const px1 = pinXs[pair[1]];
+
+            const gateX = px0 + 6; 
+            const gateY = icY + 35; 
+
+            drawWire(px0, icY, px0, gateY); 
+            drawWire(px0, gateY, gateX, gateY);
+            drawWire(px1, gateY, px1, icY); 
+
+            const outX = gateX + 27;
+            if (outX < px1) {
+                drawWire(outX, gateY, px1 - 1, gateY); 
+            }
+
+            drawGateSymbol('NOT', gateX, gateY); 
+        });
+    } else {
+        const quadBottom = [[0,1,2], [3,4,5]];
+        quadBottom.forEach((group) => {
+            const px0 = pinXs[group[0]]; 
+            const px1 = pinXs[group[1]]; 
+            const px2 = pinXs[group[2]]; 
+
+            const gateX = px0 + 46; 
+            const gateY = icY + icH - 48; 
+
+            const topInY = gateY - 5.5;   
+            const botInY = gateY + 5.5;   
+
+            drawWire(px0, icY + icH, px0, topInY + 14); 
+            drawWire(px0, topInY + 14, gateX, topInY + 14); 
+            
+            const turnY_B = icY + icH - 10; 
+            const routeX_B = px0 + (pinSpacing / 2); 
+            
+            drawWire(px1, icY + icH, px1, turnY_B); 
+            drawWire(px1, turnY_B, routeX_B, turnY_B); 
+            drawWire(routeX_B, turnY_B, routeX_B, botInY + 13.5); 
+            drawWire(routeX_B, botInY + 13.5 , gateX, botInY + 13.5);
+            
+            drawWire(px2, gateY + 14, px2, icY + icH); 
+            
+            const outX = gateX + 34.5;
+            if (outX < px2) {
+                drawWire(outX, gateY + 14, px2, gateY + 14); 
+            }
+            
+            drawGateSymbol(type, gateX, gateY); 
+        });
+        
+        const quadTop = [[1,2,3], [4,5,6]]; 
+        quadTop.forEach((group) => {
+            const px0 = pinXs[group[0]]; 
+            const px1 = pinXs[group[1]]; 
+            const px2 = pinXs[group[2]]; 
+
+            const gateX = px0 + 46; 
+            const gateY = icY + 20;        
+
+            const topInY = gateY - 5.5;   
+            const botInY = gateY + 5.5;   
+
+            drawWire(px0, icY, px0, botInY + 13.5); 
+            drawWire(px0, botInY + 13.5, gateX, botInY + 13.5); 
+            
+            const turnY_T = icY + 10; 
+            const routeX_T = px0 + (pinSpacing / 2);  
+            
+            drawWire(px1, icY, px1, turnY_T); 
+            drawWire(px1, turnY_T, routeX_T, turnY_T); 
+            drawWire(routeX_T, turnY_T, routeX_T, topInY + 13.5); 
+            drawWire(routeX_T, topInY + 13.5, gateX, topInY + 13.5); 
+            
+            drawWire(px2, gateY + 14, px2, icY); 
+            
+            const outX = gateX + 34.5;
+            if (outX < px2) {
+                drawWire(outX, gateY + 14, px2, gateY + 14); 
+            }
+            
+            drawGateSymbol(type, gateX, gateY); 
+        });
+    }
+    ctx.restore();
+
+    // 5. Build the UI
+    const qContainer = document.getElementById('inputGroupLogic_ic');
+
+    // Make the container fluid
+    qContainer.style.width = "100%";
+    qContainer.style.display = 'block';
+
+    // Eat up that massive blank space below the Data Sheet button
+    qContainer.style.marginTop = "-35px"; 
+
+    qContainer.innerHTML = `
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-around; align-items: flex-start; font-family: 'Segoe UI', sans-serif; width: 100%; box-sizing: border-box;">
+            
+            <div style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 20px; text-align: left; padding-top: 10px; min-width: 200px;">
+                
+                <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 10px;">
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; flex: 0 0 140px; text-align: right;">IC logic gate =</label>
+                    <select id="icGateSelect" style="padding: 8px; flex: 0 0 100px; width: 100px; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
+                        <option value="">-- Select --</option>
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                        <option value="NOT">NOT</option>
+                        <option value="NAND">NAND</option>
+                        <option value="NOR">NOR</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 10px;">
+                    <label style="color: ${themePink}; font-weight: bold; font-size: 1.1rem; flex: 0 0 140px; text-align: right;">${q2Text}</label>
+                    <select id="icPinAnswer" style="padding: 8px; flex: 0 0 100px; width: 100px; border: 1.5px solid #eee; border-radius: 8px; background: white; color: #555; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
+                        <option value="">-- Select --</option>
+                        <option value="Vcc">VCC</option>
+                        <option value="Ground">Ground</option>
+                        <option value="Input">Input</option>
+                        <option value="Output">Output</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div style="flex: 1 1 250px; max-width: 300px; box-sizing: border-box; min-width: 220px; display: flex; flex-direction: column; align-items: center;">
+                
+                <label id="ttTitle" style="display: block; text-align: center; margin-bottom: 10px; color: ${themePink}; font-weight: bold; font-size: 1.1rem;"> Truth Table</label>
+                
+                <div id="ttContainer"></div>
+
+            </div>
+        </div>
+    `;
+
+    // --- Dynamic Truth Table Logic ---
+    const gateSelect = document.getElementById('icGateSelect');
+    const ttTitle = document.getElementById('ttTitle');
+    const ttContainer = document.getElementById('ttContainer');
+
+    // Helper function to re-apply the 0/1 locks after a table is drawn
+    function applyInputLocks() {
+        for (let i = 1; i <= 4; i++) {
+            let el = document.getElementById(`tt_row${i}`);
+            if (el) {
+                el.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^01]/g, ''); 
+                    this.style.backgroundColor = 'white'; 
+                    this.style.borderColor = '#ccc';
+                });
+            }
+        }
+    }
+
+    if (gateSelect && ttTitle && ttContainer) {
+        gateSelect.addEventListener('change', function() {
+            const selectedGate = this.value;
+            
+            if (!selectedGate) {
+                // If they go back to "-- Select --", clear it
+                ttTitle.innerText = ` Truth Table`;
+                ttContainer.innerHTML = ''; 
+                return;
+            }
+
+            // Update Title
+            ttTitle.innerText = `${selectedGate} Truth Table`;
+
+            // Draw the appropriate table
+            if (selectedGate === 'NOT') {
+                ttContainer.innerHTML = `
+                    <table style="margin: 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em;">
+                        <thead style="background-color: #f8f9fa;">
+                            <tr>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 35px;">A</th>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 45px;">Q</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row1" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row2" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                ttContainer.innerHTML = `
+                    <table style="margin: 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em;">
+                        <thead style="background-color: #f8f9fa;">
+                            <tr>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 35px;">A</th>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 35px;">B</th>
+                                <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 45px;">Q</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row1" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row2" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">0</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row3" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff; color: #333;">1</td>
+                                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                                    <input type="text" id="tt_row4" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            // Important: Re-attach the event listeners to the new inputs!
+            applyInputLocks(); 
+        });
+    }
+
+// 6. SOLUTION LOGIC PANEL (For Logic ICs)
+    const solText = document.getElementById('solText');
+    if (solText) {
+        // I also swapped the title string to show the Gate first, matching your UI!
+        let logicHTML = "<strong>Gate = " + type + " | Pin " + qPin + " = " + q2CorrectAnswer + "</strong><br><br>";
+
+        // --- Step 1: Gate Identification ---
+        logicHTML += "<em>Step 1:</em> Identify the logic gate. The symbols shown inside the IC are <strong>" + type + "</strong> gates.<br><br>";
+
+        // --- Step 2: Pin Identification ---
+        if (qPin === 7) {
+            logicHTML += "<em>Step 2:</em> Pin 7 on standard 14-pin logic ICs is always the <strong>Ground (0V)</strong> connection.<br><br>";
+        } else if (qPin === 14) {
+            logicHTML += "<em>Step 2:</em> Pin 14 on standard 14-pin logic ICs is always the <strong>VCC (+Ve Supply)</strong> connection.<br><br>";
+        } else {
+            logicHTML += "<em>Step 2:</em> Trace the line from Pin " + qPin + " into the internal diagram. ";
+            if (q2CorrectAnswer === "Input") {
+                logicHTML += "It connects to the flat/back side of the gate, making it an <strong>Input</strong>.<br><br>";
+            } else {
+                logicHTML += "It connects to the rounded/pointed front side (or the inversion circle) of the gate, making it an <strong>Output</strong>.<br><br>";
+            }
+        }
+
+        // --- Step 3: Truth Table Identification ---
+        logicHTML += "<em>Step 3:</em> Apply the standard truth table for a(n) " + type + " gate:<br>";
+        
+        let inputsText = (type === 'NOT') ? ["0", "1"] : ["0, 0", "0, 1", "1, 0", "1, 1"];
+        logicHTML += "<ul style='margin-top: 5px; margin-bottom: 0;'>";
+        for(let i = 0; i < ttAnswers.length; i++) {
+            let inputLabel = (type === 'NOT') ? "Input: " : "Inputs: ";
+            logicHTML += "<li>" + inputLabel + inputsText[i] + " &rarr; Output: <strong>" + ttAnswers[i] + "</strong></li>";
+        }
+        logicHTML += "</ul>";
+
+        solText.innerHTML = logicHTML;
+    }
+}
+//****************************************************************************************
+
+// ==========================================
+// LOGIC SYSTEMS (FULL TRUTH TABLE)
+// ==========================================
+function generateLogicSystemProblem(ctx, canvas) {
+    // 1. Topic Map & Progress Tracking
+    if (typeof updateTopicMap === 'function') {
+        updateTopicMap('logicsystem'); 
+    }
+
+    // 2. Setup UI & Global Reset
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const container = document.getElementById('inputGroupLogicSystem');
+    if (container) container.style.display = 'block';
+
+    // 3. Gate Logic Selection
+    const gateTypes = ['AND', 'OR', 'NAND', 'NOR'];
+    const topGate = gateTypes[Math.floor(Math.random() * gateTypes.length)];
+    const bottomGate = Math.random() > 0.5 ? 'NOT' : 'WIRE'; 
+    const finalGate = gateTypes[Math.floor(Math.random() * gateTypes.length)];
+
+    // Boolean Logic Helper
+    const compute = (gate, in1, in2) => {
+        if (gate === 'AND') return (in1 & in2);
+        if (gate === 'OR') return (in1 | in2);
+        if (gate === 'NAND') return !(in1 & in2) ? 1 : 0;
+        if (gate === 'NOR') return !(in1 | in2) ? 1 : 0;
+        if (gate === 'NOT') return in1 ? 0 : 1;
+        if (gate === 'WIRE') return in1; 
+    };
+
+    // 4. Calculate Answers & Build Table
+    window.logicSystemAnswers = { d: [], e: [], q: [] };
+    
+let tableHTML = `
+        <table style="margin: -15px auto 0 auto; background: white; border-collapse: collapse; text-align: center; font-size: 0.9em;">
+            <thead style="background-color: #f8f9fa;">
+                <tr>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 25px;">C</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 25px;">B</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 25px;">A</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 40px;">D</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 40px;">E</th>
+                    <th style="color: #c83377; border: 1px solid #ccc; padding: 4px; width: 40px;">Q</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    for (let i = 0; i < 8; i++) {
+        let c = (i >> 2) & 1, b = (i >> 1) & 1, a = i & 1;
+        let d = compute(topGate, a, b), e = compute(bottomGate, c, 0), q = compute(finalGate, d, e);
+
+        window.logicSystemAnswers.d.push(d);
+        window.logicSystemAnswers.e.push(e);
+        window.logicSystemAnswers.q.push(q);
+
+        tableHTML += `
+            <tr>
+                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${c}</td>
+                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${b}</td>
+                <td style="vertical-align: middle; font-weight: bold; border: 1px solid #ccc; padding: 2px; background: #fff;">${a}</td>
+                
+                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                    <input type="text" id="sysD_${i}" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                </td>
+                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                    <input type="text" id="sysE_${i}" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                </td>
+                <td style="padding: 2px; border: 1px solid #ccc; background: #fff;">
+                    <input type="text" id="sysQ_${i}" maxlength="1" style="width: 28px !important; box-sizing: border-box; height: 22px; text-align: center; color: #c83377; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; margin: 0 auto; display: block; padding: 0;">
+                </td>
+            </tr>
+        `;
+    }
+    
+    tableHTML += `</tbody></table>`;
+    const tableContainer = document.getElementById('logicSystemTableContainer');
+    if (tableContainer) tableContainer.innerHTML = tableHTML;
+    
+    // 5. Input Safety Lock
+    for (let i = 0; i < 8; i++) {
+        ['sysD', 'sysE', 'sysQ'].forEach(prefix => {
+            let el = document.getElementById(`${prefix}_${i}`);
+            if(el) {
+                el.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^01]/g, ''); 
+                    this.style.backgroundColor = 'white'; 
+                    this.style.borderColor = '#ccc';
+                });
+            }
+        });
+    }
+
+    // 6. DRAW THE CIRCUIT
+    ctx.font = "bold 18px Arial"; 
+    ctx.fillStyle = "#c83377"; 
+    ctx.fillText("A", 20, 60); ctx.fillText("B", 20, 80); ctx.fillText("C", 20, 165); 
+    ctx.fillText("D", 180, 55); ctx.fillText("E", 180, 150); ctx.fillText("Q", 290, 110); 
+
+    // --- CRISP WIRE OVERRIDE ---
+    ctx.save();
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+
+    if (typeof drawLine === 'function') {
+        drawLine(ctx, 40, 55, 120, 55);  // A
+        drawLine(ctx, 40, 75, 120, 75);  // B
+        
+        // FIXED: Backed out slightly to 169 to flush perfectly without piercing!
+        drawLine(ctx, 169, 65, 205, 65);   
+        drawLine(ctx, 205, 65, 205, 105);  
+        drawLine(ctx, 205, 105, 230, 105); 
+
+        drawLine(ctx, 40, 160, 120, 160);  // C
+        if (bottomGate === 'WIRE') drawLine(ctx, 120, 160, 170, 160); 
+        
+        drawLine(ctx, 170, 160, 205, 160); // E
+        drawLine(ctx, 205, 160, 205, 125); 
+        drawLine(ctx, 205, 125, 230, 125); 
+
+        drawLine(ctx, 280, 115, 320, 115); // Q
+    }
+    ctx.restore();
+
+    // 7. Draw Gates
+    const draw = (type, x, y) => {
+        const fn = window[`draw${type}Gate`];
+        if (typeof fn === 'function') fn(ctx, x, y);
+    };
+
+    draw(topGate, 120, 40);
+    if (bottomGate === 'NOT') draw('NOT', 120, 160);
+    draw(finalGate, 230, 90);
+
+    let solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = `Calculate <b>D</b> using A and B. Then calculate <b>E</b> using C. Finally, combine D and E for <b>Q</b>.`;
+}
 //*****************************************************************************************
+
+function generateBooleanProblem(ctx, canvas) {
+    // 1. INSTANT UI STABILIZATION & WIPE
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups(); 
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    currentMode = 'logic_boolean'; 
+    currentBooleanMode = 'old'; // Starting with Old Spec style
+    
+    // ==========================================
+    // NEW FIX: TURN THE STANDARD UI BACK ON
+    // ==========================================
+    const boolParent = document.getElementById('inputGroupBoolean');
+    if (boolParent) boolParent.style.display = 'block';
+
+    const qText = document.getElementById('questionText');
+    if (qText) qText.style.display = 'block';
+    
+    // SHOW THE SMART ROCKET (Grade 9)
+    const smartRocket = document.getElementById('mainGrade9Btn');
+    if (smartRocket) {
+        smartRocket.style.display = 'inline-block';
+    }
+
+    // Show EXACTLY the containers we need for this module
+    const boolDropdown = document.getElementById('booleanDropdownContainer');
+    if (boolDropdown) boolDropdown.style.display = 'block';
+    
+    // Make sure dropdown starts empty
+    const boolSelect = document.getElementById('booleanSelect');
+    if (boolSelect) boolSelect.value = ''; 
+
+    // 2. Define the Gates (Expanded for Old Spec AND De Morgan's variants)
+    const gates = [
+        { id: 'AND', text: 'A . B', overlineAll: false, overlineA: false, overlineB: false, outputs: [0, 0, 0, 1] },
+        { id: 'OR', text: 'A + B', overlineAll: false, overlineA: false, overlineB: false, outputs: [0, 1, 1, 1] },
+        { id: 'NAND', text: 'A . B', overlineAll: true, overlineA: false, overlineB: false, outputs: [1, 1, 1, 0] },
+        { id: 'NOR', text: 'A + B', overlineAll: true, overlineA: false, overlineB: false, outputs: [1, 0, 0, 0] },
+        { id: 'NOT_A_AND_B', text: 'A . B', overlineAll: false, overlineA: true, overlineB: false, outputs: [0, 1, 0, 0] },
+        { id: 'A_AND_NOT_B', text: 'A . B', overlineAll: false, overlineA: false, overlineB: true, outputs: [0, 0, 1, 0] },
+        { id: 'NOT_A_OR_B', text: 'A + B', overlineAll: false, overlineA: true, overlineB: false, outputs: [1, 1, 0, 1] },
+        { id: 'A_OR_NOT_B', text: 'A + B', overlineAll: false, overlineA: false, overlineB: true, outputs: [1, 0, 1, 1] },
+        // De Morgan's Equivalents:
+        { id: 'DEMORGAN_NOR', text: 'A . B', overlineAll: false, overlineA: true, overlineB: true, outputs: [1, 0, 0, 0] }, // Equivalent to NOR
+        { id: 'DEMORGAN_NAND', text: 'A + B', overlineAll: false, overlineA: true, overlineB: true, outputs: [1, 1, 1, 0] }  // Equivalent to NAND
+    ];
+
+    // 3. Shuffle and pick the Target Question
+    const shuffledGates = gates.sort(() => 0.5 - Math.random());
+    const targetGate = shuffledGates[0];
+
+    // 4. Double Answer Safeguard & True Random Shuffle
+    let filteredPool = shuffledGates.filter(g => g.id !== targetGate.id); 
+    if (targetGate.id === 'NOR') filteredPool = filteredPool.filter(g => g.id !== 'DEMORGAN_NOR');
+    if (targetGate.id === 'DEMORGAN_NOR') filteredPool = filteredPool.filter(g => g.id !== 'NOR');
+    if (targetGate.id === 'NAND') filteredPool = filteredPool.filter(g => g.id !== 'DEMORGAN_NAND');
+    if (targetGate.id === 'DEMORGAN_NAND') filteredPool = filteredPool.filter(g => g.id !== 'NAND');
+
+    const wrongOptions = filteredPool.slice(0, 3);
+    const finalOptions = [targetGate, ...wrongOptions];
+    
+    // Fisher-Yates Shuffle for true randomness
+    for (let i = finalOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [finalOptions[i], finalOptions[j]] = [finalOptions[j], finalOptions[i]];
+    }
+    
+    const labels = ['A', 'B', 'C', 'D'];
+    currentBooleanAnswer = labels[finalOptions.indexOf(targetGate)];
+
+    // 5. Set De Morgan Flag for Hints
+    isDeMorganQuestion = targetGate.id.includes('DEMORGAN');
+
+    // ==========================================
+    // 6. DRAWING: The Truth Table (Left Side)
+    // ==========================================
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 20px Arial";
+    ctx.fillText("Truth Table", 40, 40);
+
+    ctx.font = "bold 18px Arial";
+    ctx.fillText("A", 50, 80);
+    ctx.fillText("B", 90, 80);
+    ctx.fillText("Q", 140, 80);
+
+    ctx.beginPath();
+    ctx.moveTo(30, 90); ctx.lineTo(170, 90); 
+    ctx.moveTo(80, 60); ctx.lineTo(80, 220); 
+    ctx.moveTo(120, 60); ctx.lineTo(120, 220); 
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#333";
+    ctx.stroke();
+
+    const inputsA = [0, 0, 1, 1];
+    const inputsB = [0, 1, 0, 1];
+    for(let i = 0; i < 4; i++) {
+        let y = 120 + (i * 30);
+        ctx.fillStyle = "#333";
+        ctx.fillText(inputsA[i], 50, y);
+        ctx.fillText(inputsB[i], 90, y);
+        ctx.fillStyle = "#E64097"; 
+        ctx.font = "bold 18px Arial";
+        ctx.fillText(targetGate.outputs[i], 140, y);
+        ctx.font = "18px Arial";
+    }
+
+    // ==========================================
+    // 7. DRAWING: The Options (Right Side)
+    // ==========================================
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 20px Arial";
+    ctx.fillText("Options:", 220, 40);
+    ctx.font = "18px Arial";
+
+    for(let i = 0; i < 4; i++) {
+        let y = 90 + (i * 40);
+        let prefix = labels[i] + ")   Q = ";
+        ctx.fillText(prefix + finalOptions[i].text, 220, y);
+        
+        let startX = 220 + ctx.measureText(prefix).width;
+        ctx.lineWidth = 2;
+
+        // Line over everything
+        if (finalOptions[i].overlineAll) {
+            let textWidth = ctx.measureText(finalOptions[i].text).width;
+            ctx.beginPath();
+            ctx.moveTo(startX, y - 16);
+            ctx.lineTo(startX + textWidth, y - 16);
+            ctx.stroke();
+        }
+        
+        // Line over just 'A'
+        if (finalOptions[i].overlineA) {
+            let textWidth = ctx.measureText("A").width;
+            ctx.beginPath();
+            ctx.moveTo(startX, y - 16);
+            ctx.lineTo(startX + textWidth, y - 16);
+            ctx.stroke();
+        }
+
+        // Line over just 'B'
+        if (finalOptions[i].overlineB) {
+            let offset = ctx.measureText(finalOptions[i].text.substring(0, finalOptions[i].text.indexOf('B'))).width;
+            let textWidth = ctx.measureText("B").width;
+            ctx.beginPath();
+            ctx.moveTo(startX + offset, y - 16);
+            ctx.lineTo(startX + offset + textWidth, y - 16);
+            ctx.stroke();
+        }
+    }
+
+    // ==========================================
+    // 8. BUILD SOLUTION HTML
+    // ==========================================
+    let logicHTML = `<strong>Solution: Option ${currentBooleanAnswer}</strong><br><br>`;
+    
+    if (targetGate.id === 'AND') {
+        logicHTML += "<em>Explanation:</em> Look at the truth table. The output is 1 <strong>ONLY when both A and B are 1</strong>. This is the standard behavior of an <strong>AND</strong> gate (A . B).";
+    } else if (targetGate.id === 'OR') {
+        logicHTML += "<em>Explanation:</em> Look at the truth table. The output is 1 <strong>whenever ANY of the inputs (A or B) are 1</strong>. This is the standard behavior of an <strong>OR</strong> gate (A + B).";
+    } else if (targetGate.id === 'NAND') {
+        logicHTML += "<em>Explanation:</em> The output is 0 ONLY when both A and B are 1. This is the exact opposite of an AND gate, making it a <strong>NAND (Not-AND)</strong> gate (A . B with a line over the whole expression).";
+    } else if (targetGate.id === 'NOR') {
+        logicHTML += "<em>Explanation:</em> The output is 1 ONLY when both inputs are 0. This is the exact opposite of an OR gate, making it a <strong>NOR (Not-OR)</strong> gate (A + B with a line over the whole expression).";
+    } else if (targetGate.id === 'NOT_A_AND_B') {
+        logicHTML += "<em>Explanation:</em> The output is 1 ONLY when A is 0 and B is 1. This matches the expression <strong>(NOT A) AND B</strong>.";
+    } else if (targetGate.id === 'A_AND_NOT_B') {
+        logicHTML += "<em>Explanation:</em> The output is 1 ONLY when A is 1 and B is 0. This matches the expression <strong>A AND (NOT B)</strong>.";
+    } else if (targetGate.id === 'NOT_A_OR_B') {
+        logicHTML += "<em>Explanation:</em> The output is 0 ONLY when A is 1 and B is 0. This matches the expression <strong>(NOT A) OR B</strong>.";
+    } else if (targetGate.id === 'A_OR_NOT_B') {
+        logicHTML += "<em>Explanation:</em> The output is 0 ONLY when A is 0 and B is 1. This matches the expression <strong>A OR (NOT B)</strong>.";
+    } else if (targetGate.id === 'DEMORGAN_NOR') {
+        logicHTML += "<em>Explanation:</em> The truth table shows a NOR gate (output is 1 only when both inputs are 0). According to <strong>De Morgan's Laws</strong>, a NOR gate is equivalent to an AND gate with inverted inputs (NOT A . NOT B).";
+    } else if (targetGate.id === 'DEMORGAN_NAND') {
+        logicHTML += "<em>Explanation:</em> The truth table shows a NAND gate (output is 0 only when both inputs are 1). According to <strong>De Morgan's Laws</strong>, a NAND gate is equivalent to an OR gate with inverted inputs (NOT A + NOT B).";
+    }
+
+    const solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = logicHTML;
+    
+    // ==========================================
+    // LIVE EQUATION BUILDER LOGIC
+    // ==========================================
+    const drop1 = document.getElementById('g9boolRow1');
+    const drop2 = document.getElementById('g9boolRow2');
+    const drop3 = document.getElementById('g9boolRow3');
+
+    // Clear the radio buttons from previous questions
+    document.querySelectorAll('input[name="g9boolCombineRadio"]').forEach(radio => radio.checked = false);
+
+    // This function runs every time a dropdown is changed
+    function updateLiveEquations() {
+        // Helper to grab text or return "___" if nothing is selected
+        const getText = (dropdown) => {
+            if (!dropdown || dropdown.selectedIndex <= 0) return '___';
+            
+            // Grabs the text and uses RegEx to strip out ALL blank spaces
+            let rawText = dropdown.options[dropdown.selectedIndex].text;
+            return rawText.replace(/\s+/g, ''); 
+        };
+
+        const t1 = getText(drop1);
+        const t2 = getText(drop2);
+        const t3 = getText(drop3);
+
+        // Update the OR equation (+) placeholders
+        if (document.getElementById('sopPlaceholder1a')) document.getElementById('sopPlaceholder1a').innerText = t1;
+        if (document.getElementById('sopPlaceholder2a')) document.getElementById('sopPlaceholder2a').innerText = t2;
+        if (document.getElementById('sopPlaceholder3a')) document.getElementById('sopPlaceholder3a').innerText = t3;
+
+        // Update the AND equation (.) placeholders
+        if (document.getElementById('sopPlaceholder1b')) document.getElementById('sopPlaceholder1b').innerText = t1;
+        if (document.getElementById('sopPlaceholder2b')) document.getElementById('sopPlaceholder2b').innerText = t2;
+        if (document.getElementById('sopPlaceholder3b')) document.getElementById('sopPlaceholder3b').innerText = t3;
+    }
+
+    // Attach the tripwires to the dropdowns
+    if (drop1) drop1.addEventListener('change', updateLiveEquations);
+    if (drop2) drop2.addEventListener('change', updateLiveEquations);
+    if (drop3) drop3.addEventListener('change', updateLiveEquations);
+
+    // Run it once immediately to reset the blanks to "___" on new question load
+    updateLiveEquations();
+}
+//*****************************************************************************************
+
+function generateGrade9booleanProblem(ctx, canvas) {
+    // 1. Setup UI & Global Reset
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const masterContainer = document.getElementById('inputGroupGrade9BooleanMaster');
+    if (masterContainer) masterContainer.style.display = 'block';
+
+    const sopContainer = document.getElementById('inputGroupGrade9BooleanSOP');
+    const pathContainer = document.getElementById('inputGroupGrade9BooleanPath');
+    if (sopContainer) sopContainer.style.display = 'none';
+    if (pathContainer) pathContainer.style.display = 'none';
+
+    // Randomize between Truth Table (SOP) or Circuit Pathfinder
+    const isPathfinder = Math.random() > 0.5;
+
+    if (!isPathfinder) {
+        // ==========================================
+        // MODE 1: TRUTH TABLE (Sum of Products)
+        // ==========================================
+        if (sopContainer) {
+            sopContainer.style.display = 'block'; 
+            sopContainer.style.marginTop = '-5px'; 
+        }
+
+        const rows = [[0,0,0], [0,0,1], [0,1,0], [0,1,1], [1,0,0], [1,0,1], [1,1,0], [1,1,1]];
+        let activeIndices = [];
+        while(activeIndices.length < 3) {
+            let r = Math.floor(Math.random() * 8);
+            if(!activeIndices.includes(r)) activeIndices.push(r);
+        }
+        activeIndices.sort((a, b) => a - b); 
+
+        ctx.fillStyle = "#333"; ctx.font = "bold 20px Arial"; ctx.fillText("Truth Table", 40, 40);
+        ctx.font = "bold 18px Arial"; ctx.fillText("A", 40, 80); ctx.fillText("B", 80, 80); ctx.fillText("C", 120, 80); ctx.fillText("Q", 170, 80);
+
+        ctx.beginPath();
+        ctx.moveTo(30, 90); ctx.lineTo(200, 90);   
+        ctx.moveTo(70, 60); ctx.lineTo(70, 340);   
+        ctx.moveTo(110, 60); ctx.lineTo(110, 340); 
+        ctx.moveTo(150, 60); ctx.lineTo(150, 340); 
+        ctx.lineWidth = 2; ctx.strokeStyle = "#333"; ctx.stroke();
+
+        let correctStrings = [];
+        rows.forEach((row, i) => {
+            let y = 120 + (i * 30); 
+            ctx.fillStyle = "#333"; ctx.font = "18px Arial";
+            ctx.fillText(row[0], 40, y); ctx.fillText(row[1], 80, y); ctx.fillText(row[2], 120, y);
+
+            let isOne = activeIndices.includes(i);
+            if (isOne) {
+                ctx.fillStyle = "#E64097"; 
+                ctx.font = "bold 18px Arial"; 
+                let aPart = row[0] ? "A" : "A\u0305";
+                let bPart = row[1] ? "B" : "B\u0305";
+                let cPart = row[2] ? "C" : "C\u0305";
+                correctStrings.push(`${aPart}.${bPart}.${cPart}`); 
+            } else {
+                ctx.fillStyle = "#999"; 
+            }
+            ctx.fillText(isOne ? "1" : "0", 170, y);
+        });
+
+        window.g9boolAnswers = correctStrings;
+        window.g9boolActiveMode = 'sop'; 
+
+        const allPossibleCombos = [
+            "A\u0305.B\u0305.C\u0305", "A\u0305.B\u0305.C", "A\u0305.B.C\u0305", "A\u0305.B.C",
+            "A.B\u0305.C\u0305", "A.B\u0305.C", "A.B.C\u0305", "A.B.C"
+        ];
+
+        ['g9boolRow1', 'g9boolRow2', 'g9boolRow3'].forEach(id => {
+            let sel = document.getElementById(id);
+            if (sel) {
+                sel.innerHTML = '<option value="">Select Row...</option>';
+                allPossibleCombos.forEach(opt => {
+                    let el = document.createElement("option");
+                    el.textContent = opt; el.value = opt;
+                    sel.appendChild(el);
+                });
+            }
+        });
+
+        const boolRadios = document.querySelectorAll('input[name="g9boolCombineRadio"]');
+        ['sopPlaceholder1a', 'sopPlaceholder2a', 'sopPlaceholder3a', 'sopPlaceholder1b', 'sopPlaceholder2b', 'sopPlaceholder3b'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.textContent = "___";
+        });
+
+        if (boolRadios.length >= 2) {
+            boolRadios[0].value = "OR"; boolRadios[1].value = "AND"; 
+            const radioBox = boolRadios[0].closest('div');
+            if (radioBox) radioBox.style.borderColor = "transparent"; 
+        }
+        boolRadios.forEach(radio => radio.checked = false);
+        
+        let sol = document.getElementById('solText');
+        if(sol) sol.innerHTML = `Rows found: <b>${correctStrings.join(", ")}</b><br>Combine them with + (OR) for the final system equation.`;
+
+    } else {
+        // ==========================================
+        // MODE 2: CIRCUIT PATHFINDER (Radio Overbars)
+        // ==========================================
+        if (pathContainer) pathContainer.style.display = 'block';
+
+        // Constrained First Column (Only AND/OR)
+        const topGates = ['AND', 'OR'];
+        const topGate = topGates[Math.floor(Math.random() * topGates.length)];
+        
+        // Second column can have any
+        const finalGates = ['AND', 'OR', 'NAND', 'NOR'];
+        const finalGate = finalGates[Math.floor(Math.random() * finalGates.length)];
+
+        // Generate X and Y strings directly
+        let ansX = topGate === 'AND' ? "A . B" : "A + B";
+        let ansY = "C\u0305"; 
+
+        // Helper to generate perfectly formatted HTML for the radio labels
+        function getHTMLFormattedExp(gate, x, y) {
+            let bracketX = `(${x})`;
+            if (gate === 'AND') return `${bracketX} . ${y}`;
+            if (gate === 'OR') return `${bracketX} + ${y}`;
+            // CSS overline renders a flawless continuous bar
+            if (gate === 'NAND') return `<span style="text-decoration: overline; display: inline-block;">${bracketX} . ${y}</span>`;
+            if (gate === 'NOR') return `<span style="text-decoration: overline; display: inline-block;">${bracketX} + ${y}</span>`;
+        }
+
+        let ansQHTML = getHTMLFormattedExp(finalGate, ansX, ansY);
+        
+        // Save raw unformatted string to window logic check if needed, or pass the HTML
+        window.g9boolPathAnswers = { x: ansX, y: ansY, q: ansQHTML };
+        window.g9boolActiveMode = 'pathfinder'; 
+
+        let sol = document.getElementById('solText');
+        if(sol) sol.innerHTML = `<b>X:</b> ${ansX}<br><b>Y:</b> ${ansY}<br><b>Q:</b> ${ansQHTML}`;
+
+        // Draw inputs and wires
+        ctx.fillStyle = "#333"; ctx.font = "bold 20px Arial";
+        ctx.fillText("A", 20, 62); ctx.fillText("B", 20, 82); ctx.fillText("C", 20, 167);
+        if(typeof drawLine === 'function') {
+            drawLine(ctx, 40, 55, 120, 55); drawLine(ctx, 40, 75, 120, 75); drawLine(ctx, 40, 160, 120, 160); 
+            drawLine(ctx, 170, 65, 205, 65); drawLine(ctx, 205, 65, 205, 110); drawLine(ctx, 205, 110, 230, 110);
+            drawLine(ctx, 170, 160, 205, 160); drawLine(ctx, 205, 160, 205, 130); drawLine(ctx, 205, 130, 230, 130);
+            drawLine(ctx, 280, 120, 320, 120);
+        }
+
+        if (topGate === 'OR' && typeof drawORGate === 'function') drawORGate(ctx, 120, 40);
+        else if (topGate === 'AND' && typeof drawANDGate === 'function') drawANDGate(ctx, 120, 40);
+        
+        if(typeof drawNOTGate === 'function') drawNOTGate(ctx, 120, 160); 
+        
+        if (finalGate === 'OR' && typeof drawORGate === 'function') drawORGate(ctx, 230, 95);
+        else if (finalGate === 'AND' && typeof drawANDGate === 'function') drawANDGate(ctx, 230, 95);
+        else if (finalGate === 'NAND' && typeof drawNANDGate === 'function') drawNANDGate(ctx, 230, 95);
+        else if (finalGate === 'NOR' && typeof drawNORGate === 'function') drawNORGate(ctx, 230, 95);
+        
+        // ==========================================
+        // NEW: Draw Pink Canvas Labels for X, Y, Q
+        // ==========================================
+        ctx.font = "bold 18px Arial"; 
+        ctx.fillStyle = "#c83377"; 
+        ctx.fillText("X", 180, 55);  
+        ctx.fillText("Y", 180, 150); 
+        ctx.fillText("Q", 290, 110); 
+        // ==========================================
+
+        // 1. Populate standard dropdowns for X and Y
+        const xOptions = ["A . B", "A + B", "A\u0305 . B\u0305", "A\u0305 + B\u0305"];
+        const yOptions = ["C", "C\u0305", "A", "B"];
+        
+        const fillSelect = (id, options) => {
+            let el = document.getElementById(id);
+            if(!el) return;
+            el.innerHTML = '<option value="">Select expression...</option>';
+            options.forEach(o => el.innerHTML += `<option value="${o}">${o}</option>`);
+        };
+        fillSelect('g9boolPathX', xOptions);
+        fillSelect('g9boolPathY', yOptions);
+
+        // 2. Generate Radio Distractors for Q
+        let qSetHTML = new Set();
+        qSetHTML.add(ansQHTML); // ensure right answer exists
+        
+        while(qSetHTML.size < 4) {
+            let rTop = topGates[Math.floor(Math.random() * topGates.length)];
+            let rFin = finalGates[Math.floor(Math.random() * finalGates.length)];
+            let tX = rTop === 'AND' ? "A . B" : "A + B";
+            let tY = Math.random() > 0.5 ? "C\u0305" : "C";
+            qSetHTML.add(getHTMLFormattedExp(rFin, tX, tY));
+        }
+
+        let qArray = Array.from(qSetHTML).sort();
+
+        // 3. Inject Radio Buttons dynamically over the old dropdown
+        let oldSelectQ = document.getElementById('g9boolPathQ');
+        let radioContainer = document.getElementById('g9boolPathQRadioContainer');
+        
+        if (!radioContainer && oldSelectQ) {
+            // Create container if it doesn't exist yet
+            radioContainer = document.createElement('div');
+            radioContainer.id = 'g9boolPathQRadioContainer';
+            radioContainer.style.display = 'flex';
+            radioContainer.style.flexDirection = 'column';
+            radioContainer.style.gap = '8px';
+            radioContainer.style.marginTop = '10px';
+            oldSelectQ.parentNode.insertBefore(radioContainer, oldSelectQ);
+            oldSelectQ.style.display = 'none'; // Hide the old faulty dropdown
+        }
+
+        if (radioContainer) {
+            radioContainer.innerHTML = ''; // Clear old radios
+            
+            // --- NEW: Reset any grading styles from the previous question ---
+            radioContainer.style.border = 'none'; 
+            radioContainer.style.backgroundColor = 'transparent';
+            radioContainer.className = ''; // Clears any custom CSS classes like 'correct' or 'incorrect'
+            // ----------------------------------------------------------------
+
+            qArray.forEach((htmlExp, idx) => {
+                let wrapper = document.createElement('label');
+                wrapper.style.display = 'flex';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.gap = '10px';
+                wrapper.style.cursor = 'pointer';
+                wrapper.style.fontSize = '16px';
+                
+                let radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'g9boolPathQ_RadioGroup';
+                radio.value = htmlExp; // Store the exact string for validation
+                
+                let span = document.createElement('span');
+                span.innerHTML = htmlExp; 
+                
+                wrapper.appendChild(radio);
+                wrapper.appendChild(span);
+                radioContainer.appendChild(wrapper);
+            });
+        }
+    }
+}
+    
+//******************************************************************************************
+    
 function generateAstableProblem() {
     // 1. UI RESET
     hideAllInputGroups();
@@ -5515,6 +6875,7 @@ function goHome() {
     document.getElementById('menuTiming').style.display = 'none';
     document.getElementById('menuDiodes').style.display = 'none';
     if (document.getElementById('menuSystems')) document.getElementById('menuSystems').style.display = 'none'; 
+    if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'none'; // <-- NEW FIX
     document.getElementById('menuPlaceholder').style.display = 'none';
 
     // 2. Show the main 8-button grid
@@ -5527,7 +6888,6 @@ function goHome() {
     // 4. Reset subtitles/branding
     document.getElementById('moduleSubtitle').innerText = "Mastering the GCSE Course";
 }
-
 //*****************************************************************************************
 
 //this handles switching between the main menu modules
@@ -5538,8 +6898,8 @@ function openModule(module) {
     // Hide Home Menu
     document.getElementById('mainMenu').style.display = 'none';
     
-    // Hide all sub-menus first
-    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuPlaceholder'];
+    // Hide all sub-menus first (Added 'menuLogic' to this list)
+    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuLogic', 'menuPlaceholder'];
     menus.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -5561,20 +6921,22 @@ function openModule(module) {
     } else if (module === 'systems') {
         if (document.getElementById('menuSystems')) document.getElementById('menuSystems').style.display = 'flex';
         switchTab('iposort'); 
+    } else if (module === 'logic') {
+        if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'flex';
+        switchTab('logic_boolean'); // Automatically opens the Boolean mode to start!
     } else {
         document.getElementById('menuPlaceholder').style.display = 'flex';
         document.getElementById('contentArea').style.display = 'none';
     }
 }
-
 //*****************************************************************************************
  
 // TAB SWITCHER & GLOBAL CLEANUP
 //switchTab runs when you click the navigation menu at the very top of the page   
+// TAB SWITCHER & GLOBAL CLEANUP
+//switchTab runs when you click the navigation menu at the very top of the page   
 function switchTab(mode) {
     // 1. FORCE THE MODE
-    // When a tab is clicked, we set currentMode to exactly what that tab says (e.g., 'silicon').
-    // This naturally replaces any 'grade9silicon_xxx' because we aren't using "replace" logic anymore.
     currentMode = mode;
 
     // WIPES THE SCORE FOR THE NEW TOPIC
@@ -5599,6 +6961,11 @@ function switchTab(mode) {
     }
 
     // 3. UI CLEANUP: Hide all input groups
+    // Pro-Tip: We call your master hide function first just to be perfectly safe
+    if (typeof hideAllInputGroups === "function") {
+        hideAllInputGroups();
+    }
+
     const elementsToHide = [
         'inputGroupV', 'inputGroupI', 'inputGroupR', 
         'inputGroupOscAmp', 'inputGroupOscMark', 'inputGroupOscSpace', 
@@ -5610,7 +6977,14 @@ function switchTab(mode) {
         'mainGrade9Btn', 'showsolutionsBtn', 
         'inputGroupGrade9Zener', 'g9ZenerClosed', 'g9ZenerOpen',
         'inputGroupIPOSort', 'inputGroupSilicon', 'inputGroupSiliconVoltage', 
-        'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse', 'inputGroupGrade9SiliconParallel'
+        'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse', 'inputGroupGrade9SiliconParallel',
+        'inputGroupBoolean',
+        'booleanDropdownContainer',       
+        'booleanCheckboxContainer',       
+        'inputGroupGrade9BooleanSOP',     
+        'inputGroupGrade9BooleanPath',    
+        'inputGroupLogicSystem',          
+        'inputGroupLogic_ic'              // 👇 NEW: Clears the IC Logic Gates UI!
     ];
 
     elementsToHide.forEach(id => {
@@ -5626,16 +7000,17 @@ function switchTab(mode) {
         else if (mode === 'iposort') subtitle.innerText = "Module 4: Systems";
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
         else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
+        else if (['logic_ic', 'logic_system', 'logic_boolean', 'logic_nand', 'grade9boolean'].includes(mode)) subtitle.innerText = "Module 2: Logic Gates"; 
     }
 
     // 5. Global Cleanup
-    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '';
+    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '&nbsp;'; // Improved layout stability
     if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'none';
     
     document.querySelectorAll('input').forEach(i => {
         i.value = '';
         i.style.backgroundColor = ''; 
-        if(i.type === 'radio') i.checked = false;
+        if(i.type === 'radio' || i.type === 'checkbox') i.checked = false; 
     });
 
     document.querySelectorAll('select').forEach(s => {
@@ -5653,12 +7028,11 @@ function switchTab(mode) {
         return; 
     }
 
-    // Call the hub. Since currentMode is now exactly 'silicon', it will load the basics!
+    // Call the hub
     if (typeof hubController === "function") {
         hubController(ctx, canvas);
     }
 }
-
 //*****************************************************************************************
     
 // =============================
@@ -5786,7 +7160,7 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateSiliconProblem is not defined!");
         }
         
-        } else if (currentMode === 'grade9silicon') {
+    } else if (currentMode === 'grade9silicon') {
         
         // 1. Keep rocket VISIBLE so they can cycle through the Grade 9 problems
         if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
@@ -5814,12 +7188,28 @@ function hubController(ctx, canvas) {
         // Hide rocket because we are already in Grade 9
         if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'none';
         if (typeof generateGrade9PowerProblem === "function") generateGrade9PowerProblem(ctx, canvas);
+
+    } else if (currentMode === 'logic_boolean') {
+        if (document.getElementById('inputGroupBoolean')) document.getElementById('inputGroupBoolean').style.display = 'block';
+        
+        // Setup buttons for a new question
+        if (document.getElementById('btnCheck')) document.getElementById('btnCheck').style.display = 'inline-block';
+        if (document.getElementById('btnNext')) document.getElementById('btnNext').style.display = 'none';
+        
+        if (typeof generateBooleanProblem === "function") generateBooleanProblem(ctx, canvas);
+        
+    } else if (currentMode === 'logic_system') {
+        if (typeof generateLogicSystemProblem === "function") generateLogicSystemProblem(ctx, canvas);
+        
+    } else if (currentMode === 'logic_ic') {
+        // *** NEW IC LOGIC GATES ROUTING ***
+        if (typeof generateLogic_icProblem === "function") generateLogic_icProblem(ctx, canvas);
     }
 }
 
 //*****************************************************************************************
 // ==============================================================
-// FUNCTION 5. INPUT PROCESS AND SCORING (THE GRADERS) 
+// INPUT PROCESS AND SCORING SECTION (THE GRADERS) 
 // ==============================================================
     
 function checkAnswers() {
@@ -5884,7 +7274,352 @@ function checkAnswers() {
         
         if (typeof updateScoreboard === "function") updateScoreboard();
         return; 
+    } // <-- This is the end of the iposort interceptor
+
+    // BOOLEAN LOGIC GRADING INTERCEPTOR
+    if (currentMode === 'logic_boolean') {
+        const selectedDropdownValue = document.getElementById('booleanSelect').value;
+        
+        if (selectedDropdownValue === "") {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Please select an option from the dropdown.</span>";
+            return;
+        }
+
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        const checkansBtn = document.getElementById('checkansBtn');
+
+        // Robust check: Matches exact letter OR strings like "Equation B"
+        const isCorrect = selectedDropdownValue === currentBooleanAnswer || 
+                          selectedDropdownValue.endsWith(currentBooleanAnswer);
+
+        if (isCorrect) {
+            // SUCCESS
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            feedback.innerHTML = "<span style='color: #198754;'>Correct! Well done. Click 'New Problem' to continue.</span>";
+            canEarnPoints = false;
+            
+        } else {
+            // FAILURE
+            canEarnPoints = false; 
+            feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. The correct answer was ${currentBooleanAnswer}.</span>`;
+            
+            // REVEAL SOLUTIONS
+            const solDiv = document.getElementById('solutions');
+            if (solDiv) solDiv.style.display = 'block';
+            if (typeof viewedSolution !== 'undefined') viewedSolution = true;
+        }
+        
+        if (checkansBtn) checkansBtn.style.display = 'none';
+        if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+        
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; 
     }
+
+    // ==========================================
+    // GRADE 9 BOOLEAN INTERCEPTOR (SOP & Pathfinder)
+    // ==========================================
+    if (currentMode === 'grade9boolean') {
+        
+        // --- MODE 1: SUM OF PRODUCTS (SOP) ---
+        if (window.g9boolActiveMode === 'sop') {
+            const r1 = document.getElementById('g9boolRow1');
+            const r2 = document.getElementById('g9boolRow2');
+            const r3 = document.getElementById('g9boolRow3');
+            
+            // Find ALL checked radio buttons with this name, in case of hidden 'ghost' elements
+            const checkedRadios = document.querySelectorAll('input[name="g9boolCombineRadio"]:checked');
+            // Grab the LAST one found (which will be the one actively visible on screen)
+            const finalEqRadio = checkedRadios.length > 0 ? checkedRadios[checkedRadios.length - 1] : null;
+
+            if (!r1.value || !r2.value || !r3.value || !finalEqRadio) {
+                feedback.innerHTML = "<span style='color: #dc3545;'>Please select an option for all 3 rows and select a final equation.</span>";
+                return;
+            }
+            
+            if (!hasCheckedCurrentProblem) { 
+                problemsAttempted++; 
+                hasCheckedCurrentProblem = true; 
+            }
+
+            // Check against the global array (Top to Bottom)
+            let r1Correct = r1.value === window.g9boolAnswers[0];
+            let r2Correct = r2.value === window.g9boolAnswers[1];
+            let r3Correct = r3.value === window.g9boolAnswers[2];
+            
+            // Bulletproof check: removes spaces and ignores capitalization
+            let radioValue = finalEqRadio.value.trim().toUpperCase();
+            
+            let finalCorrect = (radioValue === "OR" || radioValue === "+"); 
+
+            let allCorrect = r1Correct && r2Correct && r3Correct && finalCorrect;
+
+            // Apply visual feedback borders to the row dropdowns
+            r1.style.border = r1Correct ? "2px solid #28a745" : "2px solid #dc3545";
+            r2.style.border = r2Correct ? "2px solid #28a745" : "2px solid #dc3545";
+            r3.style.border = r3Correct ? "2px solid #28a745" : "2px solid #dc3545";
+
+            // Apply visual feedback border to the radio button container
+            const radioContainer = finalEqRadio.closest('div');
+            if (radioContainer) {
+                radioContainer.style.border = finalCorrect ? "2px solid #28a745" : "2px solid #dc3545";
+                radioContainer.style.borderRadius = "8px";
+                radioContainer.style.padding = "5px";
+            }
+
+            const checkansBtn = document.getElementById('checkansBtn');
+
+            if (allCorrect) {
+                isCurrentProblemSolved = true;
+                if (canEarnPoints) { problemsCorrect++; }
+                feedback.innerHTML = "<span style='color: #198754;'>Perfect! You successfully derived the Sum of Products equation!</span>";
+                canEarnPoints = false;
+            } else {
+                canEarnPoints = false; 
+                feedback.innerHTML = `<span style='color: #dc3545;'>Not quite. Look at the red boxes. (Hint: A '0' means you need a NOT bar. Combine using OR.)</span>`;
+                const solDiv = document.getElementById('solutions');
+                if (solDiv) solDiv.style.display = 'block';
+                if (typeof viewedSolution !== 'undefined') viewedSolution = true;
+            }
+            
+            if (checkansBtn && isCurrentProblemSolved) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn && isCurrentProblemSolved) showsolutionsBtn.style.display = 'none';
+            
+            if (typeof updateScoreboard === "function") updateScoreboard();
+            return; 
+
+        // --- MODE 2: PATHFINDER ---
+        } else if (window.g9boolActiveMode === 'pathfinder') {
+            const x = document.getElementById('g9boolPathX');
+            const y = document.getElementById('g9boolPathY');
+            
+            // Look for the checked radio button instead of the old dropdown
+            const qRadio = document.querySelector('input[name="g9boolPathQ_RadioGroup"]:checked');
+
+            if (!x.value || !y.value || !qRadio) {
+                feedback.innerHTML = "<span style='color: #dc3545;'>Please select an option for Output X, Y, and Q.</span>";
+                return;
+            }
+
+            if (!hasCheckedCurrentProblem) { 
+                problemsAttempted++; 
+                hasCheckedCurrentProblem = true; 
+            }
+
+            let xCorrect = x.value === window.g9boolPathAnswers.x;
+            let yCorrect = y.value === window.g9boolPathAnswers.y;
+            // Check the value of the selected radio button
+            let qCorrect = qRadio.value === window.g9boolPathAnswers.q;
+            
+            let allCorrect = xCorrect && yCorrect && qCorrect;
+
+            // Apply visual feedback borders
+            x.style.border = xCorrect ? "2px solid #28a745" : "2px solid #dc3545";
+            y.style.border = yCorrect ? "2px solid #28a745" : "2px solid #dc3545";
+            
+            // Apply visual feedback border to the Q Radio Container
+            const qRadioContainer = document.getElementById('g9boolPathQRadioContainer');
+            if (qRadioContainer) {
+                qRadioContainer.style.border = qCorrect ? "2px solid #28a745" : "2px solid #dc3545";
+                qRadioContainer.style.borderRadius = "8px";
+                qRadioContainer.style.padding = "5px";
+            }
+
+            const checkansBtn = document.getElementById('checkansBtn');
+
+            if (allCorrect) {
+                isCurrentProblemSolved = true;
+                if (canEarnPoints) { problemsCorrect++; }
+                feedback.innerHTML = "<span style='color: #198754;'>Perfect! You mapped the logic path correctly!</span>";
+                canEarnPoints = false;
+            } else {
+                canEarnPoints = false; 
+                feedback.innerHTML = `<span style='color: #dc3545;'>Not quite. Look at the red boxes. Check the logic gates carefully!</span>`;
+                const solDiv = document.getElementById('solutions');
+                if (solDiv) solDiv.style.display = 'block';
+                if (typeof viewedSolution !== 'undefined') viewedSolution = true;
+            }
+            
+            if (checkansBtn && isCurrentProblemSolved) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn && isCurrentProblemSolved) showsolutionsBtn.style.display = 'none';
+            
+            if (typeof updateScoreboard === "function") updateScoreboard();
+            return; 
+        }
+    }
+
+   // ==========================================
+    // LOGIC IC INTERCEPTOR
+    // ==========================================
+    if (currentMode === 'logic_ic') {
+        const feedback = document.getElementById('feedback');
+        const gateSel = document.getElementById('icGateSelect');
+        const pinSel = document.getElementById('icPinAnswer');
+
+        // 1. Safety Check: Did they select from the dropdowns?
+        if (!gateSel || !pinSel || gateSel.value === "" || pinSel.value === "") {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Please select options for both dropdowns!</span>";
+            return;
+        }
+
+        // Determine how many rows the current Truth Table has
+        const ttRowsCount = gateSel.value === 'NOT' ? 2 : 4;
+        let ttFilled = true;
+
+        // 2. Safety Check: Did they fill out the Truth Table?
+        for (let i = 1; i <= ttRowsCount; i++) {
+            let el = document.getElementById(`tt_row${i}`);
+            if (!el || el.value.trim() === "") {
+                ttFilled = false;
+                break;
+            }
+        }
+
+        if (!ttFilled) {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Please fill in all outputs (Q) for the Truth Table!</span>";
+            return;
+        }
+
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        // 3. Grade the Dropdowns
+        // (Assuming you saved the answers in an object like window.currentICAnswers)
+        let gateCorrect = gateSel.value === window.currentICAnswers.gate;
+        let pinCorrect = pinSel.value === window.currentICAnswers.pinAnswer;
+
+        gateSel.style.border = gateCorrect ? "2px solid #28a745" : "2px solid #dc3545";
+        pinSel.style.border = pinCorrect ? "2px solid #28a745" : "2px solid #dc3545";
+
+        // 4. Grade the Truth Table
+        let ttCorrect = true;
+        for (let i = 1; i <= ttRowsCount; i++) {
+            let el = document.getElementById(`tt_row${i}`);
+            // Check against the expected array (e.g., [0, 0, 0, 1] for AND)
+            let expectedVal = window.currentICAnswers.truthTable[i - 1]; 
+            
+            if (expectedVal !== undefined && el.value === String(expectedVal)) {
+                el.style.backgroundColor = "#d4edda"; // Light Green
+                el.style.borderColor = "#28a745";
+            } else {
+                el.style.backgroundColor = "#f8d7da"; // Light Red
+                el.style.borderColor = "#dc3545";
+                ttCorrect = false;
+            }
+        }
+
+        // Catch-all: If they selected NOT but the answer is AND, the table size is wrong
+        if (ttRowsCount !== window.currentICAnswers.truthTable.length) {
+            ttCorrect = false;
+        }
+
+        let allCorrect = gateCorrect && pinCorrect && ttCorrect;
+
+        const checkansBtn = document.getElementById('checkansBtn');
+        const showsolutionsBtn = document.getElementById('showsolutionsBtn');
+
+        // 5. Final Feedback
+        if (allCorrect) {
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            feedback.innerHTML = "<span style='color: #198754;'>Perfect! You correctly identified the IC gate, pin, and Truth Table!</span>";
+            canEarnPoints = false;
+            
+            if (checkansBtn) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+        } else {
+            canEarnPoints = false; 
+            feedback.innerHTML = "<span style='color: #dc3545;'>Not quite. Look at the red boxes and try again!</span>";
+            
+            const solDiv = document.getElementById('solutions');
+            if (solDiv) solDiv.style.display = 'block';
+            if (typeof viewedSolution !== 'undefined') viewedSolution = true;
+        }
+        
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; 
+    }
+
+    // ==========================================
+    // LOGIC SYSTEMS INTERCEPTOR (TRUTH TABLE)
+    // ==========================================
+    if (currentMode === 'logic_system') {
+        let allCorrect = true;
+        let hasEmpty = false;
+
+        const feedback = document.getElementById('feedback');
+
+        // 1. Safety Check: Did they fill out all 24 boxes?
+        for (let i = 0; i < 8; i++) {
+            let dVal = document.getElementById(`sysD_${i}`).value.trim();
+            let eVal = document.getElementById(`sysE_${i}`).value.trim();
+            let qVal = document.getElementById(`sysQ_${i}`).value.trim();
+            if (dVal === "" || eVal === "" || qVal === "") {
+                hasEmpty = true;
+                break;
+            }
+        }
+
+        if (hasEmpty) {
+            if (feedback) feedback.innerHTML = "<span style='color: #dc3545;'>Please fill in all 0s and 1s in the table!</span>";
+            return; // Stops grading until they fill everything out
+        }
+
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        // 2. Grade every single cell independently
+        for (let i = 0; i < 8; i++) {
+            ['D', 'E', 'Q'].forEach(col => {
+                let inputEl = document.getElementById(`sys${col}_${i}`);
+                let correctAns = window.logicSystemAnswers[col.toLowerCase()][i]; // Pulls from the array we saved earlier
+                
+                if (inputEl.value == correctAns) {
+                    inputEl.style.backgroundColor = "#d4edda"; // Light Green Background
+                    inputEl.style.borderColor = "#28a745";
+                } else {
+                    inputEl.style.backgroundColor = "#f8d7da"; // Light Red Background
+                    inputEl.style.borderColor = "#dc3545";
+                    allCorrect = false;
+                }
+            });
+        }
+
+        const checkansBtn = document.getElementById('checkansBtn');
+        const showsolutionsBtn = document.getElementById('showsolutionsBtn');
+
+        if (allCorrect) {
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            if (feedback) feedback.innerHTML = "<span style='color: #198754;'>Perfect! You successfully mapped the entire logic system!</span>";
+            canEarnPoints = false;
+            
+            // Hide the buttons because they beat the level!
+            if (checkansBtn) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+        } else {
+            canEarnPoints = false; 
+            if (feedback) feedback.innerHTML = "<span style='color: #dc3545;'>Some outputs are incorrect. Trace the red boxes back to the circuit diagram to fix your errors!</span>";
+            
+            // Show the solutions box if they get it wrong
+            const solDiv = document.getElementById('solutions');
+            if (solDiv) solDiv.style.display = 'block';
+            if (typeof viewedSolution !== 'undefined') viewedSolution = true;
+        }
+        
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; // Exits the checkAnswers function so it doesn't accidentally run anything else
+    }
+
 
     // 2. Identify which inputs are currently active
     let activeInputs = [];
@@ -6464,7 +8199,6 @@ function provideHint() {
                 <strong>💡 Hint:</strong> Use the monostable formula on the data sheet!
             </div>`;
     } else if (currentMode === 'zener') {
-        // Original standard Zener hints
         const isSwitchOpen = document.getElementById('zenerOpenQuestions') && document.getElementById('zenerOpenQuestions').style.display !== 'none';
         if (isSwitchOpen) {
             helpText = `
@@ -6479,13 +8213,11 @@ function provideHint() {
                 <div style="${blueBox}">
                     <strong>💡 Hint (Switch CLOSED):</strong> The Zener is in parallel with the load.<br>
                     1. The load voltage will always match the Zener voltage.<br>
-                    2. The Zener diode only passes the current that the load doesn't use. The load current reaches its maximum when the Zener current drops to the minimum holding current needed to maintain the Zener voltage."
+                    2. The Zener diode only passes the current that the load doesn't use. The load current reaches its maximum when the Zener current drops to the minimum holding current needed to maintain the Zener voltage.
                 </div>`;
         }
   
     } else if (currentMode === 'grade9zener') {
-        // Grade 9 specific hints
-        // Check the Grade 9 specific ID to see if the switch is open
         const isG9SwitchOpen = document.getElementById('g9ZenerOpen') && document.getElementById('g9ZenerOpen').style.display !== 'none';
         
         if (isG9SwitchOpen) {
@@ -6532,8 +8264,7 @@ function provideHint() {
     } else if (currentMode === 'grade9power') {
         helpText = `
             <div style="${blueBox}">
-                <strong>💡 Hint:</strong> Once the E24 resistor is used, the current no longer matches the target value. Howeveer, no need to calculate the <em>new</em> actual current as the LED will clamp the voltage at the given value. Therefore you can use the resistor voltage in the power equation (on the data sheet!) as it stays constant. 
-                </div>
+                <strong>💡 Hint:</strong> Once the E24 resistor is used, the current no longer matches the target value. However, no need to calculate the <em>new</em> actual current as the LED will clamp the voltage at the given value. Therefore you can use the resistor voltage in the power equation (on the data sheet!) as it stays constant. 
             </div>`;
     } else if (currentMode === 'diode') {
         helpText = `
@@ -6550,25 +8281,60 @@ function provideHint() {
                 • <b>Voltage Math:</b> Every forward-biased diode uses up exactly 0.7V. If a reverse-biased diode breaks the circuit, no current reaches the load!
             </div>`;
     } else if (currentMode === 'grade9silicon') {
-        // If OR-Gate is visible
         if (document.getElementById('inputGroupGrade9Silicon') && document.getElementById('inputGroupGrade9Silicon').style.display !== 'none') {
             helpText = `
                 <div style="${blueBox}">
                     <strong>💡 Hint:</strong> When the switch is CLOSED, the battery with the highest voltage takes over and blocks the other. If the switch is OPEN, the main power is disconnected—which battery is left? (Don't forget the 0.7V diode drop!)
                 </div>`;
         } 
-        // If Pathfinder is visible
         else if (document.getElementById('inputGroupGrade9SiliconPath') && document.getElementById('inputGroupGrade9SiliconPath').style.display !== 'none') {
             helpText = `
                 <div style="${blueBox}">
                     <strong>💡 Hint:</strong> Current takes the path of least resistance. A forward-biased diode drops 0.7V. To find the voltage across the blocked diode, figure out the voltage at the wire above it and the wire below it first!
                 </div>`;
         }
+    } else if (currentMode === 'logic_ic') {
+        // --- NEW IC HINT BLOCK ---
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong><br>
+                • <b>Power & Ground:</b> Pin 14 is Vcc and Pin 7 is Ground on these standard chips.<br>
+                • <b>Pin Type:</b> Follow the wire from the pin you are asked about. Does it go <i>into</i> a logic gate (Input) or come <i>out</i> of one (Output)?<br>
+                • <b>Truth Table:</b> AND gates output high only when all its inputs are high. OR gages outpu1 except when both inputs are zero. NOT gates invert.
+            </div>`;
+    } else if (currentMode === 'logic_boolean') {
+        if (isDeMorganQuestion) {
+            helpText = `
+                <div style="${blueBox}">
+                    <strong>💡 Hint:</strong> You might know the standard name for this truth table, but the answer uses an alternative expression. Check the Boolean Equivalent Expressions (AKA De Morgan's Laws) section on your Data Sheet!
+                </div>`;
+        } else {
+            helpText = `
+                <div style="${blueBox}">
+                    <strong>💡 Hint:</strong> Look closely at the output column. Does it output a 1 when BOTH are 1? Or when ANY are 1? Don't forget to check if the whole output is inverted (NOT).
+                </div>`;
+        }
+    } else if (currentMode === 'grade9boolean') {
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong><br>
+                1. Look only at the rows where Q=1.<br>
+                2. If an input is 0, it gets a NOT bar (e.g. A̅). If it's 1, it stays normal (A).<br>
+                3. Combine the individual rows together using OR logic (+).
+            </div>`;
+    } else if (currentMode === 'logic_system') {
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong> Work through the table one column at a time:<br>
+                • <b>Column D:</b> Look at the top gate. What do inputs A and B make?<br>
+                • <b>Column E:</b> Look at the bottom path. What happens to input C?<br>
+                • <b>Column Q:</b> Look at the final gate. What do D and E make together?
+            </div>`;
     } else {
         // Potential Divider & General
         helpText = `
             <div style="${blueBox}">
-                <strong>💡 Use the <b>Potential Divider equation</b> from the Data Sheet.
+                <strong>💡 Hint:</strong> Use the <b>Potential Divider equation</b> from the Data Sheet.
             </div>`;
     }
 
@@ -6597,22 +8363,34 @@ function toggleSolutions() {
 // 1. Move the topicMap OUTSIDE the function for better performance
 // It will only load once when the script runs, rather than every time a student clicks submit.
 const topicMap = {
+    // --- Core Circuits & Fundamentals ---
+    'colorcode': 'Colour Codes', 
+    'resistance': 'Tot Resistance',
+    'grade9resistance': 'G9 Resistance',
+    'power': 'Power',
+    'grade9power': 'G9 Power',
     'analysis': 'Cct Analysis',
     'divider': 'Pot Divider',
     'grade9divider': 'G9 Divider',
-    'resistance': 'Tot Resistance',
-    'grade9resistance': 'G9 Resistance',
-    'colorcode': 'Colour Codes', 
-    'power': 'Power',
-    'grade9power': 'G9 Power',
+    
+    // --- Signals & Timing ---
     'oscilloscope': 'Oscilloscopes',
     'astable': 'Astable', 
     'monostable': 'Monostable',
+    
+    // --- Diodes ---
+    'silicon': 'Silicon Diodes',
+    'grade9silicon': 'G9 Silicon Diodes',
     'zener': 'Zener Diodes',
     'grade9zener': 'G9 Zener',
-    'silicon': 'Silicon Diodes',
-    'grade9silicon': 'Grade 9 Silicon Diodes',
-    'iposort': 'IPO Sort'    
+    
+    // --- Logic & Systems ---
+    'iposort': 'IPO Sort',  
+    'boolean': 'Boolean Logic',          
+    'logic_boolean': 'Boolean Logic',
+    'grade9boolean': 'G9 Boolean Logic',
+    'logic_system': 'Logic Systems',
+    'logic_ic': 'Logic Gate ICs'
 };
 
 async function processSubmission() {
@@ -6714,13 +8492,20 @@ async function processSubmission() {
         if (typeof updateScoreboard === 'function') updateScoreboard();
         
         // Trigger a new problem based on current mode
-        if (typeof window['generate' + currentMode.charAt(0).toUpperCase() + currentMode.slice(1) + 'Problem'] === 'function') {
+        if (currentMode === 'logic_boolean' || currentMode === 'grade9boolean') {
+            // Boolean logic needs the canvas context passed to it!
+            const canvas = document.getElementById('circuitCanvas'); 
+            const ctx = canvas.getContext('2d');
+            if (currentMode === 'logic_boolean') generateBooleanProblem(ctx, canvas);
+            if (currentMode === 'grade9boolean') generateGrade9booleanProblem(ctx, canvas);
+        } else if (typeof window['generate' + currentMode.charAt(0).toUpperCase() + currentMode.slice(1) + 'Problem'] === 'function') {
+            // Standard fallback for other modules
             window['generate' + currentMode.charAt(0).toUpperCase() + currentMode.slice(1) + 'Problem']();
         }
     }
 }
 
-window.processSubmission = processSubmission;
+http://googleusercontent.com/immersive_entry_chip/0
 
 // **********************************************************************   
 // ==========================================
@@ -6787,12 +8572,18 @@ function hideAllInputGroups() {
         'inputGroupGrade9SiliconPath',      // Grade 9 Pathfinder
         'inputGroupGrade9SiliconMaster',
         'oscilloscopeInputs',               // Oscilloscope wrapper
-        'inputGroupMonostable'              // Monostable wrapper
+        'inputGroupMonostable',             // Monostable wrapper
+        'inputGroupBoolean',                // NEW: Parent Boolean wrapper
+        'booleanDropdownContainer',         // NEW: Boolean Logic Dropdown
+        'booleanCheckboxContainer',         // NEW: Boolean Logic Checkboxes
+        'inputGroupGrade9BooleanSOP',       // NEW: Grade 9 Boolean SOP
+        'inputGroupGrade9BooleanPath',      // NEW: Grade 9 Boolean Path
+        'inputGroupGrade9BooleanMaster'     // NEW: Grade 9 Boolean Master
     ];
 
     ghostGroups.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.style.setProperty("display", "none", "important");
+        if (el) el.style.display = "none"; // Removed the !important lock
     });
     
     // 2c. TOGGLE BUTTONS
@@ -6810,21 +8601,21 @@ function hideAllInputGroups() {
     if (document.getElementById('solText')) document.getElementById('solText').innerHTML = "";
     if (document.getElementById('hintText')) document.getElementById('hintText').innerHTML = ""; 
 
-    // 4. Hide and wipe Question Text
+    // 4. Hide Question Text (Do NOT wipe it!)
     const qText = document.getElementById('questionText');
     if (qText) {
         qText.style.display = 'none';
-        qText.innerHTML = "";
+        // qText.innerHTML = "";  <-- DELETED
     }
 
     // 5. Clear all instruction prompts
-    document.querySelectorAll('.instruction-text').forEach(p => p.innerHTML = "");
+    //document.querySelectorAll('.instruction-text').forEach(p => p.innerHTML = "");
 
     // 6. THE ULTIMATE WIPER (Text boxes)
     document.querySelectorAll('input').forEach(input => {
         if (input.type === 'text' || input.type === 'number') {
             input.value = "";                      
-            input.style.border = "";           
+            input.style.border = "";            
             input.style.borderColor = "#ccc";      
             input.style.borderWidth = "1px";      
             input.style.backgroundColor = "";     
@@ -6840,7 +8631,7 @@ function hideAllInputGroups() {
             select.style.border = "";          
             select.style.borderColor = "#ccc"; 
             select.style.backgroundColor = ""; 
-            select.style.color = "";           
+            select.style.color = "";            
         }
     });
 
@@ -6861,6 +8652,7 @@ function hideAllInputGroups() {
     if (checkansBtn) checkansBtn.style.display = 'block';
     if (showsolutionsBtn) showsolutionsBtn.style.display = 'block';
 }
+
 // Master Switch on Load
 window.onload = function() {
     hideAllInputGroups(); 
