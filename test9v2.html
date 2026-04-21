@@ -5161,6 +5161,9 @@ function generateLogic_nandProblem(ctx, canvas) {
         
         // Shifts the ENTIRE right side drawing uniformly by 20px to the right.
         let shift = (i === 1 || i === 3) ? 20 : 0;
+        
+        // Shifts ONLY the pink dropzone boxes by 4px to the left in the right quadrants.
+        let boxShift = (i === 1 || i === 3) ? -4 : 0;
 
         if (bp === 'NOT') {
             let boxX = offsetX + 60 + shift;
@@ -5170,7 +5173,8 @@ function generateLogic_nandProblem(ctx, canvas) {
             ctx.fillText("A", offsetX + 15 + shift, pinY);
             drawWire(offsetX + 30 + shift, pinY, boxX, pinY); 
             
-            createDropZone(bp, 1, boxX, boxY, 60, 40);
+            // Applied boxShift only to the dropzone
+            createDropZone(bp, 1, boxX + boxShift, boxY, 60, 40);
             
             let outEndX = offsetX + 150 + shift;
             drawWire(boxX + 60, pinY, outEndX, pinY);
@@ -5189,15 +5193,14 @@ function generateLogic_nandProblem(ctx, canvas) {
             ctx.fillText("A", offsetX + 10 + shift, pinTopY);
             ctx.fillText("B", offsetX + 10 + shift, pinBotY);
 
-            // Wires snapped +1px into the box to close any gaps
             drawWire(offsetX + 25 + shift, pinTopY, box1X + 1, pinTopY);
             drawWire(offsetX + 25 + shift, pinBotY, box1X + 1, pinBotY);
             
-            createDropZone(bp, 1, box1X, boxY, 60, 40);
+            // Applied boxShift only to the dropzones
+            createDropZone(bp, 1, box1X + boxShift, boxY, 60, 40);
             
-            // Mid wire overlaps both boxes slightly
             drawWire(box1X + 59, pinMidY, box2X + 1, pinMidY); 
-            createDropZone(bp, 2, box2X, boxY, 60, 40);
+            createDropZone(bp, 2, box2X + boxShift, boxY, 60, 40);
             
             let outEndX = offsetX + 195 + shift;
             drawWire(box2X + 59, pinMidY, outEndX, pinMidY);
@@ -5224,8 +5227,9 @@ function generateLogic_nandProblem(ctx, canvas) {
             ctx.fillText("B", offsetX + 5 + shift, b2PinY);
             drawWire(offsetX + 15 + shift, b2PinY, box2X, b2PinY);
 
-            createDropZone(bp, 1, box1X, box1Y, 60, 40);
-            createDropZone(bp, 2, box2X, box2Y, 60, 40);
+            // Applied boxShift only to the dropzones
+            createDropZone(bp, 1, box1X + boxShift, box1Y, 60, 40);
+            createDropZone(bp, 2, box2X + boxShift, box2Y, 60, 40);
 
             let midX = offsetX + 95 + shift; 
             drawWire(box1X + 60, b1PinY, midX, b1PinY);
@@ -5236,7 +5240,8 @@ function generateLogic_nandProblem(ctx, canvas) {
             drawWire(midX, b2PinY, midX, b3BotY);
             drawWire(midX, b3BotY, box3X, b3BotY);
 
-            createDropZone(bp, 3, box3X, box3Y, 60, 40);
+            // Applied boxShift only to the dropzone
+            createDropZone(bp, 3, box3X + boxShift, box3Y, 60, 40);
 
             let outEndX = offsetX + 185 + shift;
             drawWire(box3X + 60, b3MidY, outEndX, b3MidY);
@@ -5262,12 +5267,12 @@ function generateLogic_nandProblem(ctx, canvas) {
             ctx.fillText("A", offsetX + 5 + shift, b1PinY);
             ctx.fillText("B", offsetX + 5 + shift, b2PinY);
 
-            // Snapped +1px 
             drawWire(offsetX + 15 + shift, b1PinY, box1X + 1, b1PinY);
             drawWire(offsetX + 15 + shift, b2PinY, box2X + 1, b2PinY);
 
-            createDropZone(bp, 1, box1X, box1Y, 60, 40);
-            createDropZone(bp, 2, box2X, box2Y, 60, 40);
+            // Applied boxShift only to the dropzones
+            createDropZone(bp, 1, box1X + boxShift, box1Y, 60, 40);
+            createDropZone(bp, 2, box2X + boxShift, box2Y, 60, 40);
 
             let midX = offsetX + 85 + shift; 
             drawWire(box1X + 59, b1PinY, midX, b1PinY);
@@ -5278,10 +5283,13 @@ function generateLogic_nandProblem(ctx, canvas) {
             drawWire(midX, b2PinY, midX, b3BotY);
             drawWire(midX, b3BotY, box3X + 1, b3BotY);
 
-            createDropZone(bp, 3, box3X, box3Y, 60, 40);
+            // Applied boxShift only to the dropzone
+            createDropZone(bp, 3, box3X + boxShift, box3Y, 60, 40);
 
             drawWire(box3X + 59, pinMidY, box4X + 1, pinMidY);
-            createDropZone(bp, 4, box4X, box4Y, 60, 40);
+            
+            // Applied boxShift only to the dropzone
+            createDropZone(bp, 4, box4X + boxShift, box4Y, 60, 40);
 
             let outEndX = offsetX + 240 + shift;
             drawWire(box4X + 59, pinMidY, outEndX, pinMidY);
