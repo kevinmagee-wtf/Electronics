@@ -5039,7 +5039,7 @@ function generateLogic_nandProblem(ctx, canvas) {
     const targetGate = targetGates[Math.floor(Math.random() * targetGates.length)];
     window.currentNandAnswer = targetGate;
 
-    // 2. Shuffle the 4 Blueprints (No labels will be drawn, but we track their positions)
+    // 2. Shuffle the 4 Blueprints
     let blueprints = ['NOT', 'AND', 'OR', 'NOR'];
     for (let i = blueprints.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -5055,14 +5055,12 @@ function generateLogic_nandProblem(ctx, canvas) {
     ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2);
     ctx.stroke();
 
-    // --- NEW SMALLER EMBEDDED GRAPHICS (60x40) ---
-    // Mathematically scaled down to give the NOR gate room to breathe.
-    // Standard pins at y=12 and y=28. Joined pin at y=20. Output at y=20.
+    // --- EMBEDDED GRAPHICS (60x40) ---
     const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     
     const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
-    // 4. Create UI Container in Right Panel
+    // 4. Create UI Container
     let qContainer = document.getElementById('inputGroupLogic_NAND');
     if (!qContainer) {
         qContainer = document.createElement('div');
@@ -5072,7 +5070,7 @@ function generateLogic_nandProblem(ctx, canvas) {
     }
     qContainer.style.display = 'block';
 
-    // 5. Build Parts Bin with Graphics
+    // 5. Build Parts Bin
     qContainer.innerHTML = `
         <div style="text-align: center; margin-bottom: 15px;">
             <h3 style="color: ${themePink}; margin: 0;">Task: Construct a(n) <strong>${targetGate}</strong> Gate</h3>
@@ -5116,6 +5114,8 @@ function generateLogic_nandProblem(ctx, canvas) {
     ctx.lineWidth = 2;
     ctx.fillStyle = "#000";
     ctx.font = "14px Arial";
+    // MAGIC ALIGNMENT TRICK: Forces Y-coord of text to exactly match Y-coord of wires!
+    ctx.textBaseline = "middle"; 
 
     const drawWire = (x1, y1, x2, y2) => {
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
@@ -5141,7 +5141,7 @@ function generateLogic_nandProblem(ctx, canvas) {
         overlay.appendChild(zone);
     };
 
-    // 8. Draw the Blueprints perfectly aligned to the NEW 60x40 scale
+    // 8. Draw the Blueprints (Mathematically Centered & Pixel-Perfect)
     const quadrantOffsets = [
         { x: 0, y: 0 }, { x: 300, y: 0 }, { x: 0, y: 210 }, { x: 300, y: 210 }
     ];
@@ -5149,98 +5149,110 @@ function generateLogic_nandProblem(ctx, canvas) {
     blueprints.forEach((bp, i) => {
         let offsetX = quadrantOffsets[i].x;
         let offsetY = quadrantOffsets[i].y;
-        
-        // Removed the text label to challenge the student
 
         if (bp === 'NOT') {
             let boxX = offsetX + 120, boxY = offsetY + 85;
-            ctx.fillText("A", offsetX + 45, boxY + 25);
             
-            drawWire(offsetX + 60, boxY + 20, boxX, boxY + 20); 
+            // Input
+            ctx.fillText("A", offsetX + 65, offsetY + 105);
+            drawWire(offsetX + 80, offsetY + 105, boxX, offsetY + 105); 
+            
             createDropZone(bp, 1, boxX, boxY, 60, 40);
             
-            drawWire(boxX + 60, boxY + 20, boxX + 120, boxY + 20);
-            ctx.fillText("Q", boxX + 125, boxY + 25);
+            // Output
+            drawWire(boxX + 60, offsetY + 105, offsetX + 220, offsetY + 105);
+            ctx.fillText("Q", offsetX + 225, offsetY + 105);
         } 
         
         else if (bp === 'AND') {
             let box1X = offsetX + 70, boxY = offsetY + 85;
             let box2X = offsetX + 170;
 
-            ctx.fillText("A", offsetX + 15, boxY + 17);
-            ctx.fillText("B", offsetX + 15, boxY + 33);
+            // Inputs
+            ctx.fillText("A", offsetX + 15, offsetY + 97);
+            drawWire(offsetX + 30, offsetY + 97, box1X, offsetY + 97);
             
-            drawWire(offsetX + 30, boxY + 12, box1X, boxY + 12);
-            drawWire(offsetX + 30, boxY + 28, box1X, boxY + 28);
+            ctx.fillText("B", offsetX + 15, offsetY + 113);
+            drawWire(offsetX + 30, offsetY + 113, box1X, offsetY + 113);
+            
             createDropZone(bp, 1, box1X, boxY, 60, 40);
             
-            drawWire(box1X + 60, boxY + 20, box2X, boxY + 20); 
+            // Wire Box 1 to Box 2
+            drawWire(box1X + 60, offsetY + 105, box2X, offsetY + 105); 
             createDropZone(bp, 2, box2X, boxY, 60, 40);
             
-            drawWire(box2X + 60, boxY + 20, box2X + 90, boxY + 20);
-            ctx.fillText("Q", box2X + 95, boxY + 25);
+            // Output
+            drawWire(box2X + 60, offsetY + 105, offsetX + 270, offsetY + 105);
+            ctx.fillText("Q", offsetX + 275, offsetY + 105);
         }
 
         else if (bp === 'OR') {
-            let box1X = offsetX + 50, box1Y = offsetY + 45;
-            let box2X = offsetX + 50, box2Y = offsetY + 125;
-            let box3X = offsetX + 160, box3Y = offsetY + 85;
+            let box1X = offsetX + 70, box1Y = offsetY + 45;
+            let box2X = offsetX + 70, box2Y = offsetY + 125;
+            let box3X = offsetX + 170, box3Y = offsetY + 85;
 
-            ctx.fillText("A", offsetX + 5, box1Y + 25);
-            ctx.fillText("B", offsetX + 5, box2Y + 25);
-
-            drawWire(offsetX + 20, box1Y + 20, box1X, box1Y + 20);
-            drawWire(offsetX + 20, box2Y + 20, box2X, box2Y + 20);
+            // Inputs
+            ctx.fillText("A", offsetX + 15, offsetY + 65);
+            drawWire(offsetX + 30, offsetY + 65, box1X, offsetY + 65);
+            
+            ctx.fillText("B", offsetX + 15, offsetY + 145);
+            drawWire(offsetX + 30, offsetY + 145, box2X, offsetY + 145);
 
             createDropZone(bp, 1, box1X, box1Y, 60, 40);
             createDropZone(bp, 2, box2X, box2Y, 60, 40);
 
-            let midX = box1X + 75; 
-            drawWire(box1X + 60, box1Y + 20, midX, box1Y + 20);
-            drawWire(midX, box1Y + 20, midX, box3Y + 12);
-            drawWire(midX, box3Y + 12, box3X, box3Y + 12);
+            // Elbows Box 1 & 2 into Box 3
+            let midX = offsetX + 150;
+            drawWire(box1X + 60, offsetY + 65, midX, offsetY + 65);
+            drawWire(midX, offsetY + 65, midX, offsetY + 97);
+            drawWire(midX, offsetY + 97, box3X, offsetY + 97);
 
-            drawWire(box2X + 60, box2Y + 20, midX, box2Y + 20);
-            drawWire(midX, box2Y + 20, midX, box3Y + 28);
-            drawWire(midX, box3Y + 28, box3X, box3Y + 28);
+            drawWire(box2X + 60, offsetY + 145, midX, offsetY + 145);
+            drawWire(midX, offsetY + 145, midX, offsetY + 113);
+            drawWire(midX, offsetY + 113, box3X, offsetY + 113);
 
             createDropZone(bp, 3, box3X, box3Y, 60, 40);
 
-            drawWire(box3X + 60, box3Y + 20, box3X + 75, box3Y + 20);
-            ctx.fillText("Q", box3X + 80, box3Y + 25);
+            // Output
+            drawWire(box3X + 60, offsetY + 105, offsetX + 270, offsetY + 105);
+            ctx.fillText("Q", offsetX + 275, offsetY + 105);
         }
 
         else if (bp === 'NOR') {
-            let box1X = offsetX + 30, box1Y = offsetY + 45;
-            let box2X = offsetX + 30, box2Y = offsetY + 125;
+            let box1X = offsetX + 40, box1Y = offsetY + 45;
+            let box2X = offsetX + 40, box2Y = offsetY + 125;
             let box3X = offsetX + 120, box3Y = offsetY + 85;
-            let box4X = offsetX + 210, box4Y = offsetY + 85;
+            let box4X = offsetX + 200, box4Y = offsetY + 85;
 
-            ctx.fillText("A", offsetX + 0, box1Y + 25);
-            ctx.fillText("B", offsetX + 0, box2Y + 25);
-
-            drawWire(offsetX + 15, box1Y + 20, box1X, box1Y + 20);
-            drawWire(offsetX + 15, box2Y + 20, box2X, box2Y + 20);
+            // Inputs
+            ctx.fillText("A", offsetX + 5, offsetY + 65);
+            drawWire(offsetX + 20, offsetY + 65, box1X, offsetY + 65);
+            
+            ctx.fillText("B", offsetX + 5, offsetY + 145);
+            drawWire(offsetX + 20, offsetY + 145, box2X, offsetY + 145);
 
             createDropZone(bp, 1, box1X, box1Y, 60, 40);
             createDropZone(bp, 2, box2X, box2Y, 60, 40);
 
-            let midX = box1X + 75; 
-            drawWire(box1X + 60, box1Y + 20, midX, box1Y + 20);
-            drawWire(midX, box1Y + 20, midX, box3Y + 12);
-            drawWire(midX, box3Y + 12, box3X, box3Y + 12);
+            // Elbows Box 1 & 2 into Box 3
+            let midX = offsetX + 110; 
+            drawWire(box1X + 60, offsetY + 65, midX, offsetY + 65);
+            drawWire(midX, offsetY + 65, midX, offsetY + 97);
+            drawWire(midX, offsetY + 97, box3X, offsetY + 97);
 
-            drawWire(box2X + 60, box2Y + 20, midX, box2Y + 20);
-            drawWire(midX, box2Y + 20, midX, box3Y + 28);
-            drawWire(midX, box3Y + 28, box3X, box3Y + 28);
+            drawWire(box2X + 60, offsetY + 145, midX, offsetY + 145);
+            drawWire(midX, offsetY + 145, midX, offsetY + 113);
+            drawWire(midX, offsetY + 113, box3X, offsetY + 113);
 
             createDropZone(bp, 3, box3X, box3Y, 60, 40);
 
-            drawWire(box3X + 60, box3Y + 20, box4X, box4Y + 20);
+            // Box 3 into Box 4
+            drawWire(box3X + 60, offsetY + 105, box4X, offsetY + 105);
             createDropZone(bp, 4, box4X, box4Y, 60, 40);
 
-            drawWire(box4X + 60, box4Y + 20, offsetX + 282, box4Y + 20);
-            ctx.fillText("Q", offsetX + 286, box4Y + 25); 
+            // Output
+            drawWire(box4X + 60, offsetY + 105, offsetX + 280, offsetY + 105);
+            ctx.fillText("Q", offsetX + 285, offsetY + 105); 
         }
     });
 
