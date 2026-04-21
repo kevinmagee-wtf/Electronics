@@ -5159,9 +5159,9 @@ function generateLogic_nandProblem(ctx, canvas) {
         let offsetX = quadrantOffsets[i].x;
         let offsetY = quadrantOffsets[i].y;
         
-        // This shifts the ENTIRE right side drawing uniformly by -5px
-        // without compressing the wires or changing the gaps between boxes.
-        let shift = (i === 1 || i === 3) ? -5 : 0;
+        // This shifts the ENTIRE right side drawing uniformly by 20px to the right
+        // moving the A/B labels away from the center dividing line.
+        let shift = (i === 1 || i === 3) ? 20 : 0;
 
         if (bp === 'NOT') {
             let boxX = offsetX + 60 + shift;
