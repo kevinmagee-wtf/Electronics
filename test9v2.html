@@ -5143,7 +5143,7 @@ function generateLogic_nandProblem(ctx, canvas) {
         overlay.appendChild(zone);
     };
 
-// 8. Draw the Blueprints (Perfectly mirrored, uniformly shifted on the right)
+/// 8. Draw the Blueprints (Perfectly mirrored, uniformly shifted on the right)
     const quadW = canvas.width / 2;
     const quadH = canvas.height / 2;
     
@@ -5157,7 +5157,10 @@ function generateLogic_nandProblem(ctx, canvas) {
 
     blueprints.forEach((bp, i) => {
         let offsetX = quadrantOffsets[i].x;
-        let offsetY = quadrantOffsets[i].y;
+        
+        // Shifts top quadrants (0 & 1) up by 2px, and bottom quadrants (2 & 3) up by 3px
+        let shiftY = (i === 0 || i === 1) ? -2 : -3;
+        let offsetY = quadrantOffsets[i].y + shiftY;
         
         // Shifts the ENTIRE right side drawing uniformly by 20px to the right.
         let shift = (i === 1 || i === 3) ? 20 : 0;
