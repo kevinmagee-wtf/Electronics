@@ -5143,7 +5143,7 @@ function generateLogic_nandProblem(ctx, canvas) {
         overlay.appendChild(zone);
     };
 
-// 8. Draw the Blueprints (Safely tightened right half)
+// 8. Draw the Blueprints (Perfectly mirrored, uniformly shifted on the right)
     const quadW = canvas.width / 2;
     const quadH = canvas.height / 2;
     
@@ -5159,55 +5159,56 @@ function generateLogic_nandProblem(ctx, canvas) {
         let offsetX = quadrantOffsets[i].x;
         let offsetY = quadrantOffsets[i].y;
         
-        // Flag to apply specific offsets only to the right quadrants
-        let isRight = (i === 1 || i === 3);
+        // This shifts the ENTIRE right side drawing uniformly by -5px
+        // without compressing the wires or changing the gaps between boxes.
+        let shift = (i === 1 || i === 3) ? -5 : 0;
 
         if (bp === 'NOT') {
-            let boxX = offsetX + (isRight ? 55 : 60);
+            let boxX = offsetX + 60 + shift;
             let boxY = offsetY + 65; 
             let pinY = boxY + 20; 
             
-            ctx.fillText("A", offsetX + 15, pinY);
-            drawWire(offsetX + 30, pinY, boxX, pinY); 
+            ctx.fillText("A", offsetX + 15 + shift, pinY);
+            drawWire(offsetX + 30 + shift, pinY, boxX, pinY); 
             
             createDropZone(bp, 1, boxX, boxY, 60, 40);
             
-            let outEndX = offsetX + (isRight ? 140 : 150);
+            let outEndX = offsetX + 150 + shift;
             drawWire(boxX + 60, pinY, outEndX, pinY);
             ctx.fillText("Q", outEndX + 10, pinY);
         } 
         
         else if (bp === 'AND') {
-            let box1X = offsetX + (isRight ? 35 : 40);
+            let box1X = offsetX + 40 + shift;
             let boxY = offsetY + 65;
-            let box2X = offsetX + (isRight ? 105 : 115);
+            let box2X = offsetX + 115 + shift; 
             
             let pinTopY = boxY + 12; 
             let pinBotY = boxY + 28; 
             let pinMidY = boxY + 20; 
 
-            ctx.fillText("A", offsetX + 10, pinTopY);
-            drawWire(offsetX + 25, pinTopY, box1X, pinTopY);
+            ctx.fillText("A", offsetX + 10 + shift, pinTopY);
+            drawWire(offsetX + 25 + shift, pinTopY, box1X, pinTopY);
             
-            ctx.fillText("B", offsetX + 10, pinBotY);
-            drawWire(offsetX + 25, pinBotY, box1X, pinBotY);
+            ctx.fillText("B", offsetX + 10 + shift, pinBotY);
+            drawWire(offsetX + 25 + shift, pinBotY, box1X, pinBotY);
             
             createDropZone(bp, 1, box1X, boxY, 60, 40);
             
             drawWire(box1X + 60, pinMidY, box2X, pinMidY); 
             createDropZone(bp, 2, box2X, boxY, 60, 40);
             
-            let outEndX = offsetX + (isRight ? 180 : 195);
+            let outEndX = offsetX + 195 + shift;
             drawWire(box2X + 60, pinMidY, outEndX, pinMidY);
             ctx.fillText("Q", outEndX + 10, pinMidY);
         }
 
         else if (bp === 'OR') {
-            let box1X = offsetX + (isRight ? 25 : 30);
+            let box1X = offsetX + 30 + shift;
             let box1Y = offsetY + 25; 
-            let box2X = offsetX + (isRight ? 25 : 30);
+            let box2X = offsetX + 30 + shift;
             let box2Y = offsetY + 105; 
-            let box3X = offsetX + (isRight ? 95 : 105);
+            let box3X = offsetX + 105 + shift;
             let box3Y = offsetY + 65; 
             
             let b1PinY = box1Y + 20;
@@ -5216,16 +5217,16 @@ function generateLogic_nandProblem(ctx, canvas) {
             let b3BotY = box3Y + 28;
             let b3MidY = box3Y + 20;
 
-            ctx.fillText("A", offsetX + 5, b1PinY);
-            drawWire(offsetX + 15, b1PinY, box1X, b1PinY);
+            ctx.fillText("A", offsetX + 5 + shift, b1PinY);
+            drawWire(offsetX + 15 + shift, b1PinY, box1X, b1PinY);
             
-            ctx.fillText("B", offsetX + 5, b2PinY);
-            drawWire(offsetX + 15, b2PinY, box2X, b2PinY);
+            ctx.fillText("B", offsetX + 5 + shift, b2PinY);
+            drawWire(offsetX + 15 + shift, b2PinY, box2X, b2PinY);
 
             createDropZone(bp, 1, box1X, box1Y, 60, 40);
             createDropZone(bp, 2, box2X, box2Y, 60, 40);
 
-            let midX = offsetX + (isRight ? 90 : 95); 
+            let midX = offsetX + 95 + shift; 
             drawWire(box1X + 60, b1PinY, midX, b1PinY);
             drawWire(midX, b1PinY, midX, b3TopY);
             drawWire(midX, b3TopY, box3X, b3TopY);
@@ -5236,20 +5237,19 @@ function generateLogic_nandProblem(ctx, canvas) {
 
             createDropZone(bp, 3, box3X, box3Y, 60, 40);
 
-            let outEndX = offsetX + (isRight ? 170 : 185);
+            let outEndX = offsetX + 185 + shift;
             drawWire(box3X + 60, b3MidY, outEndX, b3MidY);
             ctx.fillText("Q", outEndX + 10, b3MidY);
         }
 
         else if (bp === 'NOR') {
-            // Front boxes locked at 20 to protect the tight input wires
-            let box1X = offsetX + 20;
+            let box1X = offsetX + 20 + shift;
             let box1Y = offsetY + 25;  
-            let box2X = offsetX + 20;
+            let box2X = offsetX + 20 + shift;
             let box2Y = offsetY + 105; 
-            let box3X = offsetX + (isRight ? 90 : 95);
+            let box3X = offsetX + 95 + shift;
             let box3Y = offsetY + 65;  
-            let box4X = offsetX + (isRight ? 160 : 170); 
+            let box4X = offsetX + 170 + shift; 
             let box4Y = offsetY + 65; 
             
             let b1PinY = box1Y + 20; 
@@ -5258,16 +5258,16 @@ function generateLogic_nandProblem(ctx, canvas) {
             let b3BotY = box3Y + 28; 
             let pinMidY = box3Y + 20; 
 
-            ctx.fillText("A", offsetX + 5, b1PinY);
-            drawWire(offsetX + 15, b1PinY, box1X, b1PinY);
+            ctx.fillText("A", offsetX + 5 + shift, b1PinY);
+            drawWire(offsetX + 15 + shift, b1PinY, box1X, b1PinY);
             
-            ctx.fillText("B", offsetX + 5, b2PinY);
-            drawWire(offsetX + 15, b2PinY, box2X, b2PinY);
+            ctx.fillText("B", offsetX + 5 + shift, b2PinY);
+            drawWire(offsetX + 15 + shift, b2PinY, box2X, b2PinY);
 
             createDropZone(bp, 1, box1X, box1Y, 60, 40);
             createDropZone(bp, 2, box2X, box2Y, 60, 40);
 
-            let midX = offsetX + 85; 
+            let midX = offsetX + 85 + shift; 
             drawWire(box1X + 60, b1PinY, midX, b1PinY);
             drawWire(midX, b1PinY, midX, b3TopY);
             drawWire(midX, b3TopY, box3X, b3TopY);
@@ -5281,7 +5281,7 @@ function generateLogic_nandProblem(ctx, canvas) {
             drawWire(box3X + 60, pinMidY, box4X, pinMidY);
             createDropZone(bp, 4, box4X, box4Y, 60, 40);
 
-            let outEndX = offsetX + (isRight ? 230 : 240);
+            let outEndX = offsetX + 240 + shift;
             drawWire(box4X + 60, pinMidY, outEndX, pinMidY);
             ctx.fillText("Q", outEndX + 10, pinMidY); 
         }
