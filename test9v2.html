@@ -5143,7 +5143,7 @@ function generateLogic_nandProblem(ctx, canvas) {
         overlay.appendChild(zone);
     };
 
-// 8. Draw the Blueprints (Reverted anchors, tightened internal spacing)
+// 8. Draw the Blueprints (Safely nudged right boxes)
     const quadW = canvas.width / 2;
     const quadH = canvas.height / 2;
     
@@ -5159,8 +5159,11 @@ function generateLogic_nandProblem(ctx, canvas) {
         let offsetX = quadrantOffsets[i].x;
         let offsetY = quadrantOffsets[i].y;
 
+        // Apply a gentle 5px cascading nudge ONLY to the right quadrants
+        let nudge = (i === 1 || i === 3) ? -5 : 0;
+
         if (bp === 'NOT') {
-            let boxX = offsetX + 60, boxY = offsetY + 65; // Pulled left
+            let boxX = offsetX + 60 + nudge, boxY = offsetY + 65; 
             let pinY = boxY + 20; 
             
             ctx.fillText("A", offsetX + 15, pinY);
@@ -5168,13 +5171,13 @@ function generateLogic_nandProblem(ctx, canvas) {
             
             createDropZone(bp, 1, boxX, boxY, 60, 40);
             
-            drawWire(boxX + 60, pinY, offsetX + 150, pinY);
-            ctx.fillText("Q", offsetX + 160, pinY);
+            drawWire(boxX + 60, pinY, offsetX + 150 + nudge, pinY);
+            ctx.fillText("Q", offsetX + 160 + nudge, pinY);
         } 
         
         else if (bp === 'AND') {
-            let box1X = offsetX + 40, boxY = offsetY + 65;
-            let box2X = offsetX + 115; // Pulled left
+            let box1X = offsetX + 40 + nudge, boxY = offsetY + 65;
+            let box2X = offsetX + 115 + (nudge * 2); 
             
             let pinTopY = boxY + 12; 
             let pinBotY = boxY + 28; 
@@ -5191,14 +5194,14 @@ function generateLogic_nandProblem(ctx, canvas) {
             drawWire(box1X + 60, pinMidY, box2X, pinMidY); 
             createDropZone(bp, 2, box2X, boxY, 60, 40);
             
-            drawWire(box2X + 60, pinMidY, offsetX + 195, pinMidY);
-            ctx.fillText("Q", offsetX + 205, pinMidY);
+            drawWire(box2X + 60, pinMidY, offsetX + 195 + (nudge * 2), pinMidY);
+            ctx.fillText("Q", offsetX + 205 + (nudge * 2), pinMidY);
         }
 
         else if (bp === 'OR') {
-            let box1X = offsetX + 30, box1Y = offsetY + 25; 
-            let box2X = offsetX + 30, box2Y = offsetY + 105; 
-            let box3X = offsetX + 105, box3Y = offsetY + 65; // Pulled left
+            let box1X = offsetX + 30 + nudge, box1Y = offsetY + 25; 
+            let box2X = offsetX + 30 + nudge, box2Y = offsetY + 105; 
+            let box3X = offsetX + 105 + (nudge * 2), box3Y = offsetY + 65; 
             
             let b1PinY = box1Y + 20;
             let b2PinY = box2Y + 20;
@@ -5215,7 +5218,7 @@ function generateLogic_nandProblem(ctx, canvas) {
             createDropZone(bp, 1, box1X, box1Y, 60, 40);
             createDropZone(bp, 2, box2X, box2Y, 60, 40);
 
-            let midX = offsetX + 95; // Adjusted elbow
+            let midX = offsetX + 95 + (nudge * 2); // Adjusted elbow
             drawWire(box1X + 60, b1PinY, midX, b1PinY);
             drawWire(midX, b1PinY, midX, b3TopY);
             drawWire(midX, b3TopY, box3X, b3TopY);
@@ -5226,15 +5229,15 @@ function generateLogic_nandProblem(ctx, canvas) {
 
             createDropZone(bp, 3, box3X, box3Y, 60, 40);
 
-            drawWire(box3X + 60, b3MidY, offsetX + 185, b3MidY);
-            ctx.fillText("Q", offsetX + 195, b3MidY);
+            drawWire(box3X + 60, b3MidY, offsetX + 185 + (nudge * 2), b3MidY);
+            ctx.fillText("Q", offsetX + 195 + (nudge * 2), b3MidY);
         }
 
         else if (bp === 'NOR') {
-            let box1X = offsetX + 20, box1Y = offsetY + 25;  
-            let box2X = offsetX + 20, box2Y = offsetY + 105; 
-            let box3X = offsetX + 95, box3Y = offsetY + 65;  // Pulled left
-            let box4X = offsetX + 170, box4Y = offsetY + 65; // Pulled left
+            let box1X = offsetX + 20 + nudge, box1Y = offsetY + 25;  
+            let box2X = offsetX + 20 + nudge, box2Y = offsetY + 105; 
+            let box3X = offsetX + 95 + (nudge * 2), box3Y = offsetY + 65;  
+            let box4X = offsetX + 170 + (nudge * 3), box4Y = offsetY + 65; 
             
             let b1PinY = box1Y + 20; 
             let b2PinY = box2Y + 20; 
@@ -5251,7 +5254,7 @@ function generateLogic_nandProblem(ctx, canvas) {
             createDropZone(bp, 1, box1X, box1Y, 60, 40);
             createDropZone(bp, 2, box2X, box2Y, 60, 40);
 
-            let midX = offsetX + 85; // Adjusted elbow
+            let midX = offsetX + 85 + (nudge * 2); // Adjusted elbow
             drawWire(box1X + 60, b1PinY, midX, b1PinY);
             drawWire(midX, b1PinY, midX, b3TopY);
             drawWire(midX, b3TopY, box3X, b3TopY);
@@ -5265,8 +5268,8 @@ function generateLogic_nandProblem(ctx, canvas) {
             drawWire(box3X + 60, pinMidY, box4X, pinMidY);
             createDropZone(bp, 4, box4X, box4Y, 60, 40);
 
-            drawWire(box4X + 60, pinMidY, offsetX + 240, pinMidY);
-            ctx.fillText("Q", offsetX + 250, pinMidY); 
+            drawWire(box4X + 60, pinMidY, offsetX + 240 + (nudge * 3), pinMidY);
+            ctx.fillText("Q", offsetX + 250 + (nudge * 3), pinMidY); 
         }
     });
     
