@@ -5219,12 +5219,13 @@ function generateLogic_nandProblem(ctx, canvas) {
             let box2Y = offsetY + 105; 
             let box3X = offsetX + 105 + shift;
             let box3Y = offsetY + 65; 
-            
-            let b1PinY = box1Y + 20;
-            let b2PinY = box2Y + 20;
-            let b3TopY = box3Y + 12;
-            let b3BotY = box3Y + 28;
-            let b3MidY = box3Y + 20;
+
+            // Change nubers below to adjust wire Y coords on OR gate
+            let b1PinY = box1Y + 22;
+            let b2PinY = box2Y + 22;
+            let b3TopY = box3Y + 14;
+            let b3BotY = box3Y + 29;
+            let b3MidY = box3Y + 22;
 
             ctx.fillText("A", offsetX + 5 + shift, b1PinY);
             drawWire(offsetX + 15 + shift, b1PinY, box1X, b1PinY);
