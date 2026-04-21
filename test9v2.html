@@ -5037,9 +5037,9 @@ function generateLogic_nandProblem(ctx, canvas) {
     // 1. Pick the target gate to build
     const targetGates = ['NOT', 'AND', 'OR', 'NOR'];
     const targetGate = targetGates[Math.floor(Math.random() * targetGates.length)];
-    window.currentNandAnswer = targetGate; // Save for grading later
+    window.currentNandAnswer = targetGate;
 
-    // 2. Shuffle the 4 Blueprints so they appear in random quadrants
+    // 2. Shuffle the 4 Blueprints
     let blueprints = ['NOT', 'AND', 'OR', 'NOR'];
     for (let i = blueprints.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -5055,7 +5055,14 @@ function generateLogic_nandProblem(ctx, canvas) {
     ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2);
     ctx.stroke();
 
-    // 4. Create the dynamically injected UI Container
+    // --- EMBEDDED GRAPHICS FOR THE GATES ---
+    // These perfectly match an 80x50 box. 
+    // Standard pins at y=15 and y=35. Joined pin at y=25. Output at y=25.
+    const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 80 50" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none;"><line x1="0" y1="15" x2="15" y2="15" stroke="black" stroke-width="2"/><line x1="0" y1="35" x2="15" y2="35" stroke="black" stroke-width="2"/><path d="M 15,5 L 35,5 A 20,20 0 0,1 35,45 L 15,45 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="60" cy="25" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="64" y1="25" x2="80" y2="25" stroke="black" stroke-width="2"/></svg>`;
+    
+    const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 80 50" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none;"><line x1="0" y1="25" x2="8" y2="25" stroke="black" stroke-width="2"/><line x1="8" y1="15" x2="8" y2="35" stroke="black" stroke-width="2"/><line x1="8" y1="15" x2="15" y2="15" stroke="black" stroke-width="2"/><line x1="8" y1="35" x2="15" y2="35" stroke="black" stroke-width="2"/><path d="M 15,5 L 35,5 A 20,20 0 0,1 35,45 L 15,45 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="60" cy="25" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="64" y1="25" x2="80" y2="25" stroke="black" stroke-width="2"/></svg>`;
+
+    // 4. Create UI Container in Right Panel
     let qContainer = document.getElementById('inputGroupLogic_NAND');
     if (!qContainer) {
         qContainer = document.createElement('div');
@@ -5064,34 +5071,33 @@ function generateLogic_nandProblem(ctx, canvas) {
         document.getElementById('inputArea').appendChild(qContainer);
     }
     qContainer.style.display = 'block';
-    qContainer.style.width = '100%';
 
-    // 5. Build the Parts Bin & UI
+    // 5. Build Parts Bin with Graphics
     qContainer.innerHTML = `
         <div style="text-align: center; margin-bottom: 15px;">
             <h3 style="color: ${themePink}; margin: 0;">Task: Construct a(n) <strong>${targetGate}</strong> Gate</h3>
-            <p style="color: #666; font-size: 0.9em; margin-top: 5px;">Drag the correct NAND gates from the bin into the dashed boxes of the matching blueprint. Leave the other blueprints empty! <em>(Double-click a placed gate to remove it)</em></p>
+            <p style="color: #666; font-size: 0.85em; margin-top: 5px;">Drag the graphical gates into the correct blueprint. Leave the rest empty! <em>(Double-click a placed gate to remove)</em></p>
         </div>
         
-        <div id="nandPartsBin" style="display: flex; justify-content: center; gap: 20px; padding: 15px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px; margin-bottom: 20px;">
+        <div id="nandPartsBin" style="display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
             <div style="text-align: center;">
-                <div class="nand-draggable" draggable="true" data-gatetype="standard" style="width: 80px; height: 50px; background: white; border: 2px solid #000; border-radius: 5px; cursor: grab; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8em; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);">
-                    Standard<br>NAND
+                <div class="nand-draggable" draggable="true" data-gatetype="standard" style="width: 80px; height: 50px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+                    ${svgStandard}
                 </div>
+                <span style="font-size: 0.8em; color: #555;">Standard</span>
             </div>
             <div style="text-align: center;">
-                <div class="nand-draggable" draggable="true" data-gatetype="joined" style="width: 80px; height: 50px; background: white; border: 2px solid #000; border-radius: 5px; cursor: grab; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8em; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);">
-                    Joined<br>NAND
+                <div class="nand-draggable" draggable="true" data-gatetype="joined" style="width: 80px; height: 50px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+                    ${svgJoined}
                 </div>
+                <span style="font-size: 0.8em; color: #555;">Joined</span>
             </div>
         </div>
     `;
 
-    // 6. Canvas Overlay Setup (Floating drop-zones over the canvas)
+    // 6. Canvas Overlay Setup
     let circuitContainer = document.getElementById('circuitContainer');
-    circuitContainer.style.position = 'relative'; // Ensure absolute children position correctly
-    
-    // Wipe old overlay if it exists
+    circuitContainer.style.position = 'relative'; 
     let oldOverlay = document.getElementById('nandCanvasOverlay');
     if (oldOverlay) oldOverlay.remove();
 
@@ -5102,10 +5108,10 @@ function generateLogic_nandProblem(ctx, canvas) {
     overlay.style.left = '0';
     overlay.style.width = canvas.width + 'px';
     overlay.style.height = canvas.height + 'px';
-    overlay.style.pointerEvents = 'none'; // Lets clicks pass through the empty parts
+    overlay.style.pointerEvents = 'none'; 
     circuitContainer.appendChild(overlay);
 
-    // 7. Helper functions for Drawing Wires & Creating Drop Zones
+    // 7. Drawing Helpers
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 2;
     ctx.fillStyle = "#000";
@@ -5127,76 +5133,62 @@ function generateLogic_nandProblem(ctx, canvas) {
         zone.style.height = h + 'px';
         zone.style.border = '2px dashed #d65093';
         zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)';
-        zone.style.pointerEvents = 'auto'; // Re-enable pointer events for just the boxes
+        zone.style.pointerEvents = 'auto'; 
         zone.style.display = 'flex';
         zone.style.alignItems = 'center';
         zone.style.justifyContent = 'center';
         overlay.appendChild(zone);
     };
 
-    // 8. Loop through the 4 Quadrants and draw the Shuffled Blueprints
+    // 8. Draw the Blueprints perfectly aligned to the pins
     const quadrantOffsets = [
-        { x: 0, y: 0 },         // Top Left
-        { x: 300, y: 0 },       // Top Right
-        { x: 0, y: 210 },       // Bottom Left
-        { x: 300, y: 210 }      // Bottom Right
+        { x: 0, y: 0 }, { x: 300, y: 0 }, { x: 0, y: 210 }, { x: 300, y: 210 }
     ];
 
     blueprints.forEach((bp, i) => {
         let offsetX = quadrantOffsets[i].x;
         let offsetY = quadrantOffsets[i].y;
         
-        ctx.fillText(bp + " Blueprint", offsetX + 10, offsetY + 20); // Label for testing
+        ctx.fillText(bp + " Blueprint", offsetX + 10, offsetY + 20);
 
         if (bp === 'NOT') {
-            // NOT Blueprint Wires
-            ctx.fillText("A", offsetX + 10, offsetY + 105);
-            drawWire(offsetX + 25, offsetY + 100, offsetX + 60, offsetY + 100); // Main input line
+            // NOT expects a Joined NAND (1 input in the middle)
+            let boxX = offsetX + 100, boxY = offsetY + 75;
+            ctx.fillText("A", offsetX + 10, boxY + 30);
             
-            // Split into two inputs for the box
-            drawWire(offsetX + 60, offsetY + 100, offsetX + 60, offsetY + 90);
-            drawWire(offsetX + 60, offsetY + 90, offsetX + 100, offsetY + 90);
-            drawWire(offsetX + 60, offsetY + 100, offsetX + 60, offsetY + 110);
-            drawWire(offsetX + 60, offsetY + 110, offsetX + 100, offsetY + 110);
+            // Single wire hitting exactly at Y+25 (middle)
+            drawWire(offsetX + 25, boxY + 25, boxX, boxY + 25); 
+            createDropZone(bp, 1, boxX, boxY, 80, 50);
             
-            // Box
-            createDropZone(bp, 1, offsetX + 100, offsetY + 75, 80, 50);
-            
-            // Output
-            drawWire(offsetX + 180, offsetY + 100, offsetX + 260, offsetY + 100);
-            ctx.fillText("Q", offsetX + 270, offsetY + 105);
+            // Output wire at Y+25
+            drawWire(boxX + 80, boxY + 25, boxX + 160, boxY + 25);
+            ctx.fillText("Q", boxX + 170, boxY + 30);
         } 
         
         else if (bp === 'AND') {
-            // AND Blueprint Wires
-            ctx.fillText("A", offsetX + 10, offsetY + 80);
-            ctx.fillText("B", offsetX + 10, offsetY + 120);
+            // AND expects Box 1 (Standard) feeding into Box 2 (Joined)
+            let box1X = offsetX + 60, boxY = offsetY + 70;
+            let box2X = offsetX + 190;
+
+            ctx.fillText("A", offsetX + 10, boxY + 20);
+            ctx.fillText("B", offsetX + 10, boxY + 40);
             
-            drawWire(offsetX + 25, offsetY + 75, offsetX + 60, offsetY + 75);
-            drawWire(offsetX + 25, offsetY + 115, offsetX + 60, offsetY + 115);
+            // Twin wires hitting Box 1 at Y+15 and Y+35
+            drawWire(offsetX + 25, boxY + 15, box1X, boxY + 15);
+            drawWire(offsetX + 25, boxY + 35, box1X, boxY + 35);
+            createDropZone(bp, 1, box1X, boxY, 80, 50);
             
-            // Box 1
-            createDropZone(bp, 1, offsetX + 60, offsetY + 70, 80, 50);
+            // Output of Box 1 (Y+25) connects straight to Input of Box 2 (Y+25)
+            drawWire(box1X + 80, boxY + 25, box2X, boxY + 25); 
+            createDropZone(bp, 2, box2X, boxY, 80, 50);
             
-            // Wire between boxes (splits into two for Box 2)
-            drawWire(offsetX + 140, offsetY + 95, offsetX + 170, offsetY + 95); // Middle wire
-            drawWire(offsetX + 170, offsetY + 95, offsetX + 170, offsetY + 85); // Up split
-            drawWire(offsetX + 170, offsetY + 85, offsetX + 190, offsetY + 85); 
-            drawWire(offsetX + 170, offsetY + 95, offsetX + 170, offsetY + 105); // Down split
-            drawWire(offsetX + 170, offsetY + 105, offsetX + 190, offsetY + 105);
-            
-            // Box 2
-            createDropZone(bp, 2, offsetX + 190, offsetY + 70, 80, 50);
-            
-            // Output
-            drawWire(offsetX + 270, offsetY + 95, offsetX + 285, offsetY + 95);
-            ctx.fillText("Q", offsetX + 290, offsetY + 100);
+            // Output of Box 2 (Y+25)
+            drawWire(box2X + 80, boxY + 25, box2X + 110, boxY + 25);
+            ctx.fillText("Q", box2X + 115, boxY + 30);
         }
-        
-        // (OR and NOR wire-drawing will be dropped here in Phase 2!)
     });
 
-    // 9. DRAG AND DROP MECHANICS (Infinite Clone Trick)
+    // 9. DRAG AND DROP GRAPHICS LOGIC
     const draggables = document.querySelectorAll('.nand-draggable');
     const dropzones = document.querySelectorAll('.nand-dropzone');
 
@@ -5207,28 +5199,19 @@ function generateLogic_nandProblem(ctx, canvas) {
     });
 
     dropzones.forEach(zone => {
-        zone.addEventListener('dragover', (e) => {
-            e.preventDefault(); // Required to allow dropping
-            zone.style.backgroundColor = 'rgba(214, 80, 147, 0.2)'; // Highlight on hover
-        });
-
-        zone.addEventListener('dragleave', () => {
-            zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)'; // Remove highlight
-        });
+        zone.addEventListener('dragover', (e) => e.preventDefault());
 
         zone.addEventListener('drop', (e) => {
             e.preventDefault();
-            zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)';
-            
             const gateType = e.dataTransfer.getData('text/plain');
             if (gateType) {
-                // Populate the box with a clone representation
                 zone.dataset.filled = gateType;
-                zone.innerHTML = `<div style="width: 100%; height: 100%; background: #e0f8ff; border: 2px solid #0077b6; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8em; border-radius: 4px; pointer-events: none;">${gateType.toUpperCase()}<br>NAND</div>`;
+                // Render the correct embedded graphic directly into the drop zone
+                zone.innerHTML = gateType === 'standard' ? svgStandard : svgJoined;
             }
         });
 
-        // Double click to clear the box!
+        // Double click to remove the graphic
         zone.addEventListener('dblclick', () => {
             zone.dataset.filled = "";
             zone.innerHTML = "";
