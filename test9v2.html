@@ -5143,7 +5143,7 @@ function generateLogic_nandProblem(ctx, canvas) {
         overlay.appendChild(zone);
     };
 
-// 8. Draw the Blueprints (Dynamic shift for right quadrants only)
+// 8. Draw the Blueprints (Safe compression for right quadrants only)
     const quadW = canvas.width / 2;
     const quadH = canvas.height / 2;
     
@@ -5158,34 +5158,40 @@ function generateLogic_nandProblem(ctx, canvas) {
         let offsetX = quadrantOffsets[i].x;
         let offsetY = quadrantOffsets[i].y;
 
-        // If it's a right-side quadrant (index 1 or 3), shift inner elements left by 25 pixels
-        let shiftX = (i === 1 || i === 3) ? -25 : 0; 
+        // Flag to check if we are drawing in a right-hand quadrant
+        let isRight = (i === 1 || i === 3);
 
         if (bp === 'NOT') {
-            let boxX = offsetX + 60 + shiftX, boxY = offsetY + 65; 
+            // Carefully pull the NOT box and Q leftwards if on the right
+            let boxX = offsetX + (isRight ? 40 : 60); 
+            let boxY = offsetY + 65; 
             let pinY = boxY + 20; 
             
-            ctx.fillText("A", offsetX + 15, pinY); // Unshifted
-            drawWire(offsetX + 30, pinY, boxX, pinY); // Wire shortens naturally
+            ctx.fillText("A", offsetX + 15, pinY); 
+            drawWire(offsetX + 30, pinY, boxX, pinY); 
             
             createDropZone(bp, 1, boxX, boxY, 60, 40);
             
-            drawWire(boxX + 60, pinY, offsetX + 150 + shiftX, pinY);
-            ctx.fillText("Q", offsetX + 160 + shiftX, pinY);
+            let endWireX = isRight ? 120 : 150;
+            let textQX = isRight ? 130 : 160;
+            
+            drawWire(boxX + 60, pinY, offsetX + endWireX, pinY);
+            ctx.fillText("Q", offsetX + textQX, pinY);
         } 
         
         else if (bp === 'AND') {
-            let box1X = offsetX + 40 + shiftX, boxY = offsetY + 65;
-            let box2X = offsetX + 115 + shiftX; 
+            let box1X = offsetX + (isRight ? 30 : 40);
+            let box2X = offsetX + (isRight ? 100 : 115); 
+            let boxY = offsetY + 65;
             
             let pinTopY = boxY + 12; 
             let pinBotY = boxY + 28; 
             let pinMidY = boxY + 20; 
 
-            ctx.fillText("A", offsetX + 10, pinTopY); // Unshifted
+            ctx.fillText("A", offsetX + 10, pinTopY); 
             drawWire(offsetX + 25, pinTopY, box1X, pinTopY);
             
-            ctx.fillText("B", offsetX + 10, pinBotY); // Unshifted
+            ctx.fillText("B", offsetX + 10, pinBotY); 
             drawWire(offsetX + 25, pinBotY, box1X, pinBotY);
             
             createDropZone(bp, 1, box1X, boxY, 60, 40);
@@ -5193,14 +5199,22 @@ function generateLogic_nandProblem(ctx, canvas) {
             drawWire(box1X + 60, pinMidY, box2X, pinMidY); 
             createDropZone(bp, 2, box2X, boxY, 60, 40);
             
-            drawWire(box2X + 60, pinMidY, offsetX + 195 + shiftX, pinMidY);
-            ctx.fillText("Q", offsetX + 205 + shiftX, pinMidY);
+            let endWireX = isRight ? 175 : 195;
+            let textQX = isRight ? 185 : 205;
+
+            drawWire(box2X + 60, pinMidY, offsetX + endWireX, pinMidY);
+            ctx.fillText("Q", offsetX + textQX, pinMidY);
         }
 
         else if (bp === 'OR') {
-            let box1X = offsetX + 30 + shiftX, box1Y = offsetY + 25; 
-            let box2X = offsetX + 30 + shiftX, box2Y = offsetY + 105; 
-            let box3X = offsetX + 105 + shiftX, box3Y = offsetY + 65; 
+            let box1X = offsetX + (isRight ? 20 : 30);
+            let box2X = box1X; 
+            let box1Y = offsetY + 25; 
+            let box2Y = offsetY + 105; 
+            
+            let midX = offsetX + (isRight ? 85 : 95);
+            let box3X = offsetX + (isRight ? 90 : 105);
+            let box3Y = offsetY + 65; 
             
             let b1PinY = box1Y + 20;
             let b2PinY = box2Y + 20;
@@ -5208,16 +5222,15 @@ function generateLogic_nandProblem(ctx, canvas) {
             let b3BotY = box3Y + 28;
             let b3MidY = box3Y + 20;
 
-            ctx.fillText("A", offsetX + 5, b1PinY); // Unshifted
+            ctx.fillText("A", offsetX + 5, b1PinY); 
             drawWire(offsetX + 15, b1PinY, box1X, b1PinY);
             
-            ctx.fillText("B", offsetX + 5, b2PinY); // Unshifted
+            ctx.fillText("B", offsetX + 5, b2PinY); 
             drawWire(offsetX + 15, b2PinY, box2X, b2PinY);
 
             createDropZone(bp, 1, box1X, box1Y, 60, 40);
             createDropZone(bp, 2, box2X, box2Y, 60, 40);
 
-            let midX = offsetX + 95 + shiftX; // Shifted elbow
             drawWire(box1X + 60, b1PinY, midX, b1PinY);
             drawWire(midX, b1PinY, midX, b3TopY);
             drawWire(midX, b3TopY, box3X, b3TopY);
@@ -5228,15 +5241,25 @@ function generateLogic_nandProblem(ctx, canvas) {
 
             createDropZone(bp, 3, box3X, box3Y, 60, 40);
 
-            drawWire(box3X + 60, b3MidY, offsetX + 185 + shiftX, b3MidY);
-            ctx.fillText("Q", offsetX + 195 + shiftX, b3MidY);
+            let endWireX = isRight ? 165 : 185;
+            let textQX = isRight ? 175 : 195;
+
+            drawWire(box3X + 60, b3MidY, offsetX + endWireX, b3MidY);
+            ctx.fillText("Q", offsetX + textQX, b3MidY);
         }
 
         else if (bp === 'NOR') {
-            let box1X = offsetX + 20 + shiftX, box1Y = offsetY + 25;  
-            let box2X = offsetX + 20 + shiftX, box2Y = offsetY + 105; 
-            let box3X = offsetX + 95 + shiftX, box3Y = offsetY + 65;  
-            let box4X = offsetX + 170 + shiftX, box4Y = offsetY + 65; 
+            let box1X = offsetX + (isRight ? 17 : 20); 
+            let box2X = box1X;
+            let box1Y = offsetY + 25;  
+            let box2Y = offsetY + 105; 
+            
+            let midX = offsetX + (isRight ? 80 : 85);
+            let box3X = offsetX + (isRight ? 85 : 95);  
+            let box3Y = offsetY + 65;  
+            
+            let box4X = offsetX + (isRight ? 150 : 170); 
+            let box4Y = offsetY + 65; 
             
             let b1PinY = box1Y + 20; 
             let b2PinY = box2Y + 20; 
@@ -5244,16 +5267,15 @@ function generateLogic_nandProblem(ctx, canvas) {
             let b3BotY = box3Y + 28; 
             let pinMidY = box3Y + 20; 
 
-            ctx.fillText("A", offsetX + 5, b1PinY); // Unshifted
+            ctx.fillText("A", offsetX + 5, b1PinY); 
             drawWire(offsetX + 15, b1PinY, box1X, b1PinY);
             
-            ctx.fillText("B", offsetX + 5, b2PinY); // Unshifted
+            ctx.fillText("B", offsetX + 5, b2PinY); 
             drawWire(offsetX + 15, b2PinY, box2X, b2PinY);
 
             createDropZone(bp, 1, box1X, box1Y, 60, 40);
             createDropZone(bp, 2, box2X, box2Y, 60, 40);
 
-            let midX = offsetX + 85 + shiftX; // Shifted elbow
             drawWire(box1X + 60, b1PinY, midX, b1PinY);
             drawWire(midX, b1PinY, midX, b3TopY);
             drawWire(midX, b3TopY, box3X, b3TopY);
@@ -5267,38 +5289,13 @@ function generateLogic_nandProblem(ctx, canvas) {
             drawWire(box3X + 60, pinMidY, box4X, pinMidY);
             createDropZone(bp, 4, box4X, box4Y, 60, 40);
 
-            drawWire(box4X + 60, pinMidY, offsetX + 240 + shiftX, pinMidY);
-            ctx.fillText("Q", offsetX + 250 + shiftX, pinMidY); 
+            let endWireX = isRight ? 220 : 240;
+            let textQX = isRight ? 230 : 250;
+
+            drawWire(box4X + 60, pinMidY, offsetX + endWireX, pinMidY);
+            ctx.fillText("Q", offsetX + textQX, pinMidY); 
         }
     });
-    // 9. DRAG AND DROP GRAPHICS LOGIC
-    const draggables = document.querySelectorAll('.nand-draggable');
-    const dropzones = document.querySelectorAll('.nand-dropzone');
-
-    draggables.forEach(draggable => {
-        draggable.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', e.target.dataset.gatetype);
-        });
-    });
-
-    dropzones.forEach(zone => {
-        zone.addEventListener('dragover', (e) => e.preventDefault());
-
-        zone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const gateType = e.dataTransfer.getData('text/plain');
-            if (gateType) {
-                zone.dataset.filled = gateType;
-                zone.innerHTML = gateType === 'standard' ? svgStandard : svgJoined;
-            }
-        });
-
-        zone.addEventListener('dblclick', () => {
-            zone.dataset.filled = "";
-            zone.innerHTML = "";
-        });
-    });
-}
 
 //*************************************************************************************************************************
     
