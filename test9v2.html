@@ -1595,7 +1595,6 @@ function handleNewQuestionClick() {
     if (checkansBtn) checkansBtn.style.display = 'block'; 
 
     // ---> DO NOT COLLAPSE THE HEIGHT <---
-    // Use &nbsp; instead of "" so the div stays exactly the same height!
     const feedback = document.getElementById('feedback');
     if (feedback) feedback.innerHTML = "&nbsp;";
 
@@ -1610,17 +1609,17 @@ function handleNewQuestionClick() {
     const canvasIPOWorkstation = document.getElementById('canvasIPOWorkstation');
     if (canvasIPOWorkstation) canvasIPOWorkstation.style.display = 'none';
 
-    // ---> NEW FIX: REMOVE THE GRADE 9 CSS LOCKS <--- 
-    // This stops the Pathfinder/Master UI from permanently blocking standard questions
+    // ---> REMOVE THE GRADE 9 CSS LOCKS <--- 
     const g9Master = document.getElementById('inputGroupGrade9SiliconMaster');
     const g9Path = document.getElementById('inputGroupGrade9SiliconPath');
+    const g9Nand = document.getElementById('inputGroupGrade9Nand'); // Added for NAND
     if (g9Master) g9Master.style.removeProperty("display");
     if (g9Path) g9Path.style.removeProperty("display");
-   
+    if (g9Nand) g9Nand.style.removeProperty("display"); // Clean up NAND conversion UI
 
     // ---> ESCAPE THE GRADE 9 LOOPS & RESET SCORE <--- 
     let escapedGrade9 = false;
-    let previousMode = currentMode; // Remember where we were just in case they cancel!
+    let previousMode = currentMode; 
 
     if (currentMode === 'grade9zener') {
         currentMode = 'zener';
@@ -1640,19 +1639,22 @@ function handleNewQuestionClick() {
     } else if (currentMode === 'grade9boolean') {  
         currentMode = 'logic_boolean';
         escapedGrade9 = true;
+    } else if (currentMode === 'grade9nand') {  // 👇 NEW: Returns to standard NAND
+        currentMode = 'logic_nand';
+        escapedGrade9 = true;
     }
 
     // If we are dropping out of a Grade 9 mode AND they have a score, warn them!
-    if (escapedGrade9 && problemsAttempted > 0) {
+    if (escapedGrade9 && (typeof problemsAttempted !== 'undefined' && problemsAttempted > 0)) {
         const wantsToProceed = confirm("Warning: Returning to standard mode will reset your Grade 9 score to 0. Do you want to continue?");
         
         if (!wantsToProceed) {
-            currentMode = previousMode; // Put them back in Grade 9 mode
-            return; // Stop the rest of the function from running
+            currentMode = previousMode; 
+            return; 
         }
     }
 
-    // If they clicked "OK" (or if their score was 0), wipe the score
+    // If they clicked "OK", wipe the score
     if (escapedGrade9) {
         problemsAttempted = 0;
         problemsCorrect = 0;
@@ -1665,6 +1667,11 @@ function handleNewQuestionClick() {
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
 
+    // 👇 CRITICAL: KILL GHOST WIRES BEFORE GENERATING 👇
+    window.currentNandTarget = null;
+    window.nandWires = [];
+    window.nandGates = [];
+
     if (currentMode === 'colorcode') {
         if (typeof generateColorCodeProblem === "function") generateColorCodeProblem(ctx, canvas);
     } else if (currentMode === 'zener') {
@@ -1674,11 +1681,10 @@ function handleNewQuestionClick() {
     } else if (currentMode === 'power' || currentMode === 'grade9power') { 
         if (typeof generatePowerProblem === "function") generatePowerProblem(ctx, canvas);
     } else if (currentMode === 'logic_system') { 
-        // 👇 NEW BLOCK FOR LOGIC SYSTEMS
         if (typeof generateLogicSystemProblem === "function") generateLogicSystemProblem(ctx, canvas);
     } else {
-        // Handles Astable, Monostable, Oscilloscope, Divider, Resistance, Silicon, AND Grade 9 Silicon
-        // We route them to hubController so it can perfectly clean up the UI menus!
+        // Handles Astable, Monostable, Oscilloscope, Divider, Resistance, Silicon, AND Logic/NAND
+        // This triggers hubController which handles the UI cleaning perfectly
         if (typeof hubController === "function") hubController(ctx, canvas);
     }
 }
