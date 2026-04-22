@@ -5311,21 +5311,22 @@ function generateLogic_nandProblem(ctx, canvas) {
 //******************************************************************************************
 
 function generateGrade9NandProblem(ctx, canvas) { 
-    // --- 1. HARD WIPE SECTION (Fixes the "Clinging Wires") ---
-    // Remove the transparent HTML overlay used by the standard NAND mode
+    // --- 1. HARD WIPE SECTION ---
     const oldOverlay = document.getElementById('nandCanvasOverlay');
     if (oldOverlay) oldOverlay.remove(); 
 
-    // Wipe the canvas quadrants and wires from the previous question
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
+    ctx.setLineDash([]); 
     ctx.beginPath(); 
 
-    // Hide the standard NAND instructions/bin if it was open
+    // Ensure UI is visible
+    const g9Group = document.getElementById('inputGroupGrade9Nand');
+    if (g9Group) g9Group.style.display = 'block';
+
     const standardNandGroup = document.getElementById('inputGroupLogic_NAND');
     if (standardNandGroup) standardNandGroup.style.display = 'none';
-    // -------------------------------------------------------
 
-    // 2. Define the Problem: A 3-input standard logic circuit
+    // --- 2. DEFINE THE PROBLEM ---
     const problemSchema = {
         inputLabels: ['A', 'B', 'C'],
         gates: [
@@ -5335,18 +5336,15 @@ function generateGrade9NandProblem(ctx, canvas) {
         ]
     };
 
-    // 3. Draw standard circuit at top
-    drawStandardReference(ctx, problemSchema);
-
-    // 4. Setup Drop Zones (Ghost Slots) at bottom
-    const dropZones = [
-        { id: 'slot1', targetType: 'AND', x: 120, y: 240, w: 100, h: 60 },
-        { id: 'slot2', targetType: 'NOT', x: 120, y: 320, w: 80, h: 50 },
-        { id: 'slot3', targetType: 'OR', x: 280, y: 280, w: 120, h: 70 }
+    // --- 3. SETUP DROP ZONES ---
+    // Added 'filledWith: null' to ensure the object is ready
+    window.g9nandSlots = [
+        { id: 'slot1', targetType: 'AND', x: 120, y: 240, w: 100, h: 60, filledWith: null },
+        { id: 'slot2', targetType: 'NOT', x: 120, y: 320, w: 80, h: 50, filledWith: null },
+        { id: 'slot3', targetType: 'OR', x: 280, y: 280, w: 120, h: 70, filledWith: null }
     ];
-    window.g9nandSlots = dropZones;
 
-    // 5. Update the Bank (HTML side)
+    // --- 4. POPULATE BANK ---
     const moduleBank = document.getElementById('nandModuleBank');
     if (moduleBank) {
         moduleBank.innerHTML = '';
@@ -5357,107 +5355,43 @@ function generateGrade9NandProblem(ctx, canvas) {
             { type: 'FAKE', label: 'NAND-X' }
         ];
         
-        // Use your existing shuffleArray helper
-        shuffleArray(modules).forEach(mod => {
+        // Shuffle and create draggables
+        modules.sort(() => Math.random() - 0.5).forEach(mod => {
             let div = document.createElement('div');
             div.className = 'nand-module-item';
             div.draggable = true;
             div.dataset.type = mod.type;
             div.innerHTML = `<span>${mod.label}</span>`;
-            // Drag Logic
             div.ondragstart = (e) => { e.dataTransfer.setData("text", mod.type); };
             moduleBank.appendChild(div);
         });
     }
 
-    renderGhostSlots(ctx, dropZones);
-}
+    // --- 5. INITIAL DRAW ---
+    drawStandardReference(ctx, problemSchema);
+    renderGhostSlots(ctx, window.g9nandSlots);
 
-// 6. Draws the top reference circuit
-function drawStandardReference(ctx, schema) {
-    ctx.strokeStyle = "#333";
-    ctx.lineWidth = 2;
-    ctx.fillStyle = "#333";
-    ctx.font = "bold 14px Arial";
-    ctx.fillText("Standard System (Convert this):", 20, 25);
+    // --- 6. ATTACH DROP LISTENER (CRITICAL FOR INTERACTION) ---
+    canvas.ondragover = (e) => e.preventDefault();
+    canvas.ondrop = (e) => {
+        e.preventDefault();
+        const type = e.dataTransfer.getData("text");
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
 
-    // Draw A, B, C input lines
-    schema.inputLabels.forEach((label, i) => {
-        let y = 60 + (i * 45); // Adjusted spacing
-        ctx.fillText(label, 20, y + 5);
-        ctx.beginPath();
-        ctx.moveTo(40, y);
-        ctx.lineTo(130, y);
-        ctx.stroke();
-    });
-
-    // Draw Gate Placeholders
-    schema.gates.forEach(g => {
-        ctx.strokeRect(g.x, g.y - 15, 60, 30);
-        ctx.fillStyle = "#eee";
-        ctx.fillRect(g.x, g.y - 15, 60, 30);
-        ctx.fillStyle = "#000";
-        ctx.font = "11px Arial";
-        ctx.fillText(g.type, g.x + 10, g.y + 5);
-    });
-    
-    // Draw connecting wires for the reference circuit
-    ctx.beginPath();
-    ctx.moveTo(200, 50); ctx.lineTo(240, 50); ctx.lineTo(240, 85); ctx.lineTo(280, 85); // AND to OR
-    ctx.moveTo(200, 130); ctx.lineTo(240, 130); ctx.lineTo(240, 105); ctx.lineTo(280, 105); // NOT to OR
-    ctx.moveTo(340, 95); ctx.lineTo(380, 95); // Final Output
-    ctx.stroke();
-    ctx.fillText("Q", 390, 100);
-}
-
-// 7. Draws the dashed drop zones on the canvas
-function renderGhostSlots(ctx, slots) {
-    slots.forEach(slot => {
-        if (slot.filledWith) {
-            // 1. DRAW FILLED STATE (The "Module" is snapped in)
-            ctx.setLineDash([]); // Solid lines for filled slots
-            
-            // Background of the module
-            ctx.fillStyle = "#fff"; 
-            ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
-            
-            // Border (matching your CSS: 2px solid #333)
-            ctx.strokeStyle = "#333";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(slot.x, slot.y, slot.w, slot.h);
-            
-            // Left Accent Bar (Visual cue that it's a NAND module)
-            ctx.fillStyle = "#e64097"; // Your theme pink
-            ctx.fillRect(slot.x, slot.y, 6, slot.h);
-
-            // Label Text
-            ctx.fillStyle = "#333";
-            ctx.font = "bold 13px monospace"; // Matching your CSS font
-            ctx.textAlign = "center";
-            ctx.fillText("NAND-" + slot.filledWith, slot.x + (slot.w / 2) + 3, slot.y + (slot.h / 2) + 5);
-            
-        } else {
-            // 2. DRAW EMPTY STATE (The "Ghost" Slot)
-            ctx.setLineDash([5, 5]);
-            ctx.strokeStyle = "#bbb";
-            ctx.lineWidth = 1;
-            ctx.strokeRect(slot.x, slot.y, slot.w, slot.h);
-            
-            // Subtle placeholder background
-            ctx.fillStyle = "rgba(0, 0, 0, 0.02)";
-            ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
-            
-            // Placeholder text
-            ctx.fillStyle = "#aaa";
-            ctx.font = "italic 11px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText("Drop " + slot.targetType + " here", slot.x + (slot.w / 2), slot.y + (slot.h / 2) + 4);
-        }
-    });
-    
-    // Reset global canvas state so it doesn't affect other drawing functions
-    ctx.setLineDash([]);
-    ctx.textAlign = "left"; 
+        window.g9nandSlots.forEach(slot => {
+            if (mouseX > slot.x && mouseX < slot.x + slot.w &&
+                mouseY > slot.y && mouseY < slot.y + slot.h) {
+                slot.filledWith = type;
+                
+                // Redraw canvas to show the "snapped" module
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawStandardReference(ctx, problemSchema);
+                renderGhostSlots(ctx, window.g9nandSlots);
+            }
+        });
+    };
 }
     
 //*****************************************************************************************
