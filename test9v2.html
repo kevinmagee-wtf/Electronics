@@ -5062,6 +5062,12 @@ function generateLogic_nandProblem(ctx, canvas) {
     // Joined: Single Input y=20, Output y=20
     const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
+    // NEW: Distractor 1 - Single Input NAND (Pins joined together)
+    const svgFalseSingle = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="10" y2="20" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+
+    // NEW: Distractor 2 - Standard AND Gate (No bubble at the end)
+    const svgFalseAND = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+
     // 4. Create UI Container
     let qContainer = document.getElementById('inputGroupLogic_NAND');
     if (!qContainer) {
@@ -5074,23 +5080,39 @@ function generateLogic_nandProblem(ctx, canvas) {
 
     // 5. Build Parts Bin
     qContainer.innerHTML = `
-        <div style="text-align: center; margin-bottom: 15px;">
-            <h3 style="color: ${themePink}; margin: 0;">Task: Construct a(n) <strong>${targetGate}</strong> Gate</h3>
-            <p style="color: #666; font-size: 0.85em; margin-top: 5px;">Drag the correct gates into the unlabelled blueprint. Leave the rest empty! <em>(Double-click to remove)</em></p>
+        <div style="text-align: center; margin-top: -20px; margin-bottom: 15px;">
+            <h3 style="color: ${themePink}; margin: 0; font-size: 1.1em;">Task: Construct a(n) <strong>${targetGate}</strong> Gate</h3>
+            <p style="color: #666; font-size: 0.8em; margin-top: 2px;">Drag gates to the blueprint. Watch the inputs! <em>(Double-click to remove)</em></p>
         </div>
         
-        <div id="nandPartsBin" style="display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
+        <div id="nandPartsBin" style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 12px; padding: 12px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
+            
             <div style="text-align: center;">
-                <div class="nand-draggable" draggable="true" data-gatetype="standard" style="width: 60px; height: 40px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+                <div class="nand-draggable" draggable="true" data-gatetype="standard" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); margin: 0 auto;">
                     ${svgStandard}
                 </div>
-                <span style="font-size: 0.8em; color: #555;">Standard</span>
+                <span style="font-size: 0.7em; color: #555; font-weight: bold;">Standard</span>
             </div>
+
             <div style="text-align: center;">
-                <div class="nand-draggable" draggable="true" data-gatetype="joined" style="width: 60px; height: 40px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+                <div class="nand-draggable" draggable="true" data-gatetype="joined" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); margin: 0 auto;">
                     ${svgJoined}
                 </div>
-                <span style="font-size: 0.8em; color: #555;">Joined</span>
+                <span style="font-size: 0.7em; color: #555; font-weight: bold;">Joined</span>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="nand-draggable" draggable="true" data-gatetype="false-single" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); margin: 0 auto;">
+                    ${svgFalseSingle}
+                </div>
+                <span style="font-size: 0.7em; color: #555; font-weight: bold;">Single In</span>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="nand-draggable" draggable="true" data-gatetype="false-and" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); margin: 0 auto;">
+                    ${svgFalseAND}
+                </div>
+                <span style="font-size: 0.7em; color: #555; font-weight: bold;">AND Gate</span>
             </div>
         </div>
     `;
@@ -5143,7 +5165,7 @@ function generateLogic_nandProblem(ctx, canvas) {
         overlay.appendChild(zone);
     };
 
-/// 8. Draw the Blueprints (Perfectly mirrored, uniformly shifted on the right)
+    // 8. Draw the Blueprints (Perfectly mirrored, uniformly shifted on the right)
     const quadW = canvas.width / 2;
     const quadH = canvas.height / 2;
     
@@ -5321,7 +5343,16 @@ function generateLogic_nandProblem(ctx, canvas) {
             const gateType = e.dataTransfer.getData('text/plain');
             if (gateType) {
                 zone.dataset.filled = gateType;
-                zone.innerHTML = gateType === 'standard' ? svgStandard : svgJoined;
+                
+                // Map the dropped string to the correct graphic
+                const graphicsMap = {
+                    'standard': svgStandard,
+                    'joined': svgJoined,
+                    'false-single': svgFalseSingle,
+                    'false-and': svgFalseAND
+                };
+                
+                zone.innerHTML = graphicsMap[gateType] || "";
             }
         });
 
@@ -5331,7 +5362,6 @@ function generateLogic_nandProblem(ctx, canvas) {
         });
     });
 }
-
 //*************************************************************************************************************************
     
 function generateAstableProblem() {
