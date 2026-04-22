@@ -1738,6 +1738,26 @@ function handleGrade9Click() {
             generateGrade9SiliconProblem();
         }
     }
+
+    // 👇 NEW NAND SYSTEM CONVERSION ROUTING 👇
+    else if (currentMode === 'logic_nand' || currentMode === 'grade9nand') {
+        currentMode = 'grade9nand';
+        
+        // IMPORTANT: Clear standard NAND memory to stop "ghost wires"
+        window.currentNandTarget = null;
+        window.nandWires = []; 
+        window.nandGates = [];
+
+        if (typeof generateGrade9NandProblem === "function") {
+            generateGrade9NandProblem(ctx, canvas);
+        } else {
+            // Fallback to hub if specific generator isn't ready
+            if (typeof hubController === "function") hubController(ctx, canvas);
+        }
+    }
+
+
+        
     else {
         console.warn("Rocket clicked, but currentMode was not recognized: " + currentMode);
     }
