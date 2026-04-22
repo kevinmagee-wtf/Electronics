@@ -5034,19 +5034,29 @@ function generateLogic_nandProblem(ctx, canvas) {
     currentProblem = { type: 'logic_nand' };
     const themePink = "#d65093"; 
     
-    // 1. Pick the target gate to build
+    // 1. UI Reset for Solutions
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none"; 
+    
+    const solBox = document.getElementById('solText');
+    if (solBox) {
+        solBox.innerHTML = "";
+        solBox.style.display = "block"; 
+    }
+
+    // 2. Pick the target gate to build
     const targetGates = ['NOT', 'AND', 'OR', 'NOR'];
     const targetGate = targetGates[Math.floor(Math.random() * targetGates.length)];
     window.currentNandAnswer = targetGate;
 
-    // 2. Shuffle the 4 Blueprints
+    // 3. Shuffle the 4 Blueprints
     let blueprints = ['NOT', 'AND', 'OR', 'NOR'];
     for (let i = blueprints.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [blueprints[i], blueprints[j]] = [blueprints[j], blueprints[i]];
     }
 
-    // 3. Clear canvas & Draw Grid Separators
+    // 4. Clear canvas & Draw Grid Separators
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#eee";
     ctx.lineWidth = 2;
@@ -5055,17 +5065,15 @@ function generateLogic_nandProblem(ctx, canvas) {
     ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2);
     ctx.stroke();
 
-    // --- EMBEDDED GRAPHICS (60x40) ---
+    // --- SVG DEFINITIONS ---
     const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgFalseSingle = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="10" y2="20" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgFalseAND = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
-    
-    // NEW DISTRACTORS
     const svgFalseANDJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgFalseANDSingle = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="10" y2="20" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
-    // 4. Create UI Container
+    // 5. Create UI Container
     let qContainer = document.getElementById('inputGroupLogic_NAND');
     if (!qContainer) {
         qContainer = document.createElement('div');
@@ -5075,46 +5083,53 @@ function generateLogic_nandProblem(ctx, canvas) {
     }
     qContainer.style.display = 'block';
 
-// 5. Build Parts Bin with Shuffled Icons
-// Define the gates as an array of objects
-let gateOptions = [
-    { type: 'standard', svg: svgStandard },
-    { type: 'joined', svg: svgJoined },
-    { type: 'false-single', svg: svgFalseSingle },
-    { type: 'false-and', svg: svgFalseAND },
-    { type: 'false-and-joined', svg: svgFalseANDJoined },
-    { type: 'false-and-single', svg: svgFalseANDSingle }
-];
+    // 6. Build Parts Bin
+    let gateOptions = [
+        { type: 'standard', svg: svgStandard },
+        { type: 'joined', svg: svgJoined },
+        { type: 'false-single', svg: svgFalseSingle },
+        { type: 'false-and', svg: svgFalseAND },
+        { type: 'false-and-joined', svg: svgFalseANDJoined },
+        { type: 'false-and-single', svg: svgFalseANDSingle }
+    ];
 
-// Shuffle the gate icons
-for (let i = gateOptions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [gateOptions[i], gateOptions[j]] = [gateOptions[j], gateOptions[i]];
-}
+    for (let i = gateOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [gateOptions[i], gateOptions[j]] = [gateOptions[j], gateOptions[i]];
+    }
 
-// Generate the HTML for the icons using a map
-const gateIconsHTML = gateOptions.map(gate => `
-    <div class="nand-draggable" draggable="true" data-gatetype="${gate.type}" 
-         style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
-        ${gate.svg}
-    </div>
-`).join('');
-
-qContainer.innerHTML = `
-    <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: -20px;">
-        <div style="text-align: center; width: 100%; margin-bottom: 10px;">
-            <h3 style="color: black; margin: 0; font-size: 1.1em;">Task: Construct a(n) <span style="color: ${themePink};">${targetGate}</span> Gate</h3>
-            <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag the correct gates to the blueprint. Double-click to remove.</p>
-            <p style="color: #666; font-size: 0.8em; margin: 2px 0;"><strong>Leave all other blueprints blank</strong></p>
+    const gateIconsHTML = gateOptions.map(gate => `
+        <div class="nand-draggable" draggable="true" data-gatetype="${gate.type}" 
+             style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+            ${gate.svg}
         </div>
-        
-        <div id="nandPartsBin" style="display: flex; flex-direction: row; justify-content: center; gap: 8px; padding: 10px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
-            ${gateIconsHTML}
-        </div>
-    </div>
-`;
+    `).join('');
 
-    // 6. Canvas Overlay Setup 
+    qContainer.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: -20px;">
+            <div style="text-align: center; width: 100%; margin-bottom: 10px;">
+                <h3 style="color: black; margin: 0; font-size: 1.1em;">Task: Construct a(n) <span style="color: ${themePink};">${targetGate}</span> Gate</h3>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag the correct gates to the blueprint. Double-click to remove.</p>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;"><strong>Leave all other blueprints blank</strong></p>
+            </div>
+            <div id="nandPartsBin" style="display: flex; flex-direction: row; justify-content: center; gap: 8px; padding: 10px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
+                ${gateIconsHTML}
+            </div>
+        </div>
+    `;
+
+    // 7. Update solText (The Solution Logic)
+    if (solBox) {
+        const solutionsMap = {
+            'NOT': "A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate.",
+            'AND': "An <strong>AND</strong> gate is a NAND gate followed by a NOT gate (NAND with inputs joined).",
+            'OR': "An <strong>OR</strong> gate uses two NOT gates (inputs joined) for A and B, feeding into a final NAND gate.",
+            'NOR': "A <strong>NOR</strong> gate is an OR gate construction followed by a final NOT gate (inputs joined)."
+        };
+        solBox.innerHTML = `<strong>Target: ${targetGate} Gate</strong><br>${solutionsMap[targetGate]}`;
+    }
+
+    // 8. Canvas Overlay Setup 
     let circuitContainer = document.getElementById('circuitContainer');
     circuitContainer.style.position = 'relative'; 
     let oldOverlay = document.getElementById('nandCanvasOverlay');
@@ -5130,7 +5145,7 @@ qContainer.innerHTML = `
     overlay.style.pointerEvents = 'none'; 
     circuitContainer.appendChild(overlay);
 
-    // 7. Drawing Helpers
+    // 9. Drawing Helpers & Blueprints
     ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.fillStyle = "#000";
     ctx.font = "14px Arial"; ctx.textBaseline = "middle"; ctx.textAlign = "left"; 
 
@@ -5154,7 +5169,6 @@ qContainer.innerHTML = `
         overlay.appendChild(zone);
     };
 
-    // 8. Draw the Blueprints (All coordinate logic preserved exactly)
     const quadW = canvas.width / 2;
     const quadH = canvas.height / 2;
     const quadrantOffsets = [{ x: 0, y: 0 }, { x: quadW, y: 0 }, { x: 0, y: quadH }, { x: quadW, y: quadH }];
@@ -5226,7 +5240,7 @@ qContainer.innerHTML = `
         }
     });
 
-    // 9. DRAG AND DROP GRAPHICS LOGIC
+    // 10. Drag and Drop Setup
     const draggables = document.querySelectorAll('.nand-draggable');
     const dropzones = document.querySelectorAll('.nand-dropzone');
 
@@ -5238,189 +5252,24 @@ qContainer.innerHTML = `
 
     dropzones.forEach(zone => {
         zone.addEventListener('dragover', (e) => e.preventDefault());
-
         zone.addEventListener('drop', (e) => {
             e.preventDefault();
             const gateType = e.dataTransfer.getData('text/plain');
             if (gateType) {
                 zone.dataset.filled = gateType;
                 const graphicsMap = {
-                    'standard': svgStandard,
-                    'joined': svgJoined,
-                    'false-single': svgFalseSingle,
-                    'false-and': svgFalseAND,
-                    'false-and-joined': svgFalseANDJoined,
-                    'false-and-single': svgFalseANDSingle
+                    'standard': svgStandard, 'joined': svgJoined, 'false-single': svgFalseSingle,
+                    'false-and': svgFalseAND, 'false-and-joined': svgFalseANDJoined, 'false-and-single': svgFalseANDSingle
                 };
                 zone.innerHTML = graphicsMap[gateType] || "";
             }
         });
-
         zone.addEventListener('dblclick', () => {
-    zone.dataset.filled = "";
-    zone.innerHTML = "";
-    zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)'; // Reset to original pink tint
-});
+            zone.dataset.filled = "";
+            zone.innerHTML = "";
+            zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)';
+        });
     });
-}
-//*************************************************************************************************************************
-    
-function generateAstableProblem() {
-    // 1. UI RESET
-    hideAllInputGroups();
-    
-    // ---> THE FIX: Turn the main containers back on after the wipe <---
-    const mainGroup = document.getElementById('inputGroupAstableMain'); 
-    if (mainGroup) mainGroup.style.display = 'block';
-    
-    const checkBtn = document.getElementById('checkansBtn');
-    if (checkBtn) checkBtn.style.display = 'inline-block';
-
-    const solContainer = document.getElementById('solutions');
-    if (solContainer) solContainer.style.display = "none"; 
-    
-    const solBox = document.getElementById('solText');
-    if (solBox) solBox.style.display = "block"; 
-    
-    // 2. SELF-INITIALIZE CANVAS
-    const canvas = document.getElementById('circuitCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    currentMode = 'astable';
-    
-    // 3. CLEAR OLD INPUTS
-    const inputAstable = document.getElementById('inputAstable');
-    const inputAstableT = document.getElementById('inputAstableT');
-    const inputMarkSpace = document.getElementById('inputMarkSpace');
-    const astablePrompt = document.getElementById('astableInstruction');
-    const ratioPrompt = document.getElementById('ratioInstruction');
-    
-    [inputAstable, inputAstableT, inputMarkSpace].forEach(el => { 
-        if(el) { el.value = ""; el.placeholder = ""; el.style.backgroundColor = ""; } 
-    });
-    [astablePrompt, ratioPrompt].forEach(el => { if(el) el.innerHTML = ""; });
-
-    // 4. MATH & VARIABLES
-    const R1 = (Math.floor(Math.random() * 9) + 1) * 1000;
-    const R2 = (Math.floor(Math.random() * 9) + 1) * 1000;
-    const C_uF = [0.1, 1, 10, 47][Math.floor(Math.random() * 4)];
-    const C_farads = C_uF / 1000000;
-
-    const freq = 1.44 / ((R1 + 2 * R2) * C_farads);
-    const period_ms = (1 / freq) * 1000;
-    
-    const gcd = (a, b) => b ? gcd(b, a % b) : a;
-    const num = R1 + R2;
-    const den = R2;
-    const common = gcd(num, den);
-    const ratioString = (num / common) + "/" + (den / common);
-
-    // 5. CHOOSE QUESTION TYPE
-    // Use the global tracker to alternate perfectly
-    const qType = scenarioTracker.astable;
-    scenarioTracker.astable = (scenarioTracker.astable + 1) % 2;
-    
-    if (typeof currentAnswers === "undefined") currentAnswers = {};
-    currentAnswers.astableQType = qType;
-
-    const groupStd = document.getElementById('inputGroupAstable');
-    const groupRatio = document.getElementById('inputGroupMarkSpace');
-
-    if (qType === 0) {
-        if(groupStd) groupStd.style.display = "block";
-        if(groupRatio) groupRatio.style.display = "none";
-        if(astablePrompt) astablePrompt.innerHTML = "(Give answer to 1 d.p.)";
-        
-        currentAnswers.astableValue = parseFloat(freq.toFixed(1)); 
-        currentAnswers.astableTValue = parseFloat(period_ms.toFixed(1)); 
-        currentAnswers.astableUnit = "Hz";  
-        currentAnswers.astableTUnit = "ms";  
-
-        if(inputAstable) inputAstable.placeholder = "e.g. 50 Hz";
-        if(inputAstableT) inputAstableT.placeholder = "e.g. 20 ms";
-
-    } else {
-        if(groupRatio) groupRatio.style.display = "block";
-        if(groupStd) groupStd.style.display = "none";
-        if(ratioPrompt) ratioPrompt.innerHTML = "(Simplified fraction, e.g. 2/1)";
-        
-        currentAnswers.astableRatio = ratioString;
-        if(inputMarkSpace) inputMarkSpace.placeholder = "e.g. 2/1";
-    }
-
-    // 6. DRAWING HELPERS
-    const line = (x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
-    const drawNode = (x, y) => { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); };
-    const drawResistorBox = (x, y, val) => {
-        ctx.fillStyle = "white"; ctx.fillRect(x - 12, y - 25, 24, 50); ctx.strokeRect(x - 12, y - 25, 24, 50);
-        ctx.fillStyle = "#000"; ctx.font = "14px Arial"; ctx.textAlign = "right"; ctx.fillText(val, x - 20, y + 5);
-    };
-    const drawCapacitor = (x, y, val, align="right") => {
-        line(x - 15, y - 5, x + 15, y - 5); line(x - 15, y + 5, x + 15, y + 5);
-        ctx.font = "14px Arial"; ctx.textAlign = align;
-        ctx.fillText(val, align === "right" ? x - 25 : x + 25, y + 5);
-    };
-
-    // 7. DRAWING THE CIRCUIT
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.fillStyle = "#000";
-
-    line(100, 40, 500, 40); ctx.font = "bold 16px Arial"; ctx.textAlign = "left"; ctx.fillText("+Vcc", 510, 45);
-    line(100, 360, 500, 360); ctx.fillText("0V", 510, 365);
-    ctx.strokeRect(260, 120, 140, 140); 
-    ctx.font = "bold 24px Arial"; ctx.textAlign = "center"; ctx.fillText("555", 330, 195);
-
-    const bX = 160;
-    line(bX, 40, bX, 60); drawNode(bX, 40);
-    drawResistorBox(bX, 85, (R1/1000) + " k\u03a9");
-    line(bX, 110, bX, 155); drawNode(bX, 140);
-    drawResistorBox(bX, 180, (R2/1000) + " k\u03a9");
-    line(bX, 205, bX, 285); drawNode(bX, 225);
-    drawCapacitor(bX, 290, C_uF + " \u03bcF", "right");
-    line(bX, 295, bX, 360); drawNode(bX, 360);
-
-    line(bX, 140, 260, 140); ctx.font = "14px Arial"; ctx.textAlign = "left"; ctx.fillText("7", 265, 145);
-    line(bX, 225, 220, 225); drawNode(220, 225); line(220, 180, 220, 240);
-    line(220, 180, 260, 180); ctx.fillText("6", 265, 185); 
-    line(220, 240, 260, 240); ctx.fillText("2", 265, 245); 
-
-    // Static Pins & Output 
-    line(330, 40, 330, 80); drawNode(330, 40); drawNode(330, 80); line(300, 80, 360, 80);
-    line(300, 80, 300, 120); ctx.textAlign = "center"; ctx.fillText("8", 300, 135);
-    line(360, 80, 360, 120); ctx.fillText("4", 360, 135);
-    line(300, 260, 300, 360); drawNode(300, 360); ctx.fillText("1", 300, 255);
-    line(360, 260, 360, 305); ctx.fillText("5", 360, 255);
-    drawCapacitor(360, 310, "10 nF", "left");
-    line(360, 315, 360, 360); drawNode(360, 360);
-    line(400, 190, 460, 190); ctx.textAlign = "right"; ctx.fillText("3", 395, 195);
-    ctx.textAlign = "left"; ctx.fillText("Output", 465, 195);
-
-    // 8. Update Solution Text
-    if (solBox) {
-        let solHTML = "";
-        if (qType === 0) {
-            solHTML = `<strong>Formula:</strong> f = 1.44 / ((R1 + 2R2) × C) &nbsp;|&nbsp; T = 1 / f<br>`;
-            solHTML += `<strong>Working:</strong> f = 1.44 / ((${R1/1000}k + 2×${R2/1000}k) × ${C_uF}μF)<br>`;
-            solHTML += `<strong>Results:</strong> f = <strong>${freq.toFixed(1)} Hz</strong>, T = <strong>${period_ms.toFixed(1)} ms</strong>`;
-        } else {
-            solHTML = `<strong>Formula:</strong> Ratio = (R1 + R2) : R2<br>`;
-            solHTML += `<strong>Working:</strong> (${R1/1000}k + ${R2/1000}k) : ${R2/1000}k = ${num/1000}k : ${den/1000}k<br>`;
-            solHTML += `<strong>Simplified Ratio:</strong> <strong>${ratioString}</strong>`;
-        }
-        solBox.innerHTML = solHTML;
-    }
-
-    // 9. UNHIDE AND SET THE QUESTION TEXT
-    const qText = document.getElementById('questionText');
-    if (qText) {
-        if (qType === 0) {
-            qText.innerHTML = "Calculate the astable frequency and period.";
-        } else {
-            // Updated text here so it fits on one line!
-            qText.innerHTML = "Determine the astable mark-space ratio.";
-        }
-        qText.style.display = 'block'; 
-    }
 }
     
 //*****************************************************************************************
