@@ -1630,21 +1630,29 @@ function handleNewQuestionClick() {
         if (typeof updateScoreboard === 'function') updateScoreboard();
     }
 
-    // 2. GENERATE THE NEW PROBLEM
+// 2. GENERATE THE NEW PROBLEM ********************************
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas ? canvas.getContext('2d') : null;
 
     if (ctx && canvas) {
+        // A. HARD PIXEL WIPE
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath(); // Reset any active drawing paths
     }
     
-    // 👇 THE "GHOST BUSTER" SECTION 👇
-    // We must wipe EVERY array that could contain wires or gates
+    // B. REMOVE THE NAND OVERLAY (The source of the "clinging" wires)
+    const oldOverlay = document.getElementById('nandCanvasOverlay');
+    if (oldOverlay) {
+        oldOverlay.remove();
+    }
+
+    // C. THE "GHOST BUSTER" DATA PURGE
+    // Wipe every possible array that could contain wires or gates
     window.nandWires = [];
     window.nandGates = [];
     window.currentNandTarget = null;
     
-    // Wipe standard logic arrays (Checks for common names used in your other modules)
+    // Wipe standard logic arrays used in other modules
     if (window.allWires) window.allWires = [];
     if (window.allGates) window.allGates = [];
     if (window.logicWires) window.logicWires = [];
