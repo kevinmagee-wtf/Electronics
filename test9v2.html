@@ -7861,6 +7861,74 @@ function checkAnswers() {
         return; // Exits the checkAnswers function so it doesn't accidentally run anything else
     }
 
+    // ==========================================
+    // NAND EQUIVALENTS INTERCEPTOR
+    // ==========================================
+    if (currentMode === 'nand_equivalents') {
+        const feedback = document.getElementById('feedback');
+        
+        // 1. Get the current active blueprint (the one that isn't empty)
+        // We find the blueprint object from your shuffled array that should have gates
+        let activeBlueprint = blueprints.find(b => b.id === currentBlueprintId);
+        
+        if (!activeBlueprint) return;
+
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        let allCorrect = true;
+        let anyEmpty = false;
+
+        // 2. Validate each dropzone in the current blueprint
+        activeBlueprint.zones.forEach((zone, index) => {
+            const zoneId = `dz-${activeBlueprint.id}-${index}`;
+            const zoneEl = document.getElementById(zoneId);
+            const placedGate = zoneEl ? zoneEl.getAttribute('data-occupant') : null;
+
+            if (!placedGate) {
+                anyEmpty = true;
+                allCorrect = false;
+            } else if (placedGate !== zone.type) {
+                allCorrect = false;
+                // Visual feedback: briefly shake or highlight wrong zones
+                zoneEl.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
+            } else {
+                // Correct placement
+                zoneEl.style.backgroundColor = "rgba(40, 167, 69, 0.2)";
+            }
+        });
+
+        // 3. Final Grading Logic
+        if (anyEmpty) {
+            feedback.innerHTML = "<span style='color: #dc3545;'>The circuit is incomplete! Drag gates into all boxes.</span>";
+            return; 
+        }
+
+        const checkansBtn = document.getElementById('checkansBtn');
+        const showsolutionsBtn = document.getElementById('showsolutionsBtn');
+
+        if (allCorrect) {
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            feedback.innerHTML = "<span style='color: #198754;'>Success! That is the correct NAND equivalent circuit!</span>";
+            canEarnPoints = false;
+
+            if (checkansBtn) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+        } else {
+            canEarnPoints = false;
+            feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect logic. Review your gate choices and try again!</span>";
+            
+            // Show solutions if you have a solution image/diagram
+            const solDiv = document.getElementById('solutions');
+            if (solDiv) solDiv.style.display = 'block';
+        }
+
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; // Exit so the standard math grading doesn't run
+    }
 
     // 2. Identify which inputs are currently active
     let activeInputs = [];
