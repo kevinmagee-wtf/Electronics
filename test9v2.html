@@ -5060,6 +5060,10 @@ function generateLogic_nandProblem(ctx, canvas) {
     const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgFalseSingle = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="10" y2="20" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgFalseAND = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+    
+    // NEW DISTRACTORS
+    const svgFalseANDJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+    const svgFalseANDSingle = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="10" y2="20" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
     // 4. Create UI Container
     let qContainer = document.getElementById('inputGroupLogic_NAND');
@@ -5071,31 +5075,24 @@ function generateLogic_nandProblem(ctx, canvas) {
     }
     qContainer.style.display = 'block';
 
-// 5. Build Parts Bin
-qContainer.innerHTML = `
-    <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: -20px;">
-        
-        <div style="text-align: center; width: 100%; margin-bottom: 10px;">
-            <h3 style="color: ${themePink}; margin: 0; font-size: 1.1em;">Task: Construct a(n) <strong>${targetGate}</strong> Gate</h3>
-            <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag the correct gates to the blueprint. Double-click to remove.</p>
-        </div>
-        
-        <div id="nandPartsBin" style="display: flex; flex-direction: row; justify-content: center; gap: 10px; padding: 10px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
-            <div class="nand-draggable" draggable="true" data-gatetype="standard" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
-                ${svgStandard}
+    // 5. Build Parts Bin
+    qContainer.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: -20px;">
+            <div style="text-align: center; width: 100%; margin-bottom: 10px;">
+                <h3 style="color: black; margin: 0; font-size: 1.1em;">Task: Construct a(n) <span style="color: ${themePink};">${targetGate}</span> Gate</h3>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag the correct gates to the blueprint. Double-click to remove.</p>
             </div>
-            <div class="nand-draggable" draggable="true" data-gatetype="joined" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
-                ${svgJoined}
-            </div>
-            <div class="nand-draggable" draggable="true" data-gatetype="false-single" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
-                ${svgFalseSingle}
-            </div>
-            <div class="nand-draggable" draggable="true" data-gatetype="false-and" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
-                ${svgFalseAND}
+            
+            <div id="nandPartsBin" style="display: flex; flex-direction: row; justify-content: center; gap: 8px; padding: 10px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
+                <div class="nand-draggable" draggable="true" data-gatetype="standard" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">${svgStandard}</div>
+                <div class="nand-draggable" draggable="true" data-gatetype="joined" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">${svgJoined}</div>
+                <div class="nand-draggable" draggable="true" data-gatetype="false-single" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">${svgFalseSingle}</div>
+                <div class="nand-draggable" draggable="true" data-gatetype="false-and" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">${svgFalseAND}</div>
+                <div class="nand-draggable" draggable="true" data-gatetype="false-and-joined" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">${svgFalseANDJoined}</div>
+                <div class="nand-draggable" draggable="true" data-gatetype="false-and-single" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">${svgFalseANDSingle}</div>
             </div>
         </div>
-    </div>
-`;
+    `;
 
     // 6. Canvas Overlay Setup 
     let circuitContainer = document.getElementById('circuitContainer');
@@ -5231,7 +5228,9 @@ qContainer.innerHTML = `
                     'standard': svgStandard,
                     'joined': svgJoined,
                     'false-single': svgFalseSingle,
-                    'false-and': svgFalseAND
+                    'false-and': svgFalseAND,
+                    'false-and-joined': svgFalseANDJoined,
+                    'false-and-single': svgFalseANDSingle
                 };
                 zone.innerHTML = graphicsMap[gateType] || "";
             }
