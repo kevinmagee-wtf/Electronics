@@ -1886,6 +1886,16 @@ function showDPinstruction() {
             }
         });
     }
+// Helper: uses the targetGate to return the specific instructions for the NAND equivalent solutions.
+    function getNandSolutionText(targetGate) {
+    const solutions = {
+        'NOT': "To make a <strong>NOT</strong> gate, use a single NAND gate with its <strong>inputs joined together</strong>.",
+        'AND': "To make an <strong>AND</strong> gate, use a <strong>Standard NAND</strong> followed by a <strong>Joined NAND</strong> (which acts as a NOT gate to flip the output).",
+        'OR': "To make an <strong>OR</strong> gate, use two <strong>Joined NANDs</strong> on the inputs (A and B), then feed both into one <strong>Standard NAND</strong>.",
+        'NOR': "To make a <strong>NOR</strong> gate, build an OR gate (two Joined + one Standard) and add one final <strong>Joined NAND</strong> at the very end to invert it."
+    };
+    return solutions[targetGate] || "No solution found.";
+}
 
 // =======================================================================================================
 // DRAWING Helpers
@@ -5034,6 +5044,12 @@ function generateLogic_nandProblem(ctx, canvas) {
     currentProblem = { type: 'logic_nand' };
     const themePink = "#d65093"; 
     
+    // 0. Reset UI elements for a fresh start
+    const solDiv = document.getElementById('solutions');
+    if (solDiv) solDiv.style.display = 'none';
+    const feedback = document.getElementById('feedback');
+    if (feedback) feedback.innerHTML = "";
+
     // 1. Pick the target gate to build
     const targetGates = ['NOT', 'AND', 'OR', 'NOR'];
     const targetGate = targetGates[Math.floor(Math.random() * targetGates.length)];
@@ -5055,13 +5071,11 @@ function generateLogic_nandProblem(ctx, canvas) {
     ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2);
     ctx.stroke();
 
-    // --- EMBEDDED GRAPHICS (60x40) ---
+    // --- EMBEDDED GRAPHICS ---
     const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgFalseSingle = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="10" y2="20" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgFalseAND = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
-    
-    // NEW DISTRACTORS
     const svgFalseANDJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgFalseANDSingle = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="10" y2="20" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
@@ -5075,44 +5089,41 @@ function generateLogic_nandProblem(ctx, canvas) {
     }
     qContainer.style.display = 'block';
 
-// 5. Build Parts Bin with Shuffled Icons
-// Define the gates as an array of objects
-let gateOptions = [
-    { type: 'standard', svg: svgStandard },
-    { type: 'joined', svg: svgJoined },
-    { type: 'false-single', svg: svgFalseSingle },
-    { type: 'false-and', svg: svgFalseAND },
-    { type: 'false-and-joined', svg: svgFalseANDJoined },
-    { type: 'false-and-single', svg: svgFalseANDSingle }
-];
+    // 5. Build Parts Bin
+    let gateOptions = [
+        { type: 'standard', svg: svgStandard },
+        { type: 'joined', svg: svgJoined },
+        { type: 'false-single', svg: svgFalseSingle },
+        { type: 'false-and', svg: svgFalseAND },
+        { type: 'false-and-joined', svg: svgFalseANDJoined },
+        { type: 'false-and-single', svg: svgFalseANDSingle }
+    ];
 
-// Shuffle the gate icons
-for (let i = gateOptions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [gateOptions[i], gateOptions[j]] = [gateOptions[j], gateOptions[i]];
-}
+    // Shuffle icons
+    for (let i = gateOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [gateOptions[i], gateOptions[j]] = [gateOptions[j], gateOptions[i]];
+    }
 
-// Generate the HTML for the icons using a map
-const gateIconsHTML = gateOptions.map(gate => `
-    <div class="nand-draggable" draggable="true" data-gatetype="${gate.type}" 
-         style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
-        ${gate.svg}
-    </div>
-`).join('');
-
-qContainer.innerHTML = `
-    <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: -20px;">
-        <div style="text-align: center; width: 100%; margin-bottom: 10px;">
-            <h3 style="color: black; margin: 0; font-size: 1.1em;">Task: Construct a(n) <span style="color: ${themePink};">${targetGate}</span> Gate</h3>
-            <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag the correct gates to the blueprint. Double-click to remove.</p>
-            <p style="color: #666; font-size: 0.8em; margin: 2px 0;"><strong>Leave all other blueprints blank</strong></p>
+    const gateIconsHTML = gateOptions.map(gate => `
+        <div class="nand-draggable" draggable="true" data-gatetype="${gate.type}" 
+             style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+            ${gate.svg}
         </div>
-        
-        <div id="nandPartsBin" style="display: flex; flex-direction: row; justify-content: center; gap: 8px; padding: 10px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
-            ${gateIconsHTML}
+    `).join('');
+
+    qContainer.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: -20px;">
+            <div style="text-align: center; width: 100%; margin-bottom: 10px;">
+                <h3 style="color: black; margin: 0; font-size: 1.1em;">Task: Construct a(n) <span style="color: ${themePink};">${targetGate}</span> Gate</h3>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag the correct gates to the blueprint. Double-click to remove.</p>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;"><strong>Leave all other blueprints blank</strong></p>
+            </div>
+            <div id="nandPartsBin" style="display: flex; flex-direction: row; justify-content: center; gap: 8px; padding: 10px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
+                ${gateIconsHTML}
+            </div>
         </div>
-    </div>
-`;
+    `;
 
     // 6. Canvas Overlay Setup 
     let circuitContainer = document.getElementById('circuitContainer');
@@ -5143,6 +5154,7 @@ qContainer.innerHTML = `
         zone.className = 'nand-dropzone';
         zone.dataset.blueprint = blueprintName;
         zone.dataset.boxindex = boxIndex;
+        zone.dataset.filled = ""; // Initialize empty
         zone.style.position = 'absolute';
         zone.style.left = x + 'px'; zone.style.top = y + 'px';
         zone.style.width = w + 'px'; zone.style.height = h + 'px';
@@ -5154,7 +5166,7 @@ qContainer.innerHTML = `
         overlay.appendChild(zone);
     };
 
-    // 8. Draw the Blueprints (All coordinate logic preserved exactly)
+    // 8. Draw Blueprints
     const quadW = canvas.width / 2;
     const quadH = canvas.height / 2;
     const quadrantOffsets = [{ x: 0, y: 0 }, { x: quadW, y: 0 }, { x: 0, y: quadH }, { x: quadW, y: quadH }];
@@ -5226,7 +5238,7 @@ qContainer.innerHTML = `
         }
     });
 
-    // 9. DRAG AND DROP GRAPHICS LOGIC
+    // 9. DRAG AND DROP LOGIC
     const draggables = document.querySelectorAll('.nand-draggable');
     const dropzones = document.querySelectorAll('.nand-dropzone');
 
@@ -5238,7 +5250,6 @@ qContainer.innerHTML = `
 
     dropzones.forEach(zone => {
         zone.addEventListener('dragover', (e) => e.preventDefault());
-
         zone.addEventListener('drop', (e) => {
             e.preventDefault();
             const gateType = e.dataTransfer.getData('text/plain');
@@ -5257,10 +5268,10 @@ qContainer.innerHTML = `
         });
 
         zone.addEventListener('dblclick', () => {
-    zone.dataset.filled = "";
-    zone.innerHTML = "";
-    zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)'; // Reset to original pink tint
-});
+            zone.dataset.filled = "";
+            zone.innerHTML = "";
+            zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)';
+        });
     });
 }
 //*************************************************************************************************************************
