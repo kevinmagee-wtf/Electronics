@@ -5076,72 +5076,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
         ctx.fillText("X", 180, 55); ctx.fillText("Y", 180, 150); ctx.fillText("Q", 290, 110); 
     }
 }
-//******************************************************************************************
 
-function generateGrade9NANDConversion(ctx, canvas) {
-    // 1. Define the Problem: A 3-input standard logic circuit
-    // Example: (A AND B) OR (NOT C)
-    const problemSchema = {
-        inputLabels: ['A', 'B', 'C'],
-        gates: [
-            { id: 'gate1', type: 'AND', inputs: ['A', 'B'], pos: {x: 120, y: 50} },
-            { id: 'gate2', type: 'NOT', inputs: ['C'], pos: {x: 120, y: 150} },
-            { id: 'gate3', type: 'OR', inputs: ['gate1', 'gate2'], pos: {x: 240, y: 100} }
-        ]
-    };
-
-    // 2. Draw the "Target" circuit at the top of the canvas
-    drawStandardReference(ctx, problemSchema);
-
-    // 3. Prepare the "Ghost Slots" below for the NAND conversion
-    // Each gate in the problem gets a corresponding drop zone
-    const dropZones = [
-        { id: 'slot1', targetType: 'AND', x: 100, y: 300, w: 120, h: 80 },
-        { id: 'slot2', targetType: 'NOT', x: 100, y: 400, w: 80, h: 60 },
-        { id: 'slot3', targetType: 'OR', x: 250, y: 350, w: 150, h: 100 }
-    ];
-    window.g9nandSlots = dropZones;
-
-    // 4. Populate the "Module Bank" (the draggable items)
-    // We provide NAND-equivalents for AND, OR, NOT, plus distractors
-    const moduleBank = document.getElementById('nandModuleBank');
-    if (moduleBank) {
-        moduleBank.innerHTML = '';
-        const modules = [
-            { type: 'AND', label: 'NAND-AND', gates: 2 }, // NAND + NOT [cite: 73]
-            { type: 'OR', label: 'NAND-OR', gates: 3 },   // 2 Inverters + NAND [cite: 81]
-            { type: 'NOT', label: 'NAND-NOT', gates: 1 }, // Joined Inputs [cite: 71]
-            { type: 'FAKE', label: 'NAND-X', gates: 2 }    // Distractor
-        ];
-        
-        // Shuffle the bank so students don't learn the order
-        shuffleArray(modules).forEach(mod => {
-            let div = document.createElement('div');
-            div.className = 'nand-module-item';
-            div.draggable = true;
-            div.dataset.type = mod.type;
-            div.innerHTML = `<span>${mod.label}</span>`;
-            // Add event listeners for dragstart here
-            moduleBank.appendChild(div);
-        });
-    }
-
-    renderGhostSlots(ctx, dropZones);
-}
-
-function renderGhostSlots(ctx, slots) {
-    ctx.setLineDash([5, 5]); // Dashed lines for "empty" slots
-    slots.forEach(slot => {
-        ctx.strokeStyle = "#999";
-        ctx.strokeRect(slot.x, slot.y, slot.w, slot.h);
-        ctx.fillStyle = "#f9f9f9";
-        ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
-        ctx.fillStyle = "#999";
-        ctx.font = "12px Arial";
-        ctx.fillText("Drop Conversion Here", slot.x + 5, slot.y + slot.h/2);
-    });
-    ctx.setLineDash([]); // Reset
-}
     
 //******************************************************************************************
 
@@ -5384,6 +5319,84 @@ function generateLogic_nandProblem(ctx, canvas) {
             zone.innerHTML = "";
             zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)';
         });
+    });
+}
+
+//******************************************************************************************
+
+function generateGrade9NandProblem(ctx, canvas) { // <--- Name matched to Hub
+    // 1. Define the Problem
+    const problemSchema = {
+        inputLabels: ['A', 'B', 'C'],
+        gates: [
+            { id: 'gate1', type: 'AND', x: 140, y: 50 },
+            { id: 'gate2', type: 'NOT', x: 140, y: 130 },
+            { id: 'gate3', type: 'OR', x: 280, y: 90 }
+        ]
+    };
+
+    // 2. Draw standard circuit at top
+    drawStandardReference(ctx, problemSchema);
+
+    // 3. Setup Drop Zones (Ghost Slots) at bottom
+    const dropZones = [
+        { id: 'slot1', targetType: 'AND', x: 120, y: 240, w: 100, h: 60 },
+        { id: 'slot2', targetType: 'NOT', x: 120, y: 320, w: 80, h: 50 },
+        { id: 'slot3', targetType: 'OR', x: 280, y: 280, w: 120, h: 70 }
+    ];
+    window.g9nandSlots = dropZones;
+
+    // 4. Update the Bank (HTML side)
+    const moduleBank = document.getElementById('nandModuleBank');
+    if (moduleBank) {
+        moduleBank.innerHTML = '';
+        const modules = [
+            { type: 'AND', label: 'NAND-AND' },
+            { type: 'OR', label: 'NAND-OR' },
+            { type: 'NOT', label: 'NAND-NOT' },
+            { type: 'FAKE', label: 'NAND-X' }
+        ];
+        shuffleArray(modules).forEach(mod => {
+            let div = document.createElement('div');
+            div.className = 'nand-module-item';
+            div.draggable = true;
+            div.dataset.type = mod.type;
+            div.innerHTML = `<span>${mod.label}</span>`;
+            // Drag Logic
+            div.ondragstart = (e) => { e.dataTransfer.setData("text", mod.type); };
+            moduleBank.appendChild(div);
+        });
+    }
+
+    renderGhostSlots(ctx, dropZones);
+}
+
+// 5. MISSING FUNCTION: Draws the top reference circuit
+function drawStandardReference(ctx, schema) {
+    ctx.strokeStyle = "#333";
+    ctx.lineWidth = 2;
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 14px Arial";
+    ctx.fillText("Standard System (Convert this):", 20, 25);
+
+    // Draw A, B, C lines
+    schema.inputLabels.forEach((label, i) => {
+        let y = 50 + (i * 40);
+        ctx.fillText(label, 20, y + 5);
+        ctx.beginPath();
+        ctx.moveTo(40, y);
+        ctx.lineTo(130, y);
+        ctx.stroke();
+    });
+
+    // Draw Gate Placeholders
+    schema.gates.forEach(g => {
+        ctx.strokeRect(g.x, g.y - 15, 60, 30);
+        ctx.fillStyle = "#eee";
+        ctx.fillRect(g.x, g.y - 15, 60, 30);
+        ctx.fillStyle = "#000";
+        ctx.font = "11px Arial";
+        ctx.fillText(g.type, g.x + 10, g.y + 5);
     });
 }
     
