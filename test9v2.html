@@ -5309,8 +5309,22 @@ function generateLogic_nandProblem(ctx, canvas) {
 
 //******************************************************************************************
 
-function generateGrade9NandProblem(ctx, canvas) { // <--- Name matched to Hub
-    // 1. Define the Problem
+function generateGrade9NandProblem(ctx, canvas) { 
+    // --- 1. HARD WIPE SECTION (Fixes the "Clinging Wires") ---
+    // Remove the transparent HTML overlay used by the standard NAND mode
+    const oldOverlay = document.getElementById('nandCanvasOverlay');
+    if (oldOverlay) oldOverlay.remove(); 
+
+    // Wipe the canvas quadrants and wires from the previous question
+    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+    ctx.beginPath(); 
+
+    // Hide the standard NAND instructions/bin if it was open
+    const standardNandGroup = document.getElementById('inputGroupLogic_NAND');
+    if (standardNandGroup) standardNandGroup.style.display = 'none';
+    // -------------------------------------------------------
+
+    // 2. Define the Problem: A 3-input standard logic circuit
     const problemSchema = {
         inputLabels: ['A', 'B', 'C'],
         gates: [
@@ -5320,10 +5334,10 @@ function generateGrade9NandProblem(ctx, canvas) { // <--- Name matched to Hub
         ]
     };
 
-    // 2. Draw standard circuit at top
+    // 3. Draw standard circuit at top
     drawStandardReference(ctx, problemSchema);
 
-    // 3. Setup Drop Zones (Ghost Slots) at bottom
+    // 4. Setup Drop Zones (Ghost Slots) at bottom
     const dropZones = [
         { id: 'slot1', targetType: 'AND', x: 120, y: 240, w: 100, h: 60 },
         { id: 'slot2', targetType: 'NOT', x: 120, y: 320, w: 80, h: 50 },
@@ -5331,7 +5345,7 @@ function generateGrade9NandProblem(ctx, canvas) { // <--- Name matched to Hub
     ];
     window.g9nandSlots = dropZones;
 
-    // 4. Update the Bank (HTML side)
+    // 5. Update the Bank (HTML side)
     const moduleBank = document.getElementById('nandModuleBank');
     if (moduleBank) {
         moduleBank.innerHTML = '';
@@ -5341,6 +5355,8 @@ function generateGrade9NandProblem(ctx, canvas) { // <--- Name matched to Hub
             { type: 'NOT', label: 'NAND-NOT' },
             { type: 'FAKE', label: 'NAND-X' }
         ];
+        
+        // Use your existing shuffleArray helper
         shuffleArray(modules).forEach(mod => {
             let div = document.createElement('div');
             div.className = 'nand-module-item';
@@ -5356,7 +5372,7 @@ function generateGrade9NandProblem(ctx, canvas) { // <--- Name matched to Hub
     renderGhostSlots(ctx, dropZones);
 }
 
-// 5. MISSING FUNCTION: Draws the top reference circuit
+// 6. Draws the top reference circuit
 function drawStandardReference(ctx, schema) {
     ctx.strokeStyle = "#333";
     ctx.lineWidth = 2;
@@ -5364,9 +5380,9 @@ function drawStandardReference(ctx, schema) {
     ctx.font = "bold 14px Arial";
     ctx.fillText("Standard System (Convert this):", 20, 25);
 
-    // Draw A, B, C lines
+    // Draw A, B, C input lines
     schema.inputLabels.forEach((label, i) => {
-        let y = 50 + (i * 40);
+        let y = 60 + (i * 45); // Adjusted spacing
         ctx.fillText(label, 20, y + 5);
         ctx.beginPath();
         ctx.moveTo(40, y);
@@ -5383,6 +5399,29 @@ function drawStandardReference(ctx, schema) {
         ctx.font = "11px Arial";
         ctx.fillText(g.type, g.x + 10, g.y + 5);
     });
+    
+    // Draw connecting wires for the reference circuit
+    ctx.beginPath();
+    ctx.moveTo(200, 50); ctx.lineTo(240, 50); ctx.lineTo(240, 85); ctx.lineTo(280, 85); // AND to OR
+    ctx.moveTo(200, 130); ctx.lineTo(240, 130); ctx.lineTo(240, 105); ctx.lineTo(280, 105); // NOT to OR
+    ctx.moveTo(340, 95); ctx.lineTo(380, 95); // Final Output
+    ctx.stroke();
+    ctx.fillText("Q", 390, 100);
+}
+
+// 7. Draws the dashed drop zones on the canvas
+function renderGhostSlots(ctx, slots) {
+    ctx.setLineDash([5, 5]);
+    slots.forEach(slot => {
+        ctx.strokeStyle = "#999";
+        ctx.strokeRect(slot.x, slot.y, slot.w, slot.h);
+        ctx.fillStyle = "#f9f9f9";
+        ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
+        ctx.fillStyle = "#999";
+        ctx.font = "12px Arial";
+        ctx.fillText("Drop " + slot.targetType, slot.x + 5, slot.y + slot.h / 2);
+    });
+    ctx.setLineDash([]);
 }
     
 //*****************************************************************************************
