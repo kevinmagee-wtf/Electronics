@@ -5257,9 +5257,10 @@ qContainer.innerHTML = `
         });
 
         zone.addEventListener('dblclick', () => {
-            zone.dataset.filled = "";
-            zone.innerHTML = "";
-        });
+    zone.dataset.filled = "";
+    zone.innerHTML = "";
+    zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)'; // Reset to original pink tint
+});
     });
 }
 //*************************************************************************************************************************
@@ -7861,17 +7862,21 @@ function checkAnswers() {
         return; // Exits the checkAnswers function so it doesn't accidentally run anything else
     }
 
-    // ==========================================
+// ==========================================
     // NAND EQUIVALENTS INTERCEPTOR
     // ==========================================
-    if (currentMode === 'nand_equivalents') {
+    if (currentMode === 'logic_nand') {
         const feedback = document.getElementById('feedback');
+        const targetGate = window.currentNandAnswer; // This is 'NOT', 'AND', etc.
+        const dropzones = document.querySelectorAll('.nand-dropzone');
         
-        // 1. Get the current active blueprint (the one that isn't empty)
-        // We find the blueprint object from your shuffled array that should have gates
-        let activeBlueprint = blueprints.find(b => b.id === currentBlueprintId);
-        
-        if (!activeBlueprint) return;
+        // The Cheat Sheet: Tells the computer what logic is correct
+        const NAND_LOGIC_KEY = {
+            'NOT': ['joined'],
+            'AND': ['standard', 'joined'],
+            'OR':  ['joined', 'joined', 'standard'],
+            'NOR': ['joined', 'joined', 'standard', 'joined']
+        };
 
         if (!hasCheckedCurrentProblem) { 
             problemsAttempted++; 
@@ -7879,55 +7884,70 @@ function checkAnswers() {
         }
 
         let allCorrect = true;
-        let anyEmpty = false;
+        let studentAttemptedTarget = false;
+        let anyWrongPlacement = false;
 
-        // 2. Validate each dropzone in the current blueprint
-        activeBlueprint.zones.forEach((zone, index) => {
-            const zoneId = `dz-${activeBlueprint.id}-${index}`;
-            const zoneEl = document.getElementById(zoneId);
-            const placedGate = zoneEl ? zoneEl.getAttribute('data-occupant') : null;
+        // 1. Loop through every single dropzone on the canvas
+        dropzones.forEach(zone => {
+            const bpType = zone.dataset.blueprint;      // Which blueprint is this box in?
+            const boxIdx = parseInt(zone.dataset.boxindex) - 1; // 0-based index for our key
+            const filledGate = zone.dataset.filled || ""; // What gate is currently inside?
 
-            if (!placedGate) {
-                anyEmpty = true;
-                allCorrect = false;
-            } else if (placedGate !== zone.type) {
-                allCorrect = false;
-                // Visual feedback: briefly shake or highlight wrong zones
-                zoneEl.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
-            } else {
-                // Correct placement
-                zoneEl.style.backgroundColor = "rgba(40, 167, 69, 0.2)";
+            // RULE A: If this is the blueprint for the task (e.g. they were asked for 'OR')
+            if (bpType === targetGate) {
+                const correctType = NAND_LOGIC_KEY[bpType][boxIdx];
+                
+                if (filledGate === "") {
+                    allCorrect = false; // Missing a gate in the required circuit
+                } else if (filledGate !== correctType) {
+                    allCorrect = false;
+                    anyWrongPlacement = true;
+                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; // Tint Red
+                } else {
+                    zone.style.backgroundColor = "rgba(40, 167, 69, 0.2)"; // Tint Green
+                    studentAttemptedTarget = true;
+                }
+            } 
+            // RULE B: If this is NOT the target blueprint, it must be empty
+            else {
+                if (filledGate !== "") {
+                    allCorrect = false;
+                    anyWrongPlacement = true;
+                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; // Tint Red
+                }
             }
         });
 
-        // 3. Final Grading Logic
-        if (anyEmpty) {
-            feedback.innerHTML = "<span style='color: #dc3545;'>The circuit is incomplete! Drag gates into all boxes.</span>";
-            return; 
-        }
-
+        // 2. Final Feedback Logic
         const checkansBtn = document.getElementById('checkansBtn');
         const showsolutionsBtn = document.getElementById('showsolutionsBtn');
 
-        if (allCorrect) {
+        if (allCorrect && studentAttemptedTarget) {
+            // SUCCESS
             isCurrentProblemSolved = true;
             if (canEarnPoints) { problemsCorrect++; }
-            feedback.innerHTML = "<span style='color: #198754;'>Success! That is the correct NAND equivalent circuit!</span>";
+            feedback.innerHTML = `<span style='color: #198754;'>Perfect! You built the ${targetGate} gate correctly using NAND logic!</span>`;
             canEarnPoints = false;
 
             if (checkansBtn) checkansBtn.style.display = 'none';
             if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
-        } else {
-            canEarnPoints = false;
-            feedback.innerHTML = "<span style='color: #dc3545;'>Incorrect logic. Review your gate choices and try again!</span>";
             
-            // Show solutions if you have a solution image/diagram
+        } else {
+            // FAILURE
+            canEarnPoints = false;
+            if (anyWrongPlacement) {
+                feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect logic. Look at the red boxes and try again!</span>`;
+            } else {
+                feedback.innerHTML = `<span style='color: #dc3545;'>The circuit is incomplete. Build the ${targetGate} gate blueprint!</span>`;
+            }
+            
+            // Optional: Reveal solution box on failure
             const solDiv = document.getElementById('solutions');
             if (solDiv) solDiv.style.display = 'block';
         }
 
         if (typeof updateScoreboard === "function") updateScoreboard();
-        return; // Exit so the standard math grading doesn't run
+        return; // Stop here so it doesn't try to grade other modes
     }
 
     // 2. Identify which inputs are currently active
