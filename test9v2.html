@@ -8554,6 +8554,15 @@ function provideHint() {
                 • <b>Column E:</b> Look at the bottom path. What happens to input C?<br>
                 • <b>Column Q:</b> Look at the final gate. What do D and E make together?
             </div>`;
+    } else if (currentMode === 'logic_nand') {
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint: How to build with NAND:</strong><br>
+                • <b>NOT:</b> Join both inputs of a NAND gate together.<br>
+                • <b>AND:</b> Connect the output of a NAND gate into a NOT gate.<br>
+                • <b>OR:</b> Use two NOT gates (for inputs A and B) and feed them into a final NAND gate.<br>
+                • <b>NOR:</b> Build the OR gate logic, then add a final NOT gate at the very end.
+            </div>`;
     } else {
         // Potential Divider & General
         helpText = `
