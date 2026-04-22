@@ -7302,6 +7302,51 @@ function hubController(ctx, canvas) {
 // ==============================================================
 // INPUT PROCESS AND SCORING SECTION (THE GRADERS) 
 // ==============================================================
+
+function checkLogicNand() {
+    const target = window.currentNandAnswer;
+    const dropzones = document.querySelectorAll('.nand-dropzone');
+    let isCorrect = true;
+
+    // Define the required gate types for each blueprint
+    // 'standard' = 2 inputs, 'joined' = 1 input (tied together)
+    const winningPatterns = {
+        'NOT': { 1: 'joined' },
+        'AND': { 1: 'standard', 2: 'joined' },
+        'OR':  { 1: 'joined', 2: 'joined', 3: 'standard' },
+        'NOR': { 1: 'joined', 2: 'joined', 3: 'standard', 4: 'joined' }
+    };
+
+    const pattern = winningPatterns[target];
+
+    dropzones.forEach(zone => {
+        const bp = zone.dataset.blueprint;
+        const idx = zone.dataset.boxindex;
+        const filled = zone.dataset.filled || "";
+
+        if (bp === target) {
+            // Check if the student put the right gate in the right box of the target blueprint
+            if (filled !== pattern[idx]) {
+                isCorrect = false;
+            }
+        } else {
+            // Strictly enforce that all other blueprints must be empty
+            if (filled !== "") {
+                isCorrect = false;
+            }
+        }
+    });
+
+    if (isCorrect) {
+        displayFeedback(true, `Correct! You built the ${target} gate perfectly.`);
+        // Turn the correctly filled zones green
+        dropzones.forEach(z => {
+            if(z.dataset.filled) z.style.backgroundColor = "rgba(40, 167, 69, 0.2)";
+        });
+    } else {
+        displayFeedback(false, "Incorrect. Check your gate choices or make sure the other blueprints are empty.");
+    }
+}
     
 function checkAnswers() {
     // 1. Prevent double-checking if already solved
@@ -7716,10 +7761,9 @@ function checkAnswers() {
     // ==========================================
     if (currentMode === 'logic_nand') {
         const feedback = document.getElementById('feedback');
-        const targetGate = window.currentNandAnswer; // This is 'NOT', 'AND', etc.
+        const targetGate = window.currentNandAnswer; 
         const dropzones = document.querySelectorAll('.nand-dropzone');
         
-        // The Cheat Sheet: Tells the computer what logic is correct
         const NAND_LOGIC_KEY = {
             'NOT': ['joined'],
             'AND': ['standard', 'joined'],
@@ -7736,33 +7780,35 @@ function checkAnswers() {
         let studentAttemptedTarget = false;
         let anyWrongPlacement = false;
 
-        // 1. Loop through every single dropzone on the canvas
-        dropzones.forEach(zone => {
-            const bpType = zone.dataset.blueprint;      // Which blueprint is this box in?
-            const boxIdx = parseInt(zone.dataset.boxindex) - 1; // 0-based index for our key
-            const filledGate = zone.dataset.filled || ""; // What gate is currently inside?
+        // 1. Reset all zones to transparent before re-grading
+        dropzones.forEach(z => {
+            z.style.backgroundColor = "transparent";
+        });
 
-            // RULE A: If this is the blueprint for the task (e.g. they were asked for 'OR')
+        // 2. Loop through every single dropzone
+        dropzones.forEach(zone => {
+            const bpType = zone.dataset.blueprint;      
+            const boxIdx = parseInt(zone.dataset.boxindex) - 1; 
+            const filledGate = zone.dataset.filled || ""; 
+
             if (bpType === targetGate) {
                 const correctType = NAND_LOGIC_KEY[bpType][boxIdx];
                 
                 if (filledGate === "") {
-                    allCorrect = false; // Missing a gate in the required circuit
+                    allCorrect = false; 
                 } else if (filledGate !== correctType) {
                     allCorrect = false;
                     anyWrongPlacement = true;
-                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; // Tint Red
+                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
                 } else {
-                    zone.style.backgroundColor = "rgba(40, 167, 69, 0.2)"; // Tint Green
+                    zone.style.backgroundColor = "rgba(40, 167, 69, 0.2)"; 
                     studentAttemptedTarget = true;
                 }
-            } 
-            // RULE B: If this is NOT the target blueprint, it must be empty
-            else {
+            } else {
                 if (filledGate !== "") {
                     allCorrect = false;
                     anyWrongPlacement = true;
-                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; // Tint Red
+                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
                 }
             }
         });
