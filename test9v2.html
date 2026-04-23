@@ -5394,86 +5394,130 @@ function generateGrade9NandProblem(ctx, canvas) {
             
             const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT, 'WIRE': svgWIRE };
 
-            // --- NEW OUTLINE MAP FOR WATERMARKS ---
-            const outlineMap = {
-                'NOT': `<svg width="100%" height="100%" viewBox="0 0 140 90"><polygon points="40,25 40,65 80,45" fill="none" stroke="#ddd" stroke-width="4"/><circle cx="86" cy="45" r="5" fill="none" stroke="#ddd" stroke-width="4"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: NOT</text></svg>`,
-                'AND': `<svg width="100%" height="100%" viewBox="0 0 140 90"><path d="M 40,25 L 60,25 A 20,20 0 0,1 60,65 L 40,65 Z" fill="none" stroke="#ddd" stroke-width="4"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: AND</text></svg>`,
-                'OR': `<svg width="100%" height="100%" viewBox="0 0 140 90"><path d="M 40,25 Q 60,25 80,45 Q 60,65 40,65 Q 50,45 40,25" fill="none" stroke="#ddd" stroke-width="4"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: OR</text></svg>`,
-                'NOR': `<svg width="100%" height="100%" viewBox="0 0 140 90"><path d="M 35,25 Q 55,25 75,45 Q 55,65 35,65 Q 45,45 35,25" fill="none" stroke="#ddd" stroke-width="4"/><circle cx="81" cy="45" r="5" fill="none" stroke="#ddd" stroke-width="4"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: NOR</text></svg>`,
-                'WIRE': `<svg width="100%" height="100%" viewBox="0 0 140 90"><line x1="20" y1="45" x2="120" y2="45" stroke="#ddd" stroke-width="4" stroke-dasharray="10,10"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: WIRE</text></svg>`
-            };
-
             const s1Target = ["AND", "OR"][Math.floor(Math.random() * 2)];
             const b3Target = ["AND", "OR", "NOR"][Math.floor(Math.random() * 3)];
             const s4Target = (b3Target === "NOR") ? "NOT" : "WIRE";
             
             window.nandTargets = { s1: s1Target, s2: "NOT", s3: b3Target, s4: s4Target };
 
-            // --- 1. NEW SOLUTION TEXT FOR CONVERSION MODE ---
+            // --- 1. SOLUTION TEXT FOR CONVERSION MODE ---
             if (solBox) {
                 const solutionsMap = {
                     'NOT': "A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate.",
                     'AND': "An <strong>AND</strong> gate is a NAND gate followed by a NOT gate (NAND with inputs joined).",
                     'OR': "An <strong>OR</strong> gate uses two NOT gates (inputs joined) for A and B, feeding into a final NAND gate.",
-                    'NOR': "A <strong>NOR</strong> gate is an OR gate construction followed by a final NOT gate (inputs joined).",
-                    'WIRE': "A <strong>WIRE</strong> means no gate is needed—just a direct connection."
+                    'NOR': "A <strong>NOR</strong> gate is an OR gate construction followed by a final NOT gate.",
+                    'WIRE': "A straight <strong>Wire</strong> is used to pass the signal directly through without modification."
                 };
                 
-                solBox.innerHTML = `<div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
-                    <strong style="color: #d65093; font-size: 16px;">Grade 9 Circuit Solution:</strong><br>
-                    <ul style="line-height: 1.6; margin-top: 10px; padding-left: 20px;">
-                        <li><strong>Top Box (${s1Target}):</strong> ${solutionsMap[s1Target]}</li>
-                        <li><strong>Bottom Box (NOT):</strong> ${solutionsMap['NOT']}</li>
-                        <li><strong>Middle Box (${b3Target}):</strong> ${solutionsMap[b3Target]}</li>
-                        <li><strong>Final Box (${s4Target}):</strong> ${solutionsMap[s4Target]}</li>
-                    </ul>
-                </div>`;
+                solBox.innerHTML = `
+                    <div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                        <strong style="color: #d65093; font-size: 16px;">Grade 9 Circuit Solution:</strong><br>
+                        <ul style="line-height: 1.6; margin-top: 10px; padding-left: 20px;">
+                            <li><strong>Top Box (${s1Target}):</strong> ${solutionsMap[s1Target]}</li>
+                            <li><strong>Bottom Box (NOT):</strong> ${solutionsMap['NOT']}</li>
+                            <li><strong>Middle Box (${b3Target}):</strong> ${solutionsMap[b3Target]}</li>
+                            <li><strong>Final Box (${s4Target}):</strong> ${solutionsMap[s4Target]}</li>
+                        </ul>
+                    </div>`;
             }
-            // ------------------------------------------------
 
+            // Define coordinates for Drop Zones (Box 4 ghost removed to hide the answer!)
             const blueprint = [
-                { id: "s1", target: s1Target, x: 40,  y: 45,  w: 140, h: 90 },
-                { id: "s2", target: "NOT",    x: 40,  y: 185, w: 140, h: 90 },
-                { id: "s3", target: b3Target, x: 220, y: 115, w: 140, h: 90 },
-                { id: "s4", target: s4Target, x: 400, y: 115, w: 140, h: 90 } 
+                { id: "s1", target: s1Target, x: 40,  y: 45,  w: 140, h: 90, ghost: true },
+                { id: "s2", target: "NOT",    x: 40,  y: 185, w: 140, h: 90, ghost: true },
+                { id: "s3", target: b3Target, x: 220, y: 115, w: 140, h: 90, ghost: true },
+                { id: "s4", target: s4Target, x: 400, y: 115, w: 140, h: 90, ghost: false } 
             ];
 
-            const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px;"><h3>NAND Logic Construction</h3><p>Drag the NAND equivalent gates into the boxes.</p></div>`;
+            const instructionHTML = `
+                <div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 16px;">NAND Logic Construction</h3>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+                        Drag and drop the NAND equivalent gates to connect the inputs to the output Q using only NAND gates.<br><br>
+                        The wire should be placed in the right box only when needed.<br><br>
+                        <i>(Double click to remove components from a box.)</i>
+                    </p>
+                </div>`;
             let instDiv = document.createElement('div'); instDiv.id = 'nandInstructions'; instDiv.innerHTML = instructionHTML;
             const checkBtn = document.getElementById('checkansBtn');
             if (checkBtn && checkBtn.parentNode) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
 
-            ctx.strokeStyle = "#333"; ctx.lineWidth = 2; ctx.beginPath();
-            ctx.moveTo(10, 75); ctx.lineTo(40, 75); ctx.moveTo(10, 105); ctx.lineTo(40, 105); ctx.moveTo(10, 230); ctx.lineTo(40, 230);
-            ctx.moveTo(180, 90); ctx.lineTo(200, 90); ctx.lineTo(200, 140); ctx.lineTo(220, 140); ctx.moveTo(180, 230); ctx.lineTo(200, 230); ctx.lineTo(200, 180); ctx.lineTo(220, 180);
-            ctx.moveTo(360, 160); ctx.lineTo(400, 160); ctx.moveTo(540, 160); ctx.lineTo(570, 160); ctx.stroke();
-            ctx.fillStyle = "#333"; ctx.font = "bold 16px Arial"; ctx.fillText("A", 2, 75); ctx.fillText("B", 2, 105); ctx.fillText("C", 2, 230); ctx.fillText("Q", 575, 160);
+            // --- CANVAS GHOST DRAWING HELPER ---
+            const drawGhost = (type, x, y) => {
+                ctx.save();
+                ctx.globalAlpha = 0.3; // Made slightly darker/more visible than original 0.15
+                ctx.strokeStyle = "#444"; 
+                ctx.lineWidth = 3; // Thicker lines for visibility
+                ctx.translate(x, y);
+                ctx.beginPath();
+                if (type === "AND") {
+                    ctx.moveTo(35, 20); ctx.lineTo(75, 20);
+                    ctx.arc(75, 45, 25, -Math.PI/2, Math.PI/2); ctx.lineTo(35, 70); ctx.closePath();
+                } else if (type === "OR" || type === "NOR") {
+                    ctx.moveTo(30, 20); ctx.quadraticCurveTo(50, 45, 30, 70);
+                    ctx.quadraticCurveTo(90, 70, 115, 45); ctx.quadraticCurveTo(90, 20, 30, 20);
+                    if (type === "NOR") { ctx.stroke(); ctx.beginPath(); ctx.arc(120, 45, 5, 0, Math.PI*2); }
+                } else if (type === "NOT") {
+                    ctx.moveTo(45, 25); ctx.lineTo(85, 45); ctx.lineTo(45, 65); ctx.closePath();
+                    ctx.stroke(); ctx.beginPath(); ctx.arc(90, 45, 5, 0, Math.PI*2);
+                } else if (type === "WIRE") {
+                    ctx.setLineDash([8, 8]); // Dashed line for the wire ghost
+                    ctx.moveTo(25, 45); ctx.lineTo(115, 45);
+                }
+                ctx.stroke();
+                ctx.restore();
+            };
 
+            // Draw Static Circuit Wiring
+            ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(10, 75); ctx.lineTo(40, 75);
+            ctx.moveTo(10, 105); ctx.lineTo(40, 105);
+            ctx.moveTo(10, 230); ctx.lineTo(40, 230);
+            ctx.moveTo(180, 90); ctx.lineTo(200, 90); ctx.lineTo(200, 140); ctx.lineTo(220, 140);
+            ctx.moveTo(180, 230); ctx.lineTo(200, 230); ctx.lineTo(200, 180); ctx.lineTo(220, 180);
+            ctx.moveTo(360, 160); ctx.lineTo(400, 160);
+            ctx.moveTo(540, 160); ctx.lineTo(570, 160);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = "#333"; ctx.font = "bold 16px Arial"; ctx.textBaseline = "middle";
+            ctx.fillText("A", 2, 75); ctx.fillText("B", 2, 105); ctx.fillText("C", 2, 230); ctx.fillText("Q", 575, 160);
+
+            // Create Drop Zones on Overlay
             blueprint.forEach(s => {
-                let zone = document.createElement('div');
-                zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center;`;
+                if(s.ghost) drawGhost(s.target, s.x, s.y);
                 
-                // Add the placeholder watermark initially
-                zone.innerHTML = outlineMap[s.target] || "";
-
-                zone.ondragover = (e) => e.preventDefault();
+                let zone = document.createElement('div');
+                zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center; transition: background 0.3s;`;
+                
+                zone.ondragover = (e) => { e.preventDefault(); zone.style.background = "rgba(214, 80, 147, 0.05)"; };
+                zone.ondragleave = () => { zone.style.background = "transparent"; };
                 zone.ondrop = (e) => {
                     const type = e.dataTransfer.getData("text");
                     zone.innerHTML = graphicsMap[type];
+                    zone.style.border = "2px solid #444";
+                    zone.style.background = "transparent";
                     zone.setAttribute('data-filled-type', type); 
                 };
                 zone.ondblclick = () => { 
-                    // Restore the watermark when the user double-clicks to clear it
-                    zone.innerHTML = outlineMap[s.target] || ""; 
-                    zone.removeAttribute('data-filled-type'); 
+                    zone.innerHTML = ""; 
+                    zone.style.border = "2px dashed #bbb"; 
+                    zone.removeAttribute('data-filled-type');
                 };
                 overlay.appendChild(zone);
             });
 
-            let tray = document.createElement('div'); tray.id = 'nandBottomTray'; tray.style.cssText = `position:absolute; bottom:15px; width:100%; display:flex; justify-content:center; gap:20px; pointer-events:auto;`;
+            // Add the Parts Tray (Gate Palette)
+            let tray = document.createElement('div');
+            tray.id = 'nandBottomTray';
+            tray.style.cssText = `position:absolute; bottom:15px; width:100%; display:flex; justify-content:center; gap:20px; pointer-events:auto;`;
             ['AND','OR','NOT','WIRE'].forEach(type => {
-                let item = document.createElement('div'); item.style.cssText = "width:120px; height:80px; background:white; border:1px solid #ccc; cursor:grab;";
-                item.draggable = true; item.innerHTML = graphicsMap[type];
+                let item = document.createElement('div');
+                item.style.cssText = "width:120px; height:80px; background:white; border:1px solid #ccc; cursor:grab; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
+                item.draggable = true;
+                item.innerHTML = graphicsMap[type];
                 item.ondragstart = (e) => e.dataTransfer.setData("text", type);
                 tray.appendChild(item);
             });
