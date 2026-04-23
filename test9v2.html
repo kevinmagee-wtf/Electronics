@@ -5461,11 +5461,10 @@ function generateGrade9NandProblem(ctx, canvas) {
         // MODE B: REDUNDANCY HUNTER
         // =========================================================
 else {
-            // SVG Constants
             const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
             const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
-            const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><h3>Dual-Stream Redundancy Hunter</h3><p>Follow the distinct paths from <b>A-H</b>. Identify the redundant NAND inverters. <b>Click to cross them out!</b></p></div>`;
+            const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><h3>Precision Redundancy Hunter</h3><p>Follow isolated paths from <b>A-H</b>. Spot the redundant NOT-NOT chains. <b>Click to cross them out!</b></p></div>`;
             let instDiv = document.getElementById('nandInstructions') || document.createElement('div');
             instDiv.id = 'nandInstructions';
             const checkBtn = document.getElementById('checkansBtn');
@@ -5473,16 +5472,16 @@ else {
             instDiv.innerHTML = instructionHTML;
 
             const inputs = ["A", "B", "C", "D", "E", "F", "G", "H"];
-            let layers = [5, 4, 2]; 
+            let layers = [6, 4, 2]; // 6 gates in layer 1 to accommodate 4 singles and 2 pairs
             let gatePositions = [];
 
             layers.forEach((count, lIndex) => {
                 for (let i = 0; i < count; i++) {
-                    let gx = 80 + (lIndex * 180);
+                    let gx = 80 + (lIndex * 190);
                     let gy = (480 / (count + 1)) * (i + 1);
 
-                    // Set Redundant Pairs: Layer 0 (Top/Bottom) and Layer 1 (Inner)
-                    let isInv = (lIndex === 0 && (i === 0 || i === 4)) || (lIndex === 1 && (i === 1 || i === 2));
+                    // Logic: 4 Single Inverters (top 2, bottom 2) and 2 Standard pairs in middle
+                    let isInv = (lIndex === 0 && (i === 0 || i === 1 || i === 4 || i === 5)) || (lIndex === 1 && (i === 1 || i === 2));
 
                     let gateDiv = document.createElement('div');
                     gateDiv.dataset.selected = "false";
@@ -5506,12 +5505,11 @@ else {
                 }
             });
 
-            // --- Clean, Non-Crossing Wiring ---
             ctx.lineWidth = 1.5;
-            ctx.strokeStyle = "#444";
+            ctx.strokeStyle = "#333";
             ctx.font = "bold 14px Arial";
 
-            // 1. Inputs to Layer 0 (2 Single, 3 Pairs)
+            // 1. Layer 0 Inputs (4 Singles, 2 Pairs)
             const l0Gates = gatePositions.filter(p => p.layer === 0);
             let inputIdx = 0;
             l0Gates.forEach((gate) => {
@@ -5526,13 +5524,13 @@ else {
                 }
             });
 
-            // 2. Layer-to-Layer Wiring (Parallel paths, No Crossings)
+            // 2. Separate Wiring (No joining, No crossing)
             gatePositions.forEach(gate => {
                 if (gate.layer > 0) {
                     const prevLayer = gatePositions.filter(p => p.layer === gate.layer - 1);
-                    // Determine parents based on index to keep paths parallel
+                    // Mapping logic to keep wires separate and parallel
                     let parents = (gate.layer === 1) 
-                        ? [gate.index, (gate.index + 1) % prevLayer.length] 
+                        ? [gate.index, (gate.index + 2) % prevLayer.length] 
                         : [gate.index * 2, gate.index * 2 + 1];
                     
                     parents.forEach((pIdx, pin) => {
@@ -5544,19 +5542,20 @@ else {
                         const endX = gate.x;
                         const endY = (gate.type === 'inverter') ? gate.y + 20 : (pin === 0 ? gate.y + 12 : gate.y + 28);
                         
-                        // Square routing to avoid overlaps
-                        const bendX = startX + 15 + (pin * 10); 
+                        // Vertical "Isolator" offset - ensures wires don't share a trunk
+                        const isolatorX = startX + 20 + (gate.index * 8) + (pin * 5); 
+
                         ctx.beginPath();
                         ctx.moveTo(startX, startY);
-                        ctx.lineTo(bendX, startY);
-                        ctx.lineTo(bendX, endY);
+                        ctx.lineTo(isolatorX, startY);
+                        ctx.lineTo(isolatorX, endY);
                         ctx.lineTo(endX, endY);
                         ctx.stroke();
                     });
                 }
             });
 
-            // 3. Output Labels
+            // 3. Final Outputs
             const finalLayer = gatePositions.filter(p => p.layer === 2);
             finalLayer.forEach((gate, idx) => {
                 ctx.fillText("Q" + (idx + 1), gate.x + 70, gate.y + 25);
