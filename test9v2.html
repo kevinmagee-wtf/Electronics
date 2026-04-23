@@ -5318,7 +5318,6 @@ function generateLogic_nandProblem(ctx, canvas) {
     
 function generateGrade9NandProblem(ctx, canvas) {
     // --- 1. SVG DEFINITIONS ---
-    // FIXED: Input wire now starts at 0 to connect to the incoming circuit wire.
     const svgNOT = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
         <line x1="0" y1="45" x2="40" y2="45" stroke="black" stroke-width="3"/>
         <path d="M 40,30 L 40,60 M 40,30 L 50,30 M 40,60 L 50,60" fill="none" stroke="black" stroke-width="3"/>
@@ -5337,7 +5336,6 @@ function generateGrade9NandProblem(ctx, canvas) {
         <line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
     </svg>`;
     
-    // FIXED: Both "D" shapes in the OR gate now have consistent vertical closure (L 20,42.5 and L 20,87.5)
     const svgOR = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
         <path d="M 0,22.5 L 10,22.5 M 10,12.5 L 10,32.5 M 10,12.5 L 20,12.5 M 10,32.5 L 20,32.5" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 20,2.5 L 35,2.5 A 20,20 0 0,1 35,42.5 L 20,42.5 Z" fill="white" stroke="black" stroke-width="3"/>
@@ -5374,24 +5372,29 @@ function generateGrade9NandProblem(ctx, canvas) {
     const s1Target = ["AND", "OR"][Math.floor(Math.random() * 2)];
     const b3Target = ["AND", "OR", "NOR"][Math.floor(Math.random() * 3)];
     
-    // EXPORT TARGETS SO THE CHECKER CAN READ THEM
-    window.nandTargets = { s1: s1Target, s3: b3Target };
+    // Determine Box 4 requirement: NOT if NOR, otherwise WIRE.
+    const s4Target = (b3Target === "NOR") ? "NOT" : "WIRE";
     
+    // EXPORT ALL TARGETS FOR CHECKER
+    window.nandTargets = { s1: s1Target, s3: b3Target, s4: s4Target };
+    
+    // COMPRESSED COORDINATES (Shifted left to fit output Q)
     const blueprint = [
-        { id: "s1", target: s1Target, x: 80, y: 45,  w: 140, h: 90, ghost: true },
-        { id: "s2", target: "NOT",    x: 80, y: 185, w: 140, h: 90, ghost: true },
-        { id: "s3", target: b3Target, x: 280, y: 115, w: 140, h: 90, ghost: true },
-        { id: "s4", target: "ANY",    x: 460, y: 115, w: 140, h: 90, ghost: false } 
+        { id: "s1", target: s1Target, x: 40,  y: 45,  w: 140, h: 90, ghost: true },
+        { id: "s2", target: "NOT",    x: 40,  y: 185, w: 140, h: 90, ghost: true },
+        { id: "s3", target: b3Target, x: 220, y: 115, w: 140, h: 90, ghost: true },
+        { id: "s4", target: "ANY",    x: 400, y: 115, w: 140, h: 90, ghost: false } 
     ];
 
     const instructionHTML = `
         <div style="padding: 15px; font-family: sans-serif;">
             <h3 style="color: #d65093; margin-top: 0;">NAND Logic Construction</h3>
-            <p>Use the NAND components below to build the following gates:</p>
+            <p>Use the components below to build the circuit:</p>
             <ul style="line-height: 1.6;">
                 <li><strong>Top Box:</strong> Build an <b>${s1Target}</b> Gate</li>
                 <li><strong>Bottom Box:</strong> Build a <b>NOT</b> Gate</li>
                 <li><strong>Middle Box:</strong> Build a <b>${b3Target}</b> Gate</li>
+                <li><strong>Final Box:</strong> Link to output Q!</li>
             </ul>
         </div>`;
     
@@ -5417,18 +5420,26 @@ function generateGrade9NandProblem(ctx, canvas) {
         ctx.restore();
     };
 
-    // --- 5. WIRING ---
+    // --- 5. COMPRESSED WIRING ---
     ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(20, 75); ctx.lineTo(80, 75); 
-    ctx.moveTo(20, 105); ctx.lineTo(80, 105); 
-    ctx.moveTo(20, 230); ctx.lineTo(80, 230); 
-    ctx.moveTo(220, 90); ctx.lineTo(250, 90); ctx.lineTo(250, 140); ctx.lineTo(280, 140);
-    ctx.moveTo(220, 230); ctx.lineTo(250, 230); ctx.lineTo(250, 180); ctx.lineTo(280, 180);
-    ctx.moveTo(420, 160); ctx.lineTo(460, 160);
-    ctx.moveTo(600, 160); ctx.lineTo(640, 160);
+    ctx.moveTo(10, 75); ctx.lineTo(40, 75);  // A to s1
+    ctx.moveTo(10, 105); ctx.lineTo(40, 105); // B to s1
+    ctx.moveTo(10, 230); ctx.lineTo(40, 230); // C to s2
+    
+    ctx.moveTo(180, 90); ctx.lineTo(200, 90); ctx.lineTo(200, 140); ctx.lineTo(220, 140); // s1 to s3
+    ctx.moveTo(180, 230); ctx.lineTo(200, 230); ctx.lineTo(200, 180); ctx.lineTo(220, 180); // s2 to s3
+    
+    ctx.moveTo(360, 160); ctx.lineTo(400, 160); // s3 to s4
+    ctx.moveTo(540, 160); ctx.lineTo(570, 160); // s4 to Q
     ctx.stroke();
-    ctx.fillStyle = "#333"; ctx.fillText("A", 10, 80); ctx.fillText("B", 10, 110); ctx.fillText("C", 10, 235); ctx.fillText("Q", 650, 165);
+    
+    // Draw Labels
+    ctx.fillStyle = "#333"; 
+    ctx.fillText("A", 0, 80); 
+    ctx.fillText("B", 0, 110); 
+    ctx.fillText("C", 0, 235); 
+    ctx.fillText("Q", 575, 165);
 
     // --- 6. INTERACTIVE ZONES ---
     blueprint.forEach(s => {
@@ -5440,15 +5451,11 @@ function generateGrade9NandProblem(ctx, canvas) {
             const type = e.dataTransfer.getData("text");
             zone.innerHTML = graphicsMap[type];
             zone.style.border = "2px solid #444";
-            
-            // ADDED: SET ATTRIBUTE FOR THE CHECKER TO READ
             zone.setAttribute('data-filled-type', type); 
         };
         zone.ondblclick = () => { 
             zone.innerHTML = ""; 
             zone.style.border = "2px dashed #bbb"; 
-            
-            // ADDED: REMOVE ATTRIBUTE SO CHECKER KNOWS IT IS EMPTY AGAIN
             zone.removeAttribute('data-filled-type');
         };
         overlay.appendChild(zone);
