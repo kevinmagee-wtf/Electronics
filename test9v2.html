@@ -2395,71 +2395,97 @@ function drawNORGate(ctx, x, y) {
     ctx.stroke();
 }
 //G9 NAND
-// --- HELPER 1: Draws the top reference circuit ---
-function drawStandardReference(ctx, schema) {
+function renderGrade9Blueprint(ctx, canvas) {
+    const themePink = "#d65093";
+    
+    // 1. HARD WIPE
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const oldOverlay = document.getElementById('nandCanvasOverlay');
+    if (oldOverlay) oldOverlay.remove();
+
+    // 2. CREATE NEW OVERLAY (For the drop zones)
+    let circuitContainer = document.getElementById('circuitContainer');
+    let overlay = document.createElement('div');
+    overlay.id = 'nandCanvasOverlay';
+    overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none;`;
+    circuitContainer.appendChild(overlay);
+
+    // 3. DRAW SYSTEM LABELS & INPUT LINES
     ctx.strokeStyle = "#333";
     ctx.lineWidth = 2;
     ctx.fillStyle = "#333";
-    ctx.font = "bold 14px Arial";
-    ctx.fillText("Standard System (Convert this):", 20, 25);
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("System Conversion: Convert Standard Gates to NAND-Equivalents", 20, 30);
 
-    schema.inputLabels.forEach((label, i) => {
-        let y = 60 + (i * 45);
-        ctx.fillText(label, 20, y + 5);
+    const inputs = [
+        { label: "A", y: 100 },
+        { label: "B", y: 160 },
+        { label: "C", y: 300 }
+    ];
+
+    ctx.font = "14px Arial";
+    inputs.forEach(inp => {
+        ctx.fillText(inp.label, 30, inp.y + 5);
+        // Draw input lines to the first layer of gates
         ctx.beginPath();
-        ctx.moveTo(40, y);
-        ctx.lineTo(130, y);
+        ctx.moveTo(50, inp.y);
+        ctx.lineTo(120, inp.y);
         ctx.stroke();
     });
 
-    schema.gates.forEach(g => {
-        ctx.strokeRect(g.x, g.y - 15, 60, 30);
-        ctx.fillStyle = "#eee";
-        ctx.fillRect(g.x, g.y - 15, 60, 30);
-        ctx.fillStyle = "#000";
-        ctx.font = "11px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText(g.type, g.x + 30, g.y + 5);
-        ctx.textAlign = "left"; // Reset for next items
-    });
-    
-    ctx.beginPath();
-    ctx.moveTo(200, 50); ctx.lineTo(240, 50); ctx.lineTo(240, 85); ctx.lineTo(280, 85);
-    ctx.moveTo(200, 130); ctx.lineTo(240, 130); ctx.lineTo(240, 105); ctx.lineTo(280, 105);
-    ctx.moveTo(340, 95); ctx.lineTo(380, 95);
-    ctx.stroke();
-}
+    // 4. DEFINE LARGE DROP ZONES (Modules)
+    // We make these larger (120x80) to eventually hold multiple NAND gates
+    const modules = [
+        { id: "mod1", type: "AND", x: 120, y: 80, w: 120, h: 100 },
+        { id: "mod2", type: "NOT", x: 120, y: 275, w: 120, h: 50 },
+        { id: "mod3", type: "OR", x: 380, y: 160, w: 140, h: 120 }
+    ];
 
-// --- HELPER 2: Draws the dashed drop zones ---
-function renderGhostSlots(ctx, slots) {
-    slots.forEach(slot => {
-        if (slot.filledWith) {
-            ctx.setLineDash([]);
-            ctx.fillStyle = "#fff"; 
-            ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
-            ctx.strokeStyle = "#333";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(slot.x, slot.y, slot.w, slot.h);
-            ctx.fillStyle = "#e64097";
-            ctx.fillRect(slot.x, slot.y, 6, slot.h);
-            ctx.fillStyle = "#333";
-            ctx.font = "bold 13px monospace";
-            ctx.textAlign = "center";
-            ctx.fillText("NAND-" + slot.filledWith, slot.x + (slot.w / 2) + 3, slot.y + (slot.h / 2) + 5);
-            ctx.textAlign = "left";
-        } else {
-            ctx.setLineDash([5, 5]);
-            ctx.strokeStyle = "#bbb";
-            ctx.lineWidth = 1;
-            ctx.strokeRect(slot.x, slot.y, slot.w, slot.h);
-            ctx.fillStyle = "#aaa";
-            ctx.font = "italic 11px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText("Drop " + slot.targetType + " here", slot.x + (slot.w / 2), slot.y + (slot.h / 2) + 4);
-            ctx.textAlign = "left";
-        }
+    modules.forEach(m => {
+        // Create the HTML Drop Zone
+        let zone = document.createElement('div');
+        zone.className = 'nand-dropzone-large';
+        zone.dataset.target = m.type;
+        zone.style.cssText = `
+            position: absolute;
+            left: ${m.x}px; top: ${m.y}px;
+            width: ${m.w}px; height: ${m.h}px;
+            border: 2px dashed #ccc;
+            background: rgba(0,0,0,0.02);
+            pointer-events: auto;
+            display: flex; align-items: center; justify-content: center;
+        `;
+        overlay.appendChild(zone);
+
+        // Draw a Faint "Ghost" of the standard gate inside the zone
+        ctx.globalAlpha = 0.2;
+        ctx.fillStyle = "#999";
+        ctx.font = "bold 20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(m.type, m.x + (m.w / 2), m.y + (m.h / 2) + 7);
+        ctx.globalAlpha = 1.0;
+        ctx.textAlign = "left";
     });
-    ctx.setLineDash([]);
+
+    // 5. DRAW CONNECTING WIRES (The Logic Flow)
+    ctx.beginPath();
+    // From AND (mod1) to OR (mod3)
+    ctx.moveTo(240, 130); 
+    ctx.lineTo(310, 130); 
+    ctx.lineTo(310, 190); 
+    ctx.lineTo(380, 190);
+    
+    // From NOT (mod2) to OR (mod3)
+    ctx.moveTo(240, 300); 
+    ctx.lineTo(310, 300); 
+    ctx.lineTo(310, 250); 
+    ctx.lineTo(380, 250);
+
+    // Final Output Q
+    ctx.moveTo(520, 220);
+    ctx.lineTo(580, 220);
+    ctx.stroke();
+    ctx.fillText("Q", 590, 225);
 }
   
 // =========================================================================================================      
@@ -5377,93 +5403,109 @@ function generateLogic_nandProblem(ctx, canvas) {
 
 //******************************************************************************************
 
-function generateGrade9NandProblem(ctx, canvas) { 
-    // --- 1. HARD WIPE SECTION ---
+function generateGrade9NandProblem(ctx, canvas) {
+    // --- 1. COMPLEX SVG DEFINITIONS (The "Lego Kits") ---
+    const svgComplexNOT = `<svg width="100%" height="100%" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="30" x2="10" y2="30" stroke="black" stroke-width="2"/><line x1="10" y1="15" x2="10" y2="45" stroke="black" stroke-width="2"/><line x1="10" y1="15" x2="20" y2="15" stroke="black" stroke-width="2"/><line x1="10" y1="45" x2="20" y2="45" stroke="black" stroke-width="2"/><path d="M 20,5 L 45,5 A 25,25 0 0,1 45,55 L 20,55 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="75" cy="30" r="5" fill="white" stroke="black" stroke-width="2"/><line x1="80" y1="30" x2="100" y2="30" stroke="black" stroke-width="2"/></svg>`;
+
+    const svgComplexAND = `<svg width="100%" height="100%" viewBox="0 0 180 60" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="15" x2="20" y2="15" stroke="black" stroke-width="2"/><line x1="0" y1="45" x2="20" y2="45" stroke="black" stroke-width="2"/><path d="M 20,5 L 45,5 A 25,25 0 0,1 45,55 L 20,55 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="75" cy="30" r="5" fill="white" stroke="black" stroke-width="2"/><line x1="80" y1="30" x2="100" y2="30" stroke="black" stroke-width="2"/><line x1="100" y1="15" x2="100" y2="45" stroke="black" stroke-width="2"/><line x1="100" y1="15" x2="110" y2="15" stroke="black" stroke-width="2"/><line x1="100" y1="45" x2="110" y2="45" stroke="black" stroke-width="2"/><path d="M 110,5 L 135,5 A 25,25 0 0,1 135,55 L 110,55 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="165" cy="30" r="5" fill="white" stroke="black" stroke-width="2"/><line x1="170" y1="30" x2="180" y2="30" stroke="black" stroke-width="2"/></svg>`;
+
+    const svgComplexOR = `<svg width="100%" height="100%" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="20" x2="10" y2="10" stroke="black" stroke-width="2"/><line x1="10" y1="10" x2="20" y2="10" stroke="black" stroke-width="2"/><line x1="0" y1="20" x2="10" y2="30" stroke="black" stroke-width="2"/><line x1="10" y1="30" x2="20" y2="30" stroke="black" stroke-width="2"/><path d="M 20,0 L 40,0 A 20,20 0 0,1 40,40 L 20,40 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="65" cy="20" r="5" fill="white" stroke="black" stroke-width="2"/><line x1="0" y1="80" x2="10" y2="70" stroke="black" stroke-width="2"/><line x1="10" y1="70" x2="20" y2="70" stroke="black" stroke-width="2"/><line x1="0" y1="80" x2="10" y2="90" stroke="black" stroke-width="2"/><line x1="10" y1="90" x2="20" y2="90" stroke="black" stroke-width="2"/><path d="M 20,60 L 40,60 A 20,20 0 0,1 40,100 L 20,100 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="65" cy="80" r="5" fill="white" stroke="black" stroke-width="2"/><line x1="70" y1="20" x2="100" y2="20" stroke="black" stroke-width="2"/><line x1="70" y1="80" x2="100" y2="80" stroke="black" stroke-width="2"/><path d="M 100,10 L 125,10 A 40,40 0 0,1 125,90 L 100,90 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="170" cy="50" r="5" fill="white" stroke="black" stroke-width="2"/></svg>`;
+
+    const graphicsMap = { 'AND': svgComplexAND, 'OR': svgComplexOR, 'NOT': svgComplexNOT };
+
+    // --- 2. HARD WIPE SECTION ---
     const oldOverlay = document.getElementById('nandCanvasOverlay');
     if (oldOverlay) oldOverlay.remove(); 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
     ctx.setLineDash([]); 
-    ctx.lineWidth = 1; // Reset to standard
-    ctx.textAlign = "left"; // Reset alignment
+    ctx.lineWidth = 2;
     ctx.beginPath(); 
 
-    // --- 2. UI VISIBILITY ---
+    // --- 3. UI VISIBILITY ---
     const g9Group = document.getElementById('inputGroupGrade9Nand');
     if (g9Group) g9Group.style.display = 'block';
-
     const standardNandGroup = document.getElementById('inputGroupLogic_NAND');
     if (standardNandGroup) standardNandGroup.style.display = 'none';
 
-    // --- 3. DEFINE THE PROBLEM ---
-    const problemSchema = {
-        inputLabels: ['A', 'B', 'C'],
-        gates: [
-            { id: 'gate1', type: 'AND', x: 140, y: 50 },
-            { id: 'gate2', type: 'NOT', x: 140, y: 130 },
-            { id: 'gate3', type: 'OR', x: 280, y: 90 }
+    // --- 4. CREATE THE OVERLAY ---
+    let circuitContainer = document.getElementById('circuitContainer');
+    let overlay = document.createElement('div');
+    overlay.id = 'nandCanvasOverlay';
+    overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none;`;
+    circuitContainer.appendChild(overlay);
+
+    // --- 5. DEFINE BLUEPRINT ---
+    const blueprint = {
+        inputs: [{label:"A", y:100}, {label:"B", y:160}, {label:"C", y:300}],
+        slots: [
+            { id: "slot1", target: "AND", x: 140, y: 80, w: 180, h: 80 },
+            { id: "slot2", target: "NOT", x: 140, y: 270, w: 100, h: 60 },
+            { id: "slot3", target: "OR", x: 400, y: 150, w: 180, h: 120 }
         ]
     };
 
-    // --- 4. SETUP DROP ZONES ---
-    window.g9nandSlots = [
-        { id: 'slot1', targetType: 'AND', x: 120, y: 240, w: 100, h: 60, filledWith: null },
-        { id: 'slot2', targetType: 'NOT', x: 120, y: 320, w: 80, h: 50, filledWith: null },
-        { id: 'slot3', targetType: 'OR', x: 280, y: 280, w: 120, h: 70, filledWith: null }
-    ];
+    // --- 6. DRAW CANVAS UNDERLAY (Wires & Labels) ---
+    ctx.strokeStyle = "#333";
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 16px Arial";
+    ctx.fillText("System Conversion: Convert Standard Gates to NAND-Equivalents", 20, 30);
+    ctx.font = "14px Arial";
 
-    // --- 5. POPULATE BANK ---
+    blueprint.inputs.forEach(inp => {
+        ctx.fillText(inp.label, 30, inp.y + 5);
+        ctx.beginPath(); ctx.moveTo(50, inp.y); ctx.lineTo(140, inp.y); ctx.stroke();
+    });
+
+    // Main Wiring
+    ctx.beginPath();
+    ctx.moveTo(320, 120); ctx.lineTo(360, 120); ctx.lineTo(360, 185); ctx.lineTo(400, 185); 
+    ctx.moveTo(240, 300); ctx.lineTo(360, 300); ctx.lineTo(360, 235); ctx.lineTo(400, 235); 
+    ctx.moveTo(580, 210); ctx.lineTo(630, 210); ctx.stroke();
+    ctx.fillText("Q", 640, 215);
+
+    // --- 7. CREATE INTERACTIVE DROP ZONES ---
+    blueprint.slots.forEach(s => {
+        let zone = document.createElement('div');
+        zone.className = 'nand-dropzone';
+        zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #ccc; pointer-events:auto; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.5);`;
+        
+        zone.ondragover = (e) => e.preventDefault();
+        zone.ondrop = (e) => {
+            e.preventDefault();
+            const type = e.dataTransfer.getData("text");
+            zone.innerHTML = graphicsMap[type] || "";
+            zone.style.border = (type === s.target) ? "3px solid #28a745" : "3px solid #dc3545";
+        };
+        zone.ondblclick = () => { zone.innerHTML = ""; zone.style.border = "2px dashed #ccc"; };
+        overlay.appendChild(zone);
+
+        // Ghost Label on Canvas
+        ctx.globalAlpha = 0.1; ctx.font = "bold 30px Arial"; ctx.textAlign = "center";
+        ctx.fillText(s.target, s.x + (s.w/2), s.y + (s.h/2) + 10);
+        ctx.globalAlpha = 1.0; ctx.textAlign = "left";
+    });
+
+    // --- 8. POPULATE MODULE BANK ---
     const moduleBank = document.getElementById('nandModuleBank');
     if (moduleBank) {
         moduleBank.innerHTML = '';
         const modules = [
-            { type: 'AND', label: 'NAND-AND' },
-            { type: 'OR', label: 'NAND-OR' },
-            { type: 'NOT', label: 'NAND-NOT' },
-            { type: 'FAKE', label: 'NAND-X' }
+            { type: 'AND', label: 'NAND-AND', svg: svgComplexAND },
+            { type: 'OR',  label: 'NAND-OR',  svg: svgComplexOR },
+            { type: 'NOT', label: 'NAND-NOT', svg: svgComplexNOT }
         ];
         
         modules.sort(() => Math.random() - 0.5).forEach(mod => {
             let div = document.createElement('div');
             div.className = 'nand-module-item';
             div.draggable = true;
-            div.dataset.type = mod.type;
-            div.innerHTML = `<span>${mod.label}</span>`;
+            div.style.cssText = "cursor:grab; background:white; border:1px solid #ddd; padding:5px; border-radius:4px; margin-bottom:10px;";
+            div.innerHTML = mod.svg + `<div style="font-size:10px; font-weight:bold; text-align:center;">${mod.label}</div>`;
             div.ondragstart = (e) => { e.dataTransfer.setData("text", mod.type); };
             moduleBank.appendChild(div);
         });
     }
-
-    // --- 6. INITIAL DRAW (Wrapped in Timeout for Consistency) ---
-    setTimeout(() => {
-        drawStandardReference(ctx, problemSchema);
-        renderGhostSlots(ctx, window.g9nandSlots);
-    }, 20); 
-
-    // --- 7. ATTACH DROP LISTENER ---
-    canvas.ondragover = (e) => e.preventDefault();
-    canvas.ondrop = (e) => {
-        e.preventDefault();
-        const type = e.dataTransfer.getData("text");
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-
-        let changed = false;
-        window.g9nandSlots.forEach(slot => {
-            if (mouseX > slot.x && mouseX < slot.x + slot.w &&
-                mouseY > slot.y && mouseY < slot.y + slot.h) {
-                slot.filledWith = type;
-                changed = true;
-            }
-        });
-
-        if (changed) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawStandardReference(ctx, problemSchema);
-            renderGhostSlots(ctx, window.g9nandSlots);
-        }
-    };
 }
     
 //*****************************************************************************************
