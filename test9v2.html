@@ -9053,6 +9053,13 @@ function provideHint() {
                 • <b>OR:</b> Use two NOT gates (for inputs A and B) and feed them into a final NAND gate.<br>
                 • <b>NOR:</b> Build the OR gate logic, then add a final NOT gate at the very end.
             </div>`;
+    } else if (currentMode === 'grade9nand') {
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint: System Conversion:</strong><br>
+                • Build each gate using standard NAND equivalents (e.g. an AND gate is a NAND followed by a NOT).<br>
+                • Only use a straight <b>Wire</b> in the final box if no further logic inversion is needed!
+            </div>`;
     } else {
         // Potential Divider & General
         helpText = `
