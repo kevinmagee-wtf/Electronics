@@ -5456,11 +5456,8 @@ function generateGrade9NandProblem(ctx, canvas) {
             });
             if (circuitContainer) circuitContainer.appendChild(tray);
 
-        } 
-        // =========================================================
-        // MODE B: REDUNDANCY HUNTER
-        // =========================================================
-} else { // Verified: This 'else' now correctly follows the previous 'if' block
+        } else { 
+            // MODE B: REDUNDANCY HUNTER
             try {
                 // 1. Setup SVG Visuals for Gates
                 const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
@@ -5553,6 +5550,7 @@ function generateGrade9NandProblem(ctx, canvas) {
                             ctx.moveTo(startX, startY);
                             ctx.lineTo(isolatorX, startY);
                             ctx.lineTo(isolatorX, endY);
+                            ctx.lineTo(isolatorX, endY);
                             ctx.lineTo(endX, endY);
                             ctx.stroke();
                         });
@@ -5569,8 +5567,11 @@ function generateGrade9NandProblem(ctx, canvas) {
             } catch (err) {
                 console.error("Grade 9 NAND Error: ", err);
             }
-        } // End of Else
-    } // End of main function
+        } 
+    } catch (err) {
+        console.error("Critical function error: ", err);
+    }
+}
     
 //*****************************************************************************************
 
