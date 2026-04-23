@@ -8458,18 +8458,36 @@ function checkAnswers() {
                 if (solDiv) solDiv.style.display = 'block';
             }
         } 
-        // ==========================================
+// ==========================================
         // BRANCH B: REDUNDANCY HUNTER (Click to Cross Out)
         // ==========================================
         else {
-            let allCorrect = false; 
+            let allCorrect = true; 
+            let anythingSelected = false;
             
-            // TODO: We need to check which gates the user has actually crossed out here!
-            // Example:
-            // const crossedOutGates = document.querySelectorAll('.gate.crossed-out');
-            // if (userSelectedGates match the targetRedundantGates) { allCorrect = true; }
+            // Grab all the clickable gates generated for this mode
+            const gates = document.querySelectorAll('.nand-gate-clickable');
 
-            if (allCorrect) {
+            // Check every single gate to make sure their selected state matches their redundant state
+            gates.forEach(gate => {
+                const isRedundant = gate.dataset.redundant === "true";
+                const isSelected = gate.dataset.selected === "true";
+                
+                if (isSelected) anythingSelected = true;
+
+                // If a redundant gate ISN'T selected, or a normal gate IS selected, they got it wrong
+                if (isRedundant !== isSelected) {
+                    allCorrect = false;
+                }
+            });
+
+            // Grading Logic
+            if (!anythingSelected) {
+                canEarnPoints = false;
+                feedback.innerHTML = `<span style='color: #dc3545;'>You haven't crossed out any gates! Click the redundant gates to eliminate them.</span>`;
+                const solDiv = document.getElementById('solutions');
+                if (solDiv) solDiv.style.display = 'block';
+            } else if (allCorrect) {
                 isCurrentProblemSolved = true;
                 if (canEarnPoints) { problemsCorrect++; }
                 feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> Redundancies eliminated!</span>`;
@@ -8478,7 +8496,7 @@ function checkAnswers() {
                 if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
             } else {
                 canEarnPoints = false;
-                feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. You haven't found the correct redundant gates.</span>`;
+                feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. Check your logic—some necessary gates were crossed out, or redundant ones were left in!</span>`;
                 const solDiv = document.getElementById('solutions');
                 if (solDiv) solDiv.style.display = 'block';
             }
