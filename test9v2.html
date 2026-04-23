@@ -5072,16 +5072,13 @@ function generateGrade9booleanProblem(ctx, canvas) {
   
 //******************************************************************************************
     
-/**
- * GENERATE GRADE 9 NAND PROBLEM (COMPLEX VERSION)
- * Full functionality maintained: Includes conversion logic and the new 
- * "Where's Waldo" 10-20 gate redundancy hunter with 5 inputs.
- */
+//Build NAND Equivalents for NOT, AND, OR. NOR
+ 
 function generateLogic_nandProblem(ctx, canvas) {
     currentProblem = { type: 'logic_nand' };
     const themePink = "#d65093"; 
     
-    // --- 1. UI Reset & Clean Slate ---
+    // 1. UI Reset for Solutions
     const solContainer = document.getElementById('solutions');
     if (solContainer) solContainer.style.display = "none"; 
     
@@ -5091,22 +5088,26 @@ function generateLogic_nandProblem(ctx, canvas) {
         solBox.style.display = "block"; 
     }
 
-    // Hide standard task description to avoid clutter
-    const standardTaskDescription = document.querySelector('.task-description');
-    if (standardTaskDescription) standardTaskDescription.style.display = 'none';
+    // 2. Pick the target gate to build
+    const targetGates = ['NOT', 'AND', 'OR', 'NOR'];
+    const targetGate = targetGates[Math.floor(Math.random() * targetGates.length)];
+    window.currentNandAnswer = targetGate;
 
-    // Clear previous specific overlays and trays
-    let oldOverlay = document.getElementById('nandCanvasOverlay');
-    if (oldOverlay) oldOverlay.remove();
-    const oldTray = document.getElementById('nandBottomTray');
-    if (oldTray) oldTray.remove();
-    let oldInstructions = document.getElementById('nandInstructions');
-    if (oldInstructions) oldInstructions.remove();
+    // 3. Shuffle the 4 Blueprints
+    let blueprints = ['NOT', 'AND', 'OR', 'NOR'];
+    for (let i = blueprints.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [blueprints[i], blueprints[j]] = [blueprints[j], blueprints[i]];
+    }
 
+    // 4. Clear canvas & Draw Grid Separators
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // MODE SELECTION: Conversion (Drag & Drop) vs Redundancy Hunter
-    window.grade9NandMode = Math.random() < 0.5 ? 'conversion' : 'redundancy';
+    ctx.strokeStyle = "#eee";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, 0); ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
 
     // --- SVG DEFINITIONS ---
     const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
@@ -5116,7 +5117,7 @@ function generateLogic_nandProblem(ctx, canvas) {
     const svgFalseANDJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
     const svgFalseANDSingle = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="10" y2="20" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><line x1="41" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
-    // Container Setup
+    // 5. Create UI Container
     let qContainer = document.getElementById('inputGroupLogic_NAND');
     if (!qContainer) {
         qContainer = document.createElement('div');
@@ -5125,165 +5126,198 @@ function generateLogic_nandProblem(ctx, canvas) {
         document.getElementById('inputArea').appendChild(qContainer);
     }
     qContainer.style.display = 'block';
-    qContainer.innerHTML = "";
 
+    // 6. Build Parts Bin
+    let gateOptions = [
+        { type: 'standard', svg: svgStandard },
+        { type: 'joined', svg: svgJoined },
+        { type: 'false-single', svg: svgFalseSingle },
+        { type: 'false-and', svg: svgFalseAND },
+        { type: 'false-and-joined', svg: svgFalseANDJoined },
+        { type: 'false-and-single', svg: svgFalseANDSingle }
+    ];
+
+    for (let i = gateOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [gateOptions[i], gateOptions[j]] = [gateOptions[j], gateOptions[i]];
+    }
+
+    const gateIconsHTML = gateOptions.map(gate => `
+        <div class="nand-draggable" draggable="true" data-gatetype="${gate.type}" 
+             style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+            ${gate.svg}
+        </div>
+    `).join('');
+
+    qContainer.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: -20px;">
+            <div style="text-align: center; width: 100%; margin-bottom: 10px;">
+                <h3 style="color: black; margin: 0; font-size: 1.1em;">Task: Construct a(n) <span style="color: ${themePink};">${targetGate}</span> Gate</h3>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag the correct gates to the blueprint. Double-click to remove.</p>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;"><strong>Leave all other blueprints blank</strong></p>
+            </div>
+            <div id="nandPartsBin" style="display: flex; flex-direction: row; justify-content: center; gap: 8px; padding: 10px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
+                ${gateIconsHTML}
+            </div>
+        </div>
+    `;
+
+    // 7. Update solText (The Solution Logic)
+    if (solBox) {
+        const solutionsMap = {
+            'NOT': "A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate.",
+            'AND': "An <strong>AND</strong> gate is a NAND gate followed by a NOT gate (NAND with inputs joined).",
+            'OR': "An <strong>OR</strong> gate uses two NOT gates (inputs joined) for A and B, feeding into a final NAND gate.",
+            'NOR': "A <strong>NOR</strong> gate is an OR gate construction followed by a final NOT gate (inputs joined)."
+        };
+        solBox.innerHTML = `<strong>Target: ${targetGate} Gate</strong><br>${solutionsMap[targetGate]}`;
+    }
+
+    // 8. Canvas Overlay Setup 
     let circuitContainer = document.getElementById('circuitContainer');
     circuitContainer.style.position = 'relative'; 
+    let oldOverlay = document.getElementById('nandCanvasOverlay');
+    if (oldOverlay) oldOverlay.remove();
 
     let overlay = document.createElement('div');
     overlay.id = 'nandCanvasOverlay';
-    overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none; z-index:10;`;
+    overlay.style.position = 'absolute';
+    overlay.style.top = canvas.offsetTop + 'px';
+    overlay.style.left = canvas.offsetLeft + 'px';
+    overlay.style.width = canvas.width + 'px';
+    overlay.style.height = canvas.height + 'px';
+    overlay.style.pointerEvents = 'none'; 
     circuitContainer.appendChild(overlay);
 
-    // ==========================================
-    // BRANCH A: SYSTEM CONVERSION (Standard Logic)
-    // ==========================================
-    if (window.grade9NandMode === 'conversion') {
-        const targetGates = ['NOT', 'AND', 'OR', 'NOR'];
-        const targetGate = targetGates[Math.floor(Math.random() * targetGates.length)];
-        window.currentNandAnswer = targetGate;
+    // 9. Drawing Helpers & Blueprints
+    ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.fillStyle = "#000";
+    ctx.font = "14px Arial"; ctx.textBaseline = "middle"; ctx.textAlign = "left"; 
 
-        let blueprints = ['NOT', 'AND', 'OR', 'NOR'];
-        for (let i = blueprints.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [blueprints[i], blueprints[j]] = [blueprints[j], blueprints[i]];
+    const drawWire = (x1, y1, x2, y2) => {
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    };
+
+    const createDropZone = (blueprintName, boxIndex, x, y, w, h) => {
+        let zone = document.createElement('div');
+        zone.className = 'nand-dropzone';
+        zone.dataset.blueprint = blueprintName;
+        zone.dataset.boxindex = boxIndex;
+        zone.style.position = 'absolute';
+        zone.style.left = x + 'px'; zone.style.top = y + 'px';
+        zone.style.width = w + 'px'; zone.style.height = h + 'px';
+        zone.style.boxSizing = 'border-box'; 
+        zone.style.border = '2px dashed #d65093';
+        zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)';
+        zone.style.pointerEvents = 'auto'; 
+        zone.style.display = 'flex'; zone.style.alignItems = 'center'; zone.style.justifyContent = 'center';
+        overlay.appendChild(zone);
+    };
+
+    const quadW = canvas.width / 2;
+    const quadH = canvas.height / 2;
+    const quadrantOffsets = [{ x: 0, y: 0 }, { x: quadW, y: 0 }, { x: 0, y: quadH }, { x: quadW, y: quadH }];
+
+    blueprints.forEach((bp, i) => {
+        let offsetX = quadrantOffsets[i].x;
+        let shiftY = (i === 0 || i === 1) ? -2 : -3;
+        let offsetY = quadrantOffsets[i].y + shiftY;
+        let shift = (i === 1 || i === 3) ? 20 : 0;
+        let boxShift = (i === 1 || i === 3) ? -4 : 0;
+
+        if (bp === 'NOT') {
+            let boxX = offsetX + 60 + shift;
+            let boxY = offsetY + 65; let pinY = boxY + 22; 
+            ctx.fillText("A", offsetX + 15 + shift, pinY);
+            drawWire(offsetX + 30 + shift, pinY, boxX, pinY); 
+            createDropZone(bp, 1, boxX + boxShift, boxY, 60, 40);
+            let outEndX = offsetX + 150 + shift;
+            drawWire(boxX + 60, pinY, outEndX, pinY);
+            ctx.fillText("Q", outEndX + 10, pinY);
+        } else if (bp === 'AND') {
+            let box1X = offsetX + 40 + shift; let boxY = offsetY + 65; let box2X = offsetX + 115 + shift; 
+            let pinTopY = boxY + 14; let pinBotY = boxY + 27.5; let pinMidY = boxY + 21; 
+            ctx.fillText("A", offsetX + 10 + shift, pinTopY); ctx.fillText("B", offsetX + 10 + shift, pinBotY);
+            drawWire(offsetX + 25 + shift, pinTopY, box1X + 1, pinTopY);
+            drawWire(offsetX + 25 + shift, pinBotY, box1X + 1, pinBotY);
+            createDropZone(bp, 1, box1X + boxShift, boxY, 60, 40);
+            drawWire(box1X + 59, pinMidY, box2X + 1, pinMidY); 
+            createDropZone(bp, 2, box2X + boxShift, boxY, 60, 40);
+            let outEndX = offsetX + 195 + shift;
+            drawWire(box2X + 59, pinMidY, outEndX, pinMidY);
+            ctx.fillText("Q", outEndX + 10, pinMidY);
+        } else if (bp === 'OR') {
+            let box1X = offsetX + 30 + shift; let box1Y = offsetY + 25; 
+            let box2X = offsetX + 30 + shift; let box2Y = offsetY + 105; 
+            let box3X = offsetX + 105 + shift; let box3Y = offsetY + 65; 
+            let b1PinY = box1Y + 22; let b2PinY = box2Y + 22;
+            let b3TopY = box3Y + 15; let b3BotY = box3Y + 29; let b3MidY = box3Y + 23;
+            ctx.fillText("A", offsetX + 5 + shift, b1PinY); drawWire(offsetX + 15 + shift, b1PinY, box1X, b1PinY);
+            ctx.fillText("B", offsetX + 5 + shift, b2PinY); drawWire(offsetX + 15 + shift, b2PinY, box2X, b2PinY);
+            createDropZone(bp, 1, box1X + boxShift, box1Y, 60, 40);
+            createDropZone(bp, 2, box2X + boxShift, box2Y, 60, 40);
+            let midX = offsetX + 95 + shift; 
+            drawWire(box1X + 60, b1PinY, midX, b1PinY); drawWire(midX, b1PinY, midX, b3TopY); drawWire(midX, b3TopY, box3X, b3TopY);
+            drawWire(box2X + 60, b2PinY, midX, b2PinY); drawWire(midX, b2PinY, midX, b3BotY); drawWire(midX, b3BotY, box3X, b3BotY);
+            createDropZone(bp, 3, box3X + boxShift, box3Y, 60, 40);
+            let outEndX = offsetX + 185 + shift;
+            drawWire(box3X + 60, b3MidY, outEndX, b3MidY); ctx.fillText("Q", outEndX + 10, b3MidY);
+        } else if (bp === 'NOR') {
+            let box1X = offsetX + 20 + shift; let box1Y = offsetY + 25;  
+            let box2X = offsetX + 20 + shift; let box2Y = offsetY + 105; 
+            let box3X = offsetX + 95 + shift; let box3Y = offsetY + 65;  
+            let box4X = offsetX + 170 + shift; let box4Y = offsetY + 65; 
+            let b1PinY = box1Y + 21; let b2PinY = box2Y + 21; 
+            let b3TopY = box3Y + 13; let b3BotY = box3Y + 28; let pinMidY = box3Y + 21; 
+            ctx.fillText("A", offsetX + 5 + shift, b1PinY); ctx.fillText("B", offsetX + 5 + shift, b2PinY);
+            drawWire(offsetX + 15 + shift, b1PinY, box1X + 1, b1PinY);
+            drawWire(offsetX + 15 + shift, b2PinY, box2X + 1, b2PinY);
+            createDropZone(bp, 1, box1X + boxShift, box1Y, 60, 40);
+            createDropZone(bp, 2, box2X + boxShift, box2Y, 60, 40);
+            let midX = offsetX + 85 + shift; 
+            drawWire(box1X + 59, b1PinY, midX, b1PinY); drawWire(midX, b1PinY, midX, b3TopY); drawWire(midX, b3TopY, box3X + 1, b3TopY);
+            drawWire(box2X + 59, b2PinY, midX, b2PinY); drawWire(midX, b2PinY, midX, b3BotY); drawWire(midX, b3BotY, box3X + 1, b3BotY);
+            createDropZone(bp, 3, box3X + boxShift, box3Y, 60, 40);
+            drawWire(box3X + 59, pinMidY, box4X + 1, pinMidY);
+            createDropZone(bp, 4, box4X + boxShift, box4Y, 60, 40);
+            let outEndX = offsetX + 240 + shift;
+            drawWire(box4X + 59, pinMidY, outEndX, pinMidY); ctx.fillText("Q", outEndX + 10, pinMidY); 
         }
+    });
 
-        ctx.strokeStyle = "#eee"; ctx.lineWidth = 2; ctx.beginPath();
-        ctx.moveTo(canvas.width / 2, 0); ctx.lineTo(canvas.width / 2, canvas.height);
-        ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2);
-        ctx.stroke();
-
-        let gateOptions = [
-            { type: 'standard', svg: svgStandard }, { type: 'joined', svg: svgJoined },
-            { type: 'false-single', svg: svgFalseSingle }, { type: 'false-and', svg: svgFalseAND },
-            { type: 'false-and-joined', svg: svgFalseANDJoined }, { type: 'false-and-single', svg: svgFalseANDSingle }
-        ];
-
-        for (let i = gateOptions.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [gateOptions[i], gateOptions[j]] = [gateOptions[j], gateOptions[i]];
-        }
-
-        qContainer.innerHTML = `
-            <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: -20px;">
-                <div style="text-align: center; width: 100%; margin-bottom: 10px;">
-                    <h3 style="color: black; margin: 0; font-size: 1.1em;">Task: Construct a(n) <span style="color: ${themePink};">${targetGate}</span> Gate</h3>
-                    <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag the correct gates to the blueprint. Double-click to remove.</p>
-                </div>
-                <div id="nandPartsBin" style="display: flex; flex-direction: row; justify-content: center; gap: 8px; padding: 10px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
-                    ${gateOptions.map(gate => `<div class="nand-draggable" draggable="true" data-gatetype="${gate.type}" style="width: 50px; height: 35px; cursor: grab; background: white; border-radius: 4px;">${gate.svg}</div>`).join('')}
-                </div>
-            </div>`;
-
-        // Drawing conversion circuit blueprints (logic identical to your paste)
-        ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.font = "14px Arial";
-        const quadW = canvas.width / 2; const quadH = canvas.height / 2;
-        const quadrantOffsets = [{ x: 0, y: 0 }, { x: quadW, y: 0 }, { x: 0, y: quadH }, { x: quadW, y: quadH }];
-
-        blueprints.forEach((bp, i) => {
-            let ox = quadrantOffsets[i].x; let oy = quadrantOffsets[i].y + ((i < 2) ? -2 : -3);
-            let shift = (i === 1 || i === 3) ? 20 : 0;
-            // Blueprint drawing blocks (NOT, AND, OR, NOR wires) remain same...
-            // [Helper: createDropZone used as per your original function]
-            if (bp === 'NOT') {
-                ctx.fillText("A", ox + 15 + shift, oy + 87);
-                ctx.beginPath(); ctx.moveTo(ox + 30 + shift, oy + 87); ctx.lineTo(ox + 60 + shift, oy + 87); ctx.stroke();
-                // etc...
-            }
-            // (Standard conversion drawing logic follows here...)
-        });
-
-    } 
-    // ==========================================
-    // BRANCH B: REDUNDANCY HUNTER (WALDO MODE)
-    // ==========================================
-    else {
-        qContainer.innerHTML = `
-            <div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 10px; font-family: sans-serif; border-radius: 4px;">
-                <h3 style="color: #d65093; margin: 0; font-size: 16px;">Electronics "Where's Waldo"</h3>
-                <p style="margin: 5px 0 0; font-size: 13px;">Find and <b>click the redundant gates</b> (double-inversions) in this unoptimized circuit!</p>
-            </div>`;
-
-        const numRedundants = [2, 4, 6][Math.floor(Math.random() * 3)];
-        const totalGates = Math.floor(Math.random() * 11) + 10; // 10 to 20 gates
-        
-        ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.font = "bold 14px Arial";
-        const inputs = ["A", "B", "C", "D", "E"];
-        inputs.forEach((label, i) => ctx.fillText(label, 10, 50 + (i * 60)));
-
-        // Logic for Procedural 10-20 Gate Layout with Redundancy Pairs
-        let gatesPlaced = 0;
-        let redPairsCreated = 0;
-        const colWidth = 120;
-        const rowHeight = 60;
-
-        // Simplified procedural placement for Waldo Hunt
-        for (let col = 0; col < 4; col++) {
-            for (let row = 0; row < 5; row++) {
-                if (gatesPlaced >= totalGates) break;
-
-                let x = 60 + (col * colWidth);
-                let y = 30 + (row * rowHeight);
-                let isRedundant = false;
-
-                // Inject redundancy in pairs
-                if (redPairsCreated < numRedundants && Math.random() < 0.3) {
-                    isRedundant = true;
-                    // We mark gates in sequential pairs as redundant in the logic
-                }
-
-                let gateDiv = document.createElement('div');
-                gateDiv.className = 'nand-gate-clickable';
-                gateDiv.dataset.redundant = isRedundant;
-                gateDiv.dataset.selected = "false";
-                gateDiv.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:60px; height:40px; cursor:pointer; pointer-events:auto;`;
-                
-                // Randomly mix NOT-style (joined) and Standard NANDs
-                const isJoined = isRedundant || Math.random() < 0.4;
-                gateDiv.innerHTML = isJoined ? svgJoined : svgStandard;
-
-                let xMark = document.createElement('div');
-                xMark.innerHTML = '❌';
-                xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:24px; display:none; pointer-events:none; color:red;';
-                gateDiv.appendChild(xMark);
-
-                gateDiv.onclick = () => {
-                    let isSel = gateDiv.dataset.selected === "true";
-                    gateDiv.dataset.selected = !isSel;
-                    xMark.style.display = !isSel ? 'block' : 'none';
-                    gateDiv.style.opacity = !isSel ? '0.5' : '1';
-                };
-
-                overlay.appendChild(gateDiv);
-                gatesPlaced++;
-                if (isRedundant) redPairsCreated++;
-
-                // Draw connecting wires to make it look like a real circuit
-                ctx.beginPath();
-                ctx.moveTo(x - 20, y + 20); ctx.lineTo(x, y + 20);
-                ctx.moveTo(x + 60, y + 20); ctx.lineTo(x + 80, y + 20);
-                ctx.stroke();
-            }
-        }
-        ctx.fillText("Q", canvas.width - 25, canvas.height / 2);
-    }
-
-    // --- 10. DRAG & DROP / GLOBAL EVENT ATTACHMENT ---
-    // (Existing listener code for Conversion mode setup remains intact)
+    // 10. Drag and Drop Setup
     const draggables = document.querySelectorAll('.nand-draggable');
     const dropzones = document.querySelectorAll('.nand-dropzone');
-    draggables.forEach(d => d.addEventListener('dragstart', (e) => e.dataTransfer.setData('text/plain', e.target.dataset.gatetype)));
-    // ... remaining drop/dblclick listeners as per your source ...
+
+    draggables.forEach(draggable => {
+        draggable.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', e.target.dataset.gatetype);
+        });
+    });
+
+    dropzones.forEach(zone => {
+        zone.addEventListener('dragover', (e) => e.preventDefault());
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const gateType = e.dataTransfer.getData('text/plain');
+            if (gateType) {
+                zone.dataset.filled = gateType;
+                const graphicsMap = {
+                    'standard': svgStandard, 'joined': svgJoined, 'false-single': svgFalseSingle,
+                    'false-and': svgFalseAND, 'false-and-joined': svgFalseANDJoined, 'false-and-single': svgFalseANDSingle
+                };
+                zone.innerHTML = graphicsMap[gateType] || "";
+            }
+        });
+        zone.addEventListener('dblclick', () => {
+            zone.dataset.filled = "";
+            zone.innerHTML = "";
+            zone.style.backgroundColor = 'rgba(214, 80, 147, 0.05)';
+        });
+    });
 }
 
 //******************************************************************************************
     
-/**
- * GENERATE GRADE 9 NAND PROBLEM
- * Full Version: Includes all UI safety checks, instructional text, 
- * and dual-mode logic (Conversion vs Redundancy Hunter).
- */
 /**
  * GENERATE GRADE 9 NAND PROBLEM
  * Full Version: Includes all UI safety checks, instructional text, 
@@ -5406,7 +5440,7 @@ function generateGrade9NandProblem(ctx, canvas) {
             const s4Target = (b3Target === "NOR") ? "NOT" : "WIRE";
             
             // Export targets so Answer Checker can access them
-            window.nandTargets = { s1: s1Target, s3: b3Target, s4: s4Target };
+            window.nandTargets = { s1: s1Target, s2: "NOT", s3: b3Target, s4: s4Target };
 
             // --- DYNAMIC SOLUTION TEXT ---
             if (solBox) { 
@@ -5500,6 +5534,7 @@ function generateGrade9NandProblem(ctx, canvas) {
             blueprint.forEach(s => {
                 if(s.ghost) drawGhost(s.target, s.x, s.y);
                 let zone = document.createElement('div');
+                zone.className = 'nand-dropzone';
                 zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center; transition: background 0.3s;`;
                 zone.ondragover = (e) => { e.preventDefault(); zone.style.background = "rgba(214, 80, 147, 0.05)"; };
                 zone.ondragleave = () => { zone.style.background = "transparent"; };
@@ -5600,7 +5635,7 @@ function generateGrade9NandProblem(ctx, canvas) {
 
                 gateDiv.onclick = () => {
                     let isSelected = gateDiv.dataset.selected === "true";
-                    gateDiv.dataset.selected = !isSelected;
+                    gateDiv.dataset.selected = !isSelected ? "true" : "false"; // Fix string toggle
                     xMark.style.display = !isSelected ? 'block' : 'none';
                     gateDiv.style.opacity = !isSelected ? '0.5' : '1';
                 };
