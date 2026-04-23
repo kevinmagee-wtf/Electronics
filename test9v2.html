@@ -8395,94 +8395,97 @@ function checkAnswers() {
 // --- 2. NEW GRADE 9 SYSTEM NAND MODE ---
     if (currentMode === 'grade9nand') { 
         const feedback = document.getElementById('feedback');
-        const dropzones = document.querySelectorAll('#nandCanvasOverlay > div');
         
-        let REQUIRED_LOGIC = {};
-
-        // Split the logic targets based on the current sub-mode
-        if (window.grade9NandMode === 'conversion') {
-            REQUIRED_LOGIC = {
-                's1': window.nandTargets ? window.nandTargets.s1 : 'AND', 
-                's2': 'NOT', // <-- Hardcoded as requested                 
-                's3': window.nandTargets ? window.nandTargets.s3 : 'OR', 
-                's4': window.nandTargets ? window.nandTargets.s4 : 'WIRE'                     
-            };
-        } else {
-            // REDUNDANCY MODE TARGETS
-            // (Adjust these if your generator passes different redundancy targets!)
-            REQUIRED_LOGIC = {
-                's1': window.nandTargets ? window.nandTargets.s1 : 'WIRE', 
-                's2': 'NOT', // <-- Hardcoded as requested                 
-                's3': window.nandTargets ? window.nandTargets.s3 : 'WIRE', 
-                's4': window.nandTargets ? window.nandTargets.s4 : 'WIRE'                     
-            };
-        }
-
         if (!hasCheckedCurrentProblem) { 
             problemsAttempted++; 
             hasCheckedCurrentProblem = true; 
         }
 
-        let allCorrect = true;
-        let anyWrongPlacement = false;
-
-        dropzones.forEach((zone, index) => {
-            const bpId = `s${index + 1}`;
-            const targetGate = REQUIRED_LOGIC[bpId];
-            
-            const filledGate = zone.getAttribute('data-filled-type') || ""; 
-
-            // Standardized check for all 4 boxes
-            if (filledGate === targetGate) {
-                // Correct match
-                zone.style.backgroundColor = "rgba(40, 167, 69, 0.2)"; 
-                zone.style.borderColor = "#28a745";
-            } else if (filledGate !== "") {
-                // Wrong gate placed
-                allCorrect = false;
-                anyWrongPlacement = true;
-                zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
-                zone.style.borderColor = "#dc3545";
-            } else {
-                // Box left empty
-                allCorrect = false;
-                zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
-                zone.style.borderColor = "#dc3545";
-            }
-        });
-
         const checkansBtn = document.getElementById('checkansBtn');
         const showsolutionsBtn = document.getElementById('showsolutionsBtn');
 
-        if (allCorrect) {
-            isCurrentProblemSolved = true;
-            if (canEarnPoints) { problemsCorrect++; }
+        // ==========================================
+        // BRANCH A: SYSTEM CONVERSION (Drag & Drop)
+        // ==========================================
+        if (window.grade9NandMode === 'conversion') {
+            const dropzones = document.querySelectorAll('#nandCanvasOverlay > div');
             
-            // Dynamic success feedback based on sub-mode
-            if (window.grade9NandMode === 'conversion') {
-                feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> System converted correctly!</span>`;
-            } else {
-                feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> Redundancies eliminated!</span>`;
-            }
-            
-            canEarnPoints = false;
+            const REQUIRED_LOGIC = {
+                's1': window.nandTargets ? window.nandTargets.s1 : 'AND', 
+                's2': 'NOT', // Hardcoded as requested
+                's3': window.nandTargets ? window.nandTargets.s3 : 'OR', 
+                's4': window.nandTargets ? window.nandTargets.s4 : 'WIRE'                     
+            };
 
-            if (checkansBtn) checkansBtn.style.display = 'none';
-            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
-        } else {
-            canEarnPoints = false;
-            if (anyWrongPlacement) {
-                feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. Check the red boxes for mismatched logic.</span>`;
+            let allCorrect = true;
+            let anyWrongPlacement = false;
+
+            dropzones.forEach((zone, index) => {
+                const bpId = `s${index + 1}`;
+                const targetGate = REQUIRED_LOGIC[bpId];
+                const filledGate = zone.getAttribute('data-filled-type') || ""; 
+
+                if (filledGate === targetGate) {
+                    zone.style.backgroundColor = "rgba(40, 167, 69, 0.2)"; 
+                    zone.style.borderColor = "#28a745";
+                } else if (filledGate !== "") {
+                    allCorrect = false;
+                    anyWrongPlacement = true;
+                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
+                    zone.style.borderColor = "#dc3545";
+                } else {
+                    allCorrect = false;
+                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
+                    zone.style.borderColor = "#dc3545";
+                }
+            });
+
+            if (allCorrect) {
+                isCurrentProblemSolved = true;
+                if (canEarnPoints) { problemsCorrect++; }
+                feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> System converted correctly!</span>`;
+                canEarnPoints = false;
+                if (checkansBtn) checkansBtn.style.display = 'none';
+                if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
             } else {
-                feedback.innerHTML = `<span style='color: #dc3545;'>Circuit incomplete. All blueprints must be filled.</span>`;
+                canEarnPoints = false;
+                if (anyWrongPlacement) {
+                    feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. Check the red boxes for mismatched logic.</span>`;
+                } else {
+                    feedback.innerHTML = `<span style='color: #dc3545;'>Circuit incomplete. All blueprints must be filled.</span>`;
+                }
+                const solDiv = document.getElementById('solutions');
+                if (solDiv) solDiv.style.display = 'block';
             }
+        } 
+        // ==========================================
+        // BRANCH B: REDUNDANCY HUNTER (Click to Cross Out)
+        // ==========================================
+        else {
+            let allCorrect = false; 
             
-            const solDiv = document.getElementById('solutions');
-            if (solDiv) solDiv.style.display = 'block';
+            // TODO: We need to check which gates the user has actually crossed out here!
+            // Example:
+            // const crossedOutGates = document.querySelectorAll('.gate.crossed-out');
+            // if (userSelectedGates match the targetRedundantGates) { allCorrect = true; }
+
+            if (allCorrect) {
+                isCurrentProblemSolved = true;
+                if (canEarnPoints) { problemsCorrect++; }
+                feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> Redundancies eliminated!</span>`;
+                canEarnPoints = false;
+                if (checkansBtn) checkansBtn.style.display = 'none';
+                if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+            } else {
+                canEarnPoints = false;
+                feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. You haven't found the correct redundant gates.</span>`;
+                const solDiv = document.getElementById('solutions');
+                if (solDiv) solDiv.style.display = 'block';
+            }
         }
 
         if (typeof updateScoreboard === "function") updateScoreboard();
-        return; // Stop here so it doesn't try to grade other modes
+        return; 
     }
     //New function code pasted above this line
     //********************************************************************
