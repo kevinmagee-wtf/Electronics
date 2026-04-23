@@ -5355,7 +5355,7 @@ function generateGrade9NandProblem(ctx, canvas) {
     
     const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT, 'WIRE': svgWIRE };
 
-    // --- 2. CANVAS RESET & OVERLAY ---
+    // --- 2. RESET ---
     const oldOverlay = document.getElementById('nandCanvasOverlay');
     if (oldOverlay) oldOverlay.remove(); 
     const oldTray = document.getElementById('nandBottomTray');
@@ -5367,20 +5367,20 @@ function generateGrade9NandProblem(ctx, canvas) {
     overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none;`;
     document.getElementById('circuitContainer').appendChild(overlay);
 
-    // --- 3. PROBLEM LOGIC ---
+    // --- 3. UPDATED LOGIC POOL ---
     const topPool = ["AND", "OR"];
-    const box3Pool = ["AND", "OR", "NOR"];
+    const box3Pool = ["AND", "OR", "NOR"]; // Occasional NOR is back
     const s1Target = topPool[Math.floor(Math.random() * topPool.length)];
-    const b3Logic = box3Pool[Math.floor(Math.random() * box3Pool.length)];
+    const b3Target = box3Pool[Math.floor(Math.random() * box3Pool.length)];
     
     const blueprint = [
-        { id: "s1", target: s1Target, x: 80, y: 45, w: 140, h: 90, ghost: true },
+        { id: "s1", target: s1Target, x: 80, y: 45,  w: 140, h: 90, ghost: true },
         { id: "s2", target: "NOT",    x: 80, y: 185, w: 140, h: 90, ghost: true },
-        { id: "s3", target: (b3Logic === "NOR" ? "OR" : b3Logic), x: 280, y: 115, w: 140, h: 90, ghost: true },
-        { id: "s4", target: "ANY",    x: 460, y: 115, w: 140, h: 90, ghost: false } // Blank box
+        { id: "s3", target: b3Target, x: 280, y: 115, w: 140, h: 90, ghost: true },
+        { id: "s4", target: "ANY",    x: 460, y: 115, w: 140, h: 90, ghost: false } 
     ];
 
-    // --- 4. GHOST DRAWING (RE-ADDED & IMPROVED) ---
+    // --- 4. GHOST DRAWING (WITH NOR SUPPORT) ---
     const drawGhost = (type, x, y) => {
         ctx.save();
         ctx.globalAlpha = 0.15; ctx.strokeStyle = "black"; ctx.lineWidth = 2;
@@ -5388,9 +5388,12 @@ function generateGrade9NandProblem(ctx, canvas) {
         if (type === "AND") {
             ctx.beginPath(); ctx.moveTo(35, 20); ctx.lineTo(75, 20);
             ctx.arc(75, 45, 25, -Math.PI/2, Math.PI/2); ctx.lineTo(35, 70); ctx.closePath(); ctx.stroke();
-        } else if (type === "OR") {
+        } else if (type === "OR" || type === "NOR") {
             ctx.beginPath(); ctx.moveTo(30, 20); ctx.quadraticCurveTo(50, 45, 30, 70);
             ctx.quadraticCurveTo(90, 70, 115, 45); ctx.quadraticCurveTo(90, 20, 30, 20); ctx.stroke();
+            if (type === "NOR") { // Add the inversion bubble for NOR
+                ctx.beginPath(); ctx.arc(120, 45, 5, 0, Math.PI*2); ctx.stroke();
+            }
         } else if (type === "NOT") {
             ctx.beginPath(); ctx.moveTo(45, 25); ctx.lineTo(85, 45); ctx.lineTo(45, 65); ctx.closePath();
             ctx.stroke(); ctx.beginPath(); ctx.arc(90, 45, 5, 0, Math.PI*2); ctx.stroke();
@@ -5401,16 +5404,12 @@ function generateGrade9NandProblem(ctx, canvas) {
     // --- 5. FIXED WIRING ---
     ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(20, 75); ctx.lineTo(80, 75); // A
-    ctx.moveTo(20, 105); ctx.lineTo(80, 105); // B
-    ctx.moveTo(20, 230); ctx.lineTo(80, 230); // C
-    // Box 1 -> 3
+    ctx.moveTo(20, 75); ctx.lineTo(80, 75); 
+    ctx.moveTo(20, 105); ctx.lineTo(80, 105); 
+    ctx.moveTo(20, 230); ctx.lineTo(80, 230); 
     ctx.moveTo(220, 90); ctx.lineTo(250, 90); ctx.lineTo(250, 140); ctx.lineTo(280, 140);
-    // Box 2 -> 3
     ctx.moveTo(220, 230); ctx.lineTo(250, 230); ctx.lineTo(250, 180); ctx.lineTo(280, 180);
-    // Box 3 -> 4
     ctx.moveTo(420, 160); ctx.lineTo(460, 160);
-    // Box 4 -> Output
     ctx.moveTo(600, 160); ctx.lineTo(640, 160);
     ctx.stroke();
     ctx.fillStyle = "#333"; ctx.fillText("A", 10, 80); ctx.fillText("B", 10, 110); ctx.fillText("C", 10, 235); ctx.fillText("Q", 650, 165);
@@ -5436,7 +5435,7 @@ function generateGrade9NandProblem(ctx, canvas) {
     tray.style.cssText = `position:absolute; bottom:15px; width:100%; display:flex; justify-content:center; gap:25px;`;
     ['AND','OR','NOT','WIRE'].forEach(type => {
         let item = document.createElement('div');
-        item.style.cssText = "width:130px; height:85px; background:white; border:1px solid #ccc; cursor:grab; border-radius:5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
+        item.style.cssText = "width:130px; height:85px; background:white; border:1px solid #ccc; cursor:grab; border-radius:5px;";
         item.draggable = true;
         item.innerHTML = graphicsMap[type];
         item.ondragstart = (e) => e.dataTransfer.setData("text", type);
