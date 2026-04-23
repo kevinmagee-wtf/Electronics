@@ -5317,206 +5317,338 @@ function generateLogic_nandProblem(ctx, canvas) {
 //******************************************************************************************
     
 function generateGrade9NandProblem(ctx, canvas) {
-    // --- 1. SVG DEFINITIONS ---
-    const svgNOT = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-        <line x1="0" y1="45" x2="40" y2="45" stroke="black" stroke-width="3"/>
-        <path d="M 40,30 L 40,60 M 40,30 L 50,30 M 40,60 L 50,60" fill="none" stroke="black" stroke-width="3"/>
-        <path d="M 50,15 L 65,15 A 30,30 0 0,1 65,75 L 50,75 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="100" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-        <line x1="105" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
-    </svg>`;
+    currentProblem = { type: 'grade9nand' };
+    const themePink = "#d65093"; 
     
-    const svgAND = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-        <path d="M 0,30 L 10,30 M 0,60 L 10,60" fill="none" stroke="black" stroke-width="3"/>
-        <path d="M 10,15 L 25,15 A 30,30 0 0,1 25,75 L 10,75 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="60" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-        <path d="M 65,45 L 75,45 M 75,30 L 75,60 M 75,30 L 80,30 M 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/>
-        <path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-        <line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
-    </svg>`;
-    
-    const svgOR = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-        <path d="M 0,22.5 L 10,22.5 M 10,12.5 L 10,32.5 M 10,12.5 L 20,12.5 M 10,32.5 L 20,32.5" fill="none" stroke="black" stroke-width="3"/>
-        <path d="M 20,2.5 L 35,2.5 A 20,20 0 0,1 35,42.5 L 20,42.5 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="60" cy="22.5" r="5" fill="white" stroke="black" stroke-width="3"/>
-        <path d="M 65,22.5 L 75,22.5 L 75,30 L 80,30" fill="none" stroke="black" stroke-width="3"/>
-        <path d="M 0,67.5 L 10,67.5 M 10,57.5 L 10,77.5 M 10,57.5 L 20,57.5 M 10,77.5 L 20,77.5" fill="none" stroke="black" stroke-width="3"/>
-        <path d="M 20,47.5 L 35,47.5 A 20,20 0 0,1 35,87.5 L 20,87.5 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="60" cy="67.5" r="5" fill="white" stroke="black" stroke-width="3"/>
-        <path d="M 65,67.5 L 75,67.5 L 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/>
-        <path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-        <line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
-    </svg>`;
+    // THE COIN FLIP: Alternate between Drag & Drop and Redundancy Hunter
+    window.grade9NandMode = Math.random() < 0.5 ? 'conversion' : 'redundancy';
 
-    const svgWIRE = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-        <line x1="0" y1="45" x2="140" y2="45" stroke="black" stroke-width="4"/>
-    </svg>`;
-    
-    const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT, 'WIRE': svgWIRE };
-
-    // --- 2. RESET ---
-    const oldOverlay = document.getElementById('nandCanvasOverlay');
-    if (oldOverlay) oldOverlay.remove(); 
-    const oldTray = document.getElementById('nandBottomTray');
-    if (oldTray) oldTray.remove();
-    ctx.clearRect(0, 0, canvas.width, canvas.height); 
-    
-    let overlay = document.createElement('div');
-    overlay.id = 'nandCanvasOverlay';
-    overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none;`;
-    document.getElementById('circuitContainer').appendChild(overlay);
-
-// --- 3. LOGIC POOL & INSTRUCTIONS ---
-    const s1Target = ["AND", "OR"][Math.floor(Math.random() * 2)];
-    const b3Target = ["AND", "OR", "NOR"][Math.floor(Math.random() * 3)];
-    
-    // Determine Box 4 requirement: NOT if NOR, otherwise WIRE.
-    const s4Target = (b3Target === "NOR") ? "NOT" : "WIRE";
-    
-    // EXPORT ALL TARGETS FOR CHECKER
-    window.nandTargets = { s1: s1Target, s3: b3Target, s4: s4Target };
-
-    // --- UI Reset & Update for Solutions ---
+    // --- 1. SHARED UI RESET & OVERLAY SETUP ---
     const solContainer = document.getElementById('solutions');
     if (solContainer) solContainer.style.display = "none"; 
     
     const solBox = document.getElementById('solText');
-    if (solBox) {
-        solBox.style.display = "block"; 
-        
-        // Dictionary of explanations
-        const solutionsMap = {
-            'NOT': "A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate.",
-            'AND': "An <strong>AND</strong> gate is a NAND gate followed by a NOT gate (NAND with inputs joined).",
-            'OR': "An <strong>OR</strong> gate uses two NOT gates (inputs joined) for A and B, feeding into a final NAND gate.",
-            'NOR': "A <strong>NOR</strong> gate is an OR gate construction followed by a final NOT gate.",
-            'WIRE': "A straight <strong>Wire</strong> is used to pass the signal directly through without modification."
-        };
+    if (solBox) solBox.style.display = "block";
 
-        // Build the solution text dynamically based on the current randomized targets
-        solBox.innerHTML = `
-            <div style="font-family: sans-serif; font-size: 14px;">
-                <strong>Grade 9 Circuit Solution:</strong><br>
-                <ul style="line-height: 1.6; margin-top: 8px; padding-left: 20px;">
-                    <li><strong>Top Box (${s1Target}):</strong> ${solutionsMap[s1Target]}</li>
-                    <li><strong>Bottom Box (NOT):</strong> ${solutionsMap['NOT']}</li>
-                    <li><strong>Middle Box (${b3Target}):</strong> ${solutionsMap[b3Target]}</li>
-                    <li><strong>Final Box (${s4Target}):</strong> ${solutionsMap[s4Target]}</li>
-                </ul>
-            </div>
-        `;
+    let qContainer = document.getElementById('inputGroupLogic_NAND');
+    if (!qContainer) {
+        qContainer = document.createElement('div');
+        qContainer.id = 'inputGroupLogic_NAND';
+        qContainer.className = 'input-group';
+        document.getElementById('inputArea').appendChild(qContainer);
     }
-    // COMPRESSED COORDINATES (Shifted left to fit output Q)
-    const blueprint = [
-        { id: "s1", target: s1Target, x: 40,  y: 45,  w: 140, h: 90, ghost: true },
-        { id: "s2", target: "NOT",    x: 40,  y: 185, w: 140, h: 90, ghost: true },
-        { id: "s3", target: b3Target, x: 220, y: 115, w: 140, h: 90, ghost: true },
-        { id: "s4", target: "ANY",    x: 400, y: 115, w: 140, h: 90, ghost: false } 
-    ];
+    qContainer.style.display = 'block';
 
-    const instructionHTML = `
-        <div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 16px;">NAND Logic Construction</h3>
-            <p style="margin: 0; font-size: 14px; line-height: 1.6;">
-                Drag and drop the NAND equivalent gates to connect the inputs to the output Q using only NAND gates.<br><br>
-                The wire should be placed in the right box only when needed.<br><br>
-                <i>(Double click to remove components from a box.)</i>
-            </p>
-        </div>`;
+    let circuitContainer = document.getElementById('circuitContainer');
+    circuitContainer.style.position = 'relative'; 
     
-    // Safely inject into the right panel WITHOUT overwriting buttons
+    // Clean up ALL previous overlays, trays, and instructions
+    let oldOverlay = document.getElementById('nandCanvasOverlay');
+    if (oldOverlay) oldOverlay.remove();
+    const oldTray = document.getElementById('nandBottomTray');
+    if (oldTray) oldTray.remove();
     let oldInstructions = document.getElementById('nandInstructions');
     if (oldInstructions) oldInstructions.remove();
-    
-    let instructionsDiv = document.createElement('div');
-    instructionsDiv.id = 'nandInstructions';
-    instructionsDiv.innerHTML = instructionHTML;
-    
-    // Find the Check Answers button and insert the text right above it
-    const checkBtn = document.getElementById('checkansBtn');
-    if (checkBtn && checkBtn.parentNode) {
-        checkBtn.parentNode.insertBefore(instructionsDiv, checkBtn);
-    } else {
-        // Fallback just in case
-        const rightPanel = document.getElementById('rightPanel') || document.body;
-        rightPanel.appendChild(instructionsDiv);
-    }
 
-    // --- 4. GHOST DRAWING ---
-    const drawGhost = (type, x, y) => {
-        ctx.save();
-        ctx.globalAlpha = 0.15; ctx.strokeStyle = "black"; ctx.lineWidth = 2;
-        ctx.translate(x, y);
-        if (type === "AND") {
-            ctx.beginPath(); ctx.moveTo(35, 20); ctx.lineTo(75, 20);
-            ctx.arc(75, 45, 25, -Math.PI/2, Math.PI/2); ctx.lineTo(35, 70); ctx.closePath(); ctx.stroke();
-        } else if (type === "OR" || type === "NOR") {
-            ctx.beginPath(); ctx.moveTo(30, 20); ctx.quadraticCurveTo(50, 45, 30, 70);
-            ctx.quadraticCurveTo(90, 70, 115, 45); ctx.quadraticCurveTo(90, 20, 30, 20); ctx.stroke();
-            if (type === "NOR") { ctx.beginPath(); ctx.arc(120, 45, 5, 0, Math.PI*2); ctx.stroke(); }
-        } else if (type === "NOT") {
-            ctx.beginPath(); ctx.moveTo(45, 25); ctx.lineTo(85, 45); ctx.lineTo(45, 65); ctx.closePath();
-            ctx.stroke(); ctx.beginPath(); ctx.arc(90, 45, 5, 0, Math.PI*2); ctx.stroke();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Create a fresh overlay used by both modes
+    let overlay = document.createElement('div');
+    overlay.id = 'nandCanvasOverlay';
+    overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none;`;
+    circuitContainer.appendChild(overlay);
+
+
+    // =========================================================
+    // MODE A: SYSTEM CONVERSION (DRAG AND DROP)
+    // =========================================================
+    if (window.grade9NandMode === 'conversion') {
+        
+        // --- SVG DEFINITIONS ---
+        const svgNOT = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
+            <line x1="0" y1="45" x2="40" y2="45" stroke="black" stroke-width="3"/>
+            <path d="M 40,30 L 40,60 M 40,30 L 50,30 M 40,60 L 50,60" fill="none" stroke="black" stroke-width="3"/>
+            <path d="M 50,15 L 65,15 A 30,30 0 0,1 65,75 L 50,75 Z" fill="white" stroke="black" stroke-width="3"/>
+            <circle cx="100" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
+            <line x1="105" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
+        </svg>`;
+        
+        const svgAND = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
+            <path d="M 0,30 L 10,30 M 0,60 L 10,60" fill="none" stroke="black" stroke-width="3"/>
+            <path d="M 10,15 L 25,15 A 30,30 0 0,1 25,75 L 10,75 Z" fill="white" stroke="black" stroke-width="3"/>
+            <circle cx="60" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
+            <path d="M 65,45 L 75,45 M 75,30 L 75,60 M 75,30 L 80,30 M 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/>
+            <path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/>
+            <circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
+            <line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
+        </svg>`;
+        
+        const svgOR = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
+            <path d="M 0,22.5 L 10,22.5 M 10,12.5 L 10,32.5 M 10,12.5 L 20,12.5 M 10,32.5 L 20,32.5" fill="none" stroke="black" stroke-width="3"/>
+            <path d="M 20,2.5 L 35,2.5 A 20,20 0 0,1 35,42.5 L 20,42.5 Z" fill="white" stroke="black" stroke-width="3"/>
+            <circle cx="60" cy="22.5" r="5" fill="white" stroke="black" stroke-width="3"/>
+            <path d="M 65,22.5 L 75,22.5 L 75,30 L 80,30" fill="none" stroke="black" stroke-width="3"/>
+            <path d="M 0,67.5 L 10,67.5 M 10,57.5 L 10,77.5 M 10,57.5 L 20,57.5 M 10,77.5 L 20,77.5" fill="none" stroke="black" stroke-width="3"/>
+            <path d="M 20,47.5 L 35,47.5 A 20,20 0 0,1 35,87.5 L 20,87.5 Z" fill="white" stroke="black" stroke-width="3"/>
+            <circle cx="60" cy="67.5" r="5" fill="white" stroke="black" stroke-width="3"/>
+            <path d="M 65,67.5 L 75,67.5 L 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/>
+            <path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/>
+            <circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
+            <line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
+        </svg>`;
+
+        const svgWIRE = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
+            <line x1="0" y1="45" x2="140" y2="45" stroke="black" stroke-width="4"/>
+        </svg>`;
+        
+        const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT, 'WIRE': svgWIRE };
+
+        // --- LOGIC POOL ---
+        const s1Target = ["AND", "OR"][Math.floor(Math.random() * 2)];
+        const b3Target = ["AND", "OR", "NOR"][Math.floor(Math.random() * 3)];
+        
+        // Determine Box 4 requirement: NOT if NOR, otherwise WIRE.
+        const s4Target = (b3Target === "NOR") ? "NOT" : "WIRE";
+        
+        // EXPORT ALL TARGETS FOR CHECKER
+        window.nandTargets = { s1: s1Target, s3: b3Target, s4: s4Target };
+
+        // --- UI & Solutions ---
+        if (solBox) { 
+            // Dictionary of explanations
+            const solutionsMap = {
+                'NOT': "A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate.",
+                'AND': "An <strong>AND</strong> gate is a NAND gate followed by a NOT gate (NAND with inputs joined).",
+                'OR': "An <strong>OR</strong> gate uses two NOT gates (inputs joined) for A and B, feeding into a final NAND gate.",
+                'NOR': "A <strong>NOR</strong> gate is an OR gate construction followed by a final NOT gate.",
+                'WIRE': "A straight <strong>Wire</strong> is used to pass the signal directly through without modification."
+            };
+
+            // Build the solution text dynamically based on the current randomized targets
+            solBox.innerHTML = `
+                <div style="font-family: sans-serif; font-size: 14px;">
+                    <strong>Grade 9 Circuit Solution:</strong><br>
+                    <ul style="line-height: 1.6; margin-top: 8px; padding-left: 20px;">
+                        <li><strong>Top Box (${s1Target}):</strong> ${solutionsMap[s1Target]}</li>
+                        <li><strong>Bottom Box (NOT):</strong> ${solutionsMap['NOT']}</li>
+                        <li><strong>Middle Box (${b3Target}):</strong> ${solutionsMap[b3Target]}</li>
+                        <li><strong>Final Box (${s4Target}):</strong> ${solutionsMap[s4Target]}</li>
+                    </ul>
+                </div>
+            `;
         }
-        ctx.restore();
-    };
 
-    // --- 5. COMPRESSED WIRING ---
-    ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(10, 75); ctx.lineTo(40, 75);  // A to s1
-    ctx.moveTo(10, 105); ctx.lineTo(40, 105); // B to s1
-    ctx.moveTo(10, 230); ctx.lineTo(40, 230); // C to s2
-    
-    ctx.moveTo(180, 90); ctx.lineTo(200, 90); ctx.lineTo(200, 140); ctx.lineTo(220, 140); // s1 to s3
-    ctx.moveTo(180, 230); ctx.lineTo(200, 230); ctx.lineTo(200, 180); ctx.lineTo(220, 180); // s2 to s3
-    
-    ctx.moveTo(360, 160); ctx.lineTo(400, 160); // s3 to s4
-    ctx.moveTo(540, 160); ctx.lineTo(570, 160); // s4 to Q
-    ctx.stroke();
-    
-    // Draw Labels
-    ctx.fillStyle = "#333"; 
-    ctx.fillText("A", 0, 80); 
-    ctx.fillText("B", 0, 110); 
-    ctx.fillText("C", 0, 235); 
-    ctx.fillText("Q", 575, 165);
+        const blueprint = [
+            { id: "s1", target: s1Target, x: 40,  y: 45,  w: 140, h: 90, ghost: true },
+            { id: "s2", target: "NOT",    x: 40,  y: 185, w: 140, h: 90, ghost: true },
+            { id: "s3", target: b3Target, x: 220, y: 115, w: 140, h: 90, ghost: true },
+            { id: "s4", target: "ANY",    x: 400, y: 115, w: 140, h: 90, ghost: false } 
+        ];
 
-    // --- 6. INTERACTIVE ZONES ---
-    blueprint.forEach(s => {
-        if(s.ghost) drawGhost(s.target, s.x, s.y);
-        let zone = document.createElement('div');
-        zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center;`;
-        zone.ondragover = (e) => e.preventDefault();
-        zone.ondrop = (e) => {
-            const type = e.dataTransfer.getData("text");
-            zone.innerHTML = graphicsMap[type];
-            zone.style.border = "2px solid #444";
-            zone.setAttribute('data-filled-type', type); 
+        const instructionHTML = `
+            <div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 16px;">NAND Logic Construction</h3>
+                <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+                    Drag and drop the NAND equivalent gates to connect the inputs to the output Q using only NAND gates.<br><br>
+                    The wire should be placed in the right box only when needed.<br><br>
+                    <i>(Double click to remove components from a box.)</i>
+                </p>
+            </div>`;
+        
+        let instructionsDiv = document.createElement('div');
+        instructionsDiv.id = 'nandInstructions';
+        instructionsDiv.innerHTML = instructionHTML;
+        
+        const checkBtn = document.getElementById('checkansBtn');
+        if (checkBtn && checkBtn.parentNode) {
+            checkBtn.parentNode.insertBefore(instructionsDiv, checkBtn);
+        } else {
+            const rightPanel = document.getElementById('rightPanel') || document.body;
+            rightPanel.appendChild(instructionsDiv);
+        }
+
+        // --- GHOST DRAWING ---
+        const drawGhost = (type, x, y) => {
+            ctx.save();
+            ctx.globalAlpha = 0.15; ctx.strokeStyle = "black"; ctx.lineWidth = 2;
+            ctx.translate(x, y);
+            if (type === "AND") {
+                ctx.beginPath(); ctx.moveTo(35, 20); ctx.lineTo(75, 20);
+                ctx.arc(75, 45, 25, -Math.PI/2, Math.PI/2); ctx.lineTo(35, 70); ctx.closePath(); ctx.stroke();
+            } else if (type === "OR" || type === "NOR") {
+                ctx.beginPath(); ctx.moveTo(30, 20); ctx.quadraticCurveTo(50, 45, 30, 70);
+                ctx.quadraticCurveTo(90, 70, 115, 45); ctx.quadraticCurveTo(90, 20, 30, 20); ctx.stroke();
+                if (type === "NOR") { ctx.beginPath(); ctx.arc(120, 45, 5, 0, Math.PI*2); ctx.stroke(); }
+            } else if (type === "NOT") {
+                ctx.beginPath(); ctx.moveTo(45, 25); ctx.lineTo(85, 45); ctx.lineTo(45, 65); ctx.closePath();
+                ctx.stroke(); ctx.beginPath(); ctx.arc(90, 45, 5, 0, Math.PI*2); ctx.stroke();
+            }
+            ctx.restore();
         };
-        zone.ondblclick = () => { 
-            zone.innerHTML = ""; 
-            zone.style.border = "2px dashed #bbb"; 
-            zone.removeAttribute('data-filled-type');
-        };
-        overlay.appendChild(zone);
-    });
 
-    // --- 7. BOTTOM TRAY ---
-    let tray = document.createElement('div');
-    tray.id = 'nandBottomTray';
-    tray.style.cssText = `position:absolute; bottom:15px; width:100%; display:flex; justify-content:center; gap:25px;`;
-    ['AND','OR','NOT','WIRE'].forEach(type => {
-        let item = document.createElement('div');
-        item.style.cssText = "width:130px; height:85px; background:white; border:1px solid #ccc; cursor:grab; border-radius:5px;";
-        item.draggable = true;
-        item.innerHTML = graphicsMap[type];
-        item.ondragstart = (e) => e.dataTransfer.setData("text", type);
-        tray.appendChild(item);
-    });
-    document.getElementById('circuitContainer').appendChild(tray);
+        // --- COMPRESSED WIRING ---
+        ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(10, 75); ctx.lineTo(40, 75);  // A to s1
+        ctx.moveTo(10, 105); ctx.lineTo(40, 105); // B to s1
+        ctx.moveTo(10, 230); ctx.lineTo(40, 230); // C to s2
+        
+        ctx.moveTo(180, 90); ctx.lineTo(200, 90); ctx.lineTo(200, 140); ctx.lineTo(220, 140); // s1 to s3
+        ctx.moveTo(180, 230); ctx.lineTo(200, 230); ctx.lineTo(200, 180); ctx.lineTo(220, 180); // s2 to s3
+        
+        ctx.moveTo(360, 160); ctx.lineTo(400, 160); // s3 to s4
+        ctx.moveTo(540, 160); ctx.lineTo(570, 160); // s4 to Q
+        ctx.stroke();
+        
+        ctx.fillStyle = "#333"; ctx.font = "16px Arial"; ctx.textBaseline = "middle";
+        ctx.fillText("A", 0, 80); 
+        ctx.fillText("B", 0, 110); 
+        ctx.fillText("C", 0, 235); 
+        ctx.fillText("Q", 575, 165);
+
+        // --- INTERACTIVE ZONES ---
+        blueprint.forEach(s => {
+            if(s.ghost) drawGhost(s.target, s.x, s.y);
+            let zone = document.createElement('div');
+            zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center;`;
+            zone.ondragover = (e) => e.preventDefault();
+            zone.ondrop = (e) => {
+                const type = e.dataTransfer.getData("text");
+                zone.innerHTML = graphicsMap[type];
+                zone.style.border = "2px solid #444";
+                zone.setAttribute('data-filled-type', type); 
+            };
+            zone.ondblclick = () => { 
+                zone.innerHTML = ""; 
+                zone.style.border = "2px dashed #bbb"; 
+                zone.removeAttribute('data-filled-type');
+            };
+            overlay.appendChild(zone);
+        });
+
+        // --- BOTTOM TRAY ---
+        let tray = document.createElement('div');
+        tray.id = 'nandBottomTray';
+        tray.style.cssText = `position:absolute; bottom:15px; width:100%; display:flex; justify-content:center; gap:25px;`;
+        ['AND','OR','NOT','WIRE'].forEach(type => {
+            let item = document.createElement('div');
+            item.style.cssText = "width:130px; height:85px; background:white; border:1px solid #ccc; cursor:grab; border-radius:5px;";
+            item.draggable = true;
+            item.innerHTML = graphicsMap[type];
+            item.ondragstart = (e) => e.dataTransfer.setData("text", type);
+            tray.appendChild(item);
+        });
+        document.getElementById('circuitContainer').appendChild(tray);
+
+    } 
+    // =========================================================
+    // MODE B: REDUNDANCY HUNTER (CLICK TO CROSS OUT)
+    // =========================================================
+    else {
+        // --- Redundancy SVGs ---
+        const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+        const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none; display: block;"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+
+        // UI Setup
+        qContainer.innerHTML = ""; // Ensure parts bin is hidden
+        
+        const instructionHTML = `
+            <div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 16px;">Redundancy Hunter</h3>
+                <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+                    This circuit calculates <b>(A AND B) OR C</b>, but it is unoptimized.<br><br>
+                    <b>Click on any redundant gates</b> to cross them out before the circuit goes to manufacturing!
+                </p>
+            </div>`;
+        
+        let instructionsDiv = document.createElement('div');
+        instructionsDiv.id = 'nandInstructions';
+        instructionsDiv.innerHTML = instructionHTML;
+        
+        const checkBtn = document.getElementById('checkansBtn');
+        if (checkBtn && checkBtn.parentNode) {
+            checkBtn.parentNode.insertBefore(instructionsDiv, checkBtn);
+        }
+
+        // Solution Box
+        if (solBox) {
+            solBox.innerHTML = `
+                <div style="font-family: sans-serif; font-size: 14px;">
+                    <strong>Redundancy Solution:</strong><br>
+                    <p style="margin-top: 8px;">Redundant gates are pairs of NOT-configured NAND gates connected directly in series (a double inversion: $\\overline{\\overline{A}} = A$).</p>
+                    <p>In this circuit, the NOT gate from the AND module and the top NOT gate from the OR module input cancel each other out and should be crossed out.</p>
+                </div>`;
+        }
+
+        // Draw Circuit Wires
+        ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.fillStyle = "#000";
+        ctx.font = "16px Arial"; ctx.textBaseline = "middle";
+
+        const drawWire = (x1, y1, x2, y2) => {
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        };
+
+        // Inputs
+        ctx.fillText("A", 10, 52); ctx.fillText("B", 10, 68); ctx.fillText("C", 10, 140);
+        drawWire(25, 52, 80, 52); drawWire(25, 68, 80, 68); drawWire(25, 140, 260, 140);
+        
+        // Intermediate wires
+        drawWire(140, 60, 170, 60); // Gate 1 to Gate 2
+        drawWire(230, 60, 260, 60); // Gate 2 to Gate 3
+        drawWire(320, 60, 340, 60); drawWire(340, 60, 340, 92); drawWire(340, 92, 360, 92); // Gate 3 to final
+        drawWire(320, 140, 340, 140); drawWire(340, 140, 340, 108); drawWire(340, 108, 360, 108); // Gate 4 to final
+        
+        // Output wire
+        drawWire(420, 100, 460, 100); ctx.fillText("Q", 465, 100);
+
+        // Create Clickable Gates
+        const createClickableGate = (id, type, x, y, isRedundant) => {
+            let gateDiv = document.createElement('div');
+            gateDiv.className = 'nand-gate-clickable';
+            gateDiv.dataset.id = id;
+            gateDiv.dataset.redundant = isRedundant;
+            gateDiv.dataset.selected = "false";
+            gateDiv.style.position = 'absolute';
+            gateDiv.style.left = x + 'px'; gateDiv.style.top = y + 'px';
+            gateDiv.style.width = '60px'; gateDiv.style.height = '40px';
+            gateDiv.style.cursor = 'pointer';
+            gateDiv.style.pointerEvents = 'auto';
+            gateDiv.style.transition = "opacity 0.2s";
+            gateDiv.innerHTML = (type === 'joined') ? svgJoined : svgStandard;
+
+            let xMark = document.createElement('div');
+            xMark.innerHTML = '❌';
+            xMark.style.position = 'absolute';
+            xMark.style.top = '50%'; xMark.style.left = '50%';
+            xMark.style.transform = 'translate(-50%, -50%)';
+            xMark.style.fontSize = '30px';
+            xMark.style.display = 'none';
+            xMark.style.pointerEvents = 'none'; 
+            gateDiv.appendChild(xMark);
+
+            gateDiv.addEventListener('click', () => {
+                let isSelected = gateDiv.dataset.selected === "true";
+                if (isSelected) {
+                    gateDiv.dataset.selected = "false";
+                    xMark.style.display = 'none';
+                    gateDiv.style.opacity = '1';
+                } else {
+                    gateDiv.dataset.selected = "true";
+                    xMark.style.display = 'block';
+                    gateDiv.style.opacity = '0.5';
+                }
+            });
+
+            overlay.appendChild(gateDiv);
+        };
+
+        // Draw the 5 logic gates. Gate 2 and 3 are the NOT gates cancelling each other out!
+        createClickableGate('g1', 'standard', 80, 40, false);
+        createClickableGate('g2', 'joined', 170, 40, true);   // REDUNDANT
+        createClickableGate('g3', 'joined', 260, 40, true);   // REDUNDANT
+        createClickableGate('g4', 'joined', 260, 120, false); 
+        createClickableGate('g5', 'standard', 360, 80, false);
+    }
 }
     
 //*****************************************************************************************
@@ -9054,12 +9186,23 @@ function provideHint() {
                 • <b>NOR:</b> Build the OR gate logic, then add a final NOT gate at the very end.
             </div>`;
     } else if (currentMode === 'grade9nand') {
-        helpText = `
-            <div style="${blueBox}">
-                <strong>💡 Hint: System Conversion:</strong><br>
-                • Build each gate using standard NAND equivalents (e.g. an AND gate is a NAND followed by a NOT).<br>
-                • Only use a straight <b>Wire</b> in the final box if no further logic inversion is needed!
-            </div>`;
+        if (window.grade9NandMode === 'conversion') {
+            helpText = `
+                <div style="${blueBox}">
+                    <strong>💡 Hint: System Conversion:</strong><br>
+                    • Build each gate using standard NAND equivalents.<br>
+                    • Only use a straight <b>Wire</b> in the final box if no further logic inversion is needed!
+                </div>`;
+        } else {
+            helpText = `
+                <div style="${blueBox}">
+                    <strong>💡 Hint: Redundancy Hunter:</strong><br>
+                    • A double inversion ($\overline{\overline{A}}$) is a waste of hardware.<br>
+                    • Look for two NOT-configured NAND gates (gates with joined inputs) sitting side-by-side on the exact same wire path!
+                </div>`;
+        }
+    }
+    
     } else {
         // Potential Divider & General
         helpText = `
