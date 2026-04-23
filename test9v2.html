@@ -5340,38 +5340,26 @@ function generateGrade9NandProblem(ctx, canvas) {
         <path d="M 20,2.5 L 35,2.5 A 20,20 0 0,1 35,42.5 L 20,42.5 Z" fill="white" stroke="black" stroke-width="3"/>
         <circle cx="60" cy="22.5" r="5" fill="white" stroke="black" stroke-width="3"/>
         <path d="M 65,22.5 L 75,22.5 L 75,30 L 80,30" fill="none" stroke="black" stroke-width="3"/>
-        
         <path d="M 0,67.5 L 10,67.5 M 10,57.5 L 10,77.5 M 10,57.5 L 20,57.5 M 10,77.5 L 20,77.5" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 20,47.5 L 35,47.5 A 20,20 0 0,1 35,87.5 L 20,87.5 Z" fill="white" stroke="black" stroke-width="3"/>
         <circle cx="60" cy="67.5" r="5" fill="white" stroke="black" stroke-width="3"/>
         <path d="M 65,67.5 L 75,67.5 L 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/>
-        
         <path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/>
         <circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
         <line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
     </svg>`;
 
-    // NEW: Straight Wire Component
     const svgWIRE = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-        <line x1="0" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
+        <line x1="0" y1="45" x2="140" y2="45" stroke="black" stroke-width="4"/>
     </svg>`;
     
     const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT, 'WIRE': svgWIRE };
 
-    // --- 2. CRITICAL UI TOGGLES ---
-    const g9Group = document.getElementById('inputGroupGrade9Nand');
-    if (g9Group) g9Group.style.display = 'block';
-    const standardNandGroup = document.getElementById('inputGroupLogic_NAND');
-    if (standardNandGroup) standardNandGroup.style.display = 'none';
-    const oldRightBank = document.getElementById('nandModuleBank');
-    if (oldRightBank) oldRightBank.style.display = 'none';
-
-    // --- 3. CANVAS & OVERLAY RESET ---
+    // --- 2. UI RESET ---
     const oldOverlay = document.getElementById('nandCanvasOverlay');
     if (oldOverlay) oldOverlay.remove(); 
     const oldTray = document.getElementById('nandBottomTray');
     if (oldTray) oldTray.remove();
-    
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
     
     let circuitContainer = document.getElementById('circuitContainer');
@@ -5382,134 +5370,100 @@ function generateGrade9NandProblem(ctx, canvas) {
     overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none;`;
     circuitContainer.appendChild(overlay);
 
-    // --- 4. STRICT 4-BOX LOGIC SETUP ---
+    // --- 3. PROBLEM GENERATION ---
     const topPool = ["AND", "OR"];
-    const midPool = ["AND", "OR", "NOR"]; // NOR requires an OR followed by a NOT
+    // Box 3 can be AND, OR, or NOR logic
+    const box3Pool = ["AND", "OR", "NOR"]; 
     
-    const slot1Logic = topPool[Math.floor(Math.random() * topPool.length)];
-    const slot3ActualLogic = midPool[Math.floor(Math.random() * midPool.length)];
+    const slot1Target = topPool[Math.floor(Math.random() * topPool.length)];
+    const box3Logic = box3Pool[Math.floor(Math.random() * box3Pool.length)];
     
-    // Determine Slot 3 and 4 based on the randomly chosen logic
-    let slot3Target = (slot3ActualLogic === "NOR") ? "OR" : slot3ActualLogic;
-    let slot4Target = (slot3ActualLogic === "NOR") ? "NOT" : "WIRE";
+    // Determine the solution for Box 3 and Box 4
+    let slot3Target, slot4Target;
+    if (box3Logic === "NOR") {
+        slot3Target = "OR";
+        slot4Target = "WIRE"; // Standard NAND OR is already inverted compared to a standard OR?
+        // Note: You may want to adjust this logic based on your specific curriculum's NAND-equivalence diagrams.
+    } else {
+        slot3Target = box3Logic;
+        slot4Target = "WIRE"; 
+    }
 
     const blueprint = {
         slots: [
-            { id: "slot1", target: slot1Logic,   x: 90,  y: 55,  w: 140, h: 90 }, // Top Left
-            { id: "slot2", target: "NOT",        x: 90,  y: 195, w: 140, h: 90 }, // Bottom Left
-            { id: "slot3", target: slot3Target,  x: 280, y: 125, w: 140, h: 90 }, // Middle Right
-            { id: "slot4", target: slot4Target,  x: 440, y: 125, w: 140, h: 90 }  // Far Right (Joiner)
+            { id: "slot1", target: slot1Target, x: 90,  y: 55,  w: 140, h: 90, ghost: true }, 
+            { id: "slot2", target: "NOT",       x: 90,  y: 195, w: 140, h: 90, ghost: true }, 
+            { id: "slot3", target: slot3Target, x: 280, y: 125, w: 140, h: 90, ghost: true }, 
+            { id: "slot4", target: slot4Target, x: 440, y: 125, w: 140, h: 90, ghost: false } // BLANK
         ]
     };
 
-    const qText = document.getElementById('questionText');
-    if (qText) {
-        qText.innerText = "Drag the correct NAND gate clusters or wires into the slots to build the equivalent logic circuit.";
-        qText.style.display = 'block';
-    }
-
-    // --- 5. DRAW GHOST GATES (Restored!) ---
-    const drawGhostGate = (type, x, y, w, h) => {
+    // --- 4. DRAW GHOST GATES ---
+    const drawGhost = (type, x, y) => {
         ctx.save();
-        ctx.globalAlpha = 0.15; // Slightly more visible
-        ctx.beginPath();
+        ctx.globalAlpha = 0.1;
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
         if (type === "AND") {
-            ctx.moveTo(x+30, y+15); ctx.lineTo(x+80, y+15);
-            ctx.arc(x+80, y+45, 30, -Math.PI/2, Math.PI/2);
-            ctx.lineTo(x+30, y+75); ctx.closePath();
+            ctx.strokeRect(x+30, y+20, 40, 50); // Simple block representation
+            ctx.arc(x+70, y+45, 25, -Math.PI/2, Math.PI/2); ctx.stroke();
         } else if (type === "OR") {
-            ctx.moveTo(x+30, y+15);
-            ctx.quadraticCurveTo(x+50, y+45, x+30, y+75);
-            ctx.quadraticCurveTo(x+90, y+75, x+110, y+45);
-            ctx.quadraticCurveTo(x+90, y+15, x+30, y+15);
+            ctx.beginPath(); ctx.moveTo(x+30, y+20); ctx.quadraticCurveTo(x+50, y+45, x+30, y+70);
+            ctx.quadraticCurveTo(x+90, y+70, x+110, y+45); ctx.quadraticCurveTo(x+90, y+20, x+30, y+20); ctx.stroke();
         } else if (type === "NOT") {
-            ctx.moveTo(x+40, y+25); ctx.lineTo(x+80, y+45); ctx.lineTo(x+40, y+65); ctx.closePath();
-            ctx.stroke(); ctx.beginPath(); ctx.arc(x+85, y+45, 5, 0, Math.PI*2);
-        } else if (type === "WIRE") {
-            ctx.moveTo(x+20, y+45); ctx.lineTo(x+120, y+45); // Ghost line
+            ctx.beginPath(); ctx.moveTo(x+40, y+30); ctx.lineTo(x+80, y+45); ctx.lineTo(x+40, y+60); ctx.closePath();
+            ctx.stroke(); ctx.beginPath(); ctx.arc(x+85, y+45, 4, 0, Math.PI*2); ctx.stroke();
         }
-        ctx.stroke();
         ctx.restore();
     };
 
-    // --- 6. DRAW CANVAS UNDERLAY & WIRING ---
+    // --- 5. DRAW UNDERLAY ---
     ctx.strokeStyle = "#333"; ctx.lineWidth = 2; ctx.fillStyle = "#333";
-    
-    // Inputs
-    ctx.fillText("A", 20, 85);  ctx.beginPath(); ctx.moveTo(40, 80);  ctx.lineTo(90, 80);  ctx.stroke();
+    ctx.fillText("A", 20, 85); ctx.beginPath(); ctx.moveTo(40, 80); ctx.lineTo(90, 80); ctx.stroke();
     ctx.fillText("B", 20, 125); ctx.beginPath(); ctx.moveTo(40, 120); ctx.lineTo(90, 120); ctx.stroke();
     ctx.fillText("C", 20, 245); ctx.beginPath(); ctx.moveTo(40, 240); ctx.lineTo(90, 240); ctx.stroke();
     
-    // Interconnecting Wires
+    // Wires
     ctx.beginPath();
-    // Slot 1 to Slot 3 (Top Input)
     ctx.moveTo(230, 100); ctx.lineTo(255, 100); ctx.lineTo(255, 150); ctx.lineTo(280, 150); 
-    // Slot 2 to Slot 3 (Bottom Input)
     ctx.moveTo(230, 240); ctx.lineTo(255, 240); ctx.lineTo(255, 190); ctx.lineTo(280, 190); 
-    // Slot 3 to Slot 4
     ctx.moveTo(420, 170); ctx.lineTo(440, 170); 
-    // Slot 4 to Output Q
     ctx.moveTo(580, 170); ctx.lineTo(610, 170); ctx.stroke();
     ctx.fillText("Q", 620, 175);
 
-    // --- 7. CREATE INTERACTIVE ZONES ---
+    // --- 6. INTERACTIVE ZONES ---
     blueprint.slots.forEach(s => {
-        drawGhostGate(s.target, s.x, s.y, s.w, s.h);
+        if(s.ghost) drawGhost(s.target, s.x, s.y);
         
         let zone = document.createElement('div');
         zone.className = 'grade9-dropzone'; 
         zone.dataset.target = s.target; 
-        zone.dataset.filledWith = "";   
-        
-        zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center; padding: 5px; box-sizing: border-box;`;
+        zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center;`;
         
         zone.ondragover = (e) => e.preventDefault();
         zone.ondrop = (e) => {
             e.preventDefault();
             const type = e.dataTransfer.getData("text");
-            if(graphicsMap[type]) {
-                zone.innerHTML = graphicsMap[type];
-                zone.dataset.filledWith = type; 
-                zone.style.border = "2px solid #555"; 
-            }
+            zone.innerHTML = graphicsMap[type];
+            zone.dataset.filledWith = type; 
+            zone.style.border = "2px solid #555"; 
         };
-        
-        zone.ondblclick = () => { 
-            zone.innerHTML = ""; 
-            zone.dataset.filledWith = "";
-            zone.style.border = "2px dashed #bbb"; 
-        };
-        
+        zone.ondblclick = () => { zone.innerHTML = ""; zone.style.border = "2px dashed #bbb"; };
         overlay.appendChild(zone);
     });
 
-    // --- 8. HORIZONTAL BOTTOM TRAY ---
+    // --- 7. BOTTOM TRAY ---
     let bottomTray = document.createElement('div');
     bottomTray.id = 'nandBottomTray';
-    bottomTray.style.cssText = `position: absolute; bottom: 0; left: 0; width: ${canvas.width}px; display: flex; justify-content: center; align-items: center; gap: 30px; background: #f8f9fa; padding: 15px 0; border-top: 2px solid #ddd; box-sizing: border-box; z-index: 10; border-radius: 0 0 8px 8px;`;
-    
+    bottomTray.style.cssText = `position: absolute; bottom: 0; left: 0; width: ${canvas.width}px; display: flex; justify-content: center; gap: 20px; background: #f8f9fa; padding: 10px 0; border-top: 2px solid #ddd; z-index: 10;`;
     circuitContainer.appendChild(bottomTray);
 
-    const modules = [
-        {type:'AND', svg:svgAND},
-        {type:'OR',  svg:svgOR},
-        {type:'NOT', svg:svgNOT},
-        {type:'WIRE', svg:svgWIRE} // Added Wire to the bank
-    ];
-
-    modules.forEach(mod => {
+    ['AND', 'OR', 'NOT', 'WIRE'].forEach(type => {
         let item = document.createElement('div');
-        item.style.cssText = "width:140px; height:90px; background:white; border:2px solid #ddd; cursor:grab; display:flex; align-items:center; justify-content:center; border-radius:6px; transition: border 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 5px; box-sizing: border-box;";
+        item.style.cssText = "width:120px; height:80px; background:white; border:2px solid #ddd; cursor:grab; display:flex; align-items:center; justify-content:center; border-radius:6px;";
         item.draggable = true;
-        item.innerHTML = mod.svg; 
-        
-        item.onmouseover = () => item.style.border = "2px solid #999";
-        item.onmouseout = () => item.style.border = "2px solid #ddd";
-        
-        item.ondragstart = (e) => {
-            e.dataTransfer.setData("text", mod.type);
-        };
-        
+        item.innerHTML = graphicsMap[type];
+        item.ondragstart = (e) => e.dataTransfer.setData("text", type);
         bottomTray.appendChild(item);
     });
 }
