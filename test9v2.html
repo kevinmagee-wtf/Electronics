@@ -8118,8 +8118,10 @@ function checkAnswers() {
     }
 
 // ==========================================
-    // NAND EQUIVALENTS INTERCEPTOR
+    // NAND EQUIVALENTS INTERCEPTORS
     // ==========================================
+
+    // --- 1. STANDARD NAND MODE (Your original code) ---
     if (currentMode === 'logic_nand') {
         const feedback = document.getElementById('feedback');
         const targetGate = window.currentNandAnswer; 
@@ -8141,12 +8143,8 @@ function checkAnswers() {
         let studentAttemptedTarget = false;
         let anyWrongPlacement = false;
 
-        // 1. Reset all zones to transparent before re-grading
-        dropzones.forEach(z => {
-            z.style.backgroundColor = "transparent";
-        });
+        dropzones.forEach(z => z.style.backgroundColor = "transparent");
 
-        // 2. Loop through every single dropzone
         dropzones.forEach(zone => {
             const bpType = zone.dataset.blueprint;      
             const boxIdx = parseInt(zone.dataset.boxindex) - 1; 
@@ -8174,30 +8172,24 @@ function checkAnswers() {
             }
         });
 
-        // 2. Final Feedback Logic
         const checkansBtn = document.getElementById('checkansBtn');
         const showsolutionsBtn = document.getElementById('showsolutionsBtn');
 
         if (allCorrect && studentAttemptedTarget) {
-            // SUCCESS
             isCurrentProblemSolved = true;
             if (canEarnPoints) { problemsCorrect++; }
             feedback.innerHTML = `<span style='color: #198754;'>Perfect! You built the ${targetGate} gate correctly using NAND logic!</span>`;
             canEarnPoints = false;
-
             if (checkansBtn) checkansBtn.style.display = 'none';
             if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
             
         } else {
-            // FAILURE
             canEarnPoints = false;
             if (anyWrongPlacement) {
                 feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect logic. Look at the red boxes and try again!</span>`;
             } else {
                 feedback.innerHTML = `<span style='color: #dc3545;'>The circuit is incomplete. Build the ${targetGate} gate blueprint!</span>`;
             }
-            
-            // Optional: Reveal solution box on failure
             const solDiv = document.getElementById('solutions');
             if (solDiv) solDiv.style.display = 'block';
         }
@@ -8205,6 +8197,80 @@ function checkAnswers() {
         if (typeof updateScoreboard === "function") updateScoreboard();
         return; // Stop here so it doesn't try to grade other modes
     }
+
+    // --- 2. NEW GRADE 9 SYSTEM NAND MODE ---
+    if (currentMode === 'grade9nand') { 
+        const feedback = document.getElementById('feedback');
+        const dropzones = document.querySelectorAll('#nandCanvasOverlay > div');
+        
+        const REQUIRED_LOGIC = {
+            's1': window.nandTargets ? window.nandTargets.s1 : 'AND', 
+            's2': 'NOT',                 
+            's3': window.nandTargets ? window.nandTargets.s3 : 'OR', 
+            's4': ''                     
+        };
+
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        let allCorrect = true;
+        let anyWrongPlacement = false;
+
+        dropzones.forEach((zone, index) => {
+            const bpId = `s${index + 1}`;
+            const targetGate = REQUIRED_LOGIC[bpId];
+            
+            const filledGate = zone.getAttribute('data-filled-type') || ""; 
+
+            if (targetGate !== "") {
+                if (filledGate === targetGate) {
+                    zone.style.backgroundColor = "rgba(40, 167, 69, 0.2)"; 
+                    zone.style.borderColor = "#28a745";
+                } else {
+                    allCorrect = false;
+                    anyWrongPlacement = true;
+                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
+                    zone.style.borderColor = "#dc3545";
+                }
+            } else {
+                // Box 4 should be empty or a wire
+                if (filledGate !== "" && filledGate !== "WIRE") {
+                    allCorrect = false;
+                    zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)";
+                }
+            }
+        });
+
+        const checkansBtn = document.getElementById('checkansBtn');
+        const showsolutionsBtn = document.getElementById('showsolutionsBtn');
+
+        if (allCorrect) {
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> System converted correctly!</span>`;
+            canEarnPoints = false;
+
+            if (checkansBtn) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+        } else {
+            canEarnPoints = false;
+            if (anyWrongPlacement) {
+                feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. Check the red boxes for mismatched logic.</span>`;
+            } else {
+                feedback.innerHTML = `<span style='color: #dc3545;'>Circuit incomplete. All blueprints must be filled.</span>`;
+            }
+            
+            const solDiv = document.getElementById('solutions');
+            if (solDiv) solDiv.style.display = 'block';
+        }
+
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; // Stop here so it doesn't try to grade other modes
+    }
+    //New function code pasted above this line
+    //********************************************************************
 
     // 2. Identify which inputs are currently active
     let activeInputs = [];
