@@ -5311,11 +5311,11 @@ function generateLogic_nandProblem(ctx, canvas) {
 //******************************************************************************************
     
 function generateGrade9NandProblem(ctx, canvas) {
-    // --- 1. SVG DEFINITIONS (Uniform ViewBox 0 0 140 90 to prevent clipping) ---
+    // --- 1. SVG DEFINITIONS (Bubbles pushed out to prevent clipping the stroke) ---
     const svgNOT = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
         <path d="M 0,45 L 40,45 M 40,30 L 40,60 M 40,30 L 60,30 M 40,60 L 60,60" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 60,20 L 75,20 A 25,25 0 0,1 75,70 L 60,70 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="106" cy="45" r="6" fill="white" stroke="black" stroke-width="3"/>
+        <circle cx="107" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
         <line x1="112" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
     </svg>`;
     
@@ -5323,25 +5323,25 @@ function generateGrade9NandProblem(ctx, canvas) {
         <line x1="0" y1="25" x2="15" y2="25" stroke="black" stroke-width="3"/>
         <line x1="0" y1="65" x2="15" y2="65" stroke="black" stroke-width="3"/>
         <path d="M 15,15 L 30,15 A 25,25 0 0,1 30,75 L 15,75 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="61" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-        <path d="M 66,45 L 75,45 M 75,30 L 75,60 M 75,30 L 85,30 M 75,60 L 85,60" fill="none" stroke="black" stroke-width="3"/>
+        <circle cx="62" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
+        <path d="M 67,45 L 75,45 M 75,30 L 75,60 M 75,30 L 85,30 M 75,60 L 85,60" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 85,15 L 95,15 A 25,25 0 0,1 95,75 L 85,75 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="125" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-        <line x1="130" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
+        <circle cx="127" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
+        <line x1="132" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
     </svg>`;
     
     const svgOR = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
         <path d="M 0,25 L 10,25 M 10,15 L 10,35 M 10,15 L 20,15 M 10,35 L 20,35" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 20,5 L 30,5 A 15,15 0 0,1 30,45 L 20,45 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="49" cy="25" r="4" fill="white" stroke="black" stroke-width="3"/>
-        <path d="M 53,25 L 75,25 L 75,35 L 85,35" fill="none" stroke="black" stroke-width="3"/>
+        <circle cx="51" cy="25" r="4" fill="white" stroke="black" stroke-width="3"/>
+        <path d="M 55,25 L 75,25 L 75,35 L 85,35" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 0,65 L 10,65 M 10,55 L 10,75 M 10,55 L 20,55 M 10,75 L 20,75" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 20,45 L 30,45 A 15,15 0 0,1 30,85 L 20,85 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="49" cy="65" r="4" fill="white" stroke="black" stroke-width="3"/>
-        <path d="M 53,65 L 75,65 L 75,55 L 85,55" fill="none" stroke="black" stroke-width="3"/>
+        <circle cx="51" cy="65" r="4" fill="white" stroke="black" stroke-width="3"/>
+        <path d="M 55,65 L 75,65 L 75,55 L 85,55" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 85,20 L 95,20 A 25,25 0 0,1 95,70 L 85,70 Z" fill="white" stroke="black" stroke-width="3"/>
-        <circle cx="125" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-        <line x1="130" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
+        <circle cx="127" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
+        <line x1="132" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
     </svg>`;
     
     const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT };
@@ -5401,7 +5401,7 @@ function generateGrade9NandProblem(ctx, canvas) {
         ctx.restore();
     };
 
-    // --- 6. DRAW CANVAS UNDERLAY (Recalculated for perfect alignment) ---
+    // --- 6. DRAW CANVAS UNDERLAY ---
     ctx.strokeStyle = "#333"; ctx.lineWidth = 2; ctx.fillStyle = "#333";
     ctx.font = "bold 14px Arial"; ctx.fillText("System Conversion", 20, 30);
     
@@ -5438,7 +5438,8 @@ function generateGrade9NandProblem(ctx, canvas) {
             if(graphicsMap[type]) {
                 zone.innerHTML = graphicsMap[type];
                 zone.dataset.filledWith = type; 
-                zone.style.border = (type === s.target) ? "2px solid #28a745" : "2px solid #dc3545"; 
+                // Set to a neutral solid border upon drop
+                zone.style.border = "2px solid #555"; 
             }
         };
         
@@ -5451,7 +5452,7 @@ function generateGrade9NandProblem(ctx, canvas) {
         overlay.appendChild(zone);
     });
 
-    // --- 8. HORIZONTAL BOTTOM TRAY (Uniform 140x90 sizes) ---
+    // --- 8. HORIZONTAL BOTTOM TRAY ---
     let bottomTray = document.createElement('div');
     bottomTray.id = 'nandBottomTray';
     bottomTray.style.cssText = `position: absolute; bottom: 0; left: 0; width: ${canvas.width}px; display: flex; justify-content: center; align-items: center; gap: 30px; background: #f8f9fa; padding: 15px 0; border-top: 2px solid #ddd; box-sizing: border-box; z-index: 10; border-radius: 0 0 8px 8px;`;
@@ -5466,7 +5467,6 @@ function generateGrade9NandProblem(ctx, canvas) {
 
     modules.forEach(mod => {
         let item = document.createElement('div');
-        // Fixed dimensions to perfectly match drop zones
         item.style.cssText = "width:140px; height:90px; background:white; border:2px solid #ddd; cursor:grab; display:flex; align-items:center; justify-content:center; border-radius:6px; transition: border 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 5px; box-sizing: border-box;";
         item.draggable = true;
         item.innerHTML = mod.svg; 
