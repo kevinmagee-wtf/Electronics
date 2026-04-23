@@ -5330,27 +5330,24 @@ function generateGrade9NandProblem(ctx, canvas) {
         const themePink = "#d65093"; 
         
         // --- 1. THE "CLEAN SLATE" PROTOCOL ---
-        // Hide standard UI elements from other problem types to prevent "ghosting"
         const standardTaskDescription = document.querySelector('.task-description');
         if (standardTaskDescription) standardTaskDescription.style.display = 'none';
 
         const standardGateTray = document.querySelector('.gate-tray');
         if (standardGateTray) standardGateTray.style.display = 'none';
 
-        // Reset Feedback and Solution displays
         const solContainer = document.getElementById('solutions');
         if (solContainer) solContainer.style.display = "none"; 
         
         const solBox = document.getElementById('solText');
         if (solBox) {
             solBox.style.display = "block";
-            solBox.innerHTML = ""; // Clear old solution text
+            solBox.innerHTML = ""; 
         }
 
         const feedback = document.getElementById('feedback');
-        if (feedback) feedback.innerHTML = ""; // Clear previous "Correct/Incorrect" messages
+        if (feedback) feedback.innerHTML = ""; 
 
-        // Setup the specific container for NAND interactive elements
         let qContainer = document.getElementById('inputGroupLogic_NAND');
         if (!qContainer) {
             qContainer = document.createElement('div');
@@ -5360,15 +5357,13 @@ function generateGrade9NandProblem(ctx, canvas) {
             if (inputArea) inputArea.appendChild(qContainer);
         }
         qContainer.style.display = 'block';
-        qContainer.innerHTML = ""; // Clear previous gate tray or inputs
+        qContainer.innerHTML = ""; 
 
-        // Prepare the circuit container for absolute positioning of overlays
         let circuitContainer = document.getElementById('circuitContainer');
         if (circuitContainer) {
             circuitContainer.style.position = 'relative'; 
         }
         
-        // Clean up ALL previous Grade 9 specific overlays, trays, and instructions
         let oldOverlay = document.getElementById('nandCanvasOverlay');
         if (oldOverlay) oldOverlay.remove();
         const oldTray = document.getElementById('nandBottomTray');
@@ -5376,16 +5371,14 @@ function generateGrade9NandProblem(ctx, canvas) {
         let oldInstructions = document.getElementById('nandInstructions');
         if (oldInstructions) oldInstructions.remove();
 
-        // Clear the canvas for fresh drawing
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Create a fresh transparent overlay for interactive HTML elements (Drop zones/Clicks)
         let overlay = document.createElement('div');
         overlay.id = 'nandCanvasOverlay';
         overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none; z-index:10;`;
         if (circuitContainer) circuitContainer.appendChild(overlay);
 
-        // THE COIN FLIP: Alternate between Drag & Drop and Redundancy Hunter
+        // THE COIN FLIP
         window.grade9NandMode = Math.random() < 0.5 ? 'conversion' : 'redundancy';
 
         // =========================================================
@@ -5393,55 +5386,21 @@ function generateGrade9NandProblem(ctx, canvas) {
         // =========================================================
         if (window.grade9NandMode === 'conversion') {
             
-            // --- SVG DEFINITIONS (FULL SOURCE) ---
-            const svgNOT = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-                <line x1="0" y1="45" x2="40" y2="45" stroke="black" stroke-width="3"/>
-                <path d="M 40,30 L 40,60 M 40,30 L 50,30 M 40,60 L 50,60" fill="none" stroke="black" stroke-width="3"/>
-                <path d="M 50,15 L 65,15 A 30,30 0 0,1 65,75 L 50,75 Z" fill="white" stroke="black" stroke-width="3"/>
-                <circle cx="100" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-                <line x1="105" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
-            </svg>`;
-            
-            const svgAND = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-                <path d="M 0,30 L 10,30 M 0,60 L 10,60" fill="none" stroke="black" stroke-width="3"/>
-                <path d="M 10,15 L 25,15 A 30,30 0 0,1 25,75 L 10,75 Z" fill="white" stroke="black" stroke-width="3"/>
-                <circle cx="60" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-                <path d="M 65,45 L 75,45 M 75,30 L 75,60 M 75,30 L 80,30 M 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/>
-                <path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/>
-                <circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-                <line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
-            </svg>`;
-            
-            const svgOR = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-                <path d="M 0,22.5 L 10,22.5 M 10,12.5 L 10,32.5 M 10,12.5 L 20,12.5 M 10,32.5 L 20,32.5" fill="none" stroke="black" stroke-width="3"/>
-                <path d="M 20,2.5 L 35,2.5 A 20,20 0 0,1 35,42.5 L 20,42.5 Z" fill="white" stroke="black" stroke-width="3"/>
-                <circle cx="60" cy="22.5" r="5" fill="white" stroke="black" stroke-width="3"/>
-                <path d="M 65,22.5 L 75,22.5 L 75,30 L 80,30" fill="none" stroke="black" stroke-width="3"/>
-                <path d="M 0,67.5 L 10,67.5 M 10,57.5 L 10,77.5 M 10,57.5 L 20,57.5 M 10,77.5 L 20,77.5" fill="none" stroke="black" stroke-width="3"/>
-                <path d="M 20,47.5 L 35,47.5 A 20,20 0 0,1 35,87.5 L 20,87.5 Z" fill="white" stroke="black" stroke-width="3"/>
-                <circle cx="60" cy="67.5" r="5" fill="white" stroke="black" stroke-width="3"/>
-                <path d="M 65,67.5 L 75,67.5 L 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/>
-                <path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/>
-                <circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
-                <line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
-            </svg>`;
-
-            const svgWIRE = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-                <line x1="0" y1="45" x2="140" y2="45" stroke="black" stroke-width="4"/>
-            </svg>`;
+            const svgNOT = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet"><line x1="0" y1="45" x2="40" y2="45" stroke="black" stroke-width="3"/><path d="M 40,30 L 40,60 M 40,30 L 50,30 M 40,60 L 50,60" fill="none" stroke="black" stroke-width="3"/><path d="M 50,15 L 65,15 A 30,30 0 0,1 65,75 L 50,75 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="100" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/><line x1="105" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/></svg>`;
+            const svgAND = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet"><path d="M 0,30 L 10,30 M 0,60 L 10,60" fill="none" stroke="black" stroke-width="3"/><path d="M 10,15 L 25,15 A 30,30 0 0,1 25,75 L 10,75 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="60" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/><path d="M 65,45 L 75,45 M 75,30 L 75,60 M 75,30 L 80,30 M 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/><path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/><line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/></svg>`;
+            const svgOR = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet"><path d="M 0,22.5 L 10,22.5 M 10,12.5 L 10,32.5 M 10,12.5 L 20,12.5 M 10,32.5 L 20,32.5" fill="none" stroke="black" stroke-width="3"/><path d="M 20,2.5 L 35,2.5 A 20,20 0 0,1 35,42.5 L 20,42.5 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="60" cy="22.5" r="5" fill="white" stroke="black" stroke-width="3"/><path d="M 65,22.5 L 75,22.5 L 75,30 L 80,30" fill="none" stroke="black" stroke-width="3"/><path d="M 0,67.5 L 10,67.5 M 10,57.5 L 10,77.5 M 10,57.5 L 20,57.5 M 10,77.5 L 20,77.5" fill="none" stroke="black" stroke-width="3"/><path d="M 20,47.5 L 35,47.5 A 20,20 0 0,1 35,87.5 L 20,87.5 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="60" cy="67.5" r="5" fill="white" stroke="black" stroke-width="3"/><path d="M 65,67.5 L 75,67.5 L 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/><path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/><line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/></svg>`;
+            const svgWIRE = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet"><line x1="0" y1="45" x2="140" y2="45" stroke="black" stroke-width="4"/></svg>`;
             
             const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT, 'WIRE': svgWIRE };
 
-            // --- LOGIC POOL & RANDOMIZATION ---
             const s1Target = ["AND", "OR"][Math.floor(Math.random() * 2)];
             const b3Target = ["AND", "OR", "NOR"][Math.floor(Math.random() * 3)];
             const s4Target = (b3Target === "NOR") ? "NOT" : "WIRE";
             
-            // Export targets so Answer Checker can access them
-            window.nandTargets = { s1: s1Target, s3: b3Target, s4: s4Target };
+            window.nandTargets = { s1: s1Target, s2: "NOT", s3: b3Target, s4: s4Target };
 
-            // --- DYNAMIC SOLUTION TEXT ---
-            if (solBox) { 
+            // --- 1. SOLUTION TEXT FOR CONVERSION MODE ---
+            if (solBox) {
                 const solutionsMap = {
                     'NOT': "A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate.",
                     'AND': "An <strong>AND</strong> gate is a NAND gate followed by a NOT gate (NAND with inputs joined).",
@@ -5449,18 +5408,17 @@ function generateGrade9NandProblem(ctx, canvas) {
                     'NOR': "A <strong>NOR</strong> gate is an OR gate construction followed by a final NOT gate.",
                     'WIRE': "A straight <strong>Wire</strong> is used to pass the signal directly through without modification."
                 };
-
+                
                 solBox.innerHTML = `
-                    <div style="font-family: sans-serif; font-size: 14px;">
-                        <strong>Grade 9 Circuit Solution:</strong><br>
-                        <ul style="line-height: 1.6; margin-top: 8px; padding-left: 20px;">
+                    <div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                        <strong style="color: #d65093; font-size: 16px;">Grade 9 Circuit Solution:</strong><br>
+                        <ul style="line-height: 1.6; margin-top: 10px; padding-left: 20px;">
                             <li><strong>Top Box (${s1Target}):</strong> ${solutionsMap[s1Target]}</li>
                             <li><strong>Bottom Box (NOT):</strong> ${solutionsMap['NOT']}</li>
                             <li><strong>Middle Box (${b3Target}):</strong> ${solutionsMap[b3Target]}</li>
                             <li><strong>Final Box (${s4Target}):</strong> ${solutionsMap[s4Target]}</li>
                         </ul>
-                    </div>
-                `;
+                    </div>`;
             }
 
             // Define coordinates for Drop Zones
@@ -5471,7 +5429,6 @@ function generateGrade9NandProblem(ctx, canvas) {
                 { id: "s4", target: "ANY",    x: 400, y: 115, w: 140, h: 90, ghost: false } 
             ];
 
-            // UI Instruction Panel
             const instructionHTML = `
                 <div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                     <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 16px;">NAND Logic Construction</h3>
@@ -5481,15 +5438,9 @@ function generateGrade9NandProblem(ctx, canvas) {
                         <i>(Double click to remove components from a box.)</i>
                     </p>
                 </div>`;
-            
-            let instructionsDiv = document.createElement('div');
-            instructionsDiv.id = 'nandInstructions';
-            instructionsDiv.innerHTML = instructionHTML;
-            
+            let instDiv = document.createElement('div'); instDiv.id = 'nandInstructions'; instDiv.innerHTML = instructionHTML;
             const checkBtn = document.getElementById('checkansBtn');
-            if (checkBtn && checkBtn.parentNode) {
-                checkBtn.parentNode.insertBefore(instructionsDiv, checkBtn);
-            }
+            if (checkBtn && checkBtn.parentNode) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
 
             // --- GHOST DRAWING HELPER ---
             const drawGhost = (type, x, y) => {
@@ -5531,8 +5482,10 @@ function generateGrade9NandProblem(ctx, canvas) {
             // Create Drop Zones on Overlay
             blueprint.forEach(s => {
                 if(s.ghost) drawGhost(s.target, s.x, s.y);
+                
                 let zone = document.createElement('div');
                 zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center; transition: background 0.3s;`;
+                
                 zone.ondragover = (e) => { e.preventDefault(); zone.style.background = "rgba(214, 80, 147, 0.05)"; };
                 zone.ondragleave = () => { zone.style.background = "transparent"; };
                 zone.ondrop = (e) => {
@@ -5564,7 +5517,178 @@ function generateGrade9NandProblem(ctx, canvas) {
             });
             if (circuitContainer) circuitContainer.appendChild(tray);
 
+        } else { 
+            // =========================================================
+            // MODE B: REDUNDANCY HUNTER (DYNAMIC SCHEMATIC)
+            // =========================================================
+            try {
+                const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+                const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+
+                const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><h3>Triple-Stream Redundancy Hunter</h3><p>Trace completely isolated paths to <b>Q1, Q2, and Q3</b>. Spot the redundant NOT-NOT chains. <b>Click to cross them out!</b></p></div>`;
+                let instDiv = document.getElementById('nandInstructions') || document.createElement('div');
+                instDiv.id = 'nandInstructions';
+                const checkBtn = document.getElementById('checkansBtn');
+                if (checkBtn && checkBtn.parentNode && !document.getElementById('nandInstructions')) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
+                instDiv.innerHTML = instructionHTML;
+
+                // --- 2. NEW SOLUTION TEXT FOR REDUNDANCY MODE ---
+                if (solBox) {
+                    solBox.innerHTML = `<div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                        <strong style="color: #d65093; font-size: 16px;">Redundancy Hunter Solution:</strong><br><br>
+                        A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate (the gates with only 1 wire going into them).<br><br>
+                        In digital logic, a double negative cancels out: <strong>NOT(NOT(A)) = A</strong>.<br><br>
+                        <strong>How to solve:</strong> Trace each path from the inputs (A-H) to the outputs (Q1, Q2, Q3). Whenever you see <em>two NOT gates in a row</em> on the exact same path, they form a redundant pair. Click to cross them out in pairs!
+                    </div>`;
+                }
+                // ------------------------------------------------
+
+                // =================================================================
+                // DYNAMIC RANDOMIZED GENERATOR (216 Possible Configurations)
+                // =================================================================
+                let gateDefs = [];
+                let inputCharCounter = 65; // Start at 'A'
+                
+                function getChar() {
+                    let char = String.fromCharCode(inputCharCounter++);
+                    return char;
+                }
+
+                // Generate 3 distinct horizontal zones (Q1, Q2, Q3)
+                for (let i = 0; i < 3; i++) {
+                    let baseY = 20 + (i * 120); // Spacing for Zone 0, 1, 2
+                    let template = Math.floor(Math.random() * 6); // Pick 1 of 6 layouts
+
+                    if (template === 0) {
+                        // Layout 0: Top redundancy, 2-input NAND output
+                        gateDefs.push({ id: `Z${i}_L0_T`, layer: 0, x: 80, y: baseY, type: 'inverter', inputs: [getChar()] });
+                        gateDefs.push({ id: `Z${i}_L1_T`, layer: 1, x: 260, y: baseY, type: 'inverter', parents: [`Z${i}_L0_T`] }); 
+                        gateDefs.push({ id: `Z${i}_L0_B`, layer: 0, x: 80, y: baseY+60, type: 'standard', inputs: [getChar(), getChar()] });
+                        gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L1_T`, `Z${i}_L0_B`], output: `Q${i+1}` });
+                    
+                    } else if (template === 1) {
+                        // Layout 1: TRIPLE INVERTER CHAIN! 
+                        gateDefs.push({ id: `Z${i}_L0`, layer: 0, x: 80, y: baseY+30, type: 'inverter', inputs: [getChar()] });
+                        gateDefs.push({ id: `Z${i}_L1`, layer: 1, x: 260, y: baseY+30, type: 'inverter', parents: [`Z${i}_L0`] }); 
+                        gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'inverter', parents: [`Z${i}_L1`], output: `Q${i+1}` });
+                    
+                    } else if (template === 2) {
+                        // Layout 2: Bottom redundancy, 2-input NAND output
+                        gateDefs.push({ id: `Z${i}_L0_T`, layer: 0, x: 80, y: baseY, type: 'standard', inputs: [getChar(), getChar()] });
+                        gateDefs.push({ id: `Z${i}_L0_B`, layer: 0, x: 80, y: baseY+60, type: 'inverter', inputs: [getChar()] });
+                        gateDefs.push({ id: `Z${i}_L1_B`, layer: 1, x: 260, y: baseY+60, type: 'inverter', parents: [`Z${i}_L0_B`] }); 
+                        gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L0_T`, `Z${i}_L1_B`], output: `Q${i+1}` });
+                    
+                    } else if (template === 3) {
+                        // Layout 3: ANOTHER TRIPLE INVERTER CHAIN!
+                        gateDefs.push({ id: `Z${i}_L0`, layer: 0, x: 80, y: baseY+30, type: 'inverter', inputs: [getChar()] });
+                        gateDefs.push({ id: `Z${i}_L1`, layer: 1, x: 260, y: baseY+30, type: 'inverter', parents: [`Z${i}_L0`] });
+                        gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'inverter', parents: [`Z${i}_L1`], output: `Q${i+1}` });
+                    
+                    } else if (template === 4) {
+                        // Layout 4: Short inputs (missing L0), 2-input NAND output
+                        gateDefs.push({ id: `Z${i}_L1_T`, layer: 1, x: 260, y: baseY, type: 'inverter', inputs: [getChar()] });
+                        gateDefs.push({ id: `Z${i}_L1_B`, layer: 1, x: 260, y: baseY+60, type: 'standard', inputs: [getChar(), getChar()] });
+                        gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L1_T`, `Z${i}_L1_B`], output: `Q${i+1}` });
+                    
+                    } else {
+                        // Layout 5: Long wire jump, 2-input NAND output
+                        gateDefs.push({ id: `Z${i}_L1_T`, layer: 1, x: 260, y: baseY, type: 'standard', inputs: [getChar(), getChar()] });
+                        gateDefs.push({ id: `Z${i}_L0_B`, layer: 0, x: 80, y: baseY+60, type: 'inverter', inputs: [getChar()] }); // Jumps over L1 empty space
+                        gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L1_T`, `Z${i}_L0_B`], output: `Q${i+1}` });
+                    }
+                }
+
+                // VERY IMPORTANT: Exposes the generated map to the checker function!
+                window.activeGateDefs = gateDefs;
+                // =================================================================
+
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "#333";
+                ctx.font = "bold 14px Arial";
+
+                // Render Visual Gates
+                gateDefs.forEach(gate => {
+                    let gateDiv = document.createElement('div');
+                    
+                    // Assign class and ID so the checkAnswers function can find it
+                    gateDiv.id = gate.id;
+                    gateDiv.className = "nand-gate-clickable";
+                    gateDiv.dataset.selected = "false";
+                    
+                    gateDiv.style.cssText = `position:absolute; left:${gate.x}px; top:${gate.y}px; width:60px; height:40px; cursor:pointer; pointer-events:auto; z-index:11;`;
+                    gateDiv.innerHTML = gate.type === 'inverter' ? svgJoined : svgStandard;
+
+                    let xMark = document.createElement('div');
+                    xMark.innerHTML = '❌';
+                    xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; display:none; color:red; pointer-events:none;';
+                    gateDiv.appendChild(xMark);
+
+                    gateDiv.onclick = () => {
+                        let active = gateDiv.dataset.selected === "true";
+                        gateDiv.dataset.selected = !active ? "true" : "false";
+                        xMark.style.display = !active ? 'block' : 'none';
+                        gateDiv.style.opacity = !active ? '0.4' : '1';
+                    };
+
+                    overlay.appendChild(gateDiv);
+
+                    // Draw Initial Input Letters & Wires
+                    if (gate.inputs) {
+                        ctx.fillStyle = "#333";
+                        if (gate.type === 'inverter') {
+                            ctx.fillText(gate.inputs[0], gate.x - 25, gate.y + 25);
+                            ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 20); ctx.lineTo(gate.x, gate.y + 20); ctx.stroke();
+                        } else {
+                            ctx.fillText(gate.inputs[0], gate.x - 25, gate.y + 12 + 5);
+                            ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 12); ctx.lineTo(gate.x, gate.y + 12); ctx.stroke();
+                            ctx.fillText(gate.inputs[1], gate.x - 25, gate.y + 28 + 5);
+                            ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 28); ctx.lineTo(gate.x, gate.y + 28); ctx.stroke();
+                        }
+                    }
+
+                    // Draw Output Labels
+                    if (gate.output) {
+                        ctx.fillText(gate.output, gate.x + 70, gate.y + 25);
+                        ctx.beginPath(); ctx.moveTo(gate.x + 60, gate.y + 20); ctx.lineTo(gate.x + 75, gate.y + 20); ctx.stroke();
+                    }
+                });
+
+                // Draw Connecting Wires
+                gateDefs.forEach(gate => {
+                    if (gate.parents) {
+                        gate.parents.forEach((parentId, pinIdx) => {
+                            let parent = gateDefs.find(g => g.id === parentId);
+                            if (!parent) return; // safeguard
+                            
+                            let startX = parent.x + 60;
+                            let startY = parent.y + 20;
+                            let endX = gate.x;
+                            let endY = (gate.type === 'inverter') ? gate.y + 20 : (pinIdx === 0 ? gate.y + 12 : gate.y + 28);
+
+                            ctx.beginPath();
+                            ctx.moveTo(startX, startY);
+
+                            // Custom logic to route "long jump" wires clearly around middle gates
+                            let isLongWire = (gate.layer - parent.layer) > 1;
+                            let midX = startX + (isLongWire ? 100 : 30) + (pinIdx * 15);
+
+                            ctx.lineTo(midX, startY);
+                            ctx.lineTo(midX, endY);
+                            ctx.lineTo(endX, endY);
+                            ctx.stroke();
+                        });
+                    }
+                });
+
+            } catch (err) {
+                console.error("Grade 9 NAND Redundancy Error: ", err);
+            }
         } 
+    } catch (err) {
+        console.error("Critical function error: ", err);
+    }
+}
         // =========================================================
         // MODE B: REDUNDANCY HUNTER (CLICK TO CROSS OUT)
         // =========================================================
