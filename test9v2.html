@@ -5341,7 +5341,7 @@ function generateGrade9NandProblem(ctx, canvas) {
         <circle cx="60" cy="22.5" r="5" fill="white" stroke="black" stroke-width="3"/>
         <path d="M 65,22.5 L 75,22.5 L 75,30 L 80,30" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 0,67.5 L 10,67.5 M 10,57.5 L 10,77.5 M 10,57.5 L 20,57.5 M 10,77.5 L 20,77.5" fill="none" stroke="black" stroke-width="3"/>
-        <path d="M 20,47.5 L 35,47.5 A 20,20 0 0,1 35,87.5 L 20,87.5 Z" fill="white" stroke="black" stroke-width="3"/>
+        <path d="M 20,47.5 L 35,47.5 A 20,20 0 0,1 35,87.5 L 20,47.5 Z" fill="white" stroke="black" stroke-width="3"/>
         <circle cx="60" cy="67.5" r="5" fill="white" stroke="black" stroke-width="3"/>
         <path d="M 65,67.5 L 75,67.5 L 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/>
@@ -5355,117 +5355,94 @@ function generateGrade9NandProblem(ctx, canvas) {
     
     const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT, 'WIRE': svgWIRE };
 
-    // --- 2. UI RESET ---
+    // --- 2. CANVAS RESET & OVERLAY ---
     const oldOverlay = document.getElementById('nandCanvasOverlay');
     if (oldOverlay) oldOverlay.remove(); 
     const oldTray = document.getElementById('nandBottomTray');
     if (oldTray) oldTray.remove();
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
     
-    let circuitContainer = document.getElementById('circuitContainer');
-    circuitContainer.style.position = "relative"; 
-    
     let overlay = document.createElement('div');
     overlay.id = 'nandCanvasOverlay';
     overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none;`;
-    circuitContainer.appendChild(overlay);
+    document.getElementById('circuitContainer').appendChild(overlay);
 
-    // --- 3. PROBLEM GENERATION ---
+    // --- 3. PROBLEM LOGIC ---
     const topPool = ["AND", "OR"];
-    // Box 3 can be AND, OR, or NOR logic
-    const box3Pool = ["AND", "OR", "NOR"]; 
+    const box3Pool = ["AND", "OR", "NOR"];
+    const s1Target = topPool[Math.floor(Math.random() * topPool.length)];
+    const b3Logic = box3Pool[Math.floor(Math.random() * box3Pool.length)];
     
-    const slot1Target = topPool[Math.floor(Math.random() * topPool.length)];
-    const box3Logic = box3Pool[Math.floor(Math.random() * box3Pool.length)];
-    
-    // Determine the solution for Box 3 and Box 4
-    let slot3Target, slot4Target;
-    if (box3Logic === "NOR") {
-        slot3Target = "OR";
-        slot4Target = "WIRE"; // Standard NAND OR is already inverted compared to a standard OR?
-        // Note: You may want to adjust this logic based on your specific curriculum's NAND-equivalence diagrams.
-    } else {
-        slot3Target = box3Logic;
-        slot4Target = "WIRE"; 
-    }
+    const blueprint = [
+        { id: "s1", target: s1Target, x: 80, y: 45, w: 140, h: 90, ghost: true },
+        { id: "s2", target: "NOT",    x: 80, y: 185, w: 140, h: 90, ghost: true },
+        { id: "s3", target: (b3Logic === "NOR" ? "OR" : b3Logic), x: 280, y: 115, w: 140, h: 90, ghost: true },
+        { id: "s4", target: "ANY",    x: 460, y: 115, w: 140, h: 90, ghost: false } // Blank box
+    ];
 
-    const blueprint = {
-        slots: [
-            { id: "slot1", target: slot1Target, x: 90,  y: 55,  w: 140, h: 90, ghost: true }, 
-            { id: "slot2", target: "NOT",       x: 90,  y: 195, w: 140, h: 90, ghost: true }, 
-            { id: "slot3", target: slot3Target, x: 280, y: 125, w: 140, h: 90, ghost: true }, 
-            { id: "slot4", target: slot4Target, x: 440, y: 125, w: 140, h: 90, ghost: false } // BLANK
-        ]
-    };
-
-    // --- 4. DRAW GHOST GATES ---
+    // --- 4. GHOST DRAWING (RE-ADDED & IMPROVED) ---
     const drawGhost = (type, x, y) => {
         ctx.save();
-        ctx.globalAlpha = 0.1;
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
+        ctx.globalAlpha = 0.15; ctx.strokeStyle = "black"; ctx.lineWidth = 2;
+        ctx.translate(x, y);
         if (type === "AND") {
-            ctx.strokeRect(x+30, y+20, 40, 50); // Simple block representation
-            ctx.arc(x+70, y+45, 25, -Math.PI/2, Math.PI/2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(35, 20); ctx.lineTo(75, 20);
+            ctx.arc(75, 45, 25, -Math.PI/2, Math.PI/2); ctx.lineTo(35, 70); ctx.closePath(); ctx.stroke();
         } else if (type === "OR") {
-            ctx.beginPath(); ctx.moveTo(x+30, y+20); ctx.quadraticCurveTo(x+50, y+45, x+30, y+70);
-            ctx.quadraticCurveTo(x+90, y+70, x+110, y+45); ctx.quadraticCurveTo(x+90, y+20, x+30, y+20); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(30, 20); ctx.quadraticCurveTo(50, 45, 30, 70);
+            ctx.quadraticCurveTo(90, 70, 115, 45); ctx.quadraticCurveTo(90, 20, 30, 20); ctx.stroke();
         } else if (type === "NOT") {
-            ctx.beginPath(); ctx.moveTo(x+40, y+30); ctx.lineTo(x+80, y+45); ctx.lineTo(x+40, y+60); ctx.closePath();
-            ctx.stroke(); ctx.beginPath(); ctx.arc(x+85, y+45, 4, 0, Math.PI*2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(45, 25); ctx.lineTo(85, 45); ctx.lineTo(45, 65); ctx.closePath();
+            ctx.stroke(); ctx.beginPath(); ctx.arc(90, 45, 5, 0, Math.PI*2); ctx.stroke();
         }
         ctx.restore();
     };
 
-    // --- 5. DRAW UNDERLAY ---
-    ctx.strokeStyle = "#333"; ctx.lineWidth = 2; ctx.fillStyle = "#333";
-    ctx.fillText("A", 20, 85); ctx.beginPath(); ctx.moveTo(40, 80); ctx.lineTo(90, 80); ctx.stroke();
-    ctx.fillText("B", 20, 125); ctx.beginPath(); ctx.moveTo(40, 120); ctx.lineTo(90, 120); ctx.stroke();
-    ctx.fillText("C", 20, 245); ctx.beginPath(); ctx.moveTo(40, 240); ctx.lineTo(90, 240); ctx.stroke();
-    
-    // Wires
+    // --- 5. FIXED WIRING ---
+    ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(230, 100); ctx.lineTo(255, 100); ctx.lineTo(255, 150); ctx.lineTo(280, 150); 
-    ctx.moveTo(230, 240); ctx.lineTo(255, 240); ctx.lineTo(255, 190); ctx.lineTo(280, 190); 
-    ctx.moveTo(420, 170); ctx.lineTo(440, 170); 
-    ctx.moveTo(580, 170); ctx.lineTo(610, 170); ctx.stroke();
-    ctx.fillText("Q", 620, 175);
+    ctx.moveTo(20, 75); ctx.lineTo(80, 75); // A
+    ctx.moveTo(20, 105); ctx.lineTo(80, 105); // B
+    ctx.moveTo(20, 230); ctx.lineTo(80, 230); // C
+    // Box 1 -> 3
+    ctx.moveTo(220, 90); ctx.lineTo(250, 90); ctx.lineTo(250, 140); ctx.lineTo(280, 140);
+    // Box 2 -> 3
+    ctx.moveTo(220, 230); ctx.lineTo(250, 230); ctx.lineTo(250, 180); ctx.lineTo(280, 180);
+    // Box 3 -> 4
+    ctx.moveTo(420, 160); ctx.lineTo(460, 160);
+    // Box 4 -> Output
+    ctx.moveTo(600, 160); ctx.lineTo(640, 160);
+    ctx.stroke();
+    ctx.fillStyle = "#333"; ctx.fillText("A", 10, 80); ctx.fillText("B", 10, 110); ctx.fillText("C", 10, 235); ctx.fillText("Q", 650, 165);
 
     // --- 6. INTERACTIVE ZONES ---
-    blueprint.slots.forEach(s => {
+    blueprint.forEach(s => {
         if(s.ghost) drawGhost(s.target, s.x, s.y);
-        
         let zone = document.createElement('div');
-        zone.className = 'grade9-dropzone'; 
-        zone.dataset.target = s.target; 
         zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center;`;
-        
         zone.ondragover = (e) => e.preventDefault();
         zone.ondrop = (e) => {
-            e.preventDefault();
             const type = e.dataTransfer.getData("text");
             zone.innerHTML = graphicsMap[type];
-            zone.dataset.filledWith = type; 
-            zone.style.border = "2px solid #555"; 
+            zone.style.border = "2px solid #444";
         };
         zone.ondblclick = () => { zone.innerHTML = ""; zone.style.border = "2px dashed #bbb"; };
         overlay.appendChild(zone);
     });
 
     // --- 7. BOTTOM TRAY ---
-    let bottomTray = document.createElement('div');
-    bottomTray.id = 'nandBottomTray';
-    bottomTray.style.cssText = `position: absolute; bottom: 0; left: 0; width: ${canvas.width}px; display: flex; justify-content: center; gap: 20px; background: #f8f9fa; padding: 10px 0; border-top: 2px solid #ddd; z-index: 10;`;
-    circuitContainer.appendChild(bottomTray);
-
-    ['AND', 'OR', 'NOT', 'WIRE'].forEach(type => {
+    let tray = document.createElement('div');
+    tray.id = 'nandBottomTray';
+    tray.style.cssText = `position:absolute; bottom:15px; width:100%; display:flex; justify-content:center; gap:25px;`;
+    ['AND','OR','NOT','WIRE'].forEach(type => {
         let item = document.createElement('div');
-        item.style.cssText = "width:120px; height:80px; background:white; border:2px solid #ddd; cursor:grab; display:flex; align-items:center; justify-content:center; border-radius:6px;";
+        item.style.cssText = "width:130px; height:85px; background:white; border:1px solid #ccc; cursor:grab; border-radius:5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
         item.draggable = true;
         item.innerHTML = graphicsMap[type];
         item.ondragstart = (e) => e.dataTransfer.setData("text", type);
-        bottomTray.appendChild(item);
+        tray.appendChild(item);
     });
+    document.getElementById('circuitContainer').appendChild(tray);
 }
     
 //*****************************************************************************************
