@@ -5461,54 +5461,51 @@ function generateGrade9NandProblem(ctx, canvas) {
         // MODE B: REDUNDANCY HUNTER
         // =========================================================
         else {
+            // SVG Constants for Standard and Joined (Inverter) NANDs
             const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
             const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
-            const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><h3>Advanced Logic: Redundancy Hunter</h3><p>Trace the signal from <b>A-F</b>. Find the NAND gates that cancel each other out. <b>Click to cross them out!</b></p></div>`;
-            let instDiv = document.getElementById('nandInstructions');
-            if (!instDiv) {
-                instDiv = document.createElement('div');
-                instDiv.id = 'nandInstructions';
-                const checkBtn = document.getElementById('checkansBtn');
-                if (checkBtn && checkBtn.parentNode) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
-            }
+            const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><h3>Dual-Stream Redundancy Hunter</h3><p>Trace signals from <b>A-H</b> across two funnels. Identify the NAND-based NOT-NOT pairs that cancel out. <b>Click to cross them out!</b></p></div>`;
+            let instDiv = document.getElementById('nandInstructions') || document.createElement('div');
+            instDiv.id = 'nandInstructions';
+            const checkBtn = document.getElementById('checkansBtn');
+            if (checkBtn && checkBtn.parentNode && !document.getElementById('nandInstructions')) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
             instDiv.innerHTML = instructionHTML;
 
-            const inputs = ["A", "B", "C", "D", "E", "F"];
-            const colors = ["#007bff", "#dc3545", "#28a745", "#e67e22", "#6f42c1", "#17a2b8"];
-            let layers = [6, 3, 2, 1];
+            const inputs = ["A", "B", "C", "D", "E", "F", "G", "H"];
+            let layers = [8, 4, 2]; 
             let gatePositions = [];
 
             layers.forEach((count, lIndex) => {
                 for (let i = 0; i < count; i++) {
-                    let gx = 60 + (lIndex * 160);
-                    let gy = (420 / (count + 1)) * (i + 1);
+                    let gx = 60 + (lIndex * 180);
+                    let gy = (480 / (count + 1)) * (i + 1);
 
-                    let forceInv = (lIndex === 1 && i === 2); 
+                    // Creating redundant NOT-NOT chains in the middle layer
+                    let isInv = (lIndex === 1 && (i === 1 || i === 2)); 
 
                     let gateDiv = document.createElement('div');
-                    gateDiv.className = 'nand-gate-clickable';
                     gateDiv.dataset.selected = "false";
-                    gateDiv.style.cssText = `position:absolute; left:${gx}px; top:${gy}px; width:60px; height:40px; cursor:pointer; transition: opacity 0.2s; pointer-events:auto;`;
-                    gateDiv.innerHTML = forceInv ? svgJoined : svgStandard;
+                    gateDiv.style.cssText = `position:absolute; left:${gx}px; top:${gy}px; width:60px; height:40px; cursor:pointer; pointer-events:auto; z-index:11;`;
+                    gateDiv.innerHTML = isInv ? svgJoined : svgStandard;
 
                     let xMark = document.createElement('div');
                     xMark.innerHTML = '❌';
-                    xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; display:none; color:red; pointer-events:none; z-index:10;';
+                    xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; display:none; color:red; pointer-events:none;';
                     gateDiv.appendChild(xMark);
 
                     gateDiv.onclick = () => {
                         let active = gateDiv.dataset.selected === "true";
                         gateDiv.dataset.selected = !active ? "true" : "false";
                         xMark.style.display = !active ? 'block' : 'none';
-                        gateDiv.style.opacity = !active ? '0.3' : '1';
+                        gateDiv.style.opacity = !active ? '0.4' : '1';
                     };
 
                     overlay.appendChild(gateDiv);
-                    gatePositions.push({ x: gx, y: gy, layer: lIndex, index: i, type: forceInv ? 'inverter' : 'standard' });
+                    gatePositions.push({ x: gx, y: gy, layer: lIndex, index: i, type: isInv ? 'inverter' : 'standard' });
 
                     if (lIndex === 0) {
-                        ctx.fillStyle = colors[i];
+                        ctx.fillStyle = "#333";
                         ctx.font = "bold 14px Arial";
                         ctx.fillText(inputs[i], gx - 25, gy + 25);
                     }
@@ -5516,39 +5513,41 @@ function generateGrade9NandProblem(ctx, canvas) {
             });
 
             ctx.lineWidth = 1.5;
-            ctx.strokeStyle = "#888";
+            ctx.strokeStyle = "#999";
             gatePositions.forEach(gate => {
                 if (gate.layer > 0) {
                     const prevLayer = gatePositions.filter(p => p.layer === gate.layer - 1);
-                    let sourceIndices = (gate.type === 'inverter') ? [gate.index * 2] : [gate.index * 2, gate.index * 2 + 1];
+                    let sourceIndices = [gate.index * 2, gate.index * 2 + 1];
                     
                     sourceIndices.forEach((sIdx, pin) => {
-                        const src = prevLayer[sIdx % prevLayer.length];
+                        const src = prevLayer[sIdx];
+                        if (!src) return;
+                        
                         const startX = src.x + 60;
                         const startY = src.y + 20;
                         const endX = gate.x;
                         const endY = (gate.type === 'inverter') ? gate.y + 20 : (pin === 0 ? gate.y + 12 : gate.y + 28);
                         
-                        const midX = startX + (endX - startX) / 2;
                         ctx.beginPath();
                         ctx.moveTo(startX, startY);
-                        ctx.lineTo(midX, startY);
-                        ctx.lineTo(midX, endY);
+                        ctx.lineTo(startX + (endX - startX)/2, startY);
+                        ctx.lineTo(startX + (endX - startX)/2, endY);
                         ctx.lineTo(endX, endY);
                         ctx.stroke();
                     });
                 }
             });
 
-            // Final Output Label (Inside Else)
-            const finalGate = gatePositions[gatePositions.length - 1];
-            ctx.fillStyle = "#333"; 
-            ctx.font = "bold 14px Arial";
-            ctx.fillText("OUT", finalGate.x + 65, finalGate.y + 25);
-            ctx.beginPath();
-            ctx.moveTo(finalGate.x + 60, finalGate.y + 20);
-            ctx.lineTo(finalGate.x + 75, finalGate.y + 20);
-            ctx.stroke();
+            const finalLayer = gatePositions.filter(p => p.layer === 2);
+            finalLayer.forEach((gate, idx) => {
+                ctx.fillStyle = "#333";
+                ctx.font = "bold 14px Arial";
+                ctx.fillText("Q" + (idx + 1), gate.x + 70, gate.y + 25);
+                ctx.beginPath();
+                ctx.moveTo(gate.x + 60, gate.y + 20);
+                ctx.lineTo(gate.x + 75, gate.y + 20);
+                ctx.stroke();
+            });
         }
     } catch (err) { 
         console.error("Grade 9 NAND Error: ", err); 
