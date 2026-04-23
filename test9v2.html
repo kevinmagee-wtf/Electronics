@@ -5318,19 +5318,7 @@ function generateLogic_nandProblem(ctx, canvas) {
 }
 
 //******************************************************************************************
-    
-/**
- * GENERATE GRADE 9 NAND PROBLEM
- * Full Version: Includes all UI safety checks, instructional text, 
- * and dual-mode logic (Conversion vs Redundancy Hunter).
- * * This version includes the "Clean Slate" protocol to ensure standard 
- * task text and gate trays are removed when the mode starts.
- */
-/**
- * GENERATE GRADE 9 NAND PROBLEM
- * Full Version: Includes all UI safety checks, instructional text, 
- * and dual-mode logic (Conversion vs Redundancy Hunter - WALDO EDITION).
- */
+
 /**
  * GENERATE GRADE 9 NAND PROBLEM
  * Full Version: Includes all UI safety checks, instructional text, 
@@ -5406,21 +5394,48 @@ function generateGrade9NandProblem(ctx, canvas) {
             
             const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT, 'WIRE': svgWIRE };
 
+            // --- NEW OUTLINE MAP FOR WATERMARKS ---
+            const outlineMap = {
+                'NOT': `<svg width="100%" height="100%" viewBox="0 0 140 90"><polygon points="40,25 40,65 80,45" fill="none" stroke="#ddd" stroke-width="4"/><circle cx="86" cy="45" r="5" fill="none" stroke="#ddd" stroke-width="4"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: NOT</text></svg>`,
+                'AND': `<svg width="100%" height="100%" viewBox="0 0 140 90"><path d="M 40,25 L 60,25 A 20,20 0 0,1 60,65 L 40,65 Z" fill="none" stroke="#ddd" stroke-width="4"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: AND</text></svg>`,
+                'OR': `<svg width="100%" height="100%" viewBox="0 0 140 90"><path d="M 40,25 Q 60,25 80,45 Q 60,65 40,65 Q 50,45 40,25" fill="none" stroke="#ddd" stroke-width="4"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: OR</text></svg>`,
+                'NOR': `<svg width="100%" height="100%" viewBox="0 0 140 90"><path d="M 35,25 Q 55,25 75,45 Q 55,65 35,65 Q 45,45 35,25" fill="none" stroke="#ddd" stroke-width="4"/><circle cx="81" cy="45" r="5" fill="none" stroke="#ddd" stroke-width="4"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: NOR</text></svg>`,
+                'WIRE': `<svg width="100%" height="100%" viewBox="0 0 140 90"><line x1="20" y1="45" x2="120" y2="45" stroke="#ddd" stroke-width="4" stroke-dasharray="10,10"/><text x="70" y="15" fill="#ccc" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">TARGET: WIRE</text></svg>`
+            };
+
             const s1Target = ["AND", "OR"][Math.floor(Math.random() * 2)];
             const b3Target = ["AND", "OR", "NOR"][Math.floor(Math.random() * 3)];
             const s4Target = (b3Target === "NOR") ? "NOT" : "WIRE";
             
             window.nandTargets = { s1: s1Target, s2: "NOT", s3: b3Target, s4: s4Target };
 
-            if (solBox) { 
-                solBox.innerHTML = `<div style="font-family: sans-serif; font-size: 14px;"><strong>Grade 9 Circuit Solution:</strong><ul style="line-height: 1.6; margin-top: 8px; padding-left: 20px;"><li>Top: ${s1Target}</li><li>Bottom: NOT</li><li>Middle: ${b3Target}</li><li>Final: ${s4Target}</li></ul></div>`;
+            // --- 1. NEW SOLUTION TEXT FOR CONVERSION MODE ---
+            if (solBox) {
+                const solutionsMap = {
+                    'NOT': "A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate.",
+                    'AND': "An <strong>AND</strong> gate is a NAND gate followed by a NOT gate (NAND with inputs joined).",
+                    'OR': "An <strong>OR</strong> gate uses two NOT gates (inputs joined) for A and B, feeding into a final NAND gate.",
+                    'NOR': "A <strong>NOR</strong> gate is an OR gate construction followed by a final NOT gate (inputs joined).",
+                    'WIRE': "A <strong>WIRE</strong> means no gate is needed—just a direct connection."
+                };
+                
+                solBox.innerHTML = `<div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                    <strong style="color: #d65093; font-size: 16px;">Grade 9 Circuit Solution:</strong><br>
+                    <ul style="line-height: 1.6; margin-top: 10px; padding-left: 20px;">
+                        <li><strong>Top Box (${s1Target}):</strong> ${solutionsMap[s1Target]}</li>
+                        <li><strong>Bottom Box (NOT):</strong> ${solutionsMap['NOT']}</li>
+                        <li><strong>Middle Box (${b3Target}):</strong> ${solutionsMap[b3Target]}</li>
+                        <li><strong>Final Box (${s4Target}):</strong> ${solutionsMap[s4Target]}</li>
+                    </ul>
+                </div>`;
             }
+            // ------------------------------------------------
 
             const blueprint = [
                 { id: "s1", target: s1Target, x: 40,  y: 45,  w: 140, h: 90 },
                 { id: "s2", target: "NOT",    x: 40,  y: 185, w: 140, h: 90 },
                 { id: "s3", target: b3Target, x: 220, y: 115, w: 140, h: 90 },
-                { id: "s4", target: "ANY",    x: 400, y: 115, w: 140, h: 90 } 
+                { id: "s4", target: s4Target, x: 400, y: 115, w: 140, h: 90 } 
             ];
 
             const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px;"><h3>NAND Logic Construction</h3><p>Drag the NAND equivalent gates into the boxes.</p></div>`;
@@ -5437,13 +5452,21 @@ function generateGrade9NandProblem(ctx, canvas) {
             blueprint.forEach(s => {
                 let zone = document.createElement('div');
                 zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center;`;
+                
+                // Add the placeholder watermark initially
+                zone.innerHTML = outlineMap[s.target] || "";
+
                 zone.ondragover = (e) => e.preventDefault();
                 zone.ondrop = (e) => {
                     const type = e.dataTransfer.getData("text");
                     zone.innerHTML = graphicsMap[type];
                     zone.setAttribute('data-filled-type', type); 
                 };
-                zone.ondblclick = () => { zone.innerHTML = ""; zone.removeAttribute('data-filled-type'); };
+                zone.ondblclick = () => { 
+                    // Restore the watermark when the user double-clicks to clear it
+                    zone.innerHTML = outlineMap[s.target] || ""; 
+                    zone.removeAttribute('data-filled-type'); 
+                };
                 overlay.appendChild(zone);
             });
 
@@ -5471,6 +5494,17 @@ function generateGrade9NandProblem(ctx, canvas) {
                 if (checkBtn && checkBtn.parentNode && !document.getElementById('nandInstructions')) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
                 instDiv.innerHTML = instructionHTML;
 
+                // --- 2. NEW SOLUTION TEXT FOR REDUNDANCY MODE ---
+                if (solBox) {
+                    solBox.innerHTML = `<div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                        <strong style="color: #d65093; font-size: 16px;">Redundancy Hunter Solution:</strong><br><br>
+                        A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate (the gates with only 1 wire going into them).<br><br>
+                        In digital logic, a double negative cancels out: <strong>NOT(NOT(A)) = A</strong>.<br><br>
+                        <strong>How to solve:</strong> Trace each path from the inputs (A-H) to the outputs (Q1, Q2, Q3). Whenever you see <em>two NOT gates in a row</em> on the exact same path, they form a redundant pair. Click to cross them out in pairs!
+                    </div>`;
+                }
+                // ------------------------------------------------
+
                 // =================================================================
                 // DYNAMIC RANDOMIZED GENERATOR (216 Possible Configurations)
                 // =================================================================
@@ -5490,13 +5524,13 @@ function generateGrade9NandProblem(ctx, canvas) {
                     if (template === 0) {
                         // Layout 0: Top redundancy, 2-input NAND output
                         gateDefs.push({ id: `Z${i}_L0_T`, layer: 0, x: 80, y: baseY, type: 'inverter', inputs: [getChar()] });
-                        gateDefs.push({ id: `Z${i}_L1_T`, layer: 1, x: 260, y: baseY, type: 'inverter', parents: [`Z${i}_L0_T`] }); // REDUNDANT
+                        gateDefs.push({ id: `Z${i}_L1_T`, layer: 1, x: 260, y: baseY, type: 'inverter', parents: [`Z${i}_L0_T`] }); 
                         gateDefs.push({ id: `Z${i}_L0_B`, layer: 0, x: 80, y: baseY+60, type: 'standard', inputs: [getChar(), getChar()] });
                         gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L1_T`, `Z${i}_L0_B`], output: `Q${i+1}` });
                     
                     } else if (template === 1) {
-                        // Layout 1: Straight chain redundancy, 1-input NOT output
-                        gateDefs.push({ id: `Z${i}_L0`, layer: 0, x: 80, y: baseY+30, type: 'standard', inputs: [getChar(), getChar()] });
+                        // Layout 1: TRIPLE INVERTER CHAIN! 
+                        gateDefs.push({ id: `Z${i}_L0`, layer: 0, x: 80, y: baseY+30, type: 'inverter', inputs: [getChar()] });
                         gateDefs.push({ id: `Z${i}_L1`, layer: 1, x: 260, y: baseY+30, type: 'inverter', parents: [`Z${i}_L0`] }); 
                         gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'inverter', parents: [`Z${i}_L1`], output: `Q${i+1}` });
                     
@@ -5504,12 +5538,12 @@ function generateGrade9NandProblem(ctx, canvas) {
                         // Layout 2: Bottom redundancy, 2-input NAND output
                         gateDefs.push({ id: `Z${i}_L0_T`, layer: 0, x: 80, y: baseY, type: 'standard', inputs: [getChar(), getChar()] });
                         gateDefs.push({ id: `Z${i}_L0_B`, layer: 0, x: 80, y: baseY+60, type: 'inverter', inputs: [getChar()] });
-                        gateDefs.push({ id: `Z${i}_L1_B`, layer: 1, x: 260, y: baseY+60, type: 'inverter', parents: [`Z${i}_L0_B`] }); // REDUNDANT
+                        gateDefs.push({ id: `Z${i}_L1_B`, layer: 1, x: 260, y: baseY+60, type: 'inverter', parents: [`Z${i}_L0_B`] }); 
                         gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L0_T`, `Z${i}_L1_B`], output: `Q${i+1}` });
                     
                     } else if (template === 3) {
-                        // Layout 3: NAND to NOT chain, 1-input NOT output
-                        gateDefs.push({ id: `Z${i}_L0`, layer: 0, x: 80, y: baseY+30, type: 'standard', inputs: [getChar(), getChar()] });
+                        // Layout 3: ANOTHER TRIPLE INVERTER CHAIN!
+                        gateDefs.push({ id: `Z${i}_L0`, layer: 0, x: 80, y: baseY+30, type: 'inverter', inputs: [getChar()] });
                         gateDefs.push({ id: `Z${i}_L1`, layer: 1, x: 260, y: baseY+30, type: 'inverter', parents: [`Z${i}_L0`] });
                         gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'inverter', parents: [`Z${i}_L1`], output: `Q${i+1}` });
                     
