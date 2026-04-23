@@ -5318,8 +5318,10 @@ function generateLogic_nandProblem(ctx, canvas) {
     
 function generateGrade9NandProblem(ctx, canvas) {
     // --- 1. SVG DEFINITIONS ---
+    // FIXED: Input wire now starts at 0 to connect to the incoming circuit wire.
     const svgNOT = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
-        <path d="M 20,45 L 40,45 M 40,30 L 40,60 M 40,30 L 50,30 M 40,60 L 50,60" fill="none" stroke="black" stroke-width="3"/>
+        <line x1="0" y1="45" x2="40" y2="45" stroke="black" stroke-width="3"/>
+        <path d="M 40,30 L 40,60 M 40,30 L 50,30 M 40,60 L 50,60" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 50,15 L 65,15 A 30,30 0 0,1 65,75 L 50,75 Z" fill="white" stroke="black" stroke-width="3"/>
         <circle cx="100" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/>
         <line x1="105" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
@@ -5335,8 +5337,7 @@ function generateGrade9NandProblem(ctx, canvas) {
         <line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/>
     </svg>`;
     
-    // FIXED: Bottom NOT gate in the OR set was "askew" due to incorrect Z-path coordinate. 
-    // Changed L 20,47.5 Z to L 20,87.5 Z to properly close the bottom of the D-shape.
+    // FIXED: Both "D" shapes in the OR gate now have consistent vertical closure (L 20,42.5 and L 20,87.5)
     const svgOR = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet">
         <path d="M 0,22.5 L 10,22.5 M 10,12.5 L 10,32.5 M 10,12.5 L 20,12.5 M 10,32.5 L 20,32.5" fill="none" stroke="black" stroke-width="3"/>
         <path d="M 20,2.5 L 35,2.5 A 20,20 0 0,1 35,42.5 L 20,42.5 Z" fill="white" stroke="black" stroke-width="3"/>
@@ -5370,8 +5371,7 @@ function generateGrade9NandProblem(ctx, canvas) {
     document.getElementById('circuitContainer').appendChild(overlay);
 
     // --- 3. LOGIC POOL & INSTRUCTIONS ---
-    const topPool = ["AND", "OR"];
-    const s1Target = topPool[Math.floor(Math.random() * topPool.length)];
+    const s1Target = ["AND", "OR"][Math.floor(Math.random() * 2)];
     const b3Target = ["AND", "OR", "NOR"][Math.floor(Math.random() * 3)];
     
     const blueprint = [
@@ -5381,31 +5381,19 @@ function generateGrade9NandProblem(ctx, canvas) {
         { id: "s4", target: "ANY",    x: 460, y: 115, w: 140, h: 90, ghost: false } 
     ];
 
-    // INSTRUCTIONS LOGIC:
     const instructionHTML = `
         <div style="padding: 15px; font-family: sans-serif;">
             <h3 style="color: #d65093; margin-top: 0;">NAND Logic Construction</h3>
-            <p>Convert the logical system by dragging the correct NAND equivalent into each blueprint box:</p>
+            <p>Use the NAND components below to build the following gates:</p>
             <ul style="line-height: 1.6;">
                 <li><strong>Top Box:</strong> Build an <b>${s1Target}</b> Gate</li>
                 <li><strong>Bottom Box:</strong> Build a <b>NOT</b> Gate</li>
                 <li><strong>Middle Box:</strong> Build a <b>${b3Target}</b> Gate</li>
-                <li><strong>Right Box:</strong> (Leave Blank)</li>
             </ul>
-            <p style="font-size: 0.85em; color: #666; font-style: italic;">Double-click a gate to remove it.</p>
-        </div>
-    `;
+        </div>`;
     
-    // Attempt to find your right panel
-    const rightPanel = document.getElementById('solText') || 
-                       document.getElementById('rightPanel') || 
-                       document.getElementById('instructions') ||
-                       document.getElementById('solutions');
-
-    if (rightPanel) {
-        rightPanel.innerHTML = instructionHTML;
-        rightPanel.style.display = "block";
-    }
+    const rightPanel = document.getElementById('solText') || document.getElementById('rightPanel');
+    if (rightPanel) rightPanel.innerHTML = instructionHTML;
 
     // --- 4. GHOST DRAWING ---
     const drawGhost = (type, x, y) => {
