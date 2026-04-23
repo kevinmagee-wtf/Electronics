@@ -5410,7 +5410,7 @@ function generateGrade9NandProblem(ctx, canvas) {
     const svgOR = `<svg width="110" height="55" viewBox="0 0 180 100"><path d="M 20,0 L 45,0 A 20,20 0 0,1 45,40 L 20,40 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="70" cy="20" r="5" fill="white" stroke="black" stroke-width="3"/><path d="M 20,60 L 45,60 A 20,20 0 0,1 45,100 L 20,100 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="70" cy="80" r="5" fill="white" stroke="black" stroke-width="3"/><path d="M 100,10 L 130,10 A 40,40 0 0,1 130,90 L 100,90 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="170" cy="50" r="6" fill="white" stroke="black" stroke-width="3"/></svg>`;
     const graphicsMap = { 'AND': svgAND, 'OR': svgOR, 'NOT': svgNOT };
 
-    // --- 2. CRITICAL UI TOGGLES (Restored) ---
+    // --- 2. CRITICAL UI TOGGLES ---
     const g9Group = document.getElementById('inputGroupGrade9Nand');
     if (g9Group) g9Group.style.display = 'block';
     
@@ -5438,7 +5438,7 @@ function generateGrade9NandProblem(ctx, canvas) {
         ]
     };
 
-    // --- 5. DRAW GHOST GATES (Restored) ---
+    // --- 5. DRAW GHOST GATES ---
     const drawGhostGate = (type, x, y, w, h) => {
         ctx.save();
         ctx.globalAlpha = 0.1;
@@ -5476,12 +5476,12 @@ function generateGrade9NandProblem(ctx, canvas) {
 
     // --- 7. CREATE INTERACTIVE ZONES ---
     blueprint.slots.forEach(s => {
-        drawGhostGate(s.target, s.x, s.y, s.w, s.h); // Call restored function
+        drawGhostGate(s.target, s.x, s.y, s.w, s.h);
         
         let zone = document.createElement('div');
-        zone.className = 'grade9-dropzone'; // Unique class for checking answers later
-        zone.dataset.target = s.target; // Store what it SHOULD be
-        zone.dataset.filledWith = "";   // Store what it IS (for grading)
+        zone.className = 'grade9-dropzone'; 
+        zone.dataset.target = s.target; 
+        zone.dataset.filledWith = "";   
         
         zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:1px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center;`;
         
@@ -5491,12 +5491,11 @@ function generateGrade9NandProblem(ctx, canvas) {
             const type = e.dataTransfer.getData("text");
             if(graphicsMap[type]) {
                 zone.innerHTML = graphicsMap[type];
-                zone.dataset.filledWith = type; // Save state for "Check Answers"
-                zone.style.border = (type === s.target) ? "2px solid #28a745" : "2px solid #dc3545"; // Green/Red feedback
+                zone.dataset.filledWith = type; 
+                zone.style.border = (type === s.target) ? "2px solid #28a745" : "2px solid #dc3545"; 
             }
         };
         
-        // Restored Double-Click to remove
         zone.ondblclick = () => { 
             zone.innerHTML = ""; 
             zone.dataset.filledWith = "";
@@ -5506,26 +5505,27 @@ function generateGrade9NandProblem(ctx, canvas) {
         overlay.appendChild(zone);
     });
 
-    // --- 8. THE BANK (Robust display handling) ---
+    // --- 8. THE BANK (Labels Removed) ---
     const moduleBank = document.getElementById('nandModuleBank');
     if (moduleBank) {
-        moduleBank.style.display = "block"; // Force container visibility
+        moduleBank.style.display = "block"; 
         moduleBank.innerHTML = ''; 
 
         const modules = [
-            {type:'AND', label:'NAND-AND', svg:svgAND},
-            {type:'OR',  label:'NAND-OR',  svg:svgOR},
-            {type:'NOT', label:'NAND-NOT', svg:svgNOT}
+            {type:'AND', svg:svgAND},
+            {type:'OR',  svg:svgOR},
+            {type:'NOT', svg:svgNOT}
         ];
 
         modules.forEach(mod => {
             let item = document.createElement('div');
-            // Hardcoded structural CSS so external stylesheets don't break it
-            item.style.cssText = "background:white; border:2px solid #ddd; margin:10px auto; padding:10px; width:130px; cursor:grab; display:flex; flex-direction:column; align-items:center; border-radius:6px; transition: border 0.2s;";
+            // Removed flex-direction:column and adjusted padding for a cleaner center alignment
+            item.style.cssText = "background:white; border:2px solid #ddd; margin:10px auto; padding:15px 10px; width:130px; cursor:grab; display:flex; align-items:center; justify-content:center; border-radius:6px; transition: border 0.2s;";
             item.draggable = true;
-            item.innerHTML = `<div>${mod.svg}</div><div style="font-size:12px; font-weight:bold; margin-top:5px; color:#555;">${mod.label}</div>`;
             
-            // Hover effect
+            // Just inject the SVG directly, no label div underneath
+            item.innerHTML = mod.svg; 
+            
             item.onmouseover = () => item.style.border = "2px solid #999";
             item.onmouseout = () => item.style.border = "2px solid #ddd";
             
