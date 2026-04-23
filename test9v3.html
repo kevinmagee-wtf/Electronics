@@ -5421,12 +5421,12 @@ function generateGrade9NandProblem(ctx, canvas) {
                     </div>`;
             }
 
-            // Define coordinates for Drop Zones
+            // Define coordinates for Drop Zones (Box 4 ghost removed to hide the answer!)
             const blueprint = [
                 { id: "s1", target: s1Target, x: 40,  y: 45,  w: 140, h: 90, ghost: true },
                 { id: "s2", target: "NOT",    x: 40,  y: 185, w: 140, h: 90, ghost: true },
                 { id: "s3", target: b3Target, x: 220, y: 115, w: 140, h: 90, ghost: true },
-                { id: "s4", target: "ANY",    x: 400, y: 115, w: 140, h: 90, ghost: false } 
+                { id: "s4", target: s4Target, x: 400, y: 115, w: 140, h: 90, ghost: false } 
             ];
 
             const instructionHTML = `
@@ -5442,10 +5442,12 @@ function generateGrade9NandProblem(ctx, canvas) {
             const checkBtn = document.getElementById('checkansBtn');
             if (checkBtn && checkBtn.parentNode) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
 
-            // --- GHOST DRAWING HELPER ---
+            // --- CANVAS GHOST DRAWING HELPER ---
             const drawGhost = (type, x, y) => {
                 ctx.save();
-                ctx.globalAlpha = 0.15; ctx.strokeStyle = "black"; ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.3; // Made slightly darker/more visible than original 0.15
+                ctx.strokeStyle = "#444"; 
+                ctx.lineWidth = 3; // Thicker lines for visibility
                 ctx.translate(x, y);
                 ctx.beginPath();
                 if (type === "AND") {
@@ -5458,6 +5460,9 @@ function generateGrade9NandProblem(ctx, canvas) {
                 } else if (type === "NOT") {
                     ctx.moveTo(45, 25); ctx.lineTo(85, 45); ctx.lineTo(45, 65); ctx.closePath();
                     ctx.stroke(); ctx.beginPath(); ctx.arc(90, 45, 5, 0, Math.PI*2);
+                } else if (type === "WIRE") {
+                    ctx.setLineDash([8, 8]); // Dashed line for the wire ghost
+                    ctx.moveTo(25, 45); ctx.lineTo(115, 45);
                 }
                 ctx.stroke();
                 ctx.restore();
