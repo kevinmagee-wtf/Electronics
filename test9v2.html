@@ -5526,6 +5526,7 @@ function generateGrade9NandProblem(ctx, canvas) {
                         gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L1_T`, `Z${i}_L0_B`], output: `Q${i+1}` });
                     }
                 }
+                window.activeGateDefs = gateDefs;
                 // =================================================================
 
                 ctx.lineWidth = 1.5;
@@ -8432,20 +8433,63 @@ if (currentMode === 'grade9nand') {
     else {
         let allCorrect = true; 
         let anythingSelected = false;
+        let customFeedback = "";
         
         const gates = document.querySelectorAll('.nand-gate-clickable');
 
+        // We track the math for each of the 3 zones (Z0, Z1, Z2)
+        // totalInv: total NOT gates generated in this branch
+        // selInv: how many the user crossed out
+        const zones = {
+            'Z0': { totalInv: 0, selInv: 0 },
+            'Z1': { totalInv: 0, selInv: 0 },
+            'Z2': { totalInv: 0, selInv: 0 }
+        };
+
         gates.forEach(gate => {
-            const isRedundant = gate.dataset.redundant === "true";
             const isSelected = gate.dataset.selected === "true";
-            
             if (isSelected) anythingSelected = true;
 
-            if (isRedundant !== isSelected) {
-                allCorrect = false;
+            // Match this DOM element to our generated array to check its structural type
+            const def = window.activeGateDefs.find(d => gate.id.includes(d.id) || gate.dataset.id === d.id);
+            
+            if (def) {
+                const zone = def.id.substring(0, 2); // Extracts 'Z0', 'Z1', or 'Z2'
+                
+                if (def.type === 'inverter') {
+                    zones[zone].totalInv++;
+                    if (isSelected) zones[zone].selInv++;
+                } else if (def.type === 'standard' && isSelected) {
+                    // FATAL: User crossed out a structural 2-input gate
+                    allCorrect = false;
+                    customFeedback = "You crossed out a necessary 2-input NAND gate! You must only eliminate redundant NOT gates.";
+                }
             }
         });
 
+        // If they didn't break a structural gate, evaluate the parity rules per zone
+        if (allCorrect && anythingSelected) {
+            for (let z in zones) {
+                let zData = zones[z];
+                
+                // Rule 1: Must remove an EVEN number of inverters
+                if (zData.selInv % 2 !== 0) {
+                    allCorrect = false;
+                    customFeedback = "Check your logic! You removed an odd number of NOT gates in a branch, which reverses the final output.";
+                    break;
+                }
+                
+                // Rule 2: Must not leave any redundancies behind
+                let remainingInv = zData.totalInv - zData.selInv;
+                if (remainingInv >= 2) {
+                    allCorrect = false;
+                    customFeedback = "You missed something! There is still a redundant pair of NOT gates left in the circuit.";
+                    break;
+                }
+            }
+        }
+
+        // Final UI Updates
         if (!anythingSelected) {
             canEarnPoints = false;
             feedback.innerHTML = `<span style='color: #dc3545;'>You haven't crossed out any gates! Click the redundant gates to eliminate them.</span>`;
@@ -8454,13 +8498,14 @@ if (currentMode === 'grade9nand') {
         } else if (allCorrect) {
             isCurrentProblemSolved = true;
             if (canEarnPoints) { problemsCorrect++; }
-            feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> Redundancies eliminated!</span>`;
+            feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> All redundancies mathematically eliminated!</span>`;
             canEarnPoints = false;
             if (checkansBtn) checkansBtn.style.display = 'none';
             if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
         } else {
             canEarnPoints = false;
-            feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. Check your logic—some necessary gates were crossed out, or redundant ones were left in!</span>`;
+            // Uses our custom contextual feedback, or a default message
+            feedback.innerHTML = `<span style='color: #dc3545;'>${customFeedback || "Incorrect. Check your logic and try again!"}</span>`;
             const solDiv = document.getElementById('solutions');
             if (solDiv) solDiv.style.display = 'block';
         }
