@@ -5417,12 +5417,24 @@ function generateGrade9NandProblem(ctx, canvas) {
     const standardNandGroup = document.getElementById('inputGroupLogic_NAND');
     if (standardNandGroup) standardNandGroup.style.display = 'none';
 
+    // Hide the old right-panel bank to save vertical space
+    const oldRightBank = document.getElementById('nandModuleBank');
+    if (oldRightBank) oldRightBank.style.display = 'none';
+
     // --- 3. CANVAS & OVERLAY RESET ---
     const oldOverlay = document.getElementById('nandCanvasOverlay');
     if (oldOverlay) oldOverlay.remove(); 
+    
+    // Remove old bottom tray if it exists
+    const oldTray = document.getElementById('nandBottomTray');
+    if (oldTray) oldTray.remove();
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
     
     let circuitContainer = document.getElementById('circuitContainer');
+    // Ensure container is relative so absolute positioning works inside it
+    circuitContainer.style.position = "relative"; 
+    
     let overlay = document.createElement('div');
     overlay.id = 'nandCanvasOverlay';
     overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none;`;
@@ -5505,39 +5517,36 @@ function generateGrade9NandProblem(ctx, canvas) {
         overlay.appendChild(zone);
     });
 
-    // --- 8. THE BANK (Labels Removed) ---
-    const moduleBank = document.getElementById('nandModuleBank');
-    if (moduleBank) {
-        moduleBank.style.display = "block"; 
-        moduleBank.innerHTML = ''; 
+    // --- 8. NEW HORIZONTAL BOTTOM TRAY ---
+    let bottomTray = document.createElement('div');
+    bottomTray.id = 'nandBottomTray';
+    // Positioned at the bottom of the canvas, spreading horizontally
+    bottomTray.style.cssText = `position: absolute; bottom: 0; left: 0; width: ${canvas.width}px; display: flex; justify-content: center; align-items: center; gap: 30px; background: #f8f9fa; padding: 15px 0; border-top: 2px solid #ddd; box-sizing: border-box; z-index: 10; border-radius: 0 0 8px 8px;`;
+    
+    circuitContainer.appendChild(bottomTray);
 
-        const modules = [
-            {type:'AND', svg:svgAND},
-            {type:'OR',  svg:svgOR},
-            {type:'NOT', svg:svgNOT}
-        ];
+    const modules = [
+        {type:'AND', svg:svgAND},
+        {type:'OR',  svg:svgOR},
+        {type:'NOT', svg:svgNOT}
+    ];
 
-        modules.forEach(mod => {
-            let item = document.createElement('div');
-            // Removed flex-direction:column and adjusted padding for a cleaner center alignment
-            item.style.cssText = "background:white; border:2px solid #ddd; margin:10px auto; padding:15px 10px; width:130px; cursor:grab; display:flex; align-items:center; justify-content:center; border-radius:6px; transition: border 0.2s;";
-            item.draggable = true;
-            
-            // Just inject the SVG directly, no label div underneath
-            item.innerHTML = mod.svg; 
-            
-            item.onmouseover = () => item.style.border = "2px solid #999";
-            item.onmouseout = () => item.style.border = "2px solid #ddd";
-            
-            item.ondragstart = (e) => {
-                e.dataTransfer.setData("text", mod.type);
-            };
-            
-            moduleBank.appendChild(item);
-        });
-    } else {
-        console.error("CRITICAL UI ERROR: Could not find element 'nandModuleBank' in the DOM.");
-    }
+    // Populate the horizontal tray
+    modules.forEach(mod => {
+        let item = document.createElement('div');
+        item.style.cssText = "background:white; border:2px solid #ddd; padding:10px 20px; cursor:grab; display:flex; align-items:center; justify-content:center; border-radius:6px; transition: border 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);";
+        item.draggable = true;
+        item.innerHTML = mod.svg; 
+        
+        item.onmouseover = () => item.style.border = "2px solid #999";
+        item.onmouseout = () => item.style.border = "2px solid #ddd";
+        
+        item.ondragstart = (e) => {
+            e.dataTransfer.setData("text", mod.type);
+        };
+        
+        bottomTray.appendChild(item);
+    });
 }
     
 //*****************************************************************************************
