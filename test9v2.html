@@ -5387,18 +5387,16 @@ function generateGrade9NandProblem(ctx, canvas) {
     ];
 
     const instructionHTML = `
-        <div style="padding: 10px 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
             <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 16px;">NAND Logic Construction</h3>
-            <p style="margin: 0 0 8px 0; font-size: 14px;">Build the circuit:</p>
-            <ul style="line-height: 1.4; margin: 0; padding-left: 20px; font-size: 14px;">
-                <li><strong>Top Box:</strong> <b>${s1Target}</b> Gate</li>
-                <li><strong>Bottom Box:</strong> <b>NOT</b> Gate</li>
-                <li><strong>Middle Box:</strong> <b>${b3Target}</b> Gate</li>
-                <li><strong>Final Box:</strong> Link to Q (Invert if necessary)</li>
-            </ul>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+                Drag and drop the NAND equivalent gates to connect the inputs to the output Q using only NAND gates.<br><br>
+                The wire should be placed in the right box only when needed.<br><br>
+                <i>(Double click to remove components from a box.)</i>
+            </p>
         </div>`;
     
-    // THE FIX: Safely inject into the right panel WITHOUT overwriting buttons
+    // Safely inject into the right panel WITHOUT overwriting buttons
     let oldInstructions = document.getElementById('nandInstructions');
     if (oldInstructions) oldInstructions.remove();
     
