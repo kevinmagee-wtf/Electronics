@@ -5377,14 +5377,31 @@ function generateGrade9NandProblem(ctx, canvas) {
     overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none;`;
     circuitContainer.appendChild(overlay);
 
-    // --- 4. UNIFORM BLUEPRINT SETUP (All boxes exactly 140x90) ---
+    // --- 4. RANDOMIZED BLUEPRINT SETUP ---
+    // Define the available gate types
+    const gatePool = ["AND", "OR", "NOT"];
+    
+    // Simple Durstenfeld shuffle to randomize the order
+    const shuffledGates = [...gatePool].sort(() => Math.random() - 0.5);
+
     const blueprint = {
         slots: [
-            { id: "slot1", target: "AND", x: 90, y: 55, w: 140, h: 90 },
-            { id: "slot2", target: "NOT", x: 90, y: 195, w: 140, h: 90 },
-            { id: "slot3", target: "OR", x: 300, y: 125, w: 140, h: 90 }
+            { id: "slot1", target: shuffledGates[0], x: 90, y: 55, w: 140, h: 90 },
+            { id: "slot2", target: shuffledGates[1], x: 90, y: 195, w: 140, h: 90 },
+            { id: "slot3", target: shuffledGates[2], x: 300, y: 125, w: 140, h: 90 }
         ]
     };
+
+    const qText = document.getElementById('questionText');
+    if (qText) {
+        const scenarios = [
+            "Convert the logic system using the equivalent NAND configurations.",
+            "Complete the NAND-only equivalent circuit for the given logic gates.",
+            "Drag the correct NAND gate clusters to match the original system logic."
+        ];
+        qText.innerText = scenarios[Math.floor(Math.random() * scenarios.length)];
+        qText.style.display = 'block';
+    }
 
     // --- 5. DRAW GHOST GATES ---
     const drawGhostGate = (type, x, y, w, h) => {
