@@ -5460,180 +5460,117 @@ function generateGrade9NandProblem(ctx, canvas) {
         // =========================================================
         // MODE B: REDUNDANCY HUNTER
         // =========================================================
-else {
-            const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
-            const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+} else { // Verified: This 'else' now correctly follows the previous 'if' block
+            try {
+                // 1. Setup SVG Visuals for Gates
+                const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+                const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
-            const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><h3>Precision Redundancy Hunter</h3><p>Follow isolated paths from <b>A-H</b>. Spot the redundant NOT-NOT chains. <b>Click to cross them out!</b></p></div>`;
-            let instDiv = document.getElementById('nandInstructions') || document.createElement('div');
-            instDiv.id = 'nandInstructions';
-            const checkBtn = document.getElementById('checkansBtn');
-            if (checkBtn && checkBtn.parentNode && !document.getElementById('nandInstructions')) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
-            instDiv.innerHTML = instructionHTML;
+                const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><h3>Triple-Stream Redundancy Hunter</h3><p>Trace isolated paths to <b>Q1, Q2, and Q3</b>. Spot the redundant NOT-NOT chains. <b>Click to cross them out!</b></p></div>`;
+                let instDiv = document.getElementById('nandInstructions') || document.createElement('div');
+                instDiv.id = 'nandInstructions';
+                const checkBtn = document.getElementById('checkansBtn');
+                if (checkBtn && checkBtn.parentNode && !document.getElementById('nandInstructions')) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
+                instDiv.innerHTML = instructionHTML;
 
-            const inputs = ["A", "B", "C", "D", "E", "F", "G", "H"];
-            let layers = [6, 4, 2]; // 6 gates in layer 1 to accommodate 4 singles and 2 pairs
-            let gatePositions = [];
+                const inputs = ["A", "B", "C", "D", "E", "F", "G", "H"];
+                let layers = [6, 5, 3]; // 6 Input Gates -> 5 Intermediate -> 3 Final Outputs
+                let gatePositions = [];
 
-            layers.forEach((count, lIndex) => {
-                for (let i = 0; i < count; i++) {
-                    let gx = 80 + (lIndex * 190);
-                    let gy = (480 / (count + 1)) * (i + 1);
+                // 2. Create Gates and Positioning
+                layers.forEach((count, lIndex) => {
+                    for (let i = 0; i < count; i++) {
+                        let gx = 80 + (lIndex * 190);
+                        let gy = (480 / (count + 1)) * (i + 1);
 
-                    // Logic: 4 Single Inverters (top 2, bottom 2) and 2 Standard pairs in middle
-                    let isInv = (lIndex === 0 && (i === 0 || i === 1 || i === 4 || i === 5)) || (lIndex === 1 && (i === 1 || i === 2));
+                        // Layout: Layer 0 has your 4 singles/2 pairs. Layer 1 has 2 strategic inverters.
+                        let isInv = (lIndex === 0 && (i === 0 || i === 1 || i === 4 || i === 5)) || (lIndex === 1 && (i === 0 || i === 4));
 
-                    let gateDiv = document.createElement('div');
-                    gateDiv.dataset.selected = "false";
-                    gateDiv.style.cssText = `position:absolute; left:${gx}px; top:${gy}px; width:60px; height:40px; cursor:pointer; pointer-events:auto; z-index:11;`;
-                    gateDiv.innerHTML = isInv ? svgJoined : svgStandard;
+                        let gateDiv = document.createElement('div');
+                        gateDiv.dataset.selected = "false";
+                        gateDiv.style.cssText = `position:absolute; left:${gx}px; top:${gy}px; width:60px; height:40px; cursor:pointer; pointer-events:auto; z-index:11;`;
+                        gateDiv.innerHTML = isInv ? svgJoined : svgStandard;
 
-                    let xMark = document.createElement('div');
-                    xMark.innerHTML = '❌';
-                    xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; display:none; color:red; pointer-events:none;';
-                    gateDiv.appendChild(xMark);
+                        let xMark = document.createElement('div');
+                        xMark.innerHTML = '❌';
+                        xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; display:none; color:red; pointer-events:none;';
+                        gateDiv.appendChild(xMark);
 
-                    gateDiv.onclick = () => {
-                        let active = gateDiv.dataset.selected === "true";
-                        gateDiv.dataset.selected = !active ? "true" : "false";
-                        xMark.style.display = !active ? 'block' : 'none';
-                        gateDiv.style.opacity = !active ? '0.4' : '1';
-                    };
+                        gateDiv.onclick = () => {
+                            let active = gateDiv.dataset.selected === "true";
+                            gateDiv.dataset.selected = !active ? "true" : "false";
+                            xMark.style.display = !active ? 'block' : 'none';
+                            gateDiv.style.opacity = !active ? '0.4' : '1';
+                        };
 
-                    overlay.appendChild(gateDiv);
-                    gatePositions.push({ x: gx, y: gy, layer: lIndex, index: i, type: isInv ? 'inverter' : 'standard' });
-                }
-            });
+                        overlay.appendChild(gateDiv);
+                        gatePositions.push({ x: gx, y: gy, layer: lIndex, index: i, type: isInv ? 'inverter' : 'standard' });
+                    }
+                });
 
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = "#333";
-            ctx.font = "bold 14px Arial";
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "#333";
+                ctx.font = "bold 14px Arial";
 
-            // 1. Layer 0 Inputs (4 Singles, 2 Pairs)
-            const l0Gates = gatePositions.filter(p => p.layer === 0);
-            let inputIdx = 0;
-            l0Gates.forEach((gate) => {
-                if (gate.type === 'inverter') {
-                    ctx.fillText(inputs[inputIdx++], gate.x - 25, gate.y + 25);
-                    ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 20); ctx.lineTo(gate.x, gate.y + 20); ctx.stroke();
-                } else {
-                    [12, 28].forEach(offset => {
-                        ctx.fillText(inputs[inputIdx++], gate.x - 25, gate.y + offset + 5);
-                        ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + offset); ctx.lineTo(gate.x, gate.y + offset); ctx.stroke();
-                    });
-                }
-            });
+                // 3. Initial Inputs A-H
+                const l0Gates = gatePositions.filter(p => p.layer === 0);
+                let inputIdx = 0;
+                l0Gates.forEach((gate) => {
+                    if (gate.type === 'inverter') {
+                        ctx.fillText(inputs[inputIdx++], gate.x - 25, gate.y + 25);
+                        ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 20); ctx.lineTo(gate.x, gate.y + 20); ctx.stroke();
+                    } else {
+                        [12, 28].forEach(offset => {
+                            ctx.fillText(inputs[inputIdx++], gate.x - 25, gate.y + offset + 5);
+                            ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + offset); ctx.lineTo(gate.x, gate.y + offset); ctx.stroke();
+                        });
+                    }
+                });
 
-else {
-            // 1. Setup SVG Visuals for Gates
-            const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
-            const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
-
-            const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><h3>Precision Redundancy Hunter</h3><p>Trace isolated paths from <b>A-H</b>. Spot the redundant NOT-NOT chains (two inverters in a row). <b>Click to cross them out!</b></p></div>`;
-            let instDiv = document.getElementById('nandInstructions') || document.createElement('div');
-            instDiv.id = 'nandInstructions';
-            const checkBtn = document.getElementById('checkansBtn');
-            if (checkBtn && checkBtn.parentNode && !document.getElementById('nandInstructions')) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
-            instDiv.innerHTML = instructionHTML;
-
-            const inputs = ["A", "B", "C", "D", "E", "F", "G", "H"];
-            let layers = [6, 4, 2]; // 6 gates in col 1 to allow for the 4-singles/2-pairs configuration
-            let gatePositions = [];
-
-            // 2. Create Gates and Positioning
-            layers.forEach((count, lIndex) => {
-                for (let i = 0; i < count; i++) {
-                    let gx = 80 + (lIndex * 190);
-                    let gy = (480 / (count + 1)) * (i + 1);
-
-                    // Configuration: 4 Single Inverters (A,B and G,H) and 2 Standard pairs (C-D, E-F)
-                    let isInv = (lIndex === 0 && (i === 0 || i === 1 || i === 4 || i === 5)) || (lIndex === 1 && (i === 1 || i === 2));
-
-                    let gateDiv = document.createElement('div');
-                    gateDiv.dataset.selected = "false";
-                    gateDiv.style.cssText = `position:absolute; left:${gx}px; top:${gy}px; width:60px; height:40px; cursor:pointer; pointer-events:auto; z-index:11;`;
-                    gateDiv.innerHTML = isInv ? svgJoined : svgStandard;
-
-                    let xMark = document.createElement('div');
-                    xMark.innerHTML = '❌';
-                    xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; display:none; color:red; pointer-events:none;';
-                    gateDiv.appendChild(xMark);
-
-                    gateDiv.onclick = () => {
-                        let active = gateDiv.dataset.selected === "true";
-                        gateDiv.dataset.selected = !active ? "true" : "false";
-                        xMark.style.display = !active ? 'block' : 'none';
-                        gateDiv.style.opacity = !active ? '0.4' : '1';
-                    };
-
-                    overlay.appendChild(gateDiv);
-                    gatePositions.push({ x: gx, y: gy, layer: lIndex, index: i, type: isInv ? 'inverter' : 'standard' });
-                }
-            });
-
-            ctx.lineWidth = 1.5;
-            ctx.strokeStyle = "#333";
-            ctx.font = "bold 14px Arial";
-
-            // 3. Initial Inputs A-H (4 Singles, 2 Pairs)
-            const l0Gates = gatePositions.filter(p => p.layer === 0);
-            let inputIdx = 0;
-            l0Gates.forEach((gate) => {
-                if (gate.type === 'inverter') {
-                    ctx.fillText(inputs[inputIdx++], gate.x - 25, gate.y + 25);
-                    ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 20); ctx.lineTo(gate.x, gate.y + 20); ctx.stroke();
-                } else {
-                    [12, 28].forEach(offset => {
-                        ctx.fillText(inputs[inputIdx++], gate.x - 25, gate.y + offset + 5);
-                        ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + offset); ctx.lineTo(gate.x, gate.y + offset); ctx.stroke();
-                    });
-                }
-            });
-
-            // 4. Separate Wiring Logic (The Vertical Lane System)
-            gatePositions.forEach(gate => {
-                if (gate.layer > 0) {
-                    const prevLayer = gatePositions.filter(p => p.layer === gate.layer - 1);
-                    
-                    // Assign parents to ensure data flows linearly without massive crossovers
-                    let parents = (gate.layer === 1) 
-                        ? [gate.index, (gate.index + 2) % prevLayer.length] 
-                        : [gate.index * 2, gate.index * 2 + 1];
-                    
-                    parents.forEach((pIdx, pin) => {
-                        const parent = prevLayer[pIdx];
-                        if (!parent) return;
-
-                        const startX = parent.x + 60;
-                        const startY = parent.y + 20;
-                        const endX = gate.x;
-                        const endY = (gate.type === 'inverter') ? gate.y + 20 : (pin === 0 ? gate.y + 12 : gate.y + 28);
+                // 4. Multi-Stream Isolated Wiring
+                gatePositions.forEach(gate => {
+                    if (gate.layer > 0) {
+                        const prevLayer = gatePositions.filter(p => p.layer === gate.layer - 1);
                         
-                        // Use unique vertical lanes based on Parent Index + Child Pin
-                        // This prevents wires from overlapping in the vertical "trunk"
-                        const isolatorX = startX + 25 + (pIdx * 10) + (pin * 6);
+                        // Wiring logic optimized for 3 outputs without messy crossing
+                        let parents = (gate.layer === 1) 
+                            ? [gate.index, (gate.index + 1) % prevLayer.length] 
+                            : [gate.index, gate.index + 2]; // Wide branching for the 3-gate final layer
+                        
+                        parents.forEach((pIdx, pin) => {
+                            const parent = prevLayer[pIdx];
+                            if (!parent) return;
 
-                        ctx.beginPath();
-                        ctx.moveTo(startX, startY);
-                        ctx.lineTo(isolatorX, startY);
-                        ctx.lineTo(isolatorX, endY);
-                        ctx.lineTo(endX, endY);
-                        ctx.stroke();
-                    });
-                }
-            });
+                            const startX = parent.x + 60;
+                            const startY = parent.y + 20;
+                            const endX = gate.x;
+                            const endY = (gate.type === 'inverter') ? gate.y + 20 : (pin === 0 ? gate.y + 12 : gate.y + 28);
+                            
+                            // High-precision lanes to prevent "The Jumble"
+                            const isolatorX = startX + 20 + (pIdx * 12) + (pin * 7);
 
-            // 5. Final Outputs Q1 and Q2
-            const finalLayer = gatePositions.filter(p => p.layer === 2);
-            finalLayer.forEach((gate, idx) => {
-                ctx.fillText("Q" + (idx + 1), gate.x + 70, gate.y + 25);
-                ctx.beginPath(); ctx.moveTo(gate.x + 60, gate.y + 20); ctx.lineTo(gate.x + 75, gate.y + 20); ctx.stroke();
-            });
-        }
-    } catch (err) {
-        console.error("Grade 9 NAND Error: ", err);
-    }
-}
+                            ctx.beginPath();
+                            ctx.moveTo(startX, startY);
+                            ctx.lineTo(isolatorX, startY);
+                            ctx.lineTo(isolatorX, endY);
+                            ctx.lineTo(endX, endY);
+                            ctx.stroke();
+                        });
+                    }
+                });
+
+                // 5. Triple Outputs Q1, Q2, Q3
+                const finalLayer = gatePositions.filter(p => p.layer === 2);
+                finalLayer.forEach((gate, idx) => {
+                    ctx.fillText("Q" + (idx + 1), gate.x + 70, gate.y + 25);
+                    ctx.beginPath(); ctx.moveTo(gate.x + 60, gate.y + 20); ctx.lineTo(gate.x + 75, gate.y + 20); ctx.stroke();
+                });
+
+            } catch (err) {
+                console.error("Grade 9 NAND Error: ", err);
+            }
+        } // End of Else
+    } // End of main function
     
 //*****************************************************************************************
 
