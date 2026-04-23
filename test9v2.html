@@ -5317,16 +5317,18 @@ function generateGrade9NandProblem(ctx, canvas) {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height); 
     ctx.setLineDash([]); 
+    ctx.lineWidth = 1; // Reset to standard
+    ctx.textAlign = "left"; // Reset alignment
     ctx.beginPath(); 
 
-    // Ensure UI is visible
+    // --- 2. UI VISIBILITY ---
     const g9Group = document.getElementById('inputGroupGrade9Nand');
     if (g9Group) g9Group.style.display = 'block';
 
     const standardNandGroup = document.getElementById('inputGroupLogic_NAND');
     if (standardNandGroup) standardNandGroup.style.display = 'none';
 
-    // --- 2. DEFINE THE PROBLEM ---
+    // --- 3. DEFINE THE PROBLEM ---
     const problemSchema = {
         inputLabels: ['A', 'B', 'C'],
         gates: [
@@ -5336,15 +5338,14 @@ function generateGrade9NandProblem(ctx, canvas) {
         ]
     };
 
-    // --- 3. SETUP DROP ZONES ---
-    // Added 'filledWith: null' to ensure the object is ready
+    // --- 4. SETUP DROP ZONES ---
     window.g9nandSlots = [
         { id: 'slot1', targetType: 'AND', x: 120, y: 240, w: 100, h: 60, filledWith: null },
         { id: 'slot2', targetType: 'NOT', x: 120, y: 320, w: 80, h: 50, filledWith: null },
         { id: 'slot3', targetType: 'OR', x: 280, y: 280, w: 120, h: 70, filledWith: null }
     ];
 
-    // --- 4. POPULATE BANK ---
+    // --- 5. POPULATE BANK ---
     const moduleBank = document.getElementById('nandModuleBank');
     if (moduleBank) {
         moduleBank.innerHTML = '';
@@ -5355,7 +5356,6 @@ function generateGrade9NandProblem(ctx, canvas) {
             { type: 'FAKE', label: 'NAND-X' }
         ];
         
-        // Shuffle and create draggables
         modules.sort(() => Math.random() - 0.5).forEach(mod => {
             let div = document.createElement('div');
             div.className = 'nand-module-item';
@@ -5367,11 +5367,13 @@ function generateGrade9NandProblem(ctx, canvas) {
         });
     }
 
-    // --- 5. INITIAL DRAW ---
-    drawStandardReference(ctx, problemSchema);
-    renderGhostSlots(ctx, window.g9nandSlots);
+    // --- 6. INITIAL DRAW (Wrapped in Timeout for Consistency) ---
+    setTimeout(() => {
+        drawStandardReference(ctx, problemSchema);
+        renderGhostSlots(ctx, window.g9nandSlots);
+    }, 20); 
 
-    // --- 6. ATTACH DROP LISTENER (CRITICAL FOR INTERACTION) ---
+    // --- 7. ATTACH DROP LISTENER ---
     canvas.ondragover = (e) => e.preventDefault();
     canvas.ondrop = (e) => {
         e.preventDefault();
@@ -5380,17 +5382,20 @@ function generateGrade9NandProblem(ctx, canvas) {
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
+        let changed = false;
         window.g9nandSlots.forEach(slot => {
             if (mouseX > slot.x && mouseX < slot.x + slot.w &&
                 mouseY > slot.y && mouseY < slot.y + slot.h) {
                 slot.filledWith = type;
-                
-                // Redraw canvas to show the "snapped" module
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawStandardReference(ctx, problemSchema);
-                renderGhostSlots(ctx, window.g9nandSlots);
+                changed = true;
             }
         });
+
+        if (changed) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawStandardReference(ctx, problemSchema);
+            renderGhostSlots(ctx, window.g9nandSlots);
+        }
     };
 }
     
