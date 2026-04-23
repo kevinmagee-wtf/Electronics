@@ -2394,6 +2394,73 @@ function drawNORGate(ctx, x, y) {
     ctx.lineTo(x + 70, y + 25);
     ctx.stroke();
 }
+//G9 NAND
+// --- HELPER 1: Draws the top reference circuit ---
+function drawStandardReference(ctx, schema) {
+    ctx.strokeStyle = "#333";
+    ctx.lineWidth = 2;
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 14px Arial";
+    ctx.fillText("Standard System (Convert this):", 20, 25);
+
+    schema.inputLabels.forEach((label, i) => {
+        let y = 60 + (i * 45);
+        ctx.fillText(label, 20, y + 5);
+        ctx.beginPath();
+        ctx.moveTo(40, y);
+        ctx.lineTo(130, y);
+        ctx.stroke();
+    });
+
+    schema.gates.forEach(g => {
+        ctx.strokeRect(g.x, g.y - 15, 60, 30);
+        ctx.fillStyle = "#eee";
+        ctx.fillRect(g.x, g.y - 15, 60, 30);
+        ctx.fillStyle = "#000";
+        ctx.font = "11px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(g.type, g.x + 30, g.y + 5);
+        ctx.textAlign = "left"; // Reset for next items
+    });
+    
+    ctx.beginPath();
+    ctx.moveTo(200, 50); ctx.lineTo(240, 50); ctx.lineTo(240, 85); ctx.lineTo(280, 85);
+    ctx.moveTo(200, 130); ctx.lineTo(240, 130); ctx.lineTo(240, 105); ctx.lineTo(280, 105);
+    ctx.moveTo(340, 95); ctx.lineTo(380, 95);
+    ctx.stroke();
+}
+
+// --- HELPER 2: Draws the dashed drop zones ---
+function renderGhostSlots(ctx, slots) {
+    slots.forEach(slot => {
+        if (slot.filledWith) {
+            ctx.setLineDash([]);
+            ctx.fillStyle = "#fff"; 
+            ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(slot.x, slot.y, slot.w, slot.h);
+            ctx.fillStyle = "#e64097";
+            ctx.fillRect(slot.x, slot.y, 6, slot.h);
+            ctx.fillStyle = "#333";
+            ctx.font = "bold 13px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText("NAND-" + slot.filledWith, slot.x + (slot.w / 2) + 3, slot.y + (slot.h / 2) + 5);
+            ctx.textAlign = "left";
+        } else {
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = "#bbb";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(slot.x, slot.y, slot.w, slot.h);
+            ctx.fillStyle = "#aaa";
+            ctx.font = "italic 11px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Drop " + slot.targetType + " here", slot.x + (slot.w / 2), slot.y + (slot.h / 2) + 4);
+            ctx.textAlign = "left";
+        }
+    });
+    ctx.setLineDash([]);
+}
   
 // =========================================================================================================      
 // FUNCTION 2. PROBLEM GENERATORS (THE CONTENT CREATORS) 
