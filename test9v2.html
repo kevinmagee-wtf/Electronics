@@ -5391,7 +5391,7 @@ function generateGrade9NandProblem(ctx, canvas) {
         overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none; z-index:10;`;
         if (circuitContainer) circuitContainer.appendChild(overlay);
 
-        // THE COIN FLIP: Alternate between Drag & Drop and Redundancy Hunter
+        // THE COIN FLIP
         window.grade9NandMode = Math.random() < 0.5 ? 'conversion' : 'redundancy';
 
         // =========================================================
@@ -5428,7 +5428,6 @@ function generateGrade9NandProblem(ctx, canvas) {
             const checkBtn = document.getElementById('checkansBtn');
             if (checkBtn && checkBtn.parentNode) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
 
-            // Wiring and Zones...
             ctx.strokeStyle = "#333"; ctx.lineWidth = 2; ctx.beginPath();
             ctx.moveTo(10, 75); ctx.lineTo(40, 75); ctx.moveTo(10, 105); ctx.lineTo(40, 105); ctx.moveTo(10, 230); ctx.lineTo(40, 230);
             ctx.moveTo(180, 90); ctx.lineTo(200, 90); ctx.lineTo(200, 140); ctx.lineTo(220, 140); ctx.moveTo(180, 230); ctx.lineTo(200, 230); ctx.lineTo(200, 180); ctx.lineTo(220, 180);
@@ -5459,14 +5458,12 @@ function generateGrade9NandProblem(ctx, canvas) {
 
         } 
         // =========================================================
-        // MODE B: REDUNDANCY HUNTER (FUNNEL WALDO MODE - DYNAMIC)
+        // MODE B: REDUNDANCY HUNTER
         // =========================================================
-else {
-            // Restore SVG Constants
+        else {
             const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
             const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
 
-            // RESTORED: Instruction Box
             const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"><h3>Advanced Logic: Redundancy Hunter</h3><p>Trace the signal from <b>A-F</b>. Find the NAND gates that cancel each other out. <b>Click to cross them out!</b></p></div>`;
             let instDiv = document.getElementById('nandInstructions');
             if (!instDiv) {
@@ -5487,17 +5484,14 @@ else {
                     let gx = 60 + (lIndex * 160);
                     let gy = (420 / (count + 1)) * (i + 1);
 
-                    // Logic: Identify Inverters and Random Redundancies
                     let forceInv = (lIndex === 1 && i === 2); 
-                    let isRedundant = (lIndex > 0 && Math.random() < 0.2); // Random targets for the game
 
                     let gateDiv = document.createElement('div');
                     gateDiv.className = 'nand-gate-clickable';
                     gateDiv.dataset.selected = "false";
-                    gateDiv.style.cssText = `position:absolute; left:${gx}px; top:${gy}px; width:60px; height:40px; cursor:pointer; transition: opacity 0.2s;`;
+                    gateDiv.style.cssText = `position:absolute; left:${gx}px; top:${gy}px; width:60px; height:40px; cursor:pointer; transition: opacity 0.2s; pointer-events:auto;`;
                     gateDiv.innerHTML = forceInv ? svgJoined : svgStandard;
 
-                    // RESTORED: The "X" Mark for clicking
                     let xMark = document.createElement('div');
                     xMark.innerHTML = '❌';
                     xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; display:none; color:red; pointer-events:none; z-index:10;';
@@ -5521,7 +5515,6 @@ else {
                 }
             });
 
-            // RESTORED: Professional Wiring
             ctx.lineWidth = 1.5;
             ctx.strokeStyle = "#888";
             gatePositions.forEach(gate => {
@@ -5546,24 +5539,21 @@ else {
                     });
                 }
             });
-            const finalGate = gatePositions[gatePositions.length - 1];
-            ctx.fillStyle = "#333"; 
-            ctx.fillText("OUT", finalGate.x + 70, finalGate.y + 25);
-        }
 
-            // Label the final Output
+            // Final Output Label (Inside Else)
             const finalGate = gatePositions[gatePositions.length - 1];
             ctx.fillStyle = "#333"; 
             ctx.font = "bold 14px Arial";
             ctx.fillText("OUT", finalGate.x + 65, finalGate.y + 25);
-            ctx.strokeStyle = "#333";
             ctx.beginPath();
             ctx.moveTo(finalGate.x + 60, finalGate.y + 20);
             ctx.lineTo(finalGate.x + 75, finalGate.y + 20);
             ctx.stroke();
         }
-    } catch (err) { console.error(err); }
-
+    } catch (err) { 
+        console.error("Grade 9 NAND Error: ", err); 
+    }
+}
     
 //*****************************************************************************************
 
