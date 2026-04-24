@@ -7644,7 +7644,7 @@ function generateBlockBuilderProblem(ctx, canvas) {
     const scenario = JSON.parse(JSON.stringify(rawScenario)); 
 
     // --- SHIFT ENTIRE DIAGRAM UP ---
-    const shiftUp = 35; // Move everything 35px higher to clear the tray
+    const shiftUp = 40; // Move everything 40px higher to clear the tray
     scenario.blocks.forEach(b => b.y -= shiftUp);
     scenario.wires.forEach(w => {
         w.startY -= shiftUp;
