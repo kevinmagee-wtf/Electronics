@@ -7782,8 +7782,9 @@ function generateBlockBuilderProblem(ctx, canvas) {
         let row = Math.floor(index / 5);
         item.style.left = (15 + col * 115) + 'px';
         
-        // Start the buttons exactly 10px inside the top of the dashed box
-        item.style.top = (trayY + 10 + row * 40) + 'px';
+        // Shifted down to 15px inside the tray, with a 42px gap between rows
+        item.style.top = (trayY + 15 + row * 42) + 'px';
+        
         
         // Button styling
         item.style.width = '110px';
