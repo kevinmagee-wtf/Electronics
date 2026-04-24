@@ -7639,28 +7639,28 @@ function generateBlockBuilderProblem(ctx, canvas) {
         `<strong>${scenario.title}</strong><br>` +
         scenario.description + 
         "<br><br><em>Drag the correct sub-systems from the tray to complete the block diagram.</em>";
-
+    
     // Clear canvas and draw wires
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#fff"; 
-    ctx.lineWidth = 2;
-
-    scenario.wires.forEach(wire => {
-        ctx.beginPath();
-        ctx.moveTo(wire.startX, wire.startY);
-        ctx.lineTo(wire.endX, wire.endY);
-        ctx.stroke();
-        
-        let angle = Math.atan2(wire.endY - wire.startY, wire.endX - wire.startX);
-        let midX = (wire.startX + wire.endX) / 2;
-        let midY = (wire.startY + wire.endY) / 2;
-        ctx.beginPath();
-        ctx.moveTo(midX, midY);
-        ctx.lineTo(midX - 10 * Math.cos(angle - Math.PI / 6), midY - 10 * Math.sin(angle - Math.PI / 6));
-        ctx.lineTo(midX - 10 * Math.cos(angle + Math.PI / 6), midY - 10 * Math.sin(angle + Math.PI / 6));
-        ctx.fillStyle = "#fff";
-        ctx.fill();
-    });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "#333"; // 👈 CHANGED FROM "#fff" to "#333" (Dark Grey)
+        ctx.lineWidth = 2;
+    
+        scenario.wires.forEach(wire => {
+            ctx.beginPath();
+            ctx.moveTo(wire.startX, wire.startY);
+            ctx.lineTo(wire.endX, wire.endY);
+            ctx.stroke();
+            
+            let angle = Math.atan2(wire.endY - wire.startY, wire.endX - wire.startX);
+            let midX = (wire.startX + wire.endX) / 2;
+            let midY = (wire.startY + wire.endY) / 2;
+            ctx.beginPath();
+            ctx.moveTo(midX, midY);
+            ctx.lineTo(midX - 10 * Math.cos(angle - Math.PI / 6), midY - 10 * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(midX - 10 * Math.cos(angle + Math.PI / 6), midY - 10 * Math.sin(angle + Math.PI / 6));
+            ctx.fillStyle = "#333"; // 👈 CHANGED FROM "#fff" to "#333" (Dark Grey)
+            ctx.fill();
+        });
 
     // Create Overlay
     let overlay = document.getElementById('canvasOverlay');
