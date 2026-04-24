@@ -10125,10 +10125,9 @@ function hideAllInputGroups() {
         'inputGroupGrade9BooleanMaster',    // Grade 9 Boolean Master
         'inputGroupLogic_ic',               // NEW: Logic Gate ICs
         'inputGroupLogicSystem',            // NEW: Logic Systems
-        'inputGroupLogic_NAND',              // NEW: NAND Equivalents
-        'inputGroupGrade9Nand',              // Grade 9 NAND
-        'inputGroupBlockBuilder',            // NEW: Block Builder System
-        'nandInstructions'
+        'inputGroupLogic_NAND',             // NEW: NAND Equivalents
+        'inputGroupGrade9Nand',             // Grade 9 NAND
+        'inputGroupBlockBuilder'            // NEW: Block Builder System
     ];
 
     ghostGroups.forEach(id => {
@@ -10136,10 +10135,10 @@ function hideAllInputGroups() {
         if (el) el.style.display = "none"; 
     });
 
-    // --- ADD THIS SPECIFIC PART BELOW THE LOOP ---
-    // This finds ANY div with that ID (even clones) and removes them entirely
-    const stubbornNands = document.querySelectorAll('#nandInstructions');
-    stubbornNands.forEach(el => el.remove());
+    // --- PATH 2: SURGICAL REMOVAL ---
+    // This finds ANY existing NAND instruction divs (including stacked clones) 
+    // and deletes them from the DOM entirely to keep the layout clean.
+    document.querySelectorAll('#nandInstructions').forEach(el => el.remove());
     
     // 2c. TOGGLE BUTTONS
     if (document.getElementById('mainGrade9Btn')) {
@@ -10197,14 +10196,13 @@ function hideAllInputGroups() {
     document.querySelectorAll('.ipo-zone').forEach(zone => zone.innerHTML = "");
 
     // 9b. CLEAR NAND CANVAS OVERLAYS
-    // Prevents transparent drag-and-drop boxes from floating over other circuits!
     const nandOverlay = document.getElementById('nandCanvasOverlay');
     if (nandOverlay) nandOverlay.remove();
 
     const nandTray = document.getElementById('nandBottomTray');
     if (nandTray) nandTray.remove();
 
-    // 9c. CLEAR BLOCK BUILDER OVERLAYS (Add this new block here!)
+    // 9c. CLEAR BLOCK BUILDER OVERLAYS
     document.querySelectorAll('.gcse-block-ui').forEach(el => el.remove());
     const blockOverlay = document.getElementById('canvasOverlay');
     if (blockOverlay) blockOverlay.remove();
