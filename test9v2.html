@@ -5079,6 +5079,14 @@ function generateLogic_nandProblem(ctx, canvas) {
     currentProblem = { type: 'logic_nand' };
     const themePink = "#d65093"; 
     
+ // --- CRITICAL CLEANUP (Prevents Grade 9 text from lingering) ---
+    const oldNandInstructions = document.getElementById('nandInstructions');
+    if (oldNandInstructions) oldNandInstructions.remove();
+    
+    const oldNandTray = document.getElementById('nandBottomTray');
+    if (oldNandTray) oldNandTray.remove();
+    // --------------------------------------------------------------- 
+    
     // 1. UI Reset for Solutions
     const solContainer = document.getElementById('solutions');
     if (solContainer) solContainer.style.display = "none"; 
