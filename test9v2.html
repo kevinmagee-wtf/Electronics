@@ -1678,6 +1678,8 @@ function handleNewQuestionClick() {
         if (typeof generatePowerProblem === "function") generatePowerProblem(ctx, canvas);
     } else if (currentMode === 'logic_system') { 
         if (typeof generateLogicSystemProblem === "function") generateLogicSystemProblem(ctx, canvas);
+    } else if (currentMode === 'block_diagram') {
+        if (typeof generateBlockBuilderProblem === "function") generateBlockBuilderProblem(ctx, canvas);
     } else {
         // This calls hubController which does the final ctx.clearRect
         if (typeof hubController === "function") hubController(ctx, canvas);
