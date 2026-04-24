@@ -7560,7 +7560,164 @@ function generateIPOProblem(ctx, canvas) {
         });
     }
 }
-    
+//*****************************************************************************************
+// ==============================
+// Block Builder
+// ===============================
+const blockScenarios = [
+    {
+        id: '2019_security_light',
+        title: 'Security Lighting System',
+        description: `
+            <ul>
+                <li>The lighting system should only operate if it is dark.</li>
+                <li>The lighting system should be operated either at the front door or when someone opens the gate.</li>
+                <li>The LED lights should remain on for a fixed period of 3 minutes and then switch off automatically.</li>
+            </ul>
+        `,
+        // Coordinates for where to draw the empty dashed boxes
+        dropZones: [
+            { id: 'in1', x: 20, y: 30, w: 100, h: 60, target: 'Switch (Gate)' },
+            { id: 'in2', x: 20, y: 110, w: 100, h: 60, target: 'Switch (House)' },
+            { id: 'in3', x: 20, y: 220, w: 100, h: 60, target: 'Light Sensor' },
+            { id: 'gate1', x: 160, y: 70, w: 100, h: 60, target: 'OR Gate' },
+            { id: 'gate2', x: 300, y: 150, w: 100, h: 60, target: 'AND Gate' },
+            { id: 'proc1', x: 440, y: 150, w: 100, h: 60, target: 'Delay Unit' },
+            { id: 'drive1', x: 580, y: 150, w: 100, h: 60, target: 'Transistor Driver' } // Will accept Transistor OR MOSFET later
+        ],
+        // The static output that is pre-drawn on the canvas
+        staticBlocks: [
+            { text: 'LED Lights', x: 720, y: 150, w: 90, h: 60 }
+        ],
+        // Wires connecting the zones (from_x, from_y, to_x, to_y)
+        wires: [
+            { startX: 120, startY: 60, endX: 160, endY: 85 }, // Sw1 to OR
+            { startX: 120, startY: 140, endX: 160, endY: 115 }, // Sw2 to OR
+            { startX: 260, startY: 100, endX: 300, endY: 165 }, // OR to AND
+            { startX: 120, startY: 250, endX: 300, endY: 195 }, // Light to AND
+            { startX: 400, startY: 180, endX: 440, endY: 180 }, // AND to Delay
+            { startX: 540, startY: 180, endX: 580, endY: 180 }, // Delay to Driver
+            { startX: 680, startY: 180, endX: 720, endY: 180 }  // Driver to LED
+        ],
+        // The items that populate the bottom tray (includes distractors)
+        trayPool: ['Switch (Gate)', 'Switch (House)', 'Light Sensor', 'OR Gate', 'AND Gate', 'NAND Gate', 'Delay Unit', 'Pulse Generator', 'Transistor Driver', 'Thyristor']
+    },
+    {
+        id: '2020_watering',
+        title: 'Automatic Watering System',
+        description: `
+            <ul>
+                <li>The watering system should operate only at night.</li>
+                <li>The watering system should operate only when the soil is dry.</li>
+                <li>Water flow is controlled by a solenoid valve requiring 4A to operate.</li>
+                <li>The water should be turned on for a fixed period of 15 minutes.</li>
+            </ul>
+        `,
+        dropZones: [
+            { id: 'in1', x: 20, y: 30, w: 100, h: 60, target: 'Moisture Sensor' },
+            { id: 'in2', x: 20, y: 150, w: 100, h: 60, target: 'Light Sensor' },
+            { id: 'gate1', x: 160, y: 150, w: 100, h: 60, target: 'NOT Gate' },
+            { id: 'gate2', x: 300, y: 90, w: 100, h: 60, target: 'AND Gate' },
+            { id: 'proc1', x: 440, y: 90, w: 100, h: 60, target: 'Delay Unit' },
+            { id: 'drive1', x: 580, y: 90, w: 100, h: 60, target: 'MOSFET' } 
+        ],
+        staticBlocks: [
+            { text: 'Solenoid Unit', x: 720, y: 90, w: 90, h: 60 }
+        ],
+        wires: [
+            { startX: 120, startY: 60, endX: 300, endY: 105 }, // Moisture to AND
+            { startX: 120, startY: 180, endX: 160, endY: 180 }, // Light to NOT
+            { startX: 260, startY: 180, endX: 300, endY: 135 }, // NOT to AND
+            { startX: 400, startY: 120, endX: 440, endY: 120 }, // AND to Delay
+            { startX: 540, startY: 120, endX: 580, endY: 120 }, // Delay to MOSFET
+            { startX: 680, startY: 120, endX: 720, endY: 120 }  // MOSFET to Solenoid
+        ],
+        trayPool: ['Moisture Sensor', 'Light Sensor', 'Temperature Sensor', 'NOT Gate', 'AND Gate', 'OR Gate', 'Delay Unit', 'MOSFET', 'Transistor Switch']
+    }
+];
+// *********************
+// Function starts here: 
+function generateBlockBuilderProblem(ctx, canvas) {
+    try {
+        currentProblem = { type: 'blockbuilder' };
+        const themeColor = "#2c3e50"; // A nice engineering blue/grey
+
+        // --- CLEAN SLATE PROTOCOL ---
+        // (Use your existing clean slate code here to hide IPO containers, NAND overlays, etc.)
+        // ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // ...
+
+        // 1. Pick a random scenario
+        const scenario = blockScenarios[Math.floor(Math.random() * blockScenarios.length)];
+        window.activeBlockScenario = scenario; // Save to global for the checker
+
+        // 2. Set up Instructions/Description
+        let solBox = document.getElementById('solText');
+        if (solBox) {
+            solBox.style.display = "block";
+            solBox.innerHTML = `
+                <div style="padding: 15px; background: #fdfdfd; border: 1px solid #ddd; border-radius: 5px;">
+                    <h3 style="color: ${themeColor}; margin-top: 0;">${scenario.title}</h3>
+                    <div style="font-size: 14px; color: #444;">${scenario.description}</div>
+                </div>`;
+        }
+
+        // 3. Create Overlay for Drop Zones
+        let circuitContainer = document.getElementById('circuitContainer');
+        let overlay = document.createElement('div');
+        overlay.id = 'blockCanvasOverlay';
+        overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none; z-index:10;`;
+        if (circuitContainer) circuitContainer.appendChild(overlay);
+
+        // 4. Draw Static Wires on Canvas
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 2;
+        scenario.wires.forEach(wire => {
+            // Draw a line with a small arrow in the middle
+            ctx.beginPath();
+            ctx.moveTo(wire.startX, wire.startY);
+            ctx.lineTo(wire.endX, wire.endY);
+            ctx.stroke();
+            
+            // Draw Arrowhead
+            let angle = Math.atan2(wire.endY - wire.startY, wire.endX - wire.startX);
+            let midX = (wire.startX + wire.endX) / 2;
+            let midY = (wire.startY + wire.endY) / 2;
+            ctx.beginPath();
+            ctx.moveTo(midX, midY);
+            ctx.lineTo(midX - 10 * Math.cos(angle - Math.PI / 6), midY - 10 * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(midX - 10 * Math.cos(angle + Math.PI / 6), midY - 10 * Math.sin(angle + Math.PI / 6));
+            ctx.fillStyle = "#333";
+            ctx.fill();
+        });
+
+        // 5. Draw Static Output Blocks on Canvas
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        scenario.staticBlocks.forEach(block => {
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(block.x, block.y, block.w, block.h);
+            ctx.strokeRect(block.x, block.y, block.w, block.h);
+            ctx.fillStyle = "#333";
+            
+            // Handle text wrapping for long titles
+            let lines = block.text.split(' ');
+            if(lines.length > 1) {
+                 ctx.fillText(lines[0], block.x + (block.w/2), block.y + (block.h/2) - 8);
+                 ctx.fillText(lines.slice(1).join(' '), block.x + (block.w/2), block.y + (block.h/2) + 8);
+            } else {
+                 ctx.fillText(block.text, block.x + (block.w/2), block.y + (block.h/2));
+            }
+        });
+
+        // Next up: Generating the HTML drop zones and the bottom tray!
+
+    } catch (err) {
+        console.error("Block Builder Start Error: ", err);
+    }
+}
+//*****************************************************************************************
 // ===========================================================================================================================      
 // FUNCTION 3. NAVIGATION and UI (Traffic Control) 
 // ===========================================================================================================================      
