@@ -7779,6 +7779,7 @@ const blockScenarios = [
 
 // *********************
 // 2. THE GENERATOR FUNCTION starts here: 
+//**********************
 function generateBlockBuilderProblem(ctx, canvas) {
     // --- 1. RESET ALL GRADING & GAME STATE VARIABLES ---
     currentMode = 'block_diagram'; 
@@ -7906,6 +7907,7 @@ function generateBlockBuilderProblem(ctx, canvas) {
                 box.innerText = data;
                 box.dataset.current = data;
                 
+                // If you have a real-time checker, it runs here. Otherwise, they use the Submit button.
                 if (typeof checkBlockBuilderAnswers === "function") checkBlockBuilderAnswers(); 
             });
         }
@@ -7965,70 +7967,7 @@ function generateBlockBuilderProblem(ctx, canvas) {
         overlay.appendChild(item); 
     });
 }
-
-    // --- DRAW TRAY AREA ON THE CANVAS ---
-    const trayHeight = 100; // Increased to 100px for more breathing room
-    const trayY = canvas.height - trayHeight - 5; // Pins it to the very bottom
-
-    ctx.strokeStyle = "#888";
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
-    ctx.strokeRect(5, trayY, 590, trayHeight); 
-    ctx.setLineDash([]);
-    
-    // --- NEW: PLACE DRAGGABLE ITEMS INSIDE THE OVERLAY ---
-    // Remove old HTML tray if it exists from a previous run
-    let oldTray = document.getElementById('blockTray');
-    if (oldTray) oldTray.remove();
-
-    // Shuffle the tray options
-    let shuffledOptions = scenario.trayPool.sort(() => Math.random() - 0.5);
-
-    // Generate the buttons and position them in a 5-column grid at the bottom
-    shuffledOptions.forEach((opt, index) => {
-        const item = document.createElement('div');
-        item.innerText = opt;
-        
-        item.style.position = 'absolute';
-        
-        // Calculate Grid Position (5 items per row, starting at X=15)
-        let col = index % 5;
-        let row = Math.floor(index / 5);
-        item.style.left = (15 + col * 115) + 'px';
-        
-        // Shifted down to 15px inside the tray, with a 42px gap between rows
-        item.style.top = (trayY + 15 + row * 42) + 'px';
-        
-        // Button styling
-        item.style.width = '110px';
-        item.style.height = '35px';
-        item.style.backgroundColor = '#3498db';
-        item.style.color = '#fff';
-        item.style.borderRadius = '4px';
-        item.style.cursor = 'grab';
-        item.style.fontSize = '11px'; // Scaled to fit long words
-        item.style.fontWeight = 'bold';
-        item.style.display = 'flex';
-        item.style.alignItems = 'center';
-        item.style.justifyContent = 'center';
-        item.style.textAlign = 'center';
-        item.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-        item.style.boxSizing = 'border-box';
-        item.style.padding = '2px';
-        item.style.pointerEvents = 'auto';
-        item.draggable = true;
-
-        // Drag mechanics
-        item.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', opt);
-            e.dataTransfer.effectAllowed = 'copy';
-        });
-
-        // Append straight to the overlay on top of the canvas!
-        overlay.appendChild(item); 
-    });
-}
-//*****************************************************************************************
+//********************************
 // ===========================================================================================================================      
 // FUNCTION 3. NAVIGATION and UI (Traffic Control) 
 // ===========================================================================================================================      
