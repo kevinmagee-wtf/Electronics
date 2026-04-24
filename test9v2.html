@@ -7777,14 +7777,12 @@ function generateBlockBuilderProblem(ctx, canvas) {
         item.style.position = 'absolute';
         
         // Calculate Grid Position (5 items per row, starting at X=15)
-
         let col = index % 5;
         let row = Math.floor(index / 5);
         item.style.left = (15 + col * 115) + 'px';
         
         // Shifted down to 15px inside the tray, with a 42px gap between rows
         item.style.top = (trayY + 15 + row * 42) + 'px';
-        
         
         // Button styling
         item.style.width = '110px';
