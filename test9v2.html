@@ -7739,20 +7739,23 @@ function generateBlockBuilderProblem(ctx, canvas) {
         overlay.appendChild(box);
     });
 
-// --- DRAW TRAY AREA ON THE CANVAS ---
+    // --- DRAW TRAY AREA ON THE CANVAS ---
+    // Calculate the exact bottom dynamically!
+    const trayHeight = 85;
+    const trayY = canvas.height - trayHeight - 5; // Tucks it 5px from the absolute bottom
+
     ctx.strokeStyle = "#888";
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
-    // Pushed down to Y=332 (this puts the bottom edge right at the limit)
-    ctx.strokeRect(5, 332, 590, 85); 
+    ctx.strokeRect(5, trayY, 590, trayHeight); 
     ctx.setLineDash([]); 
     
     ctx.fillStyle = "#ccc";
     ctx.font = "italic 13px Arial";
     ctx.textAlign = "left";
-    // Tucked the text right above the dashed line
-    ctx.fillText("Available Sub-systems (Drag from here to the dashed boxes above):", 10, 325);
-
+    // Place the text exactly 8px above the dashed box
+    ctx.fillText("Available Sub-systems (Drag from here to the dashed boxes above):", 10, trayY - 8);
+    
     // --- NEW: PLACE DRAGGABLE ITEMS INSIDE THE OVERLAY ---
     // Remove old HTML tray if it exists from a previous run
     let oldTray = document.getElementById('blockTray');
@@ -7768,12 +7771,14 @@ function generateBlockBuilderProblem(ctx, canvas) {
         
         item.style.position = 'absolute';
         
-        // Calculate Grid Position (5 items per row, starting at X=15, Y=320)
+        // Calculate Grid Position (5 items per row, starting at X=15)
+
         let col = index % 5;
         let row = Math.floor(index / 5);
         item.style.left = (15 + col * 115) + 'px';
-        // Pushed down to Y=340, and tightened the row gap slightly to 40
-        item.style.top = (340 + row * 40) + 'px';
+        
+        // Start the buttons exactly 10px inside the top of the dashed box
+        item.style.top = (trayY + 10 + row * 40) + 'px';
         
         // Button styling
         item.style.width = '110px';
