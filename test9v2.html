@@ -7839,8 +7839,9 @@ function switchTab(mode) {
         'inputGroupGrade9BooleanPath',    
         'inputGroupLogicSystem',          
         'inputGroupLogic_ic',             
-        'inputGroupLogic_NAND',            // 👇 NEW: Clears the NAND Equivalents UI!
-        'inputGroupGrade9Nand'
+        'inputGroupLogic_NAND',            
+        'inputGroupGrade9Nand',
+        'inputGroupBlockBuilder'           // 👇 NEW: Hides Block Builder UI when switching away
     ];
 
     elementsToHide.forEach(id => {
@@ -7853,7 +7854,7 @@ function switchTab(mode) {
     if (subtitle) {
         if (mode === 'home') subtitle.innerText = "Welcome to Electronics";
         else if (['analysis', 'divider', 'resistance', 'colorcode', 'power'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
-        else if (mode === 'iposort') subtitle.innerText = "Module 4: Systems";
+        else if (['iposort', 'blockbuilder'].includes(mode)) subtitle.innerText = "Module 4: Systems"; // 👇 NEW: Added blockbuilder here
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
         else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
         else if (['logic_ic', 'logic_system', 'logic_boolean', 'logic_nand', 'grade9boolean'].includes(mode)) subtitle.innerText = "Module 2: Logic Gates"; 
