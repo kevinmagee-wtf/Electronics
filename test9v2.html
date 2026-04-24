@@ -10116,6 +10116,7 @@ function hideAllInputGroups() {
         'inputGroupLogic_ic',               // NEW: Logic Gate ICs
         'inputGroupLogicSystem',            // NEW: Logic Systems
         'inputGroupLogic_NAND',              // NEW: NAND Equivalents
+        'inputGroupGrade9Nand',              // Grade 9 NAND
         'inputGroupBlockBuilder'            // NEW: Block Builder System
     ];
 
@@ -10186,6 +10187,11 @@ function hideAllInputGroups() {
 
     const nandTray = document.getElementById('nandBottomTray');
     if (nandTray) nandTray.remove();
+
+    // 9c. CLEAR BLOCK BUILDER OVERLAYS (Add this new block here!)
+    document.querySelectorAll('.gcse-block-ui').forEach(el => el.remove());
+    const blockOverlay = document.getElementById('canvasOverlay');
+    if (blockOverlay) blockOverlay.remove();
 
     // 10. REVEAL ACTION BUTTONS
     const checkansBtn = document.getElementById('checkansBtn');
