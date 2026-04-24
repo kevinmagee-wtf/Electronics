@@ -7739,19 +7739,19 @@ function generateBlockBuilderProblem(ctx, canvas) {
         overlay.appendChild(box);
     });
 
-    // --- DRAW TRAY AREA ON THE CANVAS ---
+// --- DRAW TRAY AREA ON THE CANVAS ---
     ctx.strokeStyle = "#888";
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
-    // Pushed down from 310 to 330, and made slightly shorter to fit the bottom edge
-    ctx.strokeRect(5, 330, 590, 85); 
+    // Pushed down to Y=332 (this puts the bottom edge right at the limit)
+    ctx.strokeRect(5, 332, 590, 85); 
     ctx.setLineDash([]); 
     
     ctx.fillStyle = "#ccc";
     ctx.font = "italic 13px Arial";
     ctx.textAlign = "left";
-    // Pushed the text down from 300 to 320
-    ctx.fillText("Available Sub-systems (Drag from here to the dashed boxes above):", 10, 320);
+    // Tucked the text right above the dashed line
+    ctx.fillText("Available Sub-systems (Drag from here to the dashed boxes above):", 10, 325);
 
     // --- NEW: PLACE DRAGGABLE ITEMS INSIDE THE OVERLAY ---
     // Remove old HTML tray if it exists from a previous run
@@ -7772,7 +7772,8 @@ function generateBlockBuilderProblem(ctx, canvas) {
         let col = index % 5;
         let row = Math.floor(index / 5);
         item.style.left = (15 + col * 115) + 'px';
-        item.style.top = (338 + row * 42) + 'px';
+        // Pushed down to Y=340, and tightened the row gap slightly to 40
+        item.style.top = (340 + row * 40) + 'px';
         
         // Button styling
         item.style.width = '110px';
