@@ -9037,6 +9037,80 @@ if (currentMode === 'grade9nand') {
     if (typeof updateScoreboard === "function") updateScoreboard();
     return; 
 }
+
+    // ==========================================
+    // BLOCK DIAGRAMS INTERCEPTOR
+    // ==========================================
+    if (currentMode === 'block_diagram') {
+        const feedback = document.getElementById('feedback');
+        
+        // Find all the dropzones in the current block diagram
+        // (Assuming you give them a class like 'block-dropzone' when generating them)
+        const dropzones = document.querySelectorAll('.block-dropzone');
+        
+        let allFilled = true;
+        let allCorrect = true;
+
+        // 1. Safety Check: Are all dropzones filled?
+        dropzones.forEach(zone => {
+            const filledItem = zone.getAttribute('data-filled') || "";
+            if (filledItem.trim() === "") {
+                allFilled = false;
+            }
+        });
+
+        if (!allFilled) {
+            feedback.innerHTML = "<span style='color: #dc3545;'>Please fill all the empty boxes before checking!</span>";
+            return; // Stop grading
+        }
+
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        // 2. Grade the dropzones
+        dropzones.forEach(zone => {
+            const expectedAnswer = zone.getAttribute('data-answer'); // The correct answer we passed from the array
+            const filledItem = zone.getAttribute('data-filled');
+
+            if (filledItem === expectedAnswer) {
+                // Correct! Make it green.
+                zone.style.backgroundColor = "rgba(40, 167, 69, 0.2)"; 
+                zone.style.border = "2px solid #28a745";
+            } else {
+                // Incorrect! Make it red.
+                allCorrect = false;
+                zone.style.backgroundColor = "rgba(220, 53, 69, 0.2)"; 
+                zone.style.border = "2px solid #dc3545";
+            }
+        });
+
+        const checkansBtn = document.getElementById('checkansBtn');
+        const showsolutionsBtn = document.getElementById('showsolutionsBtn');
+
+        // 3. Final Feedback
+        if (allCorrect) {
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> You correctly mapped the system architecture!</span>`;
+            canEarnPoints = false;
+            
+            if (checkansBtn) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+        } else {
+            canEarnPoints = false;
+            feedback.innerHTML = `<span style='color: #dc3545;'>Not quite. Look at the red boxes, re-read the specifications carefully, and try again!</span>`;
+            
+            const solDiv = document.getElementById('solutions');
+            if (solDiv) solDiv.style.display = 'block';
+            if (typeof viewedSolution !== 'undefined') viewedSolution = true;
+        }
+
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; 
+    }
+    
     //New function code pasted above this line
     //********************************************************************
 
