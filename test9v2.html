@@ -7780,6 +7780,9 @@ const blockScenarios = [
 // *********************
 // 2. THE GENERATOR FUNCTION starts here: 
 function generateBlockBuilderProblem(ctx, canvas) {
+    currentMode = 'block_diagram'; // <-- Add this line!
+    hasCheckedCurrentProblem = false; // <-- Add this to reset the grading lock!
+    
     const wrapper = document.getElementById('inputGroupBlockBuilder');
     if (wrapper) wrapper.style.display = 'block';
 
