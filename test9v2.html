@@ -8339,10 +8339,15 @@ function hubController(ctx, canvas) {
         } else {
             console.error("Hub: generateGrade9NandProblem is not defined!");
         }
-        } else if (currentMode === 'blockbuilder') {
-                // *** NEW: BLOCK BUILDER MODE ***
-                if (typeof generateBlockBuilderProblem === "function") {
-                    generateBlockBuilderProblem(ctx, canvas);
+        // UPDATED BLOCK BUILDER ROUTE
+    } else if (currentMode === 'blockbuilder' || currentMode === 'block_diagram') {
+        // Unhide the specific Block Builder input group
+        if (document.getElementById('inputGroupBlockBuilder')) {
+            document.getElementById('inputGroupBlockBuilder').style.display = 'block';
+        }
+        
+        if (typeof generateBlockBuilderProblem === "function") {
+            generateBlockBuilderProblem(ctx, canvas);
         } else {
             console.error("Hub: generateBlockBuilderProblem is not defined!");
         }
