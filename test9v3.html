@@ -9422,14 +9422,20 @@ if (currentMode === 'grade9nand') {
                 results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9Rating').value)), currentAnswers.rating, 'mW'));
             }
          }
-    } else if (currentMode === 'power') {
-        if (currentAnswers.scenario === 2) {
-            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.exactPower, currentAnswers.vUnit));
-            const userRating = document.getElementById('ratingSelectP').value;
-            results.push(userRating === currentAnswers.safeRating ? 'correct' : 'wrongval');
-        } else {
-            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.vValue, currentAnswers.vUnit));
-        }
+} else if (currentMode === 'power') {
+    if (currentAnswers.scenario === 2) {
+        // Validate the exact power input
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.exactPower, currentAnswers.vUnit));
+        
+        // FIX: Match the ID used in the HTML and generation function
+        const userRating = document.getElementById('selectPowerRating').value; 
+        
+        // Validate the dropdown selection
+        results.push(userRating === currentAnswers.safeRating ? 'correct' : 'wrongval');
+    } else {
+        // Standard power validation for scenarios 1 and 3
+        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.vValue, currentAnswers.vUnit));
+    }
     } else if (currentMode === 'grade9power') {
         let rInput = document.getElementById('g9PowerIdealR').value;
         let cleanR = acceptSpaces(rInput);
