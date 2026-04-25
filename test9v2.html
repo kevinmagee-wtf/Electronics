@@ -7998,6 +7998,32 @@ if (oldOverlay) oldOverlay.remove();
 
         overlay.appendChild(item); 
     });
+
+    // --- 9. SOLUTION PANEL (BLOCK BUILDER) ---
+    const solText = document.getElementById('solText');
+    if (solText) {
+        // Filter the blocks to find only those that required user input (dropzones)
+        let logicHTML = `<div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">`;
+        logicHTML += `<strong style="color: #0d6efd; font-size: 16px;">System Configuration Solution:</strong><br>`;
+        logicHTML += `<p style="margin: 10px 0;">To achieve the <strong>${scenario.title}</strong>, the subsystems must be arranged in the following logical sequence:</p>`;
+        logicHTML += `<ul style="line-height: 1.6; padding-left: 20px;">`;
+
+        // Map through all blocks to describe the full path
+        scenario.blocks.forEach((b, idx) => {
+            if (b.type === 'static') {
+                logicHTML += `<li><strong>Fixed Stage:</strong> ${b.text}</li>`;
+            } else {
+                logicHTML += `<li><strong>Required Stage:</strong> <span style="color:#d65093; font-weight:bold;">${b.answer}</span></li>`;
+            }
+        });
+
+        logicHTML += `</ul>`;
+        logicHTML += `<p style="font-size:12px; color:#666; border-top:1px solid #eee; padding-top:10px; margin-top:10px;">` +
+                     `<em>Note: Information flows from left to right through the processing stages.</em></p>`;
+        logicHTML += `</div>`;
+
+        solText.innerHTML = logicHTML;
+    }
 }
     
 // END of Content generator functions
