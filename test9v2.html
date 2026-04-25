@@ -1383,26 +1383,30 @@
 </div>
 
 <!-- Input group G9 NAND--> 
-<div id="inputGroupNandConversion" class="input-group" style="display:none; padding: 15px; background: #fff8fb; margin-bottom: 15px; width: 100%; max-width: 500px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-left: auto; margin-right: auto;">
-    <div style="display: block; width: 100%; grid-column: 1 / -1;">
-        <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 20px;">NAND Equivalent Circuit</h3>
-        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444;">
-            Replace the standard logic gate with its NAND equivalent by dragging and dropping the correct NAND cluster.<br><br>
-            The wire should be placed in the right box only when needed.<br><br>
-            <i>(Double click to remove components from a box.)</i>
-        </p>
+<div id="inputGroupGrade9NandMaster" style="display: none; flex-direction: column; gap: 15px;">
+    
+    <div id="inputGroupNandConversion" class="input-group" style="display:none; padding: 15px; background: #fff8fb; width: 100%; max-width: 500px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 0 auto;">
+        <div style="display: block; width: 100%;">
+            <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 20px;">NAND Equivalent Circuit</h3>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444;">
+                Replace the standard logic gate with its NAND equivalent by dragging and dropping the correct NAND cluster.<br><br>
+                The wire should be placed in the right box only when needed.<br><br>
+                <i>(Double click to remove components from a box.)</i>
+            </p>
+        </div>
     </div>
-</div>
 
-<div id="inputGroupNandRedundancy" class="input-group" style="display:none; padding: 15px; background: #fff8fb; margin-bottom: 15px; width: 100%; max-width: 500px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-left: auto; margin-right: auto;">
-    <div style="display: block; width: 100%; grid-column: 1 / -1;">
-        <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 20px;">Redundant Gate Hunter</h3>
-        <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444;">
-            Spot the redundant NOT-NOT gates. <br><br>
-            <b>Click on a gate to cross them out!</b>
-            Click on an X if you wish to remove it 
-        </p>
+    <div id="inputGroupNandRedundancy" class="input-group" style="display:none; padding: 15px; background: #fff8fb; width: 100%; max-width: 500px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 0 auto;">
+        <div style="display: block; width: 100%;">
+            <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 20px;">Redundant Gate Hunter</h3>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444;">
+                Spot the redundant NOT-NOT gates. <br><br>
+                <b>Click on a gate to cross them out!</b><br>
+                Click on an X if you wish to remove it 
+            </p>
+        </div>
     </div>
+
 </div>
                 
 <!-- Input group colour code-->  
@@ -5418,7 +5422,7 @@ function generateGrade9NandProblem(ctx, canvas) {
         if (circuitContainer) circuitContainer.appendChild(overlay);
 
         // THE COIN FLIP UNUSED but keep for reference
-       // window.grade9NandMode = Math.random() < 0.5 ? 'conversion' : 'redundancy';
+        // window.grade9NandMode = Math.random() < 0.5 ? 'conversion' : 'redundancy';
 
         // THE ALTERNATOR: Flips between the two modes instead of randomizing
         window.grade9NandMode = (window.grade9NandMode === 'conversion') ? 'redundancy' : 'conversion';
@@ -5685,20 +5689,22 @@ function generateGrade9NandProblem(ctx, canvas) {
                     // Draw Initial Input Letters & Wires
                     if (gate.inputs) {
                         ctx.fillStyle = "#333";
+                        ctx.textBaseline = "middle";
                         if (gate.type === 'inverter') {
-                            ctx.fillText(gate.inputs[0], gate.x - 25, gate.y + 25);
+                            ctx.fillText(gate.inputs[0], gate.x - 25, gate.y + 20);
                             ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 20); ctx.lineTo(gate.x, gate.y + 20); ctx.stroke();
                         } else {
-                            ctx.fillText(gate.inputs[0], gate.x - 25, gate.y + 12 + 5);
+                            ctx.fillText(gate.inputs[0], gate.x - 25, gate.y + 12);
                             ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 12); ctx.lineTo(gate.x, gate.y + 12); ctx.stroke();
-                            ctx.fillText(gate.inputs[1], gate.x - 25, gate.y + 28 + 5);
+                            ctx.fillText(gate.inputs[1], gate.x - 25, gate.y + 28);
                             ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 28); ctx.lineTo(gate.x, gate.y + 28); ctx.stroke();
                         }
                     }
 
                     // Draw Output Labels
                     if (gate.output) {
-                        ctx.fillText(gate.output, gate.x + 70, gate.y + 25);
+                        ctx.textBaseline = "middle";
+                        ctx.fillText(gate.output, gate.x + 70, gate.y + 20);
                         ctx.beginPath(); ctx.moveTo(gate.x + 60, gate.y + 20); ctx.lineTo(gate.x + 75, gate.y + 20); ctx.stroke();
                     }
                 });
