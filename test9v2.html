@@ -7831,7 +7831,7 @@ function generateBlockBuilderProblem(ctx, canvas) {
 
     window.currentBlockScenario = scenario;
 
-    // --- 3. INSTRUCTIONS PANEL ---
+// --- 3. INSTRUCTIONS PANEL ---
     let instDiv = document.createElement('div');
     instDiv.className = 'gcse-block-ui'; // Tagged for master cleanup sweep
     instDiv.style.cssText = "padding: 15px; background: #f8f9fa; margin-bottom: 15px; border-left: 4px solid #0d6efd; font-family: sans-serif;";
@@ -7841,7 +7841,7 @@ function generateBlockBuilderProblem(ctx, canvas) {
         "<br><br><em style='color:#d65093;'>Drag the correct sub-systems from the tray to complete the block diagram.</em>";
 
     // Insert instructions into the wrapper
-    const wrapper = document.getElementById('inputGroupBlockBuilder');
+    // FIXED: Removed "const wrapper = ..." from here since it's already declared at the top
     if (wrapper) {
         wrapper.prepend(instDiv);
     } else {
