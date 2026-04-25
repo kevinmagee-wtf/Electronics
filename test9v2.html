@@ -9921,7 +9921,7 @@ function provideHint() {
                 <strong>💡 Block Diagram Design Rules:</strong><br>
                 <ul style="margin-top: 8px; padding-left: 20px; line-height: 1.5;">
                     <li><b>Logic Gates:</b> Look for keywords! If the text says <em>"Both X AND Y"</em>, use an <b>AND</b> gate. If it says <em>"Either X OR Y"</em>, use an <b>OR</b> gate.</li>
-                    <li><b>The Driver Rule:</b> High-power outputs (Motors, Lamps, Solenoids) <b>always</b> need a <b>Driver</b> or <b>MOSFET</b> before them to boost the logic signal.</li>
+                    <li><b>The Driver Rule:</b> High-power outputs <b>always</b> need a <b>Driver</b> before them to boost the logic signal.</li>
                     <li><b>Memory (Latch):</b> If a system needs to stay ON even after the sensor is released (like a burglar alarm), you need a <b>Latch</b>.</li>
                     <li><b>Timing:</b> 
                         <br>• Use a <b>Delay</b> (Monostable) to keep an output on for a set time.
@@ -9962,14 +9962,15 @@ function provideHint() {
                     • Build each gate using standard NAND equivalents.<br>
                     • Only use a straight <b>Wire</b> in the final box if no further logic inversion is needed!
                 </div>`;
-        } else {
-            helpText = `
-                <div style="${blueBox}">
-                    <strong>💡 Hint: Redundancy Hunter:</strong><br>
-                    • A double inversion ($\\overline{\\overline{A}}$) is a waste of hardware.<br>
-                    • Look for two NOT-configured NAND gates (gates with joined inputs) sitting side-by-side on the exact same wire path!
-                </div>`;
-        }
+    } else {
+        // --- REDUNDANCY HUNTER (Symbols Removed) ---
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint: Redundancy Hunter:</strong><br>
+                • A <b>double inversion</b> (a NOT gate followed immediately by another NOT gate) is a waste of hardware.<br>
+                • Look for two NOT-configured NAND gates (gates with joined inputs) sitting side-by-side on the exact same wire path!
+            </div>`;
+    }    
     } else {
         // Potential Divider & General
         helpText = `
