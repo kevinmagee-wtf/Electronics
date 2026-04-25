@@ -8425,17 +8425,17 @@ function hubController(ctx, canvas) {
 
 
     } else if (currentMode === 'grade9nand') {
-            // *** NEW: GRADE 9 SYSTEM CONVERSION & REDUNDANCY HUNTER ***
-            
-            // Ensure the Master Container is visible before calling the generator
-            const master = document.getElementById('inputGroupGrade9NandMaster');
-            if (master) master.style.display = 'block';
-    
-            // Keep rocket visible to cycle through different questions
-            if (document.getElementById('mainGrade9Btn')) {
-                document.getElementById('mainGrade9Btn').style.display = 'inline-block';
-            }
+        // *** NEW: GRADE 9 SYSTEM CONVERSION & REDUNDANCY HUNTER ***
         
+        // Match the HTML's flex-direction: column requirement
+        const master = document.getElementById('inputGroupGrade9NandMaster');
+        if (master) master.style.display = 'flex'; 
+
+        // Keep rocket visible to cycle through different questions
+        if (document.getElementById('mainGrade9Btn')) {
+            document.getElementById('mainGrade9Btn').style.display = 'inline-block';
+        }
+    
         if (typeof generateGrade9NandProblem === "function") {
             generateGrade9NandProblem(ctx, canvas);
         } else {
