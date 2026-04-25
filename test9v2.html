@@ -1618,9 +1618,12 @@ function handleNewQuestionClick() {
     const canvasIPOWorkstation = document.getElementById('canvasIPOWorkstation');
     if (canvasIPOWorkstation) canvasIPOWorkstation.style.display = 'none';
 
-    // REMOVE THE GRADE 9 CSS LOCKS 
-    const g9Nand = document.getElementById('inputGroupGrade9Nand');
-    if (g9Nand) g9Nand.style.removeProperty("display");
+    // --- UPDATED: REMOVE THE GRADE 9 CSS LOCKS --- 
+    const nandConv = document.getElementById('inputGroupNandConversion');
+    if (nandConv) nandConv.style.removeProperty("display");
+    
+    const nandRed = document.getElementById('inputGroupNandRedundancy');
+    if (nandRed) nandRed.style.removeProperty("display");
 
     // ESCAPE THE GRADE 9 LOOPS
     let escapedGrade9 = false;
@@ -8090,7 +8093,8 @@ function switchTab(mode) {
         'inputGroupLogicSystem',          
         'inputGroupLogic_ic',             
         'inputGroupLogic_NAND',            
-        'inputGroupGrade9Nand',
+        'inputGroupNandConversion',
+        'inputGroupNandRedundancy',
         'inputGroupBlockBuilder'           // 👇 NEW: Hides Block Builder UI when switching away
     ];
 
@@ -8337,10 +8341,10 @@ function hubController(ctx, canvas) {
         if (typeof generateLogic_nandProblem === "function") generateLogic_nandProblem(ctx, canvas);
 
     } else if (currentMode === 'grade9nand') {
-        // *** NEW: GRADE 9 SYSTEM CONVERSION ***
-        if (document.getElementById('inputGroupGrade9Nand')) document.getElementById('inputGroupGrade9Nand').style.display = 'block';
+        // *** NEW: GRADE 9 SYSTEM CONVERSION & REDUNDANCY HUNTER ***
+        // (Note: The specific input group is dynamically unhidden inside the generator based on the randomized mode)
         
-        // Hide rocket or keep visible to cycle through different 3-input systems
+        // Keep rocket visible to cycle through different questions
         if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         
         if (typeof generateGrade9NandProblem === "function") {
@@ -8348,6 +8352,7 @@ function hubController(ctx, canvas) {
         } else {
             console.error("Hub: generateGrade9NandProblem is not defined!");
         }
+
         // UPDATED BLOCK BUILDER ROUTE
     } else if (currentMode === 'blockbuilder' || currentMode === 'block_diagram') {
         // Unhide the specific Block Builder input group
@@ -10130,7 +10135,8 @@ function hideAllInputGroups() {
         'inputGroupLogic_ic',               // NEW: Logic Gate ICs
         'inputGroupLogicSystem',            // NEW: Logic Systems
         'inputGroupLogic_NAND',             // NEW: NAND Equivalents
-        'inputGroupGrade9Nand',             // Grade 9 NAND
+        'inputGroupNandConversion',         // Mode A: NAND Conversion
+        'inputGroupNandRedundancy',         // Mode B: Redundancy Hunter
         'inputGroupBlockBuilder'            // NEW: Block Builder System
     ];
 
