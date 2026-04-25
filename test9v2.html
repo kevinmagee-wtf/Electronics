@@ -5101,13 +5101,16 @@ function generateLogic_nandProblem(ctx, canvas) {
     currentProblem = { type: 'logic_nand' };
     const themePink = "#d65093"; 
     
- // --- CRITICAL CLEANUP (Prevents Grade 9 text from lingering) ---
-    const oldNandInstructions = document.getElementById('nandInstructions');
-    if (oldNandInstructions) oldNandInstructions.remove();
+    // --- UPDATED CLEANUP ---
+    // Hide the specific HTML containers instead of trying to 'remove' a non-existent ID
+    const conv = document.getElementById('inputGroupNandConversion');
+    const redund = document.getElementById('inputGroupNandRedundancy');
+    if (conv) conv.style.display = 'none';
+    if (redund) redund.style.display = 'none';
     
     const oldNandTray = document.getElementById('nandBottomTray');
     if (oldNandTray) oldNandTray.remove();
-    // --------------------------------------------------------------- 
+    // -----------------------
     
     // 1. UI Reset for Solutions
     const solContainer = document.getElementById('solutions');
@@ -7785,22 +7788,25 @@ const blockScenarios = [
 // 2. THE GENERATOR FUNCTION starts here: 
 //**********************
 function generateBlockBuilderProblem(ctx, canvas) {
-    // --- 1. THE JANITOR PROTOCOL (STOPS STACKING) ---
-    currentMode = 'block_diagram'; 
-    hasCheckedCurrentProblem = false; 
-    isCurrentProblemSolved = false; 
+// --- 1. THE JANITOR PROTOCOL (STOPS STACKING) ---
+currentMode = 'block_diagram'; 
+hasCheckedCurrentProblem = false; 
+isCurrentProblemSolved = false; 
 
-    // A. Clear the Wrapper (Removes old instruction sets)
-    const wrapper = document.getElementById('inputGroupBlockBuilder');
-    if (wrapper) wrapper.innerHTML = ""; 
+// A. Clear the Wrapper
+const wrapper = document.getElementById('inputGroupBlockBuilder');
+if (wrapper) wrapper.innerHTML = ""; 
 
-    // B. Remove OLD Overlays (Removes old draggable blocks)
-    let oldOverlay = document.getElementById('canvasOverlay');
-    if (oldOverlay) oldOverlay.remove();
+// B. THE FIX: Match the names used in generateGrade9NandProblem
+const conversionInst = document.getElementById('inputGroupNandConversion');
+const redundancyInst = document.getElementById('inputGroupNandRedundancy');
 
-    // C. Force-Hide NAND instructions if they leaked out
-    let leakedNandInst = document.getElementById('nandInstructions');
-    if (leakedNandInst) leakedNandInst.style.display = 'none';
+if (conversionInst) conversionInst.style.display = 'none';
+if (redundancyInst) redundancyInst.style.display = 'none';
+
+// C. Remove OLD Overlays
+let oldOverlay = document.getElementById('canvasOverlay');
+if (oldOverlay) oldOverlay.remove();
 
     // --- 2. SELECT AND PREPARE THE SCENARIO ---
     const rawScenario = blockScenarios[Math.floor(Math.random() * blockScenarios.length)];
@@ -10171,10 +10177,6 @@ function hideAllInputGroups() {
         if (el) el.style.display = "none"; 
     });
 
-    // --- PATH 2: SURGICAL REMOVAL ---
-    // This finds ANY existing NAND instruction divs (including stacked clones) 
-    // and deletes them from the DOM entirely to keep the layout clean.
-    document.querySelectorAll('#nandInstructions').forEach(el => el.remove());
     
     // 2c. TOGGLE BUTTONS
     if (document.getElementById('mainGrade9Btn')) {
