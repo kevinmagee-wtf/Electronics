@@ -1163,30 +1163,42 @@
         </div>
     </div>
 
-    <div id="inputGroupGrade9SiliconPath" style="display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 12px;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 15px; width: 100%; justify-items: center;">
+<div id="inputGroupGrade9SiliconPath" style="display: flex; flex-direction: column; align-items: center; padding: 10px 0; width: 100%;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px 20px; width: 100%; justify-items: center;">
+        
+        <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
+            <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">I<sub>D1</sub> =</div>
+            <input type="text" id="g9SilPathID1" placeholder="e.g. 50 mA" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+        </div>
+        
+        <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
+            <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">I<sub>D2</sub> =</div>
+            <input type="text" id="g9SilPathID2" placeholder="e.g. 50 mA" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+        </div>
+        
+        <div id="wrapperVD1" style="width: 100%;">
             <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
-                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">I<sub>D1</sub> =</div>
-                <input type="text" id="g9SilPathID1" placeholder="e.g. 50 mA" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-            </div>
-            <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
-                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">I<sub>D2</sub> =</div>
-                <input type="text" id="g9SilPathID2" placeholder="e.g. 50 mA" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-            </div>
-            <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
-                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">V<sub>D1</sub> =</div>
-                <input type="text" id="g9SilPathVD1" placeholder="e.g. 1.0 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-            </div>
-            <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
-                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">V<sub>D2</sub> =</div>
-                <input type="text" id="g9SilPathVD2" placeholder="e.g. 1.0 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">V<sub>D1</sub> =</div>
+                <input type="text" id="g9SilPathVD1" placeholder="e.g. 0.7 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
             </div>
         </div>
-        <div style="display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 5px;">
-            <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">V<sub>Load</sub> =</div>
+        
+        <div id="wrapperVD2" style="width: 100%;">
+            <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
+                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">V<sub>D2</sub> =</div>
+                <input type="text" id="g9SilPathVD2" placeholder="e.g. 0.7 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+            </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
+            <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">V<sub>Load</sub> =</div>
             <input type="text" id="g9SilPathVLoad" placeholder="e.g. 8.6 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
         </div>
+        
     </div>
+</div>
+    
+</div>
 </div>
                 
 <!-- Input group Zener -->                
@@ -7184,7 +7196,7 @@ function generateGrade9SiliconProblem() {
         ctx.textAlign = "left"; 
         ctx.fillText("S", 230, 100); // Switch label
 
-        // --- DRAWING D1 (Shifted down to accommodate the bigger switch) ---
+        // --- DRAWING D1 ---
         drawLine(ctx, 200, 119, 200, 135); // Wire from bottom node to D1
         
         ctx.beginPath(); 
@@ -7194,7 +7206,7 @@ function generateGrade9SiliconProblem() {
         drawLine(ctx, 200, 135, 200, 165); // Internal triangle line  
         ctx.fillStyle = pink; ctx.textAlign = "right"; ctx.fillText("D1", 175, 155);
         
-        drawLine(ctx, 200, 165, 200, 210); // Wire from D1 down to the junction (Moved up)
+        drawLine(ctx, 200, 165, 200, 210); // Wire from D1 down to the junction
 
         // --- DRAWING BACKUP BRANCH & D2 ---
         drawLine(ctx, 260, 140, 350, 140); 
@@ -7208,15 +7220,15 @@ function generateGrade9SiliconProblem() {
         drawLine(ctx, 285, 190, 315, 190); 
         drawLine(ctx, 300, 160, 300, 190); 
         ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("D2", 325, 180);
-        drawLine(ctx, 300, 190, 300, 210); // Wire from D2 down to the junction (Moved up)
+        drawLine(ctx, 300, 190, 300, 210); // Wire from D2 down to the junction
 
         // --- LOWER CIRCUIT RECOMBINATION ---
-        drawLine(ctx, 200, 210, 300, 210); // Moved up to 210
+        drawLine(ctx, 200, 210, 300, 210); 
         if(typeof drawNode === 'function') drawNode(ctx, 250, 210); 
         drawLine(ctx, 250, 210, 250, 260); // Wire to load
         
         // Payload Box
-        const boxX = 215, boxY = 260, boxW = 70, boxH = 50; // Shifted Y down
+        const boxX = 215, boxY = 260, boxW = 70, boxH = 50; 
         const centerY = boxY + (boxH / 2); 
 
         ctx.fillStyle = "#f8f9fa"; 
@@ -7238,7 +7250,7 @@ function generateGrade9SiliconProblem() {
         ctx.textAlign = "start";
 
         // Ground
-        drawLine(ctx, 250, 310, 250, 350); // Shifted Y down
+        drawLine(ctx, 250, 310, 250, 350); 
         drawLine(ctx, 230, 350, 270, 350); drawLine(ctx, 240, 355, 260, 355); drawLine(ctx, 245, 360, 255, 360);
         ctx.fillStyle = "black"; ctx.fillText("0V (GND)", 250, 385);
 
@@ -7288,52 +7300,69 @@ function generateGrade9SiliconProblem() {
         let v_load = Number((v_in - 0.7).toFixed(1));
 
         let i_d1 = 0, i_d2 = 0;
-        let v_d1 = 0, v_d2 = 0;
         let logicHTML = "";
+        
+        // Get the wrapper elements so we can dynamically hide the unneeded Voltage inputs
+        const wrapVD1 = document.getElementById('wrapperVD1');
+        const wrapVD2 = document.getElementById('wrapperVD2');
 
         if (bothForward) {
             i_d1 = i_load / 2;
             i_d2 = i_load / 2;
-            v_d1 = 0.7;
-            v_d2 = 0.7;
             
             logicHTML += `<strong>Both diodes are Forward-Biased!</strong><br>`;
             logicHTML += `They share the load current equally: ${i_load}mA / 2 = <strong>${i_d1}mA each</strong>.<br><br>`;
-            logicHTML += `Both are conducting, so both drop <strong>0.7V</strong>.<br>`;
+            logicHTML += `Both are conducting, so they drop <strong>0.7V</strong>.<br>`;
+            
+            // Show VD1, Hide VD2
+            if (wrapVD1) wrapVD1.style.display = ''; 
+            if (wrapVD2) wrapVD2.style.display = 'none';
+            
+            // Expected Answers (Only expects VD1)
+            currentAnswers = { iD1: i_d1, iD2: i_d2, vD1: 0.7, vLoad: v_load };
+            
         } else {
             if (d1Forward) {
                 i_d1 = i_load;
                 i_d2 = 0;
-                v_d1 = 0.7;
-                v_d2 = -0.7; 
                 
                 logicHTML += `<strong>D1 is Forward-Biased and D2 is Reverse-Biased.</strong><br>`;
                 logicHTML += `D1 takes the full load current (<strong>${i_load}mA</strong>), leaving D2 blocked (<strong>0mA</strong>).<br><br>`;
+                logicHTML += `The conducting diode (D1) drops <strong>0.7V</strong>.<br>`;
+                
+                // Show VD1, Hide VD2
+                if (wrapVD1) wrapVD1.style.display = ''; 
+                if (wrapVD2) wrapVD2.style.display = 'none';
+                
+                // Expected Answers (Only expects VD1)
+                currentAnswers = { iD1: i_d1, iD2: i_d2, vD1: 0.7, vLoad: v_load };
+                
             } else {
                 i_d1 = 0;
                 i_d2 = i_load;
-                v_d1 = -0.7; 
-                v_d2 = 0.7;
                 
                 logicHTML += `<strong>D2 is Forward-Biased and D1 is Reverse-Biased.</strong><br>`;
                 logicHTML += `D2 takes the full load current (<strong>${i_load}mA</strong>), leaving D1 blocked (<strong>0mA</strong>).<br><br>`;
+                logicHTML += `The conducting diode (D2) drops <strong>0.7V</strong>.<br>`;
+                
+                // Hide VD1, Show VD2
+                if (wrapVD1) wrapVD1.style.display = 'none'; 
+                if (wrapVD2) wrapVD2.style.display = '';
+                
+                // Expected Answers (Only expects VD2)
+                currentAnswers = { iD1: i_d1, iD2: i_d2, vD2: 0.7, vLoad: v_load };
             }
-            logicHTML += `The conducting diode drops <strong>0.7V</strong>.<br>`;
-            logicHTML += `The reverse-biased diode blocks the circuit, seeing a drop of <strong>-0.7V</strong>.<br>`;
         }
         
         logicHTML += `V<sub>Load</sub> = ${v_in}V - 0.7V = <strong>${v_load}V</strong>.`;
 
-        // Store answers mapped to the new HTML IDs
-        currentAnswers = { iD1: i_d1, iD2: i_d2, vD1: v_d1, vD2: v_d2, vLoad: v_load };
-
         if (qText) {
             qText.innerHTML = 
                 `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge: The Pathfinder</strong></div>` +
-                `Calculate Branch Currents and Diode Voltages.`; 
+                `Calculate the active Branch Currents and Diode Voltage.`; 
         }
         if (hintDiv) {
-            hintDiv.innerHTML = "<strong>Hint:</strong> Current will take the path of least resistance. If both open, they share it. Forward diodes drop 0.7V. Reverse diodes drop -0.7V.";
+            hintDiv.innerHTML = "<strong>Hint:</strong> Current will take the path of least resistance. If both are open, they share it. The conducting diode always drops 0.7V.";
         }
 
         // Drawing Pathfinder
@@ -7395,8 +7424,6 @@ function generateGrade9SiliconProblem() {
         // Load Box (Stays where it is at Y=260)
         ctx.fillStyle = "#f8f9fa"; ctx.fillRect(215, 260, 70, 50); ctx.strokeRect(215, 260, 70, 50);
         ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("Load", 250, 290);
-
-
                                  
         // Draw V_Load = ? (Shifted Y coordinates down)
         ctx.fillStyle = pink; 
