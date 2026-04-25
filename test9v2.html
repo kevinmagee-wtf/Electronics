@@ -7956,7 +7956,22 @@ if (oldOverlay) oldOverlay.remove();
     ctx.setLineDash([]);
     
     // --- 8. RENDER TRAY DRAGGABLE ITEMS ---
-    let shuffledOptions = scenario.trayPool.sort(() => Math.random() - 0.5);
+    
+    // Create a local copy so we don't accidentally break the original scenario data
+    let filteredPool = [...scenario.trayPool];
+
+    // Check if both MOSTET and Transitor options are present
+    const hasMOSFET = filteredPool.includes("MOSFET");
+    const hasTransistor = filteredPool.includes("Transistor Driver");
+
+    if (hasMOSFET && hasTransistor) {
+        // Randomly decide which one to kick out (50/50 chance)
+        const toRemove = Math.random() > 0.5 ? "MOSFET" : "Transistor Driver";
+        filteredPool = filteredPool.filter(item => item !== toRemove);
+    }
+
+    // Now shuffle the filtered list instead of the raw scenario.trayPool
+    let shuffledOptions = filteredPool.sort(() => Math.random() - 0.5);
 
     shuffledOptions.forEach((opt, index) => {
         const item = document.createElement('div');
