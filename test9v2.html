@@ -8190,7 +8190,7 @@ function generateTransistorProblem(ctx, canvas) {
 
     let ic_mA, ib_mA, vrb, vin, p_mW;
 
-// ==========================================
+    // ==========================================
     // LOGIC & UI TEXT GENERATION
     // ==========================================
     const qText = document.getElementById('questionText');
@@ -8201,6 +8201,14 @@ function generateTransistorProblem(ctx, canvas) {
             <em>Enter your calculated values followed by a standard unit symbol (e.g., 5 mA, 12 V).</em>
         </div>
     `;
+
+    // Force neat vertical spacing between all input boxes
+    ['wrapperTransVIN', 'wrapperTransVRB', 'wrapperTransIB', 'wrapperTransIC', 'wrapperTransP', 'wrapperTransRB'].forEach(id => {
+        const wrapper = document.getElementById(id);
+        if (wrapper) {
+            wrapper.style.marginBottom = '12px'; 
+        }
+    });
 
     if (window.transistorMode === 1) {
         // --- MODE 1: Top-Down (Given I_Load, find V_IN) ---
@@ -8217,7 +8225,6 @@ function generateTransistorProblem(ctx, canvas) {
         currentAnswers.p = p_mW / 1000; 
 
         if (qText) {
-            // Mode title and "Instructions" removed. Context flows straight into "Calculate..."
             qText.innerHTML = `
                 A transistor circuit is used to switch on a motor. The motor requires a current of <strong>${ic_mA} mA</strong> to operate from a <strong>${supplyVoltage}V</strong> supply. 
                 The transistor has a current gain (h<sub>FE</sub>) of <strong>${hfe}</strong>.<br>
@@ -8268,7 +8275,6 @@ function generateTransistorProblem(ctx, canvas) {
         currentAnswers.ic = ic_mA;
 
         if (qText) {
-            // Mode title and "Instructions" removed. Context flows straight into "Calculate..."
             qText.innerHTML = `
                 A sensor provides an input voltage (V<sub>IN</sub>) to the transistor circuit as shown in the diagram. 
                 The transistor has a current gain (h<sub>FE</sub>) of <strong>${hfe}</strong>.<br>
@@ -8316,7 +8322,6 @@ function generateTransistorProblem(ctx, canvas) {
         currentAnswers.rb = rb; 
 
         if (qText) {
-            // Mode title and "Instructions" removed. Context flows straight into "Calculate..."
             qText.innerHTML = `
                 You need to switch a motor that requires a current of <strong>${ic_mA} mA</strong> using an input signal (V<sub>IN</sub>) as shown.
                 The transistor has a current gain (h<sub>FE</sub>) of <strong>${hfe}</strong>.<br>
@@ -8491,7 +8496,6 @@ function generateTransistorProblem(ctx, canvas) {
         ctx.fillText(`${ic_mA}mA`, lx + 30, ly + 15); 
     }
 }
-
 // END of Content generator functions
 //**********************************************************************************************************
 //**********************************************************************************************************
