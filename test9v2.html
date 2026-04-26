@@ -8190,15 +8190,15 @@ function generateTransistorProblem(ctx, canvas) {
 
     let ic_mA, ib_mA, vrb, vin, p_mW;
 
-    // ==========================================
+// ==========================================
     // LOGIC & UI TEXT GENERATION
     // ==========================================
     const qText = document.getElementById('questionText');
     
-    const commonInstructions = `
-        <div style="margin-bottom: 15px; font-size: 16px; color: #444; line-height: 1.3;">
-            <strong>Instructions:</strong><br>
-            <span style="font-weight: normal; font-size: 0.85em; color: #777;"><em>Enter your calculated values followed by a standard unit symbol (e.g., 5 mA, 12 V).</em></span>
+    // We moved the unit instructions to the bottom of the text block
+    const closingInstructions = `
+        <div style="margin-top: 15px; font-weight: normal; font-size: 0.85em; color: #777;">
+            <em>Enter your calculated values followed by a standard unit symbol (e.g., 5 mA, 12 V).</em>
         </div>
     `;
 
@@ -8217,8 +8217,8 @@ function generateTransistorProblem(ctx, canvas) {
         currentAnswers.p = p_mW / 1000; 
 
         if (qText) {
-            qText.innerHTML = commonInstructions + `
-                <strong>Mode: Top-Down Analysis</strong><br>
+            // Mode title and "Instructions" removed. Context flows straight into "Calculate..."
+            qText.innerHTML = `
                 A transistor circuit is used to switch on a motor. The motor requires a current of <strong>${ic_mA} mA</strong> to operate from a <strong>${supplyVoltage}V</strong> supply. 
                 The transistor has a current gain (h<sub>FE</sub>) of <strong>${hfe}</strong>.<br>
                 Assume V<sub>BE</sub> = 0.7V when the transistor is saturated.<br><br>
@@ -8227,8 +8227,9 @@ function generateTransistorProblem(ctx, canvas) {
                 &bull; <strong>V<sub>RB</sub></strong>: The voltage dropped across the base resistor.<br>
                 &bull; <strong>I<sub>B</sub></strong>: The Base Current flowing into the transistor.<br>
                 &bull; <strong>P</strong>: The electrical power dissipated by the <strong>motor</strong>.
+                ${closingInstructions}
             `;
-            qText.style.display = 'block'; // <-- THE FIX: Forces text box to show
+            qText.style.display = 'block'; 
         }
         
         if (solText) {
@@ -8267,8 +8268,8 @@ function generateTransistorProblem(ctx, canvas) {
         currentAnswers.ic = ic_mA;
 
         if (qText) {
-            qText.innerHTML = commonInstructions + `
-                <strong>Mode: Bottom-Up Analysis</strong><br>
+            // Mode title and "Instructions" removed. Context flows straight into "Calculate..."
+            qText.innerHTML = `
                 A sensor provides an input voltage (V<sub>IN</sub>) to the transistor circuit as shown in the diagram. 
                 The transistor has a current gain (h<sub>FE</sub>) of <strong>${hfe}</strong>.<br>
                 Assume V<sub>BE</sub> = 0.7V.<br><br>
@@ -8276,8 +8277,9 @@ function generateTransistorProblem(ctx, canvas) {
                 &bull; <strong>V<sub>RB</sub></strong>: The voltage dropped across the base resistor.<br>
                 &bull; <strong>I<sub>B</sub></strong>: The resulting Base Current.<br>
                 &bull; <strong>I<sub>C</sub></strong>: The final Collector Current flowing through the <strong>motor</strong>.
+                ${closingInstructions}
             `;
-            qText.style.display = 'block'; // <-- THE FIX
+            qText.style.display = 'block'; 
         }
 
         if (solText) {
@@ -8314,8 +8316,8 @@ function generateTransistorProblem(ctx, canvas) {
         currentAnswers.rb = rb; 
 
         if (qText) {
-            qText.innerHTML = commonInstructions + `
-                <strong>Mode: Component Selection (Design)</strong><br>
+            // Mode title and "Instructions" removed. Context flows straight into "Calculate..."
+            qText.innerHTML = `
                 You need to switch a motor that requires a current of <strong>${ic_mA} mA</strong> using an input signal (V<sub>IN</sub>) as shown.
                 The transistor has a current gain (h<sub>FE</sub>) of <strong>${hfe}</strong>.<br>
                 Assume V<sub>BE</sub> = 0.7V.<br><br>
@@ -8323,8 +8325,9 @@ function generateTransistorProblem(ctx, canvas) {
                 &bull; <strong>I<sub>B</sub></strong>: The required Base Current.<br>
                 &bull; <strong>V<sub>RB</sub></strong>: The voltage that must drop across the base resistor.<br>
                 &bull; <strong>R<sub>B</sub></strong>: The required resistance value for the <strong>Base Resistor</strong>.
+                ${closingInstructions}
             `;
-            qText.style.display = 'block'; // <-- THE FIX
+            qText.style.display = 'block'; 
         }
 
         if (solText) {
