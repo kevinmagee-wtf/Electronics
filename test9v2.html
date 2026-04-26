@@ -9700,8 +9700,10 @@ if (currentMode === 'grade9nand') {
     else if (currentMode === 'transistor') {
         if (window.transistorMode === 1) {
             activeInputs = ['transVIN', 'transVRB', 'transIB', 'transP']; // Top-Down Mode
-        } else {
+        } else if (window.transistorMode === 2) {
             activeInputs = ['transVRB', 'transIB', 'transIC'];            // Bottom-Up Mode
+        } else {
+            activeInputs = ['transIB', 'transVRB', 'transRB'];            // Mode 3: Design Mode
         }
     }
     
@@ -9908,10 +9910,18 @@ if (currentMode === 'grade9nand') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transP').value)), currentAnswers.p, 'W'));
-        } else {
+            
+        } else if (window.transistorMode === 2) {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIC').value)), currentAnswers.ic, 'mA'));
+            
+        } else {
+            // Mode 3: Design Mode
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
+            // Note: Uses the Ω symbol for grading the resistor value!
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transRB').value)), currentAnswers.rb, 'Ω'));
         }
     }
 
