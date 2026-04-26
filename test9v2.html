@@ -8190,7 +8190,7 @@ function generateTransistorProblem(ctx, canvas) {
 
     let ic_mA, ib_mA, vrb, vin, p_mW;
 
-    // ==========================================
+// ==========================================
     // LOGIC & UI TEXT GENERATION
     // ==========================================
     const qText = document.getElementById('questionText');
@@ -8226,12 +8226,12 @@ function generateTransistorProblem(ctx, canvas) {
 
         if (qText) {
             qText.innerHTML = `
-                The transistor is just saturated. Assume V<sub>BE</sub> = 0.7V.<br><br>
+                The transistor is just saturated.<br><br>
                 <strong>Calculate the following unknown values:</strong><br>
                 &bull; <strong>V<sub>IN</sub></strong>: The required Input Voltage.<br>
-                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
-                &bull; <strong>I<sub>B</sub></strong>: The Base Current into the transistor.<br>
-                &bull; <strong>P</strong>: Power dissipated in the motor.
+                &bull; <strong>V<sub>RB</sub></strong>: The voltage dropped across the base resistor.<br>
+                &bull; <strong>I<sub>B</sub></strong>: The Base Current flowing into the transistor.<br>
+                &bull; <strong>P</strong>: Power dissipated in the <strong>motor</strong>.
                 ${closingInstructions}
             `;
             qText.style.display = 'block'; 
@@ -8274,7 +8274,7 @@ function generateTransistorProblem(ctx, canvas) {
 
         if (qText) {
             qText.innerHTML = `
-                The transistor is just saturated. Assume V<sub>BE</sub> = 0.7V.<br><br>
+                The transistor is just saturated.<br><br>
                 <strong>Calculate the following unknown values:</strong><br>
                 &bull; <strong>V<sub>RB</sub></strong>: The voltage dropped across the base resistor.<br>
                 &bull; <strong>I<sub>B</sub></strong>: The resulting Base Current.<br>
@@ -8319,7 +8319,7 @@ function generateTransistorProblem(ctx, canvas) {
 
         if (qText) {
             qText.innerHTML = `
-                The transistor is just saturated. Assume V<sub>BE</sub> = 0.7V.<br><br>
+                The transistor is just saturated.<br><br>
                 <strong>Calculate the following unknown values:</strong><br>
                 &bull; <strong>I<sub>B</sub></strong>: The required Base Current.<br>
                 &bull; <strong>V<sub>RB</sub></strong>: The voltage that must drop across the base resistor.<br>
