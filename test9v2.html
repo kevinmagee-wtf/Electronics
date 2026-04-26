@@ -8411,7 +8411,6 @@ function switchTab(mode) {
     }
 
     // 3. UI CLEANUP: Hide all input groups
-    // Pro-Tip: We call your master hide function first just to be perfectly safe
     if (typeof hideAllInputGroups === "function") {
         hideAllInputGroups();
     }
@@ -8429,19 +8428,18 @@ function switchTab(mode) {
         'inputGroupIPOSort', 'inputGroupSilicon', 'inputGroupSiliconVoltage', 
         'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse', 'inputGroupGrade9SiliconParallel',
         'inputGroupBoolean',
-        'booleanDropdownContainer',       
-        'booleanCheckboxContainer',       
+        'booleanDropdownContainer',        
+        'booleanCheckboxContainer',        
         'inputGroupGrade9BooleanSOP',     
         'inputGroupGrade9BooleanPath',    
         'inputGroupLogicSystem',          
         'inputGroupLogic_ic',             
         'inputGroupLogic_NAND',  
-        
-        'inputGroupGrade9NandMaster',      // The main wrapper for the topic
-        'inputGroupNandConversion',        // The sub-UI for Mode A
-        'inputGroupNandRedundancy',        // The sub-UI for Mode B
-        
-        'inputGroupBlockBuilder'           // 👇 NEW: Hides Block Builder UI when switching away
+        'inputGroupGrade9NandMaster',      
+        'inputGroupNandConversion',        
+        'inputGroupNandRedundancy',        
+        'inputGroupBlockBuilder',          
+        'inputGroupTransistor'            // 👇 NEW: Hides Transistor UI when switching away
     ];
 
     elementsToHide.forEach(id => {
@@ -8454,14 +8452,15 @@ function switchTab(mode) {
     if (subtitle) {
         if (mode === 'home') subtitle.innerText = "Welcome to Electronics";
         else if (['analysis', 'divider', 'resistance', 'colorcode', 'power'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
-        else if (['iposort', 'blockbuilder'].includes(mode)) subtitle.innerText = "Module 4: Systems"; // 👇 NEW: Added blockbuilder here
+        else if (['iposort', 'blockbuilder'].includes(mode)) subtitle.innerText = "Module 4: Systems"; 
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
         else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
         else if (['logic_ic', 'logic_system', 'logic_boolean', 'logic_nand', 'grade9boolean'].includes(mode)) subtitle.innerText = "Module 2: Logic Gates"; 
+        else if (mode === 'transistor') subtitle.innerText = "Module 6: Transistors"; // 👇 NEW: Transistor Subtitle
     }
 
     // 5. Global Cleanup
-    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '&nbsp;'; // Improved layout stability
+    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '&nbsp;'; 
     if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'none';
     
     document.querySelectorAll('input').forEach(i => {
@@ -8551,6 +8550,7 @@ function hubController(ctx, canvas) {
         btnCheck.parentNode.replaceChild(newBtnCheck, btnCheck);
         // Note: The specific mode generator will attach its own 'click' listener to this new button
     }
+    
     // 2. Full UI Reset (The "Master Wipe")
     // Because hideAllInputGroups() was upgraded above, all dropdown validation is wiped here!
     if (typeof hideAllInputGroups === "function") hideAllInputGroups();
@@ -8686,7 +8686,6 @@ function hubController(ctx, canvas) {
         
         if (typeof generateLogic_nandProblem === "function") generateLogic_nandProblem(ctx, canvas);
 
-
     } else if (currentMode === 'grade9nand') {
         // *** NEW: GRADE 9 SYSTEM CONVERSION & REDUNDANCY HUNTER ***
         
@@ -8705,7 +8704,6 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateGrade9NandProblem is not defined!");
         }
    
-        // UPDATED BLOCK BUILDER ROUTE
     } else if (currentMode === 'blockbuilder' || currentMode === 'block_diagram') {
         // Unhide the specific Block Builder input group
         if (document.getElementById('inputGroupBlockBuilder')) {
@@ -8716,6 +8714,18 @@ function hubController(ctx, canvas) {
             generateBlockBuilderProblem(ctx, canvas);
         } else {
             console.error("Hub: generateBlockBuilderProblem is not defined!");
+        }
+        
+    // 👇 NEW: TRANSISTOR ROUTING ADDED HERE
+    } else if (currentMode === 'transistor') {
+        if (document.getElementById('inputGroupTransistor')) {
+            document.getElementById('inputGroupTransistor').style.display = 'flex';
+        }
+        
+        if (typeof generateTransistorProblem === "function") {
+            generateTransistorProblem(ctx, canvas);
+        } else {
+            console.error("Hub: generateTransistorProblem is not defined!");
         }
     }
 }
