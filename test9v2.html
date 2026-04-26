@@ -8230,13 +8230,15 @@ function generateTransistorProblem(ctx, canvas) {
     // ==========================================
     
     // Maximizing the vertical canvas space!
-    const topY = 40;   // Pushed way up (was 80)
-    const botY = 360;  // Pushed way down (was 320)
-    const tx = 380;    // Transistor X
-    const ty = 200;    // Transistor Y (Perfectly centered vertically)
-    const rx = 200;    // Base Resistor X
+    const topY = 40;   
+    const botY = 360;  
+    const tx = 380;    
+    const ty = 200;    
+    const rx = 200;    
     const railStartX = 80; 
     const railEndX = 500;
+    
+    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
 
     // Draw Power Rails 
     drawLine(ctx, railStartX, topY, railEndX, topY); // +Vcc Rail
@@ -8246,7 +8248,19 @@ function generateTransistorProblem(ctx, canvas) {
 
     // Draw Component: Transistor
     drawTransistor(ctx, tx, ty);
-    drawLabel(ctx, `hFE = ${hfe}`, tx + 45, ty, 14);
+    
+    // --- MANUAL SUBSCRIPT: hFE ---
+    ctx.fillStyle = strokeColor;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    ctx.font = "14px Arial";
+    ctx.fillText("h", tx + 45, ty + 5); 
+    let hW = ctx.measureText("h").width;
+    ctx.font = "10px Arial";
+    ctx.fillText("FE", tx + 45 + hW, ty + 8); // Dropped down 3px
+    let feW = ctx.measureText("FE").width;
+    ctx.font = "14px Arial";
+    ctx.fillText(" = " + hfe, tx + 45 + hW + feW, ty + 5);
 
     // Draw Component: Base Resistor (Rotated horizontal)
     ctx.save();
@@ -8257,8 +8271,8 @@ function generateTransistorProblem(ctx, canvas) {
     drawLabel(ctx, rbLabel, rx, ty - 25, 14); // Label above resistor
 
     // Draw Component: Motor (Load)
-    const lx = tx + 10; // Aligned with the collector vertical exit
-    const ly = 120;     // Centered beautifully between the high rail (40) and transistor (200)
+    const lx = tx + 10; 
+    const ly = 120;     
     drawMotor(ctx, lx, ly);
 
     // Wire: Load to Top Rail
@@ -8279,24 +8293,38 @@ function generateTransistorProblem(ctx, canvas) {
     drawLine(ctx, railStartX, ty, rx - 25, ty);
     drawNode(ctx, railStartX, ty); // V_IN Terminal Node
 
-    // V_IN Label & Arrow
-    drawCanvasSubscript(ctx, "V", "IN", "", railStartX - 40, ty + 5, 18, strokeColor);
+    // --- MANUAL SUBSCRIPT: V_IN ---
+    ctx.font = "18px Arial";
+    ctx.fillText("V", railStartX - 40, ty + 5);
+    let vW = ctx.measureText("V").width;
+    ctx.font = "13px Arial";
+    ctx.fillText("IN", railStartX - 40 + vW + 2, ty + 10);
     
     // Draw Current Arrows
-    // I_C Arrow (Pointing down towards collector, placed on the wire between motor and transistor)
+    // I_C Arrow 
     drawArrowOnWire(ctx, lx, ly + 25, lx, ty - 25);
-    drawCanvasSubscript(ctx, "I", "C", "", lx + 15, ty - 45, 16, strokeColor);
+    
+    // --- MANUAL SUBSCRIPT: I_C (with space) ---
+    ctx.font = "16px Arial";
+    ctx.fillText("I", lx + 15, ty - 45);
+    let icW = ctx.measureText("I").width;
+    ctx.font = "12px Arial";
+    ctx.fillText("C", lx + 15 + icW + 3, ty - 40); // +3px forces the small space!
 
-    // I_B Arrow (Pointing right towards base)
+    // I_B Arrow 
     drawArrowOnWire(ctx, rx + 45, ty, tx - 45, ty);
-    drawCanvasSubscript(ctx, "I", "B", "", tx - 60, ty - 10, 16, strokeColor);
+    
+    // --- MANUAL SUBSCRIPT: I_B (with space) ---
+    ctx.font = "16px Arial";
+    ctx.fillText("I", tx - 60, ty - 10);
+    let ibW = ctx.measureText("I").width;
+    ctx.font = "12px Arial";
+    ctx.fillText("B", tx - 60 + ibW + 3, ty - 5); // +3px forces the small space!
 
     // Draw Dynamic Text labels depending on Mode
     if (window.transistorMode === 1) {
-        // Mode 1 gives I_C on the diagram
         drawLabel(ctx, `${ic_mA} mA`, lx + 15, ty - 70, 14, "#dc3545"); 
     } else {
-        // Mode 2 gives V_IN on the diagram
         drawLabel(ctx, `${vin.toFixed(1)} V`, railStartX - 15, ty - 20, 14, "#dc3545");
     }
 }
