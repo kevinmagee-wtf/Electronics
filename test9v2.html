@@ -8228,9 +8228,9 @@ function generateTransistorProblem(ctx, canvas) {
             qText.innerHTML = `
                 The transistor is just saturated.<br><br>
                 <strong>Calculate the following unknown values:</strong><br>
-                &bull; <strong>V<sub>IN</sub></strong>: The required Input Voltage.<br>
-                &bull; <strong>V<sub>RB</sub></strong>: The voltage dropped across the base resistor.<br>
-                &bull; <strong>I<sub>B</sub></strong>: The Base Current flowing into the transistor.<br>
+                &bull; <strong>V<sub>IN</sub></strong>: The required input voltage.<br>
+                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
+                &bull; <strong>I<sub>B</sub></strong>: The base current into the transistor.<br>
                 &bull; <strong>P</strong>: Power dissipated in the <strong>motor</strong>.
                 ${closingInstructions}
             `;
@@ -8242,7 +8242,7 @@ function generateTransistorProblem(ctx, canvas) {
                 "<em>Core Equations:</em> <strong>h<sub>FE</sub> = I<sub>C</sub> / I<sub>B</sub></strong> &nbsp;and&nbsp; <strong>V = I &times; R</strong><br><br>" +
                 "<em>Step 1:</em> Find the required base current.<br>" +
                 "I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub> = " + ic_mA + " mA / " + hfe + " = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
-                "<em>Step 2:</em> Calculate the voltage dropped across the base resistor.<br>" +
+                "<em>Step 2:</em> Calculate the pd across the base resistor.<br>" +
                 "V<sub>RB</sub> = I<sub>B</sub> &times; R<sub>B</sub> = " + parseFloat((ib_mA/1000).toFixed(5)) + " A &times; " + rb + " &Omega; = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
                 "<em>Step 3:</em> Add the base-emitter voltage drop to find the total input voltage needed.<br>" +
                 "V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub> = " + parseFloat(vrb.toFixed(2)) + " V + 0.7 V = <strong>" + parseFloat(vin.toFixed(2)) + " V</strong><br><br>" +
@@ -8276,9 +8276,9 @@ function generateTransistorProblem(ctx, canvas) {
             qText.innerHTML = `
                 The transistor is just saturated.<br><br>
                 <strong>Calculate the following unknown values:</strong><br>
-                &bull; <strong>V<sub>RB</sub></strong>: The voltage dropped across the base resistor.<br>
-                &bull; <strong>I<sub>B</sub></strong>: The resulting Base Current.<br>
-                &bull; <strong>I<sub>C</sub></strong>: The final Collector Current flowing through the <strong>motor</strong>.
+                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
+                &bull; <strong>I<sub>B</sub></strong>: The resulting base current.<br>
+                &bull; <strong>I<sub>C</sub></strong>: The collector current.
                 ${closingInstructions}
             `;
             qText.style.display = 'block'; 
@@ -8321,9 +8321,9 @@ function generateTransistorProblem(ctx, canvas) {
             qText.innerHTML = `
                 The transistor is just saturated.<br><br>
                 <strong>Calculate the following unknown values:</strong><br>
-                &bull; <strong>I<sub>B</sub></strong>: The required Base Current.<br>
-                &bull; <strong>V<sub>RB</sub></strong>: The voltage that must drop across the base resistor.<br>
-                &bull; <strong>R<sub>B</sub></strong>: The required resistance value for the <strong>Base Resistor</strong>.
+                &bull; <strong>I<sub>B</sub></strong>: The base current.<br>
+                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
+                &bull; <strong>R<sub>B</sub></strong>: The required base resistor value </strong>.
                 ${closingInstructions}
             `;
             qText.style.display = 'block'; 
