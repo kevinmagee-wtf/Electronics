@@ -2355,47 +2355,40 @@ const applyOverbar = (str) => {
 };
 
 /**
- * Draws a standard GCSE NPN Transistor symbol
- * Centered at (x, y) with a radius of 25px.
- * * Connection coordinates for your main circuit:
+ * Draws a standard GCSE NPN Transistor symbol (No Circle)
+ * Centered at (x, y) with connection bounds of 25px.
+ * Connection coordinates for your main circuit:
  * - Base (B): Connect wire to (x - 25, y)
  * - Collector (C): Connect wire to (x + 10, y - 25)
  * - Emitter (E): Connect wire to (x + 10, y + 25)
  */
 function drawTransistor(ctx, x, y) {
-    const radius = 25;
+    const radius = 25; // Kept to maintain exact wire connection lengths!
     const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
 
     ctx.strokeStyle = strokeColor;
     ctx.lineWidth = 2;
     ctx.lineJoin = "miter";
 
-    // 1. Solid white background circle to hide grid/wires behind it
     ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    ctx.fillStyle = "white";
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.beginPath();
-    // 2. Base wire and vertical plate
-    ctx.moveTo(x - radius, y);  // Start at left edge of circle
+    // 1. Base wire and vertical plate
+    ctx.moveTo(x - radius, y);  // Start at left bounding box edge
     ctx.lineTo(x - 10, y);      // Wire connecting to plate
     ctx.moveTo(x - 10, y - 12); // Top of base plate
     ctx.lineTo(x - 10, y + 12); // Bottom of base plate
 
-    // 3. Collector (Top diagonal and vertical exit)
+    // 2. Collector (Top diagonal and vertical exit)
     ctx.moveTo(x - 10, y - 5);      // Start slightly below top of plate
     ctx.lineTo(x + 10, y - 17);     // Diagonal up
-    ctx.lineTo(x + 10, y - radius); // Straight vertical up to the circle edge
+    ctx.lineTo(x + 10, y - radius); // Straight vertical up to the bounding edge
 
-    // 4. Emitter (Bottom diagonal and vertical exit)
+    // 3. Emitter (Bottom diagonal and vertical exit)
     ctx.moveTo(x - 10, y + 5);      // Start slightly above bottom of plate
     ctx.lineTo(x + 10, y + 17);     // Diagonal down
-    ctx.lineTo(x + 10, y + radius); // Straight vertical down to the circle edge
+    ctx.lineTo(x + 10, y + radius); // Straight vertical down to the bounding edge
     ctx.stroke();
 
-    // 5. Emitter Arrow (NPN points OUT)
+    // 4. Emitter Arrow (NPN points OUT)
     // Positioned perfectly on the bottom diagonal line
     ctx.beginPath();
     ctx.fillStyle = strokeColor;
