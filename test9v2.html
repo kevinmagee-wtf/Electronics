@@ -8133,12 +8133,15 @@ if (oldOverlay) oldOverlay.remove();
 // THANSITORS
     
 function generateTransistorProblem(ctx, canvas) {
-    // 1. Setup Canvas
+    // 1. Setup Canvas & UI Elements
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
     ctx.strokeStyle = strokeColor;
     ctx.fillStyle = strokeColor;
     ctx.lineWidth = 2;
+    
+    const solText = document.getElementById('solText');
+    if (solText) solText.innerHTML = ""; // Clear previous solutions
 
     // 2. Decide the Mode (50/50 split between Top-Down and Bottom-Up)
     // We'll store this in window.transistorMode so our grading function knows what to do later
@@ -8164,7 +8167,6 @@ function generateTransistorProblem(ctx, canvas) {
 
     if (window.transistorMode === 1) {
         // --- MODE 1: Top-Down (Given I_Load, find V_IN) ---
-        // Let's generate a nice clean Load Current
         ic_mA = Math.floor(Math.random() * 8 + 2) * 50; // 100mA to 500mA in steps of 50
         
         ib_mA = ic_mA / hfe;
@@ -8185,6 +8187,20 @@ function generateTransistorProblem(ctx, canvas) {
             Assume V<sub>BE</sub> = 0.7V when the transistor is saturated.<br><br>
             Calculate the required Base Current (I<sub>B</sub>), the voltage across the resistor (V<sub>RB</sub>), the required Input Voltage (V<sub>IN</sub>), and the power dissipated by the motor (P).
         `;
+        
+        // --- INJECT MODE 1 SOLUTIONS TEXT ---
+        if (solText) {
+            solText.innerHTML = "<strong>I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | V<sub>IN</sub> = " + parseFloat(vin.toFixed(2)) + " V | P = " + parseFloat((p_mW/1000).toFixed(2)) + " W</strong><br><br>" +
+                "<em>Core Equations:</em> <strong>h<sub>FE</sub> = I<sub>C</sub> / I<sub>B</sub></strong> &nbsp;and&nbsp; <strong>V = I &times; R</strong><br><br>" +
+                "<em>Step 1:</em> Find the required base current.<br>" +
+                "I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub> = " + ic_mA + " mA / " + hfe + " = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 2:</em> Calculate the voltage dropped across the base resistor.<br>" +
+                "V<sub>RB</sub> = I<sub>B</sub> &times; R<sub>B</sub> = " + parseFloat((ib_mA/1000).toFixed(5)) + " A &times; " + rb + " &Omega; = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 3:</em> Add the base-emitter voltage drop to find the total input voltage needed.<br>" +
+                "V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub> = " + parseFloat(vrb.toFixed(2)) + " V + 0.7 V = <strong>" + parseFloat(vin.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 4:</em> Calculate the power dissipation of the motor load.<br>" +
+                "P = I<sub>C</sub> &times; V<sub>supply</sub> = " + parseFloat((ic_mA/1000).toFixed(3)) + " A &times; " + supplyVoltage + " V = <strong>" + parseFloat((p_mW/1000).toFixed(2)) + " W</strong>";
+        }
 
         // Toggle UI
         document.getElementById('wrapperTransVIN').style.display = 'flex';
@@ -8195,7 +8211,6 @@ function generateTransistorProblem(ctx, canvas) {
 
     } else {
         // --- MODE 2: Bottom-Up (Given V_IN, find I_C) ---
-        // Let's pick a V_IN that yields nice math
         const vinValues = [2.2, 2.7, 3.1, 3.7, 4.0, 5.1];
         vin = vinValues[Math.floor(Math.random() * vinValues.length)];
         
@@ -8216,6 +8231,18 @@ function generateTransistorProblem(ctx, canvas) {
             Assume V<sub>BE</sub> = 0.7V.<br><br>
             Calculate the voltage dropped across the base resistor (V<sub>RB</sub>), the resulting Base Current (I<sub>B</sub>), and the final Collector Current (I<sub>C</sub>) flowing through the motor.
         `;
+
+        // --- INJECT MODE 2 SOLUTIONS TEXT ---
+        if (solText) {
+            solText.innerHTML = "<strong>V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | I<sub>C</sub> = " + parseFloat(ic_mA.toFixed(2)) + " mA</strong><br><br>" +
+                "<em>Core Equations:</em> <strong>V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub></strong> &nbsp;and&nbsp; <strong>I<sub>C</sub> = h<sub>FE</sub> &times; I<sub>B</sub></strong><br><br>" +
+                "<em>Step 1:</em> Subtract the base-emitter drop to find the voltage across the base resistor.<br>" +
+                "V<sub>RB</sub> = V<sub>IN</sub> - V<sub>BE</sub> = " + vin.toFixed(1) + " V - 0.7 V = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 2:</em> Calculate the base current using Ohm's Law.<br>" +
+                "I<sub>B</sub> = V<sub>RB</sub> / R<sub>B</sub> = " + parseFloat(vrb.toFixed(2)) + " V / " + rb + " &Omega; = " + parseFloat(ib_A.toFixed(6)) + " A = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 3:</em> Multiply by the current gain to find the final collector current.<br>" +
+                "I<sub>C</sub> = h<sub>FE</sub> &times; I<sub>B</sub> = " + hfe + " &times; " + parseFloat(ib_mA.toFixed(3)) + " mA = <strong>" + parseFloat(ic_mA.toFixed(2)) + " mA</strong>";
+        }
 
         // Toggle UI
         document.getElementById('wrapperTransVIN').style.display = 'none'; // Given in text
