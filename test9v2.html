@@ -9692,6 +9692,7 @@ if (currentMode === 'grade9nand') {
     
     //New function code pasted above this line for grag and drop
     //********************************************************************
+    //********************************************************************
     // New function below this line in two places if need to be parsed
 
     // 2. Identify which inputs are currently active
@@ -9736,7 +9737,7 @@ if (currentMode === 'grade9nand') {
             activeInputs.push('siliconTP1', 'siliconTP2');
         }
     }
-    else if (currentMode === 'grade9silicon') {
+    } else if (currentMode === 'grade9silicon') {
         activeInputs = [];
         // If the OR-Gate inputs are showing:
         if (document.getElementById('inputGroupGrade9Silicon') && document.getElementById('inputGroupGrade9Silicon').style.display !== 'none') {
@@ -9744,7 +9745,16 @@ if (currentMode === 'grade9nand') {
         } 
         // If the Pathfinder inputs are showing:
         else if (document.getElementById('inputGroupGrade9SiliconPath') && document.getElementById('inputGroupGrade9SiliconPath').style.display !== 'none') {
-            activeInputs.push('g9SilPathID1', 'g9SilPathID2', 'g9SilPathVD1', 'g9SilPathVD2', 'g9SilPathVLoad');
+            // Push the 3 inputs that are ALWAYS visible
+            activeInputs.push('g9SilPathID1', 'g9SilPathID2', 'g9SilPathVLoad');
+            
+            // Only push the diode voltage inputs if they are currently visible on the screen!
+            if (document.getElementById('wrapperVD1') && document.getElementById('wrapperVD1').style.display !== 'none') {
+                activeInputs.push('g9SilPathVD1');
+            }
+            if (document.getElementById('wrapperVD2') && document.getElementById('wrapperVD2').style.display !== 'none') {
+                activeInputs.push('g9SilPathVD2');
+            }
         }
     }
     // 👇 NEW: TRANSISTOR ACTIVE INPUTS 👇
@@ -9938,7 +9948,7 @@ if (currentMode === 'grade9nand') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('siliconTP2').value)), currentAnswers.tp2, 'V'));
         }
 
-    } else if (currentMode === 'grade9silicon') {
+} else if (currentMode === 'grade9silicon') {
         // Grade OR-Gate if it's visible
         if (document.getElementById('inputGroupGrade9Silicon') && document.getElementById('inputGroupGrade9Silicon').style.display !== 'none') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPayload').value)), currentAnswers.vLoad, 'V'));
@@ -9949,8 +9959,15 @@ if (currentMode === 'grade9nand') {
         else if (document.getElementById('inputGroupGrade9SiliconPath') && document.getElementById('inputGroupGrade9SiliconPath').style.display !== 'none') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathID1').value)), currentAnswers.iD1, 'mA'));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathID2').value)), currentAnswers.iD2, 'mA'));
-            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathVD1').value)), currentAnswers.vD1, 'V'));
-            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathVD2').value)), currentAnswers.vD2, 'V'));
+            
+            // Only grade the diode voltage inputs if they are currently visible on the screen!
+            if (document.getElementById('wrapperVD1') && document.getElementById('wrapperVD1').style.display !== 'none') {
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathVD1').value)), currentAnswers.vD1, 'V'));
+            }
+            if (document.getElementById('wrapperVD2') && document.getElementById('wrapperVD2').style.display !== 'none') {
+                results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathVD2').value)), currentAnswers.vD2, 'V'));
+            }
+            
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathVLoad').value)), currentAnswers.vLoad, 'V'));
         }
     }
