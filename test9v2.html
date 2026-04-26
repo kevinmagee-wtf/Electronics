@@ -832,6 +832,11 @@
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
 </div>
 
+<div id="menuTransistors" class="tabs" style="display:none;">
+    <button class="tab" id="tab-transistor" onclick="safeSwitchTab('transistor')">Transistors</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
+</div>
+
 <div id="menuPlaceholder" class="tabs" style="display:none;">
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Module Under Construction - Return Home</button>
 </div>
@@ -1449,10 +1454,38 @@
         </div>
 <!-- Input group Block Builder -->  
         <div id="inputGroupBlockBuilder" class="input-group" style="display:none; width: 100%; margin-top: 10px;">
-    <div id="blockBuilderInstructions" style="margin-bottom: 15px; padding: 15px; background: #fdfdfd; border-left: 4px solid #3498db; border-radius: 4px; font-family: sans-serif; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div id="blockBuilderInstructions" style="margin-bottom: 15px; padding: 15px; background: #fdfdfd; border-left: 4px solid #3498db; border-radius: 4px; font-family: sans-serif; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            </div>
         </div>
+<!-- Input group Block Builder -->  
+    <div id="inputGroupTransistor" style="display: none; flex-direction: column; align-items: center; padding: 10px 0; gap: 12px; width: 100%;">
     
+    <div id="wrapperTransVIN" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">V<sub>IN</sub> =</div>
+        <input type="text" id="transVIN" placeholder="e.g. 3.4 V" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
     </div>
+
+    <div id="wrapperTransVRB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">V<sub>RB</sub> =</div>
+        <input type="text" id="transVRB" placeholder="e.g. 2.7 V" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransIB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">I<sub>B</sub> =</div>
+        <input type="text" id="transIB" placeholder="e.g. 1.5 mA" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransIC" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">I<sub>C</sub> =</div>
+        <input type="text" id="transIC" placeholder="e.g. 300 mA" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransP" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">P =</div>
+        <input type="text" id="transP" placeholder="e.g. 3.6 W" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+</div>
 <!-- *************************************************************************************** -->   
 <!-- *************************************************************************************** -->    
 <!-- Bottom Controls, Feedback, and Solutions -->
@@ -2320,6 +2353,58 @@ const applyOverbar = (str) => {
     }
     return result;
 };
+
+/**
+ * Draws a standard GCSE NPN Transistor symbol
+ * Centered at (x, y) with a radius of 25px.
+ * * Connection coordinates for your main circuit:
+ * - Base (B): Connect wire to (x - 25, y)
+ * - Collector (C): Connect wire to (x + 10, y - 25)
+ * - Emitter (E): Connect wire to (x + 10, y + 25)
+ */
+function drawTransistor(ctx, x, y) {
+    const radius = 25;
+    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "miter";
+
+    // 1. Solid white background circle to hide grid/wires behind it
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = "white";
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    // 2. Base wire and vertical plate
+    ctx.moveTo(x - radius, y);  // Start at left edge of circle
+    ctx.lineTo(x - 10, y);      // Wire connecting to plate
+    ctx.moveTo(x - 10, y - 12); // Top of base plate
+    ctx.lineTo(x - 10, y + 12); // Bottom of base plate
+
+    // 3. Collector (Top diagonal and vertical exit)
+    ctx.moveTo(x - 10, y - 5);      // Start slightly below top of plate
+    ctx.lineTo(x + 10, y - 17);     // Diagonal up
+    ctx.lineTo(x + 10, y - radius); // Straight vertical up to the circle edge
+
+    // 4. Emitter (Bottom diagonal and vertical exit)
+    ctx.moveTo(x - 10, y + 5);      // Start slightly above bottom of plate
+    ctx.lineTo(x + 10, y + 17);     // Diagonal down
+    ctx.lineTo(x + 10, y + radius); // Straight vertical down to the circle edge
+    ctx.stroke();
+
+    // 5. Emitter Arrow (NPN points OUT)
+    // Positioned perfectly on the bottom diagonal line
+    ctx.beginPath();
+    ctx.fillStyle = strokeColor;
+    ctx.moveTo(x + 10, y + 17); // Arrow tip
+    ctx.lineTo(x + 1, y + 16);  // Left barb
+    ctx.lineTo(x + 7, y + 7);   // Right barb
+    ctx.closePath();
+    ctx.fill();
+}
     
 // ==========================================
 // LOGIC GATE DRAWING HELPERS
@@ -8051,7 +8136,176 @@ if (oldOverlay) oldOverlay.remove();
         solText.innerHTML = logicHTML;
     }
 }
+//*********************************************************************************************************
+// THANSITORS
     
+function generateTransistorProblem(ctx, canvas) {
+    // 1. Setup Canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+    ctx.strokeStyle = strokeColor;
+    ctx.fillStyle = strokeColor;
+    ctx.lineWidth = 2;
+
+    // 2. Decide the Mode (50/50 split between Top-Down and Bottom-Up)
+    // We'll store this in window.transistorMode so our grading function knows what to do later
+    window.transistorMode = Math.random() < 0.5 ? 1 : 2; 
+    
+    // Arrays for sensible random values
+    const hfeValues = [50, 80, 100, 120, 150, 200, 250];
+    const rbValues = [1000, 1200, 1500, 2000, 2200, 3300, 4700]; // in Ohms
+    const supplyVoltage = Math.random() < 0.5 ? 9 : 12; // 9V or 12V supply
+    
+    const hfe = hfeValues[Math.floor(Math.random() * hfeValues.length)];
+    const rb = rbValues[Math.floor(Math.random() * rbValues.length)];
+    const rbLabel = (rb / 1000) + " kΩ"; // Format for the canvas label
+    
+    // Global answers object for grading
+    window.currentAnswers = {
+        hfe: hfe,
+        rb: rb,
+        vSupply: supplyVoltage
+    };
+
+    let ic_mA, ib_mA, vrb, vin, p_mW;
+
+    if (window.transistorMode === 1) {
+        // --- MODE 1: Top-Down (Given I_Load, find V_IN) ---
+        // Let's generate a nice clean Load Current
+        ic_mA = Math.floor(Math.random() * 8 + 2) * 50; // 100mA to 500mA in steps of 50
+        
+        ib_mA = ic_mA / hfe;
+        vrb = (ib_mA / 1000) * rb; // I * R (Need to convert mA to A)
+        vin = vrb + 0.7; // Add V_BE drop
+        p_mW = ic_mA * supplyVoltage; // Power in mW
+
+        // Store precise answers for the grader
+        currentAnswers.ib = ib_mA;
+        currentAnswers.vrb = vrb;
+        currentAnswers.vin = vin;
+        currentAnswers.p = p_mW / 1000; // Store Power in Watts for the UI
+
+        document.getElementById('questionText').innerHTML = `
+            <strong>Mode: Top-Down Analysis</strong><br>
+            A transistor circuit is used to switch on a motor. The motor requires a current of <strong>${ic_mA} mA</strong> to operate. 
+            The transistor has a current gain (h<sub>FE</sub>) of <strong>${hfe}</strong>, and the base resistor is <strong>${rbLabel}</strong>. 
+            Assume V<sub>BE</sub> = 0.7V when the transistor is saturated.<br><br>
+            Calculate the required Base Current (I<sub>B</sub>), the voltage across the resistor (V<sub>RB</sub>), the required Input Voltage (V<sub>IN</sub>), and the power dissipated by the motor (P).
+        `;
+
+        // Toggle UI
+        document.getElementById('wrapperTransVIN').style.display = 'flex';
+        document.getElementById('wrapperTransVRB').style.display = 'flex';
+        document.getElementById('wrapperTransIB').style.display = 'flex';
+        document.getElementById('wrapperTransIC').style.display = 'none'; // Given in text
+        document.getElementById('wrapperTransP').style.display = 'flex';
+
+    } else {
+        // --- MODE 2: Bottom-Up (Given V_IN, find I_C) ---
+        // Let's pick a V_IN that yields nice math
+        const vinValues = [2.2, 2.7, 3.1, 3.7, 4.0, 5.1];
+        vin = vinValues[Math.floor(Math.random() * vinValues.length)];
+        
+        vrb = vin - 0.7;
+        let ib_A = vrb / rb; // I = V / R
+        ib_mA = ib_A * 1000;
+        ic_mA = ib_mA * hfe;
+
+        // Store precise answers for the grader
+        currentAnswers.vrb = vrb;
+        currentAnswers.ib = ib_mA;
+        currentAnswers.ic = ic_mA;
+
+        document.getElementById('questionText').innerHTML = `
+            <strong>Mode: Bottom-Up Analysis</strong><br>
+            A sensor provides an input voltage (V<sub>IN</sub>) of <strong>${vin.toFixed(1)} V</strong> to the transistor circuit. 
+            The transistor has a current gain (h<sub>FE</sub>) of <strong>${hfe}</strong>, and the base resistor is <strong>${rbLabel}</strong>. 
+            Assume V<sub>BE</sub> = 0.7V.<br><br>
+            Calculate the voltage dropped across the base resistor (V<sub>RB</sub>), the resulting Base Current (I<sub>B</sub>), and the final Collector Current (I<sub>C</sub>) flowing through the motor.
+        `;
+
+        // Toggle UI
+        document.getElementById('wrapperTransVIN').style.display = 'none'; // Given in text
+        document.getElementById('wrapperTransVRB').style.display = 'flex';
+        document.getElementById('wrapperTransIB').style.display = 'flex';
+        document.getElementById('wrapperTransIC').style.display = 'flex';
+        document.getElementById('wrapperTransP').style.display = 'none'; // Skip power for this mode
+    }
+
+    // ==========================================
+    // 3. DRAW THE CIRCUIT
+    // ==========================================
+    
+    // Coordinates
+    const topY = 40;
+    const botY = 240;
+    const tx = 250; // Transistor X center
+    const ty = 160; // Transistor Y center
+    const rx = 120; // Base Resistor X center
+
+    // Draw Power Rails
+    drawLine(ctx, 40, topY, 340, topY); // +Vcc Rail
+    drawLine(ctx, 40, botY, 340, botY); // 0V Rail
+    drawLabel(ctx, `+${supplyVoltage}V`, 10, topY + 5, 16);
+    drawLabel(ctx, `0V`, 15, botY + 5, 16);
+
+    // Draw Component: Transistor
+    drawTransistor(ctx, tx, ty);
+    drawLabel(ctx, `hFE = ${hfe}`, tx + 30, ty, 14);
+
+    // Draw Component: Base Resistor (Rotated to be horizontal!)
+    ctx.save();
+    ctx.translate(rx, ty);
+    ctx.rotate(Math.PI / 2); // Rotate 90 degrees
+    drawResistor(ctx, 0, 0);
+    ctx.restore();
+    drawLabel(ctx, rbLabel, rx - 15, ty - 20, 14); // Label above resistor
+
+    // Draw Component: Motor (Load)
+    const lx = tx + 10; // Aligned with the collector vertical exit
+    const ly = topY + 45; // Below the top rail
+    drawMotor(ctx, lx, ly);
+
+    // Wire: Load to Top Rail
+    drawLine(ctx, lx, topY, lx, ly - 25);
+    drawNode(ctx, lx, topY);
+
+    // Wire: Load to Transistor Collector
+    drawLine(ctx, lx, ly + 25, lx, ty - 25);
+
+    // Wire: Transistor Emitter to Bottom Rail
+    drawLine(ctx, tx + 10, ty + 25, tx + 10, botY);
+    drawNode(ctx, tx + 10, botY);
+
+    // Wire: Base Resistor to Transistor Base
+    drawLine(ctx, rx + 25, ty, tx - 25, ty);
+
+    // Wire: V_IN Terminal to Base Resistor
+    drawLine(ctx, 60, ty, rx - 25, ty);
+    drawNode(ctx, 60, ty); // V_IN Terminal Node
+
+    // V_IN Label & Arrow
+    drawCanvasSubscript(ctx, "V", "IN", "", 25, ty + 5, 18, strokeColor);
+    
+    // Draw Current Arrows
+    // I_C Arrow (Pointing down towards collector)
+    drawArrowOnWire(ctx, lx, ly + 35, lx, ty - 35);
+    drawCanvasSubscript(ctx, "I", "C", "", lx + 10, ty - 35, 16, strokeColor);
+
+    // I_B Arrow (Pointing right towards base)
+    drawArrowOnWire(ctx, rx + 35, ty, tx - 35, ty);
+    drawCanvasSubscript(ctx, "I", "B", "", tx - 45, ty - 10, 16, strokeColor);
+
+    // Draw Dynamic Text labels depending on Mode
+    if (window.transistorMode === 1) {
+        // Mode 1 gives I_C on the diagram
+        drawLabel(ctx, `${ic_mA} mA`, lx + 10, ty - 50, 14, "#dc3545"); 
+    } else {
+        // Mode 2 gives V_IN on the diagram
+        drawLabel(ctx, `${vin.toFixed(1)} V`, 25, ty - 15, 14, "#dc3545");
+    }
+}
+
 // END of Content generator functions
 //**********************************************************************************************************
 //**********************************************************************************************************
@@ -8089,8 +8343,8 @@ function openModule(module) {
     // Hide Home Menu
     document.getElementById('mainMenu').style.display = 'none';
     
-    // Hide all sub-menus first (Added 'menuLogic' to this list)
-    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuLogic', 'menuPlaceholder'];
+    // Hide all sub-menus first (Added 'menuTransistors' to this list)
+    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuLogic', 'menuTransistors', 'menuPlaceholder'];
     menus.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -8114,7 +8368,11 @@ function openModule(module) {
         switchTab('iposort'); 
     } else if (module === 'logic') {
         if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'flex';
-        switchTab('logic_ic'); // Automatically opens the Boolean mode to start!
+        switchTab('logic_ic'); 
+    } else if (module === 'transistors') {
+        // NEW: Handle the Transistors module opening
+        if (document.getElementById('menuTransistors')) document.getElementById('menuTransistors').style.display = 'flex';
+        switchTab('transistor'); 
     } else {
         document.getElementById('menuPlaceholder').style.display = 'flex';
         document.getElementById('contentArea').style.display = 'none';
