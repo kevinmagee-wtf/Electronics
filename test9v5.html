@@ -7,6 +7,7 @@
     <title>Abingdon School - Electronics Quiz</title>
     
 <style>
+    
     /* ============================================================
        1. GLOBAL STYLES & BACKGROUND
        ============================================================ */
@@ -787,7 +788,7 @@
 <div id="mainMenu" class="tabs">
     <button class="tab" onclick="safeOpenModule('basics')">1. Circuit Basics</button>
     <button class="tab" onclick="safeOpenModule('flipflops')">5. Flip Flops & Counters</button>
-    <button class="tab" onclick="safeOpenModule('logic')">2. Logic Gates</button>
+    <button class="tab" onclick="safeOpenModule('logic')">2. Logic</button>
     <button class="tab" onclick="safeOpenModule('transistors')">6. Transistors</button>
     <button class="tab" onclick="safeOpenModule('timing')">3. Timing Circuits</button>
     <button class="tab" onclick="safeOpenModule('opamps')">7. Op Amps</button>
@@ -813,6 +814,7 @@
 
 <div id="menuSystems" class="tabs" style="display:none;">
     <button class="tab" id="tab-iposort" onclick="safeSwitchTab('iposort')">IPO Sort</button>
+    <button class="tab" id="tab-blockbuilder" onclick="safeSwitchTab('blockbuilder')">Block Builder</button>
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
 </div>
 
@@ -827,6 +829,11 @@
     <button class="tab" id="tab-logic_system" onclick="safeSwitchTab('logic_system')">Logic Systems</button>
     <button class="tab" id="tab-logic_boolean" onclick="safeSwitchTab('logic_boolean')">Boolean</button>
     <button class="tab" id="tab-logic_nand" onclick="safeSwitchTab('logic_nand')">NAND Equivalents</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
+</div>
+
+<div id="menuTransistors" class="tabs" style="display:none;">
+    <button class="tab" id="tab-transistor" onclick="safeSwitchTab('transistor')">Transistors</button>
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
 </div>
 
@@ -1161,30 +1168,42 @@
         </div>
     </div>
 
-    <div id="inputGroupGrade9SiliconPath" style="display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 12px;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 15px; width: 100%; justify-items: center;">
+<div id="inputGroupGrade9SiliconPath" style="display: flex; flex-direction: column; align-items: center; padding: 10px 0; width: 100%;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px 20px; width: 100%; justify-items: center;">
+        
+        <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
+            <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">I<sub>D1</sub> =</div>
+            <input type="text" id="g9SilPathID1" placeholder="e.g. 50 mA" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+        </div>
+        
+        <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
+            <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">I<sub>D2</sub> =</div>
+            <input type="text" id="g9SilPathID2" placeholder="e.g. 50 mA" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+        </div>
+        
+        <div id="wrapperVD1" style="width: 100%;">
             <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
-                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">I<sub>D1</sub> =</div>
-                <input type="text" id="g9SilPathID1" placeholder="e.g. 50 mA" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-            </div>
-            <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
-                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">I<sub>D2</sub> =</div>
-                <input type="text" id="g9SilPathID2" placeholder="e.g. 50 mA" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-            </div>
-            <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
-                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">V<sub>D1</sub> =</div>
-                <input type="text" id="g9SilPathVD1" placeholder="e.g. 1.0 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-            </div>
-            <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
-                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">V<sub>D2</sub> =</div>
-                <input type="text" id="g9SilPathVD2" placeholder="e.g. 1.0 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">V<sub>D1</sub> =</div>
+                <input type="text" id="g9SilPathVD1" placeholder="e.g. 0.7 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
             </div>
         </div>
-        <div style="display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 5px;">
-            <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px;">V<sub>Load</sub> =</div>
+        
+        <div id="wrapperVD2" style="width: 100%;">
+            <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
+                <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">V<sub>D2</sub> =</div>
+                <input type="text" id="g9SilPathVD2" placeholder="e.g. 0.7 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+            </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; justify-content: flex-start; width: 100%;">
+            <div style="font-weight: bold; color: #E64097; font-size: 16px; margin-right: 8px; white-space: nowrap;">V<sub>Load</sub> =</div>
             <input type="text" id="g9SilPathVLoad" placeholder="e.g. 8.6 V" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
         </div>
+        
     </div>
+</div>
+    
+</div>
 </div>
                 
 <!-- Input group Zener -->                
@@ -1381,17 +1400,32 @@
 </div>
 
 <!-- Input group G9 NAND--> 
-<div id="inputGroupGrade9Nand" class="input-group" style="display:none;">
-    <div style="background: #fff3f8; padding: 15px; border-radius: 8px; border: 1px solid #e64097; margin-bottom: 15px;">
-        <h4 style="margin-top: 0; color: #e64097;">NAND System Conversion</h4>
-        <p style="font-size: 0.9em; margin-bottom: 10px;">
-            <strong>Task:</strong> Drag the correct NAND modules from the canvas bank (bottom gates) into the dashed slots on the canvas to convert the standard logic circuit into its NAND equivalent. <br>(Double click to remove any placed NAND gates.)
-        </p>
-        
-        <div id="nandModuleBank" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 10px; background: #fff; border: 1px dashed #ccc; border-radius: 5px; min-height: 50px;">
-            </div>
+<div id="inputGroupGrade9NandMaster" style="display: none; flex-direction: column; gap: 15px;">
+    
+    <div id="inputGroupNandConversion" class="input-group" style="display:none; padding: 15px; background: #fff8fb; width: 100%; max-width: 500px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 0 auto;">
+        <div style="display: block; width: 100%;">
+            <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 20px;">NAND Equivalent Circuit</h3>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444;">
+                Replace the standard logic gate with its NAND equivalent by dragging and dropping the correct NAND cluster.<br><br>
+                The wire should be placed in the right box only when needed.<br><br>
+                <i>(Double click to remove components from a box.)</i>
+            </p>
+        </div>
     </div>
-</div>       
+
+    <div id="inputGroupNandRedundancy" class="input-group" style="display:none; padding: 15px; background: #fff8fb; width: 100%; max-width: 500px; font-family: sans-serif; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 0 auto;">
+        <div style="display: block; width: 100%;">
+            <h3 style="color: #d65093; margin-top: 0; margin-bottom: 8px; font-size: 20px;">Redundant Gate Hunter</h3>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444;">
+                Spot the redundant NOT-NOT gates. <br><br>
+                <b>Click on a gate to cross them out!</b><br>
+                Click on an X if you wish to remove it<br>
+            </p>
+        </div>
+    </div>
+
+</div>
+                
 <!-- Input group colour code-->  
                 <div class="input-group" id="inputGroupColorVal" style="display: none; justify-content: center; gap: 5px;">
                     <input type="number" id="inputResValue" placeholder="Value" style="width: 80px;"> <strong>Ω ±</strong> 
@@ -1418,6 +1452,45 @@
                     </div>   
             </div>
         </div>
+<!-- Input group Block Builder -->  
+        <div id="inputGroupBlockBuilder" class="input-group" style="display:none; width: 100%; margin-top: 10px;">
+            <div id="blockBuilderInstructions" style="margin-bottom: 15px; padding: 15px; background: #fdfdfd; border-left: 4px solid #3498db; border-radius: 4px; font-family: sans-serif; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            </div>
+        </div>
+<!-- Input group Transistor -->  
+<div id="inputGroupTransistor" style="display: none; flex-direction: column; align-items: center; padding: 10px 0; gap: 12px; width: 100%;">
+    
+    <div id="wrapperTransVIN" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">V<sub>IN</sub> =</div>
+        <input type="text" id="transVIN" placeholder="e.g. 3.4 V" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransVRB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">V<sub>RB</sub> =</div>
+        <input type="text" id="transVRB" placeholder="e.g. 2.7 V" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransIB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">I<sub>B</sub> =</div>
+        <input type="text" id="transIB" placeholder="e.g. 1.5 mA" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransIC" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">I<sub>C</sub> =</div>
+        <input type="text" id="transIC" placeholder="e.g. 300 mA" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransRB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">R<sub>B</sub> =</div>
+        <input type="text" id="transRB" placeholder="e.g. 1500 Ω" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransP" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">P =</div>
+        <input type="text" id="transP" placeholder="e.g. 3.6 W" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+</div>
 <!-- *************************************************************************************** -->   
 <!-- *************************************************************************************** -->    
 <!-- Bottom Controls, Feedback, and Solutions -->
@@ -1604,9 +1677,12 @@ function handleNewQuestionClick() {
     const canvasIPOWorkstation = document.getElementById('canvasIPOWorkstation');
     if (canvasIPOWorkstation) canvasIPOWorkstation.style.display = 'none';
 
-    // REMOVE THE GRADE 9 CSS LOCKS 
-    const g9Nand = document.getElementById('inputGroupGrade9Nand');
-    if (g9Nand) g9Nand.style.removeProperty("display");
+    // --- UPDATED: REMOVE THE GRADE 9 CSS LOCKS --- 
+    const nandConv = document.getElementById('inputGroupNandConversion');
+    if (nandConv) nandConv.style.removeProperty("display");
+    
+    const nandRed = document.getElementById('inputGroupNandRedundancy');
+    if (nandRed) nandRed.style.removeProperty("display");
 
     // ESCAPE THE GRADE 9 LOOPS
     let escapedGrade9 = false;
@@ -1670,6 +1746,8 @@ function handleNewQuestionClick() {
         if (typeof generatePowerProblem === "function") generatePowerProblem(ctx, canvas);
     } else if (currentMode === 'logic_system') { 
         if (typeof generateLogicSystemProblem === "function") generateLogicSystemProblem(ctx, canvas);
+    } else if (currentMode === 'block_diagram') {
+        if (typeof generateBlockBuilderProblem === "function") generateBlockBuilderProblem(ctx, canvas);
     } else {
         // This calls hubController which does the final ctx.clearRect
         if (typeof hubController === "function") hubController(ctx, canvas);
@@ -2280,6 +2358,51 @@ const applyOverbar = (str) => {
     }
     return result;
 };
+
+/**
+ * Draws a standard GCSE NPN Transistor symbol (No Circle)
+ * Centered at (x, y) with connection bounds of 25px.
+ * Connection coordinates for your main circuit:
+ * - Base (B): Connect wire to (x - 25, y)
+ * - Collector (C): Connect wire to (x + 10, y - 25)
+ * - Emitter (E): Connect wire to (x + 10, y + 25)
+ */
+function drawTransistor(ctx, x, y) {
+    const radius = 25; // Kept to maintain exact wire connection lengths!
+    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "miter";
+
+    ctx.beginPath();
+    // 1. Base wire and vertical plate
+    ctx.moveTo(x - radius, y);  // Start at left bounding box edge
+    ctx.lineTo(x - 10, y);      // Wire connecting to plate
+    ctx.moveTo(x - 10, y - 12); // Top of base plate
+    ctx.lineTo(x - 10, y + 12); // Bottom of base plate
+
+    // 2. Collector (Top diagonal and vertical exit)
+    ctx.moveTo(x - 10, y - 5);      // Start slightly below top of plate
+    ctx.lineTo(x + 10, y - 17);     // Diagonal up
+    ctx.lineTo(x + 10, y - radius); // Straight vertical up to the bounding edge
+
+    // 3. Emitter (Bottom diagonal and vertical exit)
+    ctx.moveTo(x - 10, y + 5);      // Start slightly above bottom of plate
+    ctx.lineTo(x + 10, y + 17);     // Diagonal down
+    ctx.lineTo(x + 10, y + radius); // Straight vertical down to the bounding edge
+    ctx.stroke();
+
+    // 4. Emitter Arrow (NPN points OUT)
+    // Positioned perfectly on the bottom diagonal line
+    ctx.beginPath();
+    ctx.fillStyle = strokeColor;
+    ctx.moveTo(x + 10, y + 17); // Arrow tip
+    ctx.lineTo(x + 1, y + 16);  // Left barb
+    ctx.lineTo(x + 7, y + 7);   // Right barb
+    ctx.closePath();
+    ctx.fill();
+}
     
 // ==========================================
 // LOGIC GATE DRAWING HELPERS
@@ -4963,7 +5086,7 @@ function generateGrade9booleanProblem(ctx, canvas) {
         let ansX = topGate === 'AND' ? "A . B" : "A + B";
         let ansY = "C\u0305"; 
 
-        function getHTMLFormattedExp(gate, x, y) {
+function getHTMLFormattedExp(gate, x, y) {
             let bracketX = `(${x})`;
             if (gate === 'AND') return `${bracketX} . ${y}`;
             if (gate === 'OR') return `${bracketX} + ${y}`;
@@ -5078,6 +5201,17 @@ function generateLogic_nandProblem(ctx, canvas) {
     currentProblem = { type: 'logic_nand' };
     const themePink = "#d65093"; 
     
+    // --- UPDATED CLEANUP ---
+    // Hide the specific HTML containers instead of trying to 'remove' a non-existent ID
+    const conv = document.getElementById('inputGroupNandConversion');
+    const redund = document.getElementById('inputGroupNandRedundancy');
+    if (conv) conv.style.display = 'none';
+    if (redund) redund.style.display = 'none';
+    
+    const oldNandTray = document.getElementById('nandBottomTray');
+    if (oldNandTray) oldNandTray.remove();
+    // -----------------------
+    
     // 1. UI Reset for Solutions
     const solContainer = document.getElementById('solutions');
     if (solContainer) solContainer.style.display = "none"; 
@@ -5152,9 +5286,13 @@ function generateLogic_nandProblem(ctx, canvas) {
     qContainer.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: -20px;">
             <div style="text-align: center; width: 100%; margin-bottom: 10px;">
-                <h3 style="color: black; margin: 0; font-size: 1.1em;">Task: Construct a(n) <span style="color: ${themePink};">${targetGate}</span> Gate</h3>
-                <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag the correct gates to the blueprint. Double-click to remove.</p>
-                <p style="color: #666; font-size: 0.8em; margin: 2px 0;"><strong>Leave all other blueprints blank</strong></p>
+                <h3 style="color: #666; margin: 0; font-size: 1em; font-weight: bold;">Task: Construct a NAND Equivalent:</h3>
+                <h3 style="color: ${themePink}; margin: 2px 0; font-size: 1.5em; font-weight: bold;">${targetGate} Gate</h3>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;">Drag and drop NAND gates to the pink boxes to connect inputs to the output Q. </p>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;">(Double-click to remove a gate)</p>
+                <p style="color: #666; font-size: 0.8em; margin: 2px 0;"><strong>Only complete the relevant quadrant and leave all other templates blank</strong></p>
+                
+                
             </div>
             <div id="nandPartsBin" style="display: flex; flex-direction: row; justify-content: center; gap: 8px; padding: 10px; background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px;">
                 ${gateIconsHTML}
@@ -5317,19 +5455,7 @@ function generateLogic_nandProblem(ctx, canvas) {
 }
 
 //******************************************************************************************
-    
-/**
- * GENERATE GRADE 9 NAND PROBLEM
- * Full Version: Includes all UI safety checks, instructional text, 
- * and dual-mode logic (Conversion vs Redundancy Hunter).
- * * This version includes the "Clean Slate" protocol to ensure standard 
- * task text and gate trays are removed when the mode starts.
- */
-/**
- * GENERATE GRADE 9 NAND PROBLEM
- * Full Version: Includes all UI safety checks, instructional text, 
- * and dual-mode logic (Conversion vs Redundancy Hunter - WALDO EDITION).
- */
+
 /**
  * GENERATE GRADE 9 NAND PROBLEM
  * Full Version: Includes all UI safety checks, instructional text, 
@@ -5380,8 +5506,6 @@ function generateGrade9NandProblem(ctx, canvas) {
         if (oldOverlay) oldOverlay.remove();
         const oldTray = document.getElementById('nandBottomTray');
         if (oldTray) oldTray.remove();
-        let oldInstructions = document.getElementById('nandInstructions');
-        if (oldInstructions) oldInstructions.remove();
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -5390,13 +5514,23 @@ function generateGrade9NandProblem(ctx, canvas) {
         overlay.style.cssText = `position:absolute; top:${canvas.offsetTop}px; left:${canvas.offsetLeft}px; width:${canvas.width}px; height:${canvas.height}px; pointer-events:none; z-index:10;`;
         if (circuitContainer) circuitContainer.appendChild(overlay);
 
-        // THE COIN FLIP: Alternate between Drag & Drop and Redundancy Hunter
-        window.grade9NandMode = Math.random() < 0.5 ? 'conversion' : 'redundancy';
+        // THE ALTERNATOR: Flips between the two modes
+        window.grade9NandMode = (window.grade9NandMode === 'conversion') ? 'redundancy' : 'conversion';
 
         // =========================================================
         // MODE A: SYSTEM CONVERSION (DRAG AND DROP)
         // =========================================================
         if (window.grade9NandMode === 'conversion') {
+            
+            // --- UI VISIBILITY LOGIC ---
+            const master = document.getElementById('inputGroupGrade9NandMaster');
+            if (master) master.style.display = 'flex';
+            
+            const conversionInst = document.getElementById('inputGroupNandConversion');
+            if (conversionInst) conversionInst.style.display = 'block';
+
+            const redundancyInst = document.getElementById('inputGroupNandRedundancy');
+            if (redundancyInst) redundancyInst.style.display = 'none';
             
             const svgNOT = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet"><line x1="0" y1="45" x2="40" y2="45" stroke="black" stroke-width="3"/><path d="M 40,30 L 40,60 M 40,30 L 50,30 M 40,60 L 50,60" fill="none" stroke="black" stroke-width="3"/><path d="M 50,15 L 65,15 A 30,30 0 0,1 65,75 L 50,75 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="100" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/><line x1="105" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/></svg>`;
             const svgAND = `<svg width="100%" height="100%" viewBox="0 0 140 90" preserveAspectRatio="xMidYMid meet"><path d="M 0,30 L 10,30 M 0,60 L 10,60" fill="none" stroke="black" stroke-width="3"/><path d="M 10,15 L 25,15 A 30,30 0 0,1 25,75 L 10,75 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="60" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/><path d="M 65,45 L 75,45 M 75,30 L 75,60 M 75,30 L 80,30 M 75,60 L 80,60" fill="none" stroke="black" stroke-width="3"/><path d="M 80,15 L 95,15 A 30,30 0 0,1 95,75 L 80,75 Z" fill="white" stroke="black" stroke-width="3"/><circle cx="130" cy="45" r="5" fill="white" stroke="black" stroke-width="3"/><line x1="135" y1="45" x2="140" y2="45" stroke="black" stroke-width="3"/></svg>`;
@@ -5411,94 +5545,212 @@ function generateGrade9NandProblem(ctx, canvas) {
             
             window.nandTargets = { s1: s1Target, s2: "NOT", s3: b3Target, s4: s4Target };
 
-            if (solBox) { 
-                solBox.innerHTML = `<div style="font-family: sans-serif; font-size: 14px;"><strong>Grade 9 Circuit Solution:</strong><ul style="line-height: 1.6; margin-top: 8px; padding-left: 20px;"><li>Top: ${s1Target}</li><li>Bottom: NOT</li><li>Middle: ${b3Target}</li><li>Final: ${s4Target}</li></ul></div>`;
+            if (solBox) {
+                const solutionsMap = {
+                    'NOT': "A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate.",
+                    'AND': "An <strong>AND</strong> gate is a NAND gate followed by a NOT gate (NAND with inputs joined).",
+                    'OR': "An <strong>OR</strong> gate uses two NOT gates (inputs joined) for A and B, feeding into a final NAND gate.",
+                    'NOR': "A <strong>NOR</strong> gate is an OR gate construction followed by a final NOT gate.",
+                    'WIRE': "A straight <strong>Wire</strong> is used to pass the signal directly through without modification."
+                };
+                
+                solBox.innerHTML = `
+                    <div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                        <strong style="color: #d65093; font-size: 16px;">Grade 9 Circuit Solution:</strong><br>
+                        <ul style="line-height: 1.6; margin-top: 10px; padding-left: 20px;">
+                            <li><strong>Top Box (${s1Target}):</strong> ${solutionsMap[s1Target]}</li>
+                            <li><strong>Bottom Box (NOT):</strong> ${solutionsMap['NOT']}</li>
+                            <li><strong>Middle Box (${b3Target}):</strong> ${solutionsMap[b3Target]}</li>
+                            <li><strong>Final Box (${s4Target}):</strong> ${solutionsMap[s4Target]}</li>
+                        </ul>
+                    </div>`;
             }
 
             const blueprint = [
-                { id: "s1", target: s1Target, x: 40,  y: 45,  w: 140, h: 90 },
-                { id: "s2", target: "NOT",    x: 40,  y: 185, w: 140, h: 90 },
-                { id: "s3", target: b3Target, x: 220, y: 115, w: 140, h: 90 },
-                { id: "s4", target: "ANY",    x: 400, y: 115, w: 140, h: 90 } 
+                { id: "s1", target: s1Target, x: 40,  y: 45,  w: 140, h: 90, ghost: true },
+                { id: "s2", target: "NOT",    x: 40,  y: 185, w: 140, h: 90, ghost: true },
+                { id: "s3", target: b3Target, x: 220, y: 115, w: 140, h: 90, ghost: true },
+                { id: "s4", target: s4Target, x: 400, y: 115, w: 140, h: 90, ghost: false } 
             ];
 
-            const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px;"><h3>NAND Logic Construction</h3><p>Drag the NAND equivalent gates into the boxes.</p></div>`;
-            let instDiv = document.createElement('div'); instDiv.id = 'nandInstructions'; instDiv.innerHTML = instructionHTML;
-            const checkBtn = document.getElementById('checkansBtn');
-            if (checkBtn && checkBtn.parentNode) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
+            const drawGhost = (type, x, y) => {
+                ctx.save();
+                ctx.globalAlpha = 0.3; 
+                ctx.strokeStyle = "#444"; 
+                ctx.lineWidth = 3; 
+                ctx.translate(x, y);
+                ctx.beginPath();
+                if (type === "AND") {
+                    ctx.moveTo(35, 20); ctx.lineTo(75, 20);
+                    ctx.arc(75, 45, 25, -Math.PI/2, Math.PI/2); ctx.lineTo(35, 70); ctx.closePath();
+                } else if (type === "OR" || type === "NOR") {
+                    ctx.moveTo(30, 20); ctx.quadraticCurveTo(50, 45, 30, 70);
+                    ctx.quadraticCurveTo(90, 70, 115, 45); ctx.quadraticCurveTo(90, 20, 30, 20);
+                    if (type === "NOR") { ctx.stroke(); ctx.beginPath(); ctx.arc(120, 45, 5, 0, Math.PI*2); }
+                } else if (type === "NOT") {
+                    ctx.moveTo(45, 25); ctx.lineTo(85, 45); ctx.lineTo(45, 65); ctx.closePath();
+                    ctx.stroke(); ctx.beginPath(); ctx.arc(90, 45, 5, 0, Math.PI*2);
+                } else if (type === "WIRE") {
+                    ctx.setLineDash([8, 8]); 
+                    ctx.moveTo(25, 45); ctx.lineTo(115, 45);
+                }
+                ctx.stroke();
+                ctx.restore();
+            };
 
-            // Wiring and Zones...
-            ctx.strokeStyle = "#333"; ctx.lineWidth = 2; ctx.beginPath();
-            ctx.moveTo(10, 75); ctx.lineTo(40, 75); ctx.moveTo(10, 105); ctx.lineTo(40, 105); ctx.moveTo(10, 230); ctx.lineTo(40, 230);
-            ctx.moveTo(180, 90); ctx.lineTo(200, 90); ctx.lineTo(200, 140); ctx.lineTo(220, 140); ctx.moveTo(180, 230); ctx.lineTo(200, 230); ctx.lineTo(200, 180); ctx.lineTo(220, 180);
-            ctx.moveTo(360, 160); ctx.lineTo(400, 160); ctx.moveTo(540, 160); ctx.lineTo(570, 160); ctx.stroke();
-            ctx.fillStyle = "#333"; ctx.font = "bold 16px Arial"; ctx.fillText("A", 2, 75); ctx.fillText("B", 2, 105); ctx.fillText("C", 2, 230); ctx.fillText("Q", 575, 160);
+            ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(10, 75); ctx.lineTo(40, 75);
+            ctx.moveTo(10, 105); ctx.lineTo(40, 105);
+            ctx.moveTo(10, 230); ctx.lineTo(40, 230);
+            ctx.moveTo(180, 90); ctx.lineTo(200, 90); ctx.lineTo(200, 140); ctx.lineTo(220, 140);
+            ctx.moveTo(180, 230); ctx.lineTo(200, 230); ctx.lineTo(200, 180); ctx.lineTo(220, 180);
+            ctx.moveTo(360, 160); ctx.lineTo(400, 160);
+            ctx.moveTo(540, 160); ctx.lineTo(570, 160);
+            ctx.stroke();
+            
+            ctx.fillStyle = "#333"; ctx.font = "bold 16px Arial"; ctx.textBaseline = "middle";
+            ctx.fillText("A", 2, 75); ctx.fillText("B", 2, 105); ctx.fillText("C", 2, 230); ctx.fillText("Q", 575, 160);
 
             blueprint.forEach(s => {
+                if(s.ghost) drawGhost(s.target, s.x, s.y);
+                
                 let zone = document.createElement('div');
-                zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center;`;
-                zone.ondragover = (e) => e.preventDefault();
+                zone.style.cssText = `position:absolute; left:${s.x}px; top:${s.y}px; width:${s.w}px; height:${s.h}px; border:2px dashed #bbb; pointer-events:auto; display:flex; align-items:center; justify-content:center; transition: background 0.3s;`;
+                
+                zone.ondragover = (e) => { e.preventDefault(); zone.style.background = "rgba(214, 80, 147, 0.05)"; };
+                zone.ondragleave = () => { zone.style.background = "transparent"; };
                 zone.ondrop = (e) => {
                     const type = e.dataTransfer.getData("text");
                     zone.innerHTML = graphicsMap[type];
+                    zone.style.border = "2px solid #444";
+                    zone.style.background = "transparent";
                     zone.setAttribute('data-filled-type', type); 
                 };
-                zone.ondblclick = () => { zone.innerHTML = ""; zone.removeAttribute('data-filled-type'); };
+                zone.ondblclick = () => { 
+                    zone.innerHTML = ""; 
+                    zone.style.border = "2px dashed #bbb"; 
+                    zone.removeAttribute('data-filled-type');
+                };
                 overlay.appendChild(zone);
             });
 
-            let tray = document.createElement('div'); tray.id = 'nandBottomTray'; tray.style.cssText = `position:absolute; bottom:15px; width:100%; display:flex; justify-content:center; gap:20px; pointer-events:auto;`;
+            let tray = document.createElement('div');
+            tray.id = 'nandBottomTray';
+            tray.style.cssText = `position:absolute; bottom:15px; width:100%; display:flex; justify-content:center; gap:20px; pointer-events:auto;`;
             ['AND','OR','NOT','WIRE'].forEach(type => {
-                let item = document.createElement('div'); item.style.cssText = "width:120px; height:80px; background:white; border:1px solid #ccc; cursor:grab;";
-                item.draggable = true; item.innerHTML = graphicsMap[type];
+                let item = document.createElement('div');
+                item.style.cssText = "width:120px; height:80px; background:white; border:1px solid #ccc; cursor:grab; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
+                item.draggable = true;
+                item.innerHTML = graphicsMap[type];
                 item.ondragstart = (e) => e.dataTransfer.setData("text", type);
                 tray.appendChild(item);
             });
             if (circuitContainer) circuitContainer.appendChild(tray);
 
-        } 
-        // =========================================================
-        // MODE B: REDUNDANCY HUNTER (FUNNEL WALDO MODE - DYNAMIC)
-        // =========================================================
-else {
-            const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
-            const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+        } else { 
+         // =========================================================
+            // MODE B: REDUNDANCY HUNTER (DYNAMIC SCHEMATIC)
+            // =========================================================
+            try {
+                // --- UI VISIBILITY LOGIC ---
+                const master = document.getElementById('inputGroupGrade9NandMaster');
+                if (master) master.style.display = 'flex';
 
-            const instructionHTML = `<div style="padding: 15px; background: #fff8fb; border-left: 4px solid #d65093; margin-bottom: 15px;"><h3>Advanced Logic: Redundancy Hunter</h3><p>Trace the signal. <b>Click to cross out NOT-NOT pairs</b> (double-inversions) that cancel each other out.</p></div>`;
-            let instDiv = document.createElement('div'); instDiv.id = 'nandInstructions'; instDiv.innerHTML = instructionHTML;
-            const checkBtn = document.getElementById('checkansBtn');
-            if (checkBtn && checkBtn.parentNode) checkBtn.parentNode.insertBefore(instDiv, checkBtn);
+                const redundancyInst = document.getElementById('inputGroupNandRedundancy');
+                if (redundancyInst) redundancyInst.style.display = 'block';
 
-            if (solBox) solBox.innerHTML = "Trace from the final gate backwards. Look for back-to-back NOT-configured NANDs.";
+                const conversionInst = document.getElementById('inputGroupNandConversion');
+                if (conversionInst) conversionInst.style.display = 'none';
 
-            // Inputs for Column 0
-            const inputs = ["A", "B", "C", "D", "E"];
-            const colors = ["#007bff", "#dc3545", "#28a745", "#e67e22", "#6f42c1"];
+                const svgStandard = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="0" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
+                const svgJoined = `<svg width="100%" height="100%" viewBox="0 0 60 40"><line x1="0" y1="20" x2="6" y2="20" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="6" y2="28" stroke="black" stroke-width="2"/><line x1="6" y1="12" x2="10" y2="12" stroke="black" stroke-width="2"/><line x1="6" y1="28" x2="10" y2="28" stroke="black" stroke-width="2"/><path d="M 10,4 L 25,4 A 16,16 0 0,1 25,36 L 10,36 Z" fill="white" stroke="black" stroke-width="2"/><circle cx="45" cy="20" r="4" fill="white" stroke="black" stroke-width="2"/><line x1="49" y1="20" x2="60" y2="20" stroke="black" stroke-width="2"/></svg>`;
             
-            // Funnel Matrix Definition
-            // Layer 0: Start (5 gates), Layer 1: Mix (4 gates), Layer 2: Pre-final (2 gates), Layer 3: Final (1 gate)
-            let layers = [5, 4, 2, 1];
-            let gatePositions = [];
-            let injectedCount = 0;
+                if (solBox) {
+                    solBox.innerHTML = `
+                        <div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                            <strong style="color: #d65093; font-size: 16px;">Redundancy Hunter Solution:</strong><br><br>
+                            A <strong>NOT</strong> gate is made by joining the inputs of a single NAND gate (the gates with only 1 wire going into them).<br><br>
+                            In digital logic, a double negative cancels out: <strong>NOT(NOT(A)) = A</strong>.<br><br>
+                            <strong>How to solve:</strong> Trace each path from the inputs (A-H) to the outputs (Q1, Q2, Q3). Whenever you see <em>two NOT gates in a row</em> on the exact same path, they form a redundant pair. Click to cross them out in pairs!
+                        </div>`;
+                }
 
-            layers.forEach((count, lIndex) => {
-                for (let i = 0; i < count; i++) {
-                    // Logic to inject redundant pairs primarily in early layers
-                    let isRed = (injectedCount < 3 && lIndex < 2 && Math.random() < 0.25); 
-                    let gx = 80 + (lIndex * 150);
-                    let gy = (400 / (count + 1)) * (i + 1);
+                let gateDefs = [];
+                let inputCharCounter = 65; 
+                let hasRedundancy = false; 
 
+                function getChar() {
+                    let char = String.fromCharCode(inputCharCounter++);
+                    return char;
+                }
+
+                do {
+                    gateDefs = [];
+                    inputCharCounter = 65;
+                    hasRedundancy = false;
+
+                    for (let i = 0; i < 3; i++) {
+                        let baseY = 20 + (i * 120); 
+                        let template = Math.floor(Math.random() * 6); 
+
+                        if (template === 0) {
+                            hasRedundancy = true; 
+                            gateDefs.push({ id: `Z${i}_L0_T`, layer: 0, x: 80, y: baseY, type: 'inverter', inputs: [getChar()] });
+                            gateDefs.push({ id: `Z${i}_L1_T`, layer: 1, x: 260, y: baseY, type: 'inverter', parents: [`Z${i}_L0_T`] }); 
+                            gateDefs.push({ id: `Z${i}_L0_B`, layer: 0, x: 80, y: baseY+60, type: 'standard', inputs: [getChar(), getChar()] });
+                            gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L1_T`, `Z${i}_L0_B`], output: `Q${i+1}` });
+                        
+                        } else if (template === 1) {
+                            hasRedundancy = true; 
+                            gateDefs.push({ id: `Z${i}_L0`, layer: 0, x: 80, y: baseY+30, type: 'inverter', inputs: [getChar()] });
+                            gateDefs.push({ id: `Z${i}_L1`, layer: 1, x: 260, y: baseY+30, type: 'inverter', parents: [`Z${i}_L0`] }); 
+                            gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'inverter', parents: [`Z${i}_L1`], output: `Q${i+1}` });
+                        
+                        } else if (template === 2) {
+                            hasRedundancy = true; 
+                            gateDefs.push({ id: `Z${i}_L0_T`, layer: 0, x: 80, y: baseY, type: 'standard', inputs: [getChar(), getChar()] });
+                            gateDefs.push({ id: `Z${i}_L0_B`, layer: 0, x: 80, y: baseY+60, type: 'inverter', inputs: [getChar()] });
+                            gateDefs.push({ id: `Z${i}_L1_B`, layer: 1, x: 260, y: baseY+60, type: 'inverter', parents: [`Z${i}_L0_B`] }); 
+                            gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L0_T`, `Z${i}_L1_B`], output: `Q${i+1}` });
+                        
+                        } else if (template === 3) {
+                            hasRedundancy = true; 
+                            gateDefs.push({ id: `Z${i}_L0`, layer: 0, x: 80, y: baseY+30, type: 'inverter', inputs: [getChar()] });
+                            gateDefs.push({ id: `Z${i}_L1`, layer: 1, x: 260, y: baseY+30, type: 'inverter', parents: [`Z${i}_L0`] });
+                            gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'inverter', parents: [`Z${i}_L1`], output: `Q${i+1}` });
+                        
+                        } else if (template === 4) {
+                            gateDefs.push({ id: `Z${i}_L1_T`, layer: 1, x: 260, y: baseY, type: 'inverter', inputs: [getChar()] });
+                            gateDefs.push({ id: `Z${i}_L1_B`, layer: 1, x: 260, y: baseY+60, type: 'standard', inputs: [getChar(), getChar()] });
+                            gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L1_T`, `Z${i}_L1_B`], output: `Q${i+1}` });
+                        
+                        } else {
+                            gateDefs.push({ id: `Z${i}_L1_T`, layer: 1, x: 260, y: baseY, type: 'standard', inputs: [getChar(), getChar()] });
+                            gateDefs.push({ id: `Z${i}_L0_B`, layer: 0, x: 80, y: baseY+60, type: 'inverter', inputs: [getChar()] }); 
+                            gateDefs.push({ id: `Z${i}_OUT`, layer: 2, x: 440, y: baseY+30, type: 'standard', parents: [`Z${i}_L1_T`, `Z${i}_L0_B`], output: `Q${i+1}` });
+                        }
+                    }
+                } while (!hasRedundancy); 
+
+                window.activeGateDefs = gateDefs;
+
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "#333";
+                ctx.font = "bold 14px Arial";
+
+                gateDefs.forEach(gate => {
                     let gateDiv = document.createElement('div');
-                    gateDiv.className = 'nand-gate-clickable';
-                    gateDiv.dataset.redundant = isRed;
+                    gateDiv.id = gate.id;
+                    gateDiv.className = "nand-gate-clickable";
                     gateDiv.dataset.selected = "false";
-                    gateDiv.style.cssText = `position:absolute; left:${gx}px; top:${gy}px; width:60px; height:40px; cursor:pointer; pointer-events:auto;`;
                     
-                    // Render Joined SVG for Redundant or randomly for visual complexity
-                    gateDiv.innerHTML = isRed ? svgJoined : (Math.random() > 0.4 ? svgStandard : svgJoined);
+                    gateDiv.style.cssText = `position:absolute; left:${gate.x}px; top:${gate.y}px; width:60px; height:40px; cursor:pointer; pointer-events:auto; z-index:11;`;
+                    gateDiv.innerHTML = gate.type === 'inverter' ? svgJoined : svgStandard;
 
                     let xMark = document.createElement('div');
-                    xMark.innerHTML = '❌'; xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; display:none; color:red; pointer-events:none;';
+                    xMark.innerHTML = '❌';
+                    xMark.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:24px; display:none; color:red; pointer-events:none;';
                     gateDiv.appendChild(xMark);
 
                     gateDiv.onclick = () => {
@@ -5507,66 +5759,62 @@ else {
                         xMark.style.display = !active ? 'block' : 'none';
                         gateDiv.style.opacity = !active ? '0.4' : '1';
                     };
+
                     overlay.appendChild(gateDiv);
 
-                    // Track position for wiring
-                    gatePositions.push({ x: gx, y: gy, layer: lIndex, index: i });
-                    if (isRed) injectedCount++;
-
-                    // Place labels beside the nearest gate (Layer 0 only)
-                    if (lIndex === 0 && i < inputs.length) {
-                        ctx.fillStyle = colors[i];
-                        ctx.font = "bold 14px Arial";
-                        ctx.fillText(inputs[i], gx - 25, gy + 25);
-                        ctx.strokeStyle = colors[i];
-                        ctx.beginPath();
-                        ctx.moveTo(gx - 10, gy + 20);
-                        ctx.lineTo(gx, gy + 20);
-                        ctx.stroke();
+                    if (gate.inputs) {
+                        ctx.fillStyle = "#333";
+                        ctx.textBaseline = "middle";
+                        if (gate.type === 'inverter') {
+                            ctx.fillText(gate.inputs[0], gate.x - 25, gate.y + 20);
+                            ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 20); ctx.lineTo(gate.x, gate.y + 20); ctx.stroke();
+                        } else {
+                            ctx.fillText(gate.inputs[0], gate.x - 25, gate.y + 12);
+                            ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 12); ctx.lineTo(gate.x, gate.y + 12); ctx.stroke();
+                            ctx.fillText(gate.inputs[1], gate.x - 25, gate.y + 28);
+                            ctx.beginPath(); ctx.moveTo(gate.x - 12, gate.y + 28); ctx.lineTo(gate.x, gate.y + 28); ctx.stroke();
+                        }
                     }
-                }
-            });
 
-            // Engineering Ortho-Wiring (90-degree bends)
-            ctx.lineWidth = 1.5;
-            gatePositions.forEach(gate => {
-                if (gate.layer > 0) {
-                    ctx.strokeStyle = "#888";
-                    const sources = gatePositions.filter(p => p.layer === gate.layer - 1);
-                    
-                    // Connect inputs (offsets 12 and 28 for standard gates)
-                    [12, 28].forEach((inputYOffset, idx) => {
-                        const src = sources[(gate.index + idx) % sources.length];
-                        const startX = src.x + 60;
-                        const startY = src.y + 20;
-                        const endX = gate.x;
-                        const endY = gate.y + inputYOffset;
-                        
-                        // Create Manhattan (Ortho) path
-                        const midX = startX + (endX - startX) / (2 + idx); 
+                    if (gate.output) {
+                        ctx.textBaseline = "middle";
+                        ctx.fillText(gate.output, gate.x + 70, gate.y + 20);
+                        ctx.beginPath(); ctx.moveTo(gate.x + 60, gate.y + 20); ctx.lineTo(gate.x + 75, gate.y + 20); ctx.stroke();
+                    }
+                });
 
-                        ctx.beginPath();
-                        ctx.moveTo(startX, startY);
-                        ctx.lineTo(midX, startY); 
-                        ctx.lineTo(midX, endY);   
-                        ctx.lineTo(endX, endY);   
-                        ctx.stroke();
-                    });
-                }
-            });
+                gateDefs.forEach(gate => {
+                    if (gate.parents) {
+                        gate.parents.forEach((parentId, pinIdx) => {
+                            let parent = gateDefs.find(g => g.id === parentId);
+                            if (!parent) return; 
+                            
+                            let startX = parent.x + 60;
+                            let startY = parent.y + 20;
+                            let endX = gate.x;
+                            let endY = (gate.type === 'inverter') ? gate.y + 20 : (pinIdx === 0 ? gate.y + 12 : gate.y + 28);
 
-            // Label the final Output
-            const finalGate = gatePositions[gatePositions.length - 1];
-            ctx.fillStyle = "#333"; 
-            ctx.font = "bold 14px Arial";
-            ctx.fillText("OUT", finalGate.x + 65, finalGate.y + 25);
-            ctx.strokeStyle = "#333";
-            ctx.beginPath();
-            ctx.moveTo(finalGate.x + 60, finalGate.y + 20);
-            ctx.lineTo(finalGate.x + 75, finalGate.y + 20);
-            ctx.stroke();
-        }
-    } catch (err) { console.error(err); }
+                            ctx.beginPath();
+                            ctx.moveTo(startX, startY);
+
+                            let isLongWire = (gate.layer - parent.layer) > 1;
+                            let midX = startX + (isLongWire ? 100 : 30) + (pinIdx * 15);
+
+                            ctx.lineTo(midX, startY);
+                            ctx.lineTo(midX, endY);
+                            ctx.lineTo(endX, endY);
+                            ctx.stroke();
+                        });
+                    }
+                });
+
+            } catch (err) {
+                console.error("Grade 9 NAND Redundancy Error: ", err);
+            }
+        } 
+    } catch (err) {
+        console.error("Critical function error: ", err);
+    }
 }
     
 //*****************************************************************************************
@@ -7031,7 +7279,7 @@ function generateGrade9SiliconProblem() {
         ctx.textAlign = "left"; 
         ctx.fillText("S", 230, 100); // Switch label
 
-        // --- DRAWING D1 (Shifted down to accommodate the bigger switch) ---
+        // --- DRAWING D1 ---
         drawLine(ctx, 200, 119, 200, 135); // Wire from bottom node to D1
         
         ctx.beginPath(); 
@@ -7041,7 +7289,7 @@ function generateGrade9SiliconProblem() {
         drawLine(ctx, 200, 135, 200, 165); // Internal triangle line  
         ctx.fillStyle = pink; ctx.textAlign = "right"; ctx.fillText("D1", 175, 155);
         
-        drawLine(ctx, 200, 165, 200, 210); // Wire from D1 down to the junction (Moved up)
+        drawLine(ctx, 200, 165, 200, 210); // Wire from D1 down to the junction
 
         // --- DRAWING BACKUP BRANCH & D2 ---
         drawLine(ctx, 260, 140, 350, 140); 
@@ -7055,15 +7303,15 @@ function generateGrade9SiliconProblem() {
         drawLine(ctx, 285, 190, 315, 190); 
         drawLine(ctx, 300, 160, 300, 190); 
         ctx.fillStyle = pink; ctx.textAlign = "left"; ctx.fillText("D2", 325, 180);
-        drawLine(ctx, 300, 190, 300, 210); // Wire from D2 down to the junction (Moved up)
+        drawLine(ctx, 300, 190, 300, 210); // Wire from D2 down to the junction
 
         // --- LOWER CIRCUIT RECOMBINATION ---
-        drawLine(ctx, 200, 210, 300, 210); // Moved up to 210
+        drawLine(ctx, 200, 210, 300, 210); 
         if(typeof drawNode === 'function') drawNode(ctx, 250, 210); 
         drawLine(ctx, 250, 210, 250, 260); // Wire to load
         
         // Payload Box
-        const boxX = 215, boxY = 260, boxW = 70, boxH = 50; // Shifted Y down
+        const boxX = 215, boxY = 260, boxW = 70, boxH = 50; 
         const centerY = boxY + (boxH / 2); 
 
         ctx.fillStyle = "#f8f9fa"; 
@@ -7085,7 +7333,7 @@ function generateGrade9SiliconProblem() {
         ctx.textAlign = "start";
 
         // Ground
-        drawLine(ctx, 250, 310, 250, 350); // Shifted Y down
+        drawLine(ctx, 250, 310, 250, 350); 
         drawLine(ctx, 230, 350, 270, 350); drawLine(ctx, 240, 355, 260, 355); drawLine(ctx, 245, 360, 255, 360);
         ctx.fillStyle = "black"; ctx.fillText("0V (GND)", 250, 385);
 
@@ -7135,52 +7383,69 @@ function generateGrade9SiliconProblem() {
         let v_load = Number((v_in - 0.7).toFixed(1));
 
         let i_d1 = 0, i_d2 = 0;
-        let v_d1 = 0, v_d2 = 0;
         let logicHTML = "";
+        
+        // Get the wrapper elements so we can dynamically hide the unneeded Voltage inputs
+        const wrapVD1 = document.getElementById('wrapperVD1');
+        const wrapVD2 = document.getElementById('wrapperVD2');
 
         if (bothForward) {
             i_d1 = i_load / 2;
             i_d2 = i_load / 2;
-            v_d1 = 0.7;
-            v_d2 = 0.7;
             
             logicHTML += `<strong>Both diodes are Forward-Biased!</strong><br>`;
             logicHTML += `They share the load current equally: ${i_load}mA / 2 = <strong>${i_d1}mA each</strong>.<br><br>`;
-            logicHTML += `Both are conducting, so both drop <strong>0.7V</strong>.<br>`;
+            logicHTML += `Both are conducting, so they drop <strong>0.7V</strong>.<br>`;
+            
+            // Show VD1, Hide VD2
+            if (wrapVD1) wrapVD1.style.display = ''; 
+            if (wrapVD2) wrapVD2.style.display = 'none';
+            
+            // Expected Answers (Only expects VD1)
+            currentAnswers = { iD1: i_d1, iD2: i_d2, vD1: 0.7, vLoad: v_load };
+            
         } else {
             if (d1Forward) {
                 i_d1 = i_load;
                 i_d2 = 0;
-                v_d1 = 0.7;
-                v_d2 = -0.7; 
                 
                 logicHTML += `<strong>D1 is Forward-Biased and D2 is Reverse-Biased.</strong><br>`;
                 logicHTML += `D1 takes the full load current (<strong>${i_load}mA</strong>), leaving D2 blocked (<strong>0mA</strong>).<br><br>`;
+                logicHTML += `The conducting diode (D1) drops <strong>0.7V</strong>.<br>`;
+                
+                // Show VD1, Hide VD2
+                if (wrapVD1) wrapVD1.style.display = ''; 
+                if (wrapVD2) wrapVD2.style.display = 'none';
+                
+                // Expected Answers (Only expects VD1)
+                currentAnswers = { iD1: i_d1, iD2: i_d2, vD1: 0.7, vLoad: v_load };
+                
             } else {
                 i_d1 = 0;
                 i_d2 = i_load;
-                v_d1 = -0.7; 
-                v_d2 = 0.7;
                 
                 logicHTML += `<strong>D2 is Forward-Biased and D1 is Reverse-Biased.</strong><br>`;
                 logicHTML += `D2 takes the full load current (<strong>${i_load}mA</strong>), leaving D1 blocked (<strong>0mA</strong>).<br><br>`;
+                logicHTML += `The conducting diode (D2) drops <strong>0.7V</strong>.<br>`;
+                
+                // Hide VD1, Show VD2
+                if (wrapVD1) wrapVD1.style.display = 'none'; 
+                if (wrapVD2) wrapVD2.style.display = '';
+                
+                // Expected Answers (Only expects VD2)
+                currentAnswers = { iD1: i_d1, iD2: i_d2, vD2: 0.7, vLoad: v_load };
             }
-            logicHTML += `The conducting diode drops <strong>0.7V</strong>.<br>`;
-            logicHTML += `The reverse-biased diode blocks the circuit, seeing a drop of <strong>-0.7V</strong>.<br>`;
         }
         
         logicHTML += `V<sub>Load</sub> = ${v_in}V - 0.7V = <strong>${v_load}V</strong>.`;
 
-        // Store answers mapped to the new HTML IDs
-        currentAnswers = { iD1: i_d1, iD2: i_d2, vD1: v_d1, vD2: v_d2, vLoad: v_load };
-
         if (qText) {
             qText.innerHTML = 
                 `<div style="margin-bottom: 10px;"><strong style="color: #D4A017;">🏆 Grade 9 Challenge: The Pathfinder</strong></div>` +
-                `Calculate Branch Currents and Diode Voltages.`; 
+                `Calculate the active Branch Currents and Diode Voltage.`; 
         }
         if (hintDiv) {
-            hintDiv.innerHTML = "<strong>Hint:</strong> Current will take the path of least resistance. If both open, they share it. Forward diodes drop 0.7V. Reverse diodes drop -0.7V.";
+            hintDiv.innerHTML = "<strong>Hint:</strong> Current will take the path of least resistance. If both are open, they share it. The conducting diode always drops 0.7V.";
         }
 
         // Drawing Pathfinder
@@ -7242,8 +7507,6 @@ function generateGrade9SiliconProblem() {
         // Load Box (Stays where it is at Y=260)
         ctx.fillStyle = "#f8f9fa"; ctx.fillRect(215, 260, 70, 50); ctx.strokeRect(215, 260, 70, 50);
         ctx.fillStyle = "black"; ctx.textAlign = "center"; ctx.fillText("Load", 250, 290);
-
-
                                  
         // Draw V_Load = ? (Shifted Y coordinates down)
         ctx.fillStyle = pink; 
@@ -7404,7 +7667,831 @@ function generateIPOProblem(ctx, canvas) {
         });
     }
 }
+//*****************************************************************************************
+// ==============================
+// Block Builder
+// ===============================
+// 1. THE SCENARIOS DATABASE (Updated for 600x420 canvas)
+const blockScenarios = [
+    // ==========================================
+    // ARCHITECTURE 1: (OR/AND) + Time-limited output
+    // ==========================================
+    {
+        id: 'arch1_flavour1',
+        title: 'Porch Lighting System',
+        description: `
+            1. The lights should only be able to operate if it is dark.<br>
+            2. The lights should activate if either the gate is opened OR the doorbell is pressed.<br>
+            3. Once activated, the lights stay on for 3 minutes and then switch off automatically.<br><br>
+            <strong>Sensor Information:</strong><br>
+            • The light sensing unit outputs logic 1 in the dark.<br>
+            • The switches output logic 1 when pressed/opened.
+        `,
+        blocks: [
+            { id: 'b1', type: 'drop', x: 10, y: 30, answer: 'Switch (Gate)' },
+            { id: 'b2', type: 'static', x: 10, y: 120, text: 'Switch\n(Doorbell)' },
+            { id: 'b3', type: 'drop', x: 10, y: 240, answer: 'Light sensing unit' },
+            { id: 'b4', type: 'drop', x: 120, y: 75, answer: 'OR gate' },
+            { id: 'b5', type: 'static', x: 220, y: 155, text: 'AND gate' },
+            { id: 'b6', type: 'static', x: 320, y: 155, text: 'Delay\nunit' },
+            { id: 'b7', type: 'drop', x: 420, y: 155, answer: 'Transistor driver' },
+            { id: 'b8', type: 'static', x: 510, y: 155, text: 'LED Array' }
+        ],
+        wires: [
+            { startX: 90, startY: 55, endX: 120, endY: 85 },   
+            { startX: 90, startY: 145, endX: 120, endY: 115 }, 
+            { startX: 200, startY: 100, endX: 220, endY: 165 },
+            { startX: 90, startY: 265, endX: 220, endY: 195 }, 
+            { startX: 300, startY: 180, endX: 320, endY: 180 },
+            { startX: 400, startY: 180, endX: 420, endY: 180 },
+            { startX: 500, startY: 180, endX: 510, endY: 180 } 
+        ],
+        trayPool: [
+            "Switch (Gate)", "Light sensing unit", "OR gate", "Transistor driver", 
+            "NOT gate", "Latch unit", "Temperature sensor", "Buzzer unit", "Comparator", "Motor unit"
+        ]
+    },
+
+    // ==========================================
+    // ARCHITECTURE 2: Linear + Conditional (NOT gate)
+    // ==========================================
+    {
+        id: 'arch2_flavour4',
+        title: 'Greenhouse Irrigation',
+        description: `
+            1. The watering system must start when the soil becomes dry.<br>
+            2. The water should flow for a period of 5 minutes before stopping.<br>
+            3. The system uses a solenoid valve to control the water.<br><br>
+            <strong>Sensor Information:</strong><br>
+            • The moisture sensor outputs logic 0 when dry.
+        `,
+        blocks: [
+            { id: 'b1', type: 'drop', x: 10, y: 155, answer: 'Moisture sensor' },
+            { id: 'b2', type: 'drop', x: 120, y: 155, answer: 'NOT gate' }, 
+            { id: 'b3', type: 'static', x: 220, y: 155, text: 'Delay\nunit' },
+            { id: 'b4', type: 'drop', x: 370, y: 155, answer: 'MOSFET' },
+            { id: 'b5', type: 'static', x: 510, y: 155, text: 'Solenoid\nValve' }
+        ],
+        wires: [
+            { startX: 90, startY: 180, endX: 120, endY: 180 },
+            { startX: 200, startY: 180, endX: 220, endY: 180 },
+            { startX: 300, startY: 180, endX: 370, endY: 180 },
+            { startX: 450, startY: 180, endX: 510, endY: 180 }
+        ],
+        trayPool: [
+            "Moisture sensor", "NOT gate", "MOSFET", "AND gate", "OR gate", 
+            "Transistor driver", "Loudspeaker", "Light sensing unit", "Latch unit", "Pulse generator"
+        ]
+    },
+
+    // ==========================================
+    // ARCHITECTURE 3: Flashing/Pulsing (Re-wired for Pulse Input)
+    // ==========================================
+    {
+        id: 'arch3_flavour7',
+        title: 'Roadworks Warning Signal',
+        description: `
+            1. A warning beacon must operate only when it is dark AND the master switch is on.<br>
+            2. When active, the beacon must switch on and off repeatedly to create a flashing effect.<br><br>
+            <strong>Sensor Information:</strong><br>
+            • The light sensing unit outputs logic 1 in the dark.<br>
+            • The switch unit outputs logic 1 when turned on.
+        `,
+        blocks: [
+            { id: 'b1', type: 'drop', x: 10, y: 30, answer: 'Switch Unit' },
+            { id: 'b2', type: 'static', x: 10, y: 120, text: 'Light sensing\nunit' },
+            { id: 'b3', type: 'drop', x: 10, y: 240, answer: 'Pulse Generator' }, // Moved to Input!
+            { id: 'b4', type: 'drop', x: 120, y: 75, answer: 'AND gate' },
+            { id: 'b5', type: 'static', x: 220, y: 155, text: 'AND gate' }, // Final enabling gate
+            { id: 'b6', type: 'drop', x: 320, y: 155, answer: 'Transistor driver' },
+            { id: 'b7', type: 'static', x: 420, y: 155, text: 'Warning\nBeacon' }
+        ],
+        wires: [
+            { startX: 90, startY: 55, endX: 120, endY: 85 },   // Switch to AND1
+            { startX: 90, startY: 145, endX: 120, endY: 115 }, // Light to AND1
+            { startX: 200, startY: 100, endX: 220, endY: 165 },// AND1 to AND2
+            { startX: 90, startY: 265, endX: 220, endY: 195 }, // Pulse to AND2
+            { startX: 300, startY: 180, endX: 320, endY: 180 },// AND2 to Driver
+            { startX: 400, startY: 180, endX: 420, endY: 180 } // Driver to Beacon
+        ],
+        trayPool: [
+            "Switch Unit", "Pulse Generator", "Transistor driver", "AND gate", "OR gate", 
+            "Delay unit", "Moisture sensor", "NOT gate", "NAND gate", "Latch unit"
+        ]
+    },
+
+    // ==========================================
+    // ARCHITECTURE 4: Latching Output
+    // ==========================================
+    {
+        id: 'arch4_flavour9',
+        title: 'Security Alarm',
+        description: `
+            1. The alarm is triggered if a window switch is opened.<br>
+            2. Once triggered, the siren must continue to sound even if the window is closed again.<br>
+            3. The siren stops only when a separate reset procedure is followed.<br><br>
+            <strong>Sensor Information:</strong><br>
+            • The window switch outputs logic 1 when opened.
+        `,
+        blocks: [
+            { id: 'b1', type: 'drop', x: 10, y: 155, answer: 'Window Switch' },
+            { id: 'b2', type: 'drop', x: 150, y: 155, answer: 'Latch Unit' },
+            { id: 'b3', type: 'static', x: 300, y: 155, text: 'MOSFET' },
+            { id: 'b4', type: 'drop', x: 450, y: 155, answer: 'Siren' }
+        ],
+        wires: [
+            { startX: 90, startY: 180, endX: 150, endY: 180 }, 
+            { startX: 230, startY: 180, endX: 300, endY: 180 },
+            { startX: 380, startY: 180, endX: 450, endY: 180 }
+        ],
+        trayPool: [
+            "Window Switch", "Latch Unit", "Siren", "Delay unit", "Pulse generator", 
+            "NOT gate", "Transistor driver", "AND gate", "Moisture sensor", "Comparator"
+        ]
+    },
+
+    // ==========================================
+    // ARCHITECTURE 5: Parallel Outputs
+    // ==========================================
+    {
+        id: 'arch5_flavour10',
+        title: 'Terrarium Environment',
+        description: `
+            1. A heater must turn on if the air temperature drops too low.<br>
+            2. A water pump must activate if the moisture sensor detects the soil is dry.<br><br>
+            <strong>Sensor Information:</strong><br>
+            • The temperature sensor outputs logic 1 when cold.<br>
+            • The moisture sensor outputs logic 1 when dry.
+        `,
+        blocks: [
+            { id: 'b1', type: 'static', x: 10, y: 50, text: 'Temp Sensor' },
+            { id: 'b2', type: 'drop', x: 150, y: 50, answer: 'MOSFET' },
+            { id: 'b3', type: 'static', x: 300, y: 50, text: 'Heater' },
+            { id: 'b4', type: 'drop', x: 10, y: 220, answer: 'Moisture sensor' },
+            { id: 'b5', type: 'static', x: 150, y: 220, text: 'MOSFET' },
+            { id: 'b6', type: 'drop', x: 300, y: 220, answer: 'Water Pump' }
+        ],
+        wires: [
+            { startX: 90, startY: 75, endX: 150, endY: 75 }, 
+            { startX: 230, startY: 75, endX: 300, endY: 75 },
+            { startX: 90, startY: 245, endX: 150, endY: 245 }, 
+            { startX: 230, startY: 245, endX: 300, endY: 245 }
+        ],
+        trayPool: [
+            "Moisture sensor", "MOSFET", "Water Pump", "AND gate", "OR gate", 
+            "Transistor driver", "Light sensing unit", "Delay unit", "NOT gate", "Solenoid valve"
+        ]
+    },
+
+    // ==========================================
+    // ARCHITECTURE 6: Manual Override
+    // ==========================================
+    {
+        id: 'arch6_flavour11',
+        title: 'Safety Lighting',
+        description: `
+            1. The emergency lights turn on automatically when the sensor detects it is dark.<br>
+            2. A manual switch must also be able to turn the lights on at any time for testing.<br><br>
+            <strong>Sensor Information:</strong><br>
+            • The light sensing unit outputs logic 1 in the light.<br>
+            • The manual switch outputs logic 1 when pressed.
+        `,
+        blocks: [
+            { id: 'b1', type: 'drop', x: 10, y: 40, answer: 'Manual Switch' },
+            { id: 'b2', type: 'static', x: 10, y: 180, text: 'Light sensing\nunit' },
+            { id: 'b3', type: 'drop', x: 130, y: 180, answer: 'NOT gate' },
+            { id: 'b4', type: 'drop', x: 260, y: 110, answer: 'OR gate' },
+            { id: 'b5', type: 'static', x: 380, y: 110, text: 'Transistor\ndriver' },
+            { id: 'b6', type: 'static', x: 510, y: 110, text: 'Light Array' }
+        ],
+        wires: [
+            { startX: 90, startY: 65, endX: 260, endY: 130 }, 
+            { startX: 90, startY: 205, endX: 130, endY: 205 },
+            { startX: 210, startY: 205, endX: 260, endY: 150 },
+            { startX: 340, startY: 135, endX: 380, endY: 135 },
+            { startX: 460, startY: 135, endX: 510, endY: 135 }
+        ],
+        trayPool: [
+            "Manual Switch", "NOT gate", "OR gate", "AND gate", "NAND gate", 
+            "Delay unit", "Moisture sensor", "Pulse generator", "MOSFET", "Level Sensor"
+        ]
+    }
+];
+
+// *********************
+// 2. THE GENERATOR FUNCTION starts here: 
+//**********************
+function generateBlockBuilderProblem(ctx, canvas) {
+// --- 1. THE JANITOR PROTOCOL (STOPS STACKING) ---
+currentMode = 'block_diagram'; 
+hasCheckedCurrentProblem = false; 
+isCurrentProblemSolved = false; 
+
+// A. Clear the Wrapper
+const wrapper = document.getElementById('inputGroupBlockBuilder');
+if (wrapper) wrapper.innerHTML = ""; 
+
+// B. THE FIX: Match the names used in generateGrade9NandProblem
+const conversionInst = document.getElementById('inputGroupNandConversion');
+const redundancyInst = document.getElementById('inputGroupNandRedundancy');
+
+if (conversionInst) conversionInst.style.display = 'none';
+if (redundancyInst) redundancyInst.style.display = 'none';
+
+// C. Remove OLD Overlays
+let oldOverlay = document.getElementById('canvasOverlay');
+if (oldOverlay) oldOverlay.remove();
+
+    // --- 2. SELECT AND PREPARE THE SCENARIO ---
+    const rawScenario = blockScenarios[Math.floor(Math.random() * blockScenarios.length)];
+    const scenario = JSON.parse(JSON.stringify(rawScenario));
+
+    // Shift entire diagram up 30px to clear the tray
+    const shiftUp = 30; 
+    scenario.blocks.forEach(b => b.y -= shiftUp);
+    scenario.wires.forEach(w => {
+        w.startY -= shiftUp;
+        w.endY -= shiftUp;
+    });
+
+    window.currentBlockScenario = scenario;
+
+// --- 3. INSTRUCTIONS PANEL ---
+    let instDiv = document.createElement('div');
+    instDiv.className = 'gcse-block-ui'; // Tagged for master cleanup sweep
+    instDiv.style.cssText = "padding: 15px; background: #f8f9fa; margin-bottom: 15px; border-left: 4px solid #0d6efd; font-family: sans-serif;";
     
+    // REORDERED HERE: Instructions now appear at the top
+    instDiv.innerHTML = 
+        "<em style='color:#d65093;'>Drag the correct sub-systems from the tray to complete the block diagram.<br>(Double click to remove components from a box.)</em><br><br>" +
+        `<strong style="font-size:16px; color:#333;">${scenario.title}</strong><br>` +
+        scenario.description;
+
+    // Insert instructions into the wrapper
+    if (wrapper) {
+        wrapper.prepend(instDiv);
+    } else {
+        canvas.parentNode.insertBefore(instDiv, canvas);
+    }
+    
+    // --- 4. CREATE NEW OVERLAY ---
+    canvas.parentNode.style.position = 'relative'; 
+    let overlay = document.createElement('div');
+    overlay.id = 'canvasOverlay'; // Tagged for master cleanup sweep
+    overlay.style.position = 'absolute';
+    overlay.style.top = canvas.offsetTop + 'px';
+    overlay.style.left = canvas.offsetLeft + 'px';
+    overlay.style.width = canvas.width + 'px';
+    overlay.style.height = canvas.height + 'px';
+    overlay.style.pointerEvents = 'none'; 
+    overlay.style.zIndex = '10';
+    canvas.parentNode.appendChild(overlay);
+
+    // --- 5. CLEAR CANVAS & DRAW STATIC WIRES ---
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#333"; 
+    ctx.lineWidth = 2;
+
+    scenario.wires.forEach(wire => {
+        ctx.beginPath();
+        ctx.moveTo(wire.startX, wire.startY);
+        
+        let midX = wire.startX + (wire.endX - wire.startX) / 2;
+
+        ctx.lineTo(midX, wire.startY);    
+        ctx.lineTo(midX, wire.endY);      
+        ctx.lineTo(wire.endX, wire.endY); 
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(wire.endX, wire.endY); 
+        ctx.lineTo(wire.endX - 10, wire.endY - 5);
+        ctx.lineTo(wire.endX - 10, wire.endY + 5);
+        ctx.fillStyle = "#333";
+        ctx.fill();
+    });
+
+    // --- 6. RENDER BLOCKS ---
+    scenario.blocks.forEach(b => {
+        const box = document.createElement('div');
+        box.className = 'gcse-block-ui';
+        box.style.position = 'absolute';
+        box.style.left = b.x + 'px';
+        box.style.top = b.y + 'px';
+        box.style.width = '80px';
+        box.style.height = '50px'; 
+        box.style.border = '2px solid #222';
+        box.style.display = 'flex';
+        box.style.alignItems = 'center';
+        box.style.justifyContent = 'center';
+        box.style.textAlign = 'center';
+        box.style.fontSize = '12px';
+        box.style.fontFamily = 'Arial, sans-serif';
+        box.style.backgroundColor = '#fff';
+        box.style.pointerEvents = 'auto'; 
+        box.style.boxSizing = 'border-box';
+        box.style.padding = '4px';
+
+        if (b.type === 'static') {
+            box.innerText = b.text;
+            box.style.backgroundColor = '#a0aec0'; 
+            box.style.fontWeight = 'bold';
+        } else {
+            box.dataset.answer = b.answer;
+            box.classList.add('dropzone');
+            
+            box.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (isCurrentProblemSolved) return; 
+                box.style.backgroundColor = '#d1f0d1'; 
+            });
+            
+            box.addEventListener('dragleave', () => {
+                if (isCurrentProblemSolved) return;
+                box.style.backgroundColor = '#fff';
+            });
+            
+            box.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (isCurrentProblemSolved) return; 
+                
+                box.style.backgroundColor = '#fff';
+                const data = e.dataTransfer.getData('text/plain');
+                box.innerText = data;
+                box.dataset.current = data;
+                
+                if (typeof checkBlockBuilderAnswers === "function") checkBlockBuilderAnswers(); 
+            });
+
+            // 👇 NEW: DOUBLE CLICK TO REMOVE ITEMS 👇
+            box.addEventListener('dblclick', () => {
+                if (isCurrentProblemSolved) return; // Lock the box if they already won
+                
+                box.innerText = ''; // Clear the text visually
+                box.dataset.current = ''; // Clear the underlying data
+                box.style.backgroundColor = '#fff'; // Reset background
+                box.style.borderColor = '#222'; // Reset border (in case it was marked red/green)
+                
+                // Re-trigger the check function to instantly update any real-time grading logic
+                if (typeof checkBlockBuilderAnswers === "function") checkBlockBuilderAnswers(); 
+            });
+        }
+        overlay.appendChild(box);
+    });
+
+    // --- 7. DRAW TRAY AREA ---
+    const trayHeight = 95; 
+    const trayY = canvas.height - trayHeight - 5; 
+
+    ctx.strokeStyle = "#888";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(5, trayY, 590, trayHeight); 
+    ctx.setLineDash([]);
+    
+    // --- 8. RENDER TRAY DRAGGABLE ITEMS ---
+    
+    // Create a local copy so we don't accidentally break the original scenario data
+    let filteredPool = [...scenario.trayPool];
+
+    // Check if both MOSTET and Transitor options are present
+    const hasMOSFET = filteredPool.includes("MOSFET");
+    const hasTransistor = filteredPool.includes("Transistor Driver");
+
+    if (hasMOSFET && hasTransistor) {
+        // Randomly decide which one to kick out (50/50 chance)
+        const toRemove = Math.random() > 0.5 ? "MOSFET" : "Transistor Driver";
+        filteredPool = filteredPool.filter(item => item !== toRemove);
+    }
+
+    // Now shuffle the filtered list instead of the raw scenario.trayPool
+    let shuffledOptions = filteredPool.sort(() => Math.random() - 0.5);
+
+    shuffledOptions.forEach((opt, index) => {
+        const item = document.createElement('div');
+        item.className = 'gcse-block-ui';
+        item.innerText = opt;
+        item.style.position = 'absolute';
+        
+        let col = index % 5;
+        let row = Math.floor(index / 5);
+        item.style.left = (15 + col * 115) + 'px';
+        item.style.top = (trayY + 10 + row * 42) + 'px';
+        
+        item.style.width = '110px';
+        item.style.height = '35px';
+        item.style.backgroundColor = '#3498db';
+        item.style.color = '#fff';
+        item.style.borderRadius = '4px';
+        item.style.cursor = 'grab';
+        item.style.fontSize = '11px'; 
+        item.style.fontWeight = 'bold';
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.justifyContent = 'center';
+        item.style.textAlign = 'center';
+        item.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        item.style.boxSizing = 'border-box';
+        item.style.padding = '2px';
+        item.style.pointerEvents = 'auto';
+        item.draggable = true;
+
+        item.addEventListener('dragstart', (e) => {
+            if (isCurrentProblemSolved) { 
+                e.preventDefault(); 
+                return; 
+            }
+            e.dataTransfer.setData('text/plain', opt);
+            e.dataTransfer.effectAllowed = 'copy';
+        });
+
+        overlay.appendChild(item); 
+    });
+
+    // --- 9. SOLUTION PANEL (BLOCK BUILDER) ---
+    const solText = document.getElementById('solText');
+    if (solText) {
+        // Filter the blocks to find only those that required user input (dropzones)
+        let logicHTML = `<div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">`;
+        logicHTML += `<strong style="color: #0d6efd; font-size: 16px;">System Configuration Solution:</strong><br>`;
+        logicHTML += `<p style="margin: 10px 0;">To achieve the <strong>${scenario.title}</strong>, the subsystems must be arranged in the following logical sequence:</p>`;
+        logicHTML += `<ul style="line-height: 1.6; padding-left: 20px;">`;
+
+        // Map through all blocks to describe the full path
+        scenario.blocks.forEach((b, idx) => {
+            if (b.type === 'static') {
+                logicHTML += `<li><strong>Fixed Stage:</strong> ${b.text}</li>`;
+            } else {
+                logicHTML += `<li><strong>Required Stage:</strong> <span style="color:#d65093; font-weight:bold;">${b.answer}</span></li>`;
+            }
+        });
+
+        logicHTML += `</ul>`;
+        logicHTML += `<p style="font-size:12px; color:#666; border-top:1px solid #eee; padding-top:10px; margin-top:10px;">` +
+                     `<em>Note: Information flows from left to right through the processing stages.</em></p>`;
+        logicHTML += `</div>`;
+
+        solText.innerHTML = logicHTML;
+    }
+}
+//*********************************************************************************************************
+// THANSITORS
+    
+function generateTransistorProblem(ctx, canvas) {
+    // 0. RESET UI & STATE (Matching the Zener setup)
+    if (typeof hideAllInputGroups === 'function') {
+        hideAllInputGroups();
+    }
+    currentMode = 'transistor';
+
+    // If you have a main wrapper for transistor inputs like you do for Zener, turn it on here
+    const transMainGroup = document.getElementById('inputGroupTransistor');
+    if (transMainGroup) transMainGroup.style.display = "block";
+
+    // 1. Setup Canvas & UI Elements
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+    const pinkColor = "#E64097"; // The designated color for Unknowns
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+
+    const solText = document.getElementById('solText');
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none"; // Hide solutions on new problem
+    if (solText) solText.innerHTML = ""; 
+
+    // 2. Decide the Mode (Alternating using scenarioTracker for 3 modes)
+    if (typeof scenarioTracker.transistor === 'undefined') {
+        scenarioTracker.transistor = 0;
+    }
+    
+    scenarioTracker.transistor++;
+    
+    if (scenarioTracker.transistor > 3) {
+        scenarioTracker.transistor = 1;
+    }
+    
+    window.transistorMode = scenarioTracker.transistor;
+    
+    // Arrays for sensible random values
+    const hfeValues = [50, 80, 100, 120, 150, 200, 250];
+    const rbValues = [1000, 1200, 1500, 2000, 2200, 3300, 4700]; // in Ohms
+    const supplyVoltage = Math.random() < 0.5 ? 9 : 12; // 9V or 12V supply
+    
+    const hfe = hfeValues[Math.floor(Math.random() * hfeValues.length)];
+    let rb = rbValues[Math.floor(Math.random() * rbValues.length)];
+    
+    // Global answers object for grading
+    window.currentAnswers = {
+        hfe: hfe,
+        rb: rb,
+        vSupply: supplyVoltage
+    };
+
+    let ic_mA, ib_mA, vrb, vin, p_mW;
+
+// ==========================================
+    // LOGIC & UI TEXT GENERATION
+    // ==========================================
+    const qText = document.getElementById('questionText');
+    
+    // We moved the unit instructions to the bottom of the text block
+    const closingInstructions = `
+        <div style="margin-top: 15px; font-weight: normal; font-size: 0.85em; color: #777;">
+            <em>Enter your calculated values followed by a standard unit symbol (e.g., 5 mA, 12 V).</em>
+        </div>
+    `;
+
+    // Force neat vertical spacing between all input boxes
+    ['wrapperTransVIN', 'wrapperTransVRB', 'wrapperTransIB', 'wrapperTransIC', 'wrapperTransP', 'wrapperTransRB'].forEach(id => {
+        const wrapper = document.getElementById(id);
+        if (wrapper) {
+            wrapper.style.marginBottom = '12px'; 
+        }
+    });
+
+    if (window.transistorMode === 1) {
+        // --- MODE 1: Top-Down (Given I_Load, find V_IN) ---
+        ic_mA = Math.floor(Math.random() * 8 + 2) * 50; 
+        
+        ib_mA = ic_mA / hfe;
+        vrb = (ib_mA / 1000) * rb; 
+        vin = vrb + 0.7; 
+        p_mW = ic_mA * supplyVoltage; 
+
+        currentAnswers.ib = ib_mA;
+        currentAnswers.vrb = vrb;
+        currentAnswers.vin = vin;
+        currentAnswers.p = p_mW / 1000; 
+
+        if (qText) {
+            qText.innerHTML = `
+                <strong>The transistor is just saturated.</strong><br><br>
+                Calculate the following unknown values:<br>
+                &bull; <strong>V<sub>IN</sub></strong>: The required input voltage.<br>
+                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
+                &bull; <strong>I<sub>B</sub></strong>: The base current into the transistor.<br>
+                &bull; <strong>P</strong>: Power dissipated in the motor.
+                ${closingInstructions}
+            `;
+            qText.style.display = 'block'; 
+        }
+        
+        if (solText) {
+            solText.innerHTML = "<strong>I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | V<sub>IN</sub> = " + parseFloat(vin.toFixed(2)) + " V | P = " + parseFloat((p_mW/1000).toFixed(2)) + " W</strong><br><br>" +
+                "<em>Core Equations:</em> <strong>h<sub>FE</sub> = I<sub>C</sub> / I<sub>B</sub></strong> &nbsp;and&nbsp; <strong>V = I &times; R</strong><br><br>" +
+                "<em>Step 1:</em> Find the required base current.<br>" +
+                "I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub> = " + ic_mA + " mA / " + hfe + " = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 2:</em> Calculate the pd across the base resistor.<br>" +
+                "V<sub>RB</sub> = I<sub>B</sub> &times; R<sub>B</sub> = " + parseFloat((ib_mA/1000).toFixed(5)) + " A &times; " + rb + " &Omega; = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 3:</em> Add the base-emitter voltage drop to find the total input voltage needed.<br>" +
+                "V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub> = " + parseFloat(vrb.toFixed(2)) + " V + 0.7 V = <strong>" + parseFloat(vin.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 4:</em> Calculate the power dissipation of the motor load.<br>" +
+                "P = I<sub>C</sub> &times; V<sub>supply</sub> = " + parseFloat((ic_mA/1000).toFixed(3)) + " A &times; " + supplyVoltage + " V = <strong>" + parseFloat((p_mW/1000).toFixed(2)) + " W</strong>";
+        }
+
+        // Toggle UI
+        document.getElementById('wrapperTransVIN').style.display = 'flex';
+        document.getElementById('wrapperTransVRB').style.display = 'flex';
+        document.getElementById('wrapperTransIB').style.display = 'flex';
+        document.getElementById('wrapperTransIC').style.display = 'none'; 
+        document.getElementById('wrapperTransP').style.display = 'flex';
+        if (document.getElementById('wrapperTransRB')) document.getElementById('wrapperTransRB').style.display = 'none';
+
+    } else if (window.transistorMode === 2) {
+        // --- MODE 2: Bottom-Up (Given V_IN, find I_C) ---
+        const vinValues = [2.2, 2.7, 3.1, 3.7, 4.0, 5.1];
+        vin = vinValues[Math.floor(Math.random() * vinValues.length)];
+        
+        vrb = vin - 0.7;
+        let ib_A = vrb / rb; 
+        ib_mA = ib_A * 1000;
+        ic_mA = ib_mA * hfe;
+
+        currentAnswers.vrb = vrb;
+        currentAnswers.ib = ib_mA;
+        currentAnswers.ic = ic_mA;
+
+        if (qText) {
+            qText.innerHTML = `
+                <strong>The transistor is just saturated.</strong><br><br>
+                Calculate the following unknown values:<br>
+                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
+                &bull; <strong>I<sub>B</sub></strong>: The resulting base current.<br>
+                &bull; <strong>I<sub>C</sub></strong>: The collector current.
+                ${closingInstructions}
+            `;
+            qText.style.display = 'block'; 
+        }
+
+        if (solText) {
+            solText.innerHTML = "<strong>V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | I<sub>C</sub> = " + parseFloat(ic_mA.toFixed(2)) + " mA</strong><br><br>" +
+                "<em>Core Equations:</em> <strong>V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub></strong> &nbsp;and&nbsp; <strong>I<sub>C</sub> = h<sub>FE</sub> &times; I<sub>B</sub></strong><br><br>" +
+                "<em>Step 1:</em> Subtract the base-emitter drop to find the voltage across the base resistor.<br>" +
+                "V<sub>RB</sub> = V<sub>IN</sub> - V<sub>BE</sub> = " + vin.toFixed(1) + " V - 0.7 V = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 2:</em> Calculate the base current using Ohm's Law.<br>" +
+                "I<sub>B</sub> = V<sub>RB</sub> / R<sub>B</sub> = " + parseFloat(vrb.toFixed(2)) + " V / " + rb + " &Omega; = " + parseFloat(ib_A.toFixed(6)) + " A = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 3:</em> Multiply by the current gain to find the final collector current.<br>" +
+                "I<sub>C</sub> = h<sub>FE</sub> &times; I<sub>B</sub> = " + hfe + " &times; " + parseFloat(ib_mA.toFixed(3)) + " mA = <strong>" + parseFloat(ic_mA.toFixed(2)) + " mA</strong>";
+        }
+
+        // Toggle UI
+        document.getElementById('wrapperTransVIN').style.display = 'none'; 
+        document.getElementById('wrapperTransVRB').style.display = 'flex';
+        document.getElementById('wrapperTransIB').style.display = 'flex';
+        document.getElementById('wrapperTransIC').style.display = 'flex';
+        document.getElementById('wrapperTransP').style.display = 'none'; 
+        if (document.getElementById('wrapperTransRB')) document.getElementById('wrapperTransRB').style.display = 'none';
+        
+    } else {
+        // --- MODE 3: Design Mode (Find RB) ---
+        ic_mA = Math.floor(Math.random() * 8 + 2) * 50; 
+        const vinValues = [3.3, 5.0, 6.0];
+        vin = vinValues[Math.floor(Math.random() * vinValues.length)];
+
+        ib_mA = ic_mA / hfe;
+        vrb = vin - 0.7;
+        rb = vrb / (ib_mA / 1000); 
+
+        currentAnswers.ib = ib_mA;
+        currentAnswers.vrb = vrb;
+        currentAnswers.rb = rb; 
+
+        if (qText) {
+            qText.innerHTML = `
+                <strong>The transistor is just saturated.</strong><br><br>
+                Calculate the following unknown values:<br>
+                &bull; <strong>I<sub>B</sub></strong>: The base current.<br>
+                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
+                &bull; <strong>R<sub>B</sub></strong>: The required base resistor value.
+                ${closingInstructions}
+            `;
+            qText.style.display = 'block'; 
+        }
+
+        if (solText) {
+            solText.innerHTML = "<strong>I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | R<sub>B</sub> = " + Math.round(rb) + " &Omega;</strong><br><br>" +
+                "<em>Core Equations:</em> <strong>I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub></strong> &nbsp;and&nbsp; <strong>R = V / I</strong><br><br>" +
+                "<em>Step 1:</em> Find the required base current to drive the load.<br>" +
+                "I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub> = " + ic_mA + " mA / " + hfe + " = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 2:</em> Calculate the voltage the base resistor must drop.<br>" +
+                "V<sub>RB</sub> = V<sub>IN</sub> - V<sub>BE</sub> = " + vin.toFixed(1) + " V - 0.7 V = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 3:</em> Use Ohm's Law to calculate the base resistor value.<br>" +
+                "R<sub>B</sub> = V<sub>RB</sub> / I<sub>B</sub> = " + parseFloat(vrb.toFixed(2)) + " V / " + parseFloat((ib_mA/1000).toFixed(5)) + " A = <strong>" + Math.round(rb) + " &Omega;</strong>";
+        }
+
+        // Toggle UI
+        document.getElementById('wrapperTransVIN').style.display = 'none'; 
+        document.getElementById('wrapperTransVRB').style.display = 'flex';
+        document.getElementById('wrapperTransIB').style.display = 'flex';
+        document.getElementById('wrapperTransIC').style.display = 'none';  
+        document.getElementById('wrapperTransP').style.display = 'none';   
+        const wrapperRB = document.getElementById('wrapperTransRB');
+        if(wrapperRB) wrapperRB.style.display = 'flex';
+    }
+
+    // ==========================================
+    // 3. DRAW THE CIRCUIT
+    // ==========================================
+    
+    const topY = 40;   
+    const botY = 360;  
+    const tx = 380;    
+    const ty = 250;    
+    const rx = 200;    
+    const railStartX = 80; 
+    const railEndX = 500;
+    
+    // Draw Power Rails 
+    drawLine(ctx, railStartX, topY, railEndX, topY); 
+    drawLine(ctx, railStartX, botY, railEndX, botY); 
+    drawLabel(ctx, `+${supplyVoltage}V`, railStartX - 35, topY + 5, 16);
+    drawLabel(ctx, `0V`, railStartX - 30, botY + 5, 16);
+
+    // Draw Component: Transistor
+    drawTransistor(ctx, tx, ty);
+    
+    // --- hFE LABEL ---
+    ctx.fillStyle = strokeColor;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    ctx.font = "14px Arial";
+    ctx.fillText("h", tx + 45, ty + 5); 
+    let hW = ctx.measureText("h").width;
+    ctx.font = "10px Arial";
+    ctx.fillText("FE", tx + 45 + hW, ty + 8); 
+    let feW = ctx.measureText("FE").width;
+    ctx.font = "14px Arial";
+    ctx.fillText(" = " + hfe, tx + 45 + hW + feW, ty + 5);
+
+    // Draw Component: Base Resistor
+    ctx.save();
+    ctx.translate(rx, ty);
+    ctx.rotate(Math.PI / 2); 
+    drawResistor(ctx, 0, 0);
+    ctx.restore();
+    
+    // --- UPDATED BASE RESISTOR LABEL ---
+    let isRbUnknown = (window.transistorMode === 3);
+    ctx.fillStyle = isRbUnknown ? pinkColor : strokeColor;
+    ctx.textAlign = "left";
+    
+    let rbValText = isRbUnknown ? " = ?" : " = " + (rb >= 1000 ? (rb / 1000) + " kΩ" : rb + " Ω");
+    let rbYOffset = ty - 25; 
+    
+    let rbStartX = rx - 35; 
+
+    ctx.font = "16px Arial";
+    ctx.fillText("R", rbStartX, rbYOffset);
+    let rWidth = ctx.measureText("R").width;
+    
+    ctx.font = "12px Arial";
+    ctx.fillText("B", rbStartX + rWidth + 1, rbYOffset + 4);
+    let bWidth = ctx.measureText("B").width;
+    
+    ctx.font = "16px Arial";
+    ctx.fillText(rbValText, rbStartX + rWidth + bWidth + 3, rbYOffset);
+
+    // Draw Component: Motor (Load)
+    const lx = tx + 10; 
+    const ly = 145;     
+    drawMotor(ctx, lx, ly);
+
+    // Wires & Nodes
+    drawLine(ctx, lx, topY, lx, ly - 25);
+    drawNode(ctx, lx, topY);
+    drawLine(ctx, lx, ly + 25, lx, ty - 25);
+    drawLine(ctx, tx + 10, ty + 25, tx + 10, botY);
+    drawNode(ctx, tx + 10, botY);
+    drawLine(ctx, rx + 25, ty, tx - 25, ty);
+    drawLine(ctx, railStartX, ty, rx - 25, ty);
+    drawNode(ctx, railStartX, ty);
+
+    // --- UPDATED V_IN TERMINAL LABEL ---
+    let isVinUnknown = (window.transistorMode === 1);
+    ctx.fillStyle = isVinUnknown ? pinkColor : strokeColor;
+    ctx.textAlign = "left";
+    let vinY = ty + 20; 
+    
+    ctx.font = "18px Arial";
+    ctx.fillText("V", railStartX - 70, vinY);
+    let vW = ctx.measureText("V").width;
+    
+    ctx.font = "13px Arial";
+    ctx.fillText("IN", railStartX - 70 + vW + 2, vinY + 5);
+    let inW = ctx.measureText("IN").width;
+    
+    ctx.font = "16px Arial";
+    let vinSuffix = isVinUnknown ? " = ?" : " = " + vin.toFixed(1) + " V";
+    ctx.fillText(vinSuffix, railStartX - 70 + vW + inW + 5, vinY);
+    
+    // I_B Arrow 
+    drawArrowOnWire(ctx, rx + 45, ty, tx - 45, ty);
+    
+    // --- I_B ARROW LABEL ---
+    ctx.fillStyle = pinkColor;
+    ctx.textAlign = "left";
+    ctx.font = "16px Arial";
+    ctx.fillText("I", tx - 95, ty - 15); 
+    let ibW = ctx.measureText("I").width;
+    ctx.font = "12px Arial";
+    ctx.fillText("B", tx - 95 + ibW + 2, ty - 10); 
+    let bW = ctx.measureText("B").width;
+    ctx.font = "16px Arial";
+    ctx.fillText(" = ?", tx - 95 + ibW + bW + 5, ty - 15);
+
+    // --- CONDITIONAL DRAWING FOR MOTOR/IC ---
+    if (window.transistorMode === 1) {
+        ctx.fillStyle = strokeColor;
+        ctx.textAlign = "left";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(`${supplyVoltage}V`, lx + 30, ly - 5);
+        ctx.fillText(`${ic_mA}mA`, lx + 30, ly + 15);
+        
+    } else if (window.transistorMode === 2) {
+        drawArrowOnWire(ctx, lx, ly + 25, lx, ty - 25);
+        ctx.fillStyle = pinkColor;
+        ctx.textAlign = "left";
+        ctx.font = "16px Arial";
+        ctx.fillText("I", lx + 15, ty - 50);
+        let icW = ctx.measureText("I").width;
+        ctx.font = "12px Arial";
+        ctx.fillText("C", lx + 15 + icW + 2, ty - 45); 
+        let cW = ctx.measureText("C").width;
+        ctx.font = "16px Arial";
+        ctx.fillText(" = ?", lx + 15 + icW + cW + 5, ty - 50);
+        
+    } else {
+        ctx.fillStyle = strokeColor;
+        ctx.textAlign = "left";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(`${supplyVoltage}V`, lx + 30, ly - 5); 
+        ctx.fillText(`${ic_mA}mA`, lx + 30, ly + 15); 
+    }
+}
+// END of Content generator functions
+//**********************************************************************************************************
+//**********************************************************************************************************
 // ===========================================================================================================================      
 // FUNCTION 3. NAVIGATION and UI (Traffic Control) 
 // ===========================================================================================================================      
@@ -7416,7 +8503,8 @@ function goHome() {
     document.getElementById('menuTiming').style.display = 'none';
     document.getElementById('menuDiodes').style.display = 'none';
     if (document.getElementById('menuSystems')) document.getElementById('menuSystems').style.display = 'none'; 
-    if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'none'; // <-- NEW FIX
+    if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'none'; 
+    if (document.getElementById('menuTransistors')) document.getElementById('menuTransistors').style.display = 'none';
     document.getElementById('menuPlaceholder').style.display = 'none';
 
     // 2. Show the main 8-button grid
@@ -7439,8 +8527,8 @@ function openModule(module) {
     // Hide Home Menu
     document.getElementById('mainMenu').style.display = 'none';
     
-    // Hide all sub-menus first (Added 'menuLogic' to this list)
-    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuLogic', 'menuPlaceholder'];
+    // Hide all sub-menus first (Added 'menuTransistors' to this list)
+    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuLogic', 'menuTransistors', 'menuPlaceholder'];
     menus.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -7464,7 +8552,11 @@ function openModule(module) {
         switchTab('iposort'); 
     } else if (module === 'logic') {
         if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'flex';
-        switchTab('logic_ic'); // Automatically opens the Boolean mode to start!
+        switchTab('logic_ic'); 
+    } else if (module === 'transistors') {
+        // NEW: Handle the Transistors module opening
+        if (document.getElementById('menuTransistors')) document.getElementById('menuTransistors').style.display = 'flex';
+        switchTab('transistor'); 
     } else {
         document.getElementById('menuPlaceholder').style.display = 'flex';
         document.getElementById('contentArea').style.display = 'none';
@@ -7502,7 +8594,6 @@ function switchTab(mode) {
     }
 
     // 3. UI CLEANUP: Hide all input groups
-    // Pro-Tip: We call your master hide function first just to be perfectly safe
     if (typeof hideAllInputGroups === "function") {
         hideAllInputGroups();
     }
@@ -7520,14 +8611,18 @@ function switchTab(mode) {
         'inputGroupIPOSort', 'inputGroupSilicon', 'inputGroupSiliconVoltage', 
         'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse', 'inputGroupGrade9SiliconParallel',
         'inputGroupBoolean',
-        'booleanDropdownContainer',       
-        'booleanCheckboxContainer',       
+        'booleanDropdownContainer',        
+        'booleanCheckboxContainer',        
         'inputGroupGrade9BooleanSOP',     
         'inputGroupGrade9BooleanPath',    
         'inputGroupLogicSystem',          
         'inputGroupLogic_ic',             
-        'inputGroupLogic_NAND',            // 👇 NEW: Clears the NAND Equivalents UI!
-        'inputGroupGrade9Nand'
+        'inputGroupLogic_NAND',  
+        'inputGroupGrade9NandMaster',      
+        'inputGroupNandConversion',        
+        'inputGroupNandRedundancy',        
+        'inputGroupBlockBuilder',          
+        'inputGroupTransistor'            // 👇 NEW: Hides Transistor UI when switching away
     ];
 
     elementsToHide.forEach(id => {
@@ -7540,14 +8635,15 @@ function switchTab(mode) {
     if (subtitle) {
         if (mode === 'home') subtitle.innerText = "Welcome to Electronics";
         else if (['analysis', 'divider', 'resistance', 'colorcode', 'power'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
-        else if (mode === 'iposort') subtitle.innerText = "Module 4: Systems";
+        else if (['iposort', 'blockbuilder'].includes(mode)) subtitle.innerText = "Module 4: Systems"; 
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
         else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
         else if (['logic_ic', 'logic_system', 'logic_boolean', 'logic_nand', 'grade9boolean'].includes(mode)) subtitle.innerText = "Module 2: Logic Gates"; 
+        else if (mode === 'transistor') subtitle.innerText = "Module 6: Transistors"; // 👇 NEW: Transistor Subtitle
     }
 
     // 5. Global Cleanup
-    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '&nbsp;'; // Improved layout stability
+    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '&nbsp;'; 
     if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'none';
     
     document.querySelectorAll('input').forEach(i => {
@@ -7621,6 +8717,23 @@ function hubController(ctx, canvas) {
     canvas.height = 420;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // --- NEW: STRIP OLD LISTENERS ---
+    // This prevents the "NAND" logic from firing when you are in "Block Builder" mode
+    const btnNext = document.getElementById('btnNext');
+    if (btnNext) {
+        const newBtnNext = btnNext.cloneNode(true);
+        btnNext.parentNode.replaceChild(newBtnNext, btnNext);
+        // Re-attach the fresh listener
+        newBtnNext.addEventListener('click', () => hubController(ctx, canvas));
+    }
+
+    const btnCheck = document.getElementById('btnCheck');
+    if (btnCheck) {
+        const newBtnCheck = btnCheck.cloneNode(true);
+        btnCheck.parentNode.replaceChild(newBtnCheck, btnCheck);
+        // Note: The specific mode generator will attach its own 'click' listener to this new button
+    }
+    
     // 2. Full UI Reset (The "Master Wipe")
     // Because hideAllInputGroups() was upgraded above, all dropdown validation is wiped here!
     if (typeof hideAllInputGroups === "function") hideAllInputGroups();
@@ -7757,16 +8870,45 @@ function hubController(ctx, canvas) {
         if (typeof generateLogic_nandProblem === "function") generateLogic_nandProblem(ctx, canvas);
 
     } else if (currentMode === 'grade9nand') {
-        // *** NEW: GRADE 9 SYSTEM CONVERSION ***
-        if (document.getElementById('inputGroupGrade9Nand')) document.getElementById('inputGroupGrade9Nand').style.display = 'block';
+        // *** NEW: GRADE 9 SYSTEM CONVERSION & REDUNDANCY HUNTER ***
         
-        // Hide rocket or keep visible to cycle through different 3-input systems
-        if (document.getElementById('mainGrade9Btn')) document.getElementById('mainGrade9Btn').style.display = 'inline-block';
-        
+        // Match the HTML's flex-direction: column requirement
+        const master = document.getElementById('inputGroupGrade9NandMaster');
+        if (master) master.style.display = 'flex'; 
+
+        // Keep rocket visible to cycle through different questions
+        if (document.getElementById('mainGrade9Btn')) {
+            document.getElementById('mainGrade9Btn').style.display = 'inline-block';
+        }
+    
         if (typeof generateGrade9NandProblem === "function") {
             generateGrade9NandProblem(ctx, canvas);
         } else {
             console.error("Hub: generateGrade9NandProblem is not defined!");
+        }
+   
+    } else if (currentMode === 'blockbuilder' || currentMode === 'block_diagram') {
+        // Unhide the specific Block Builder input group
+        if (document.getElementById('inputGroupBlockBuilder')) {
+            document.getElementById('inputGroupBlockBuilder').style.display = 'block';
+        }
+        
+        if (typeof generateBlockBuilderProblem === "function") {
+            generateBlockBuilderProblem(ctx, canvas);
+        } else {
+            console.error("Hub: generateBlockBuilderProblem is not defined!");
+        }
+        
+    // 👇 NEW: TRANSISTOR ROUTING ADDED HERE
+    } else if (currentMode === 'transistor') {
+        if (document.getElementById('inputGroupTransistor')) {
+            document.getElementById('inputGroupTransistor').style.display = 'flex';
+        }
+        
+        if (typeof generateTransistorProblem === "function") {
+            generateTransistorProblem(ctx, canvas);
+        } else {
+            console.error("Hub: generateTransistorProblem is not defined!");
         }
     }
 }
@@ -8393,20 +9535,63 @@ if (currentMode === 'grade9nand') {
     else {
         let allCorrect = true; 
         let anythingSelected = false;
+        let customFeedback = "";
         
         const gates = document.querySelectorAll('.nand-gate-clickable');
 
+        // We track the math for each of the 3 zones (Z0, Z1, Z2)
+        // totalInv: total NOT gates generated in this branch
+        // selInv: how many the user crossed out
+        const zones = {
+            'Z0': { totalInv: 0, selInv: 0 },
+            'Z1': { totalInv: 0, selInv: 0 },
+            'Z2': { totalInv: 0, selInv: 0 }
+        };
+
         gates.forEach(gate => {
-            const isRedundant = gate.dataset.redundant === "true";
             const isSelected = gate.dataset.selected === "true";
-            
             if (isSelected) anythingSelected = true;
 
-            if (isRedundant !== isSelected) {
-                allCorrect = false;
+            // Match this DOM element to our generated array to check its structural type
+            const def = window.activeGateDefs.find(d => gate.id.includes(d.id) || gate.dataset.id === d.id);
+            
+            if (def) {
+                const zone = def.id.substring(0, 2); // Extracts 'Z0', 'Z1', or 'Z2'
+                
+                if (def.type === 'inverter') {
+                    zones[zone].totalInv++;
+                    if (isSelected) zones[zone].selInv++;
+                } else if (def.type === 'standard' && isSelected) {
+                    // FATAL: User crossed out a structural 2-input gate
+                    allCorrect = false;
+                    customFeedback = "You crossed out a necessary 2-input NAND gate! You must only eliminate redundant NOT gates.";
+                }
             }
         });
 
+        // If they didn't break a structural gate, evaluate the parity rules per zone
+        if (allCorrect && anythingSelected) {
+            for (let z in zones) {
+                let zData = zones[z];
+                
+                // Rule 1: Must remove an EVEN number of inverters
+                if (zData.selInv % 2 !== 0) {
+                    allCorrect = false;
+                    customFeedback = "Check your logic! You removed an odd number of NOT gates in a branch, which reverses the final output.";
+                    break;
+                }
+                
+                // Rule 2: Must not leave any redundancies behind
+                let remainingInv = zData.totalInv - zData.selInv;
+                if (remainingInv >= 2) {
+                    allCorrect = false;
+                    customFeedback = "You missed something! There is still a redundant pair of NOT gates left in the circuit.";
+                    break;
+                }
+            }
+        }
+
+        // Final UI Updates
         if (!anythingSelected) {
             canEarnPoints = false;
             feedback.innerHTML = `<span style='color: #dc3545;'>You haven't crossed out any gates! Click the redundant gates to eliminate them.</span>`;
@@ -8415,13 +9600,14 @@ if (currentMode === 'grade9nand') {
         } else if (allCorrect) {
             isCurrentProblemSolved = true;
             if (canEarnPoints) { problemsCorrect++; }
-            feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> Redundancies eliminated!</span>`;
+            feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> All redundancies mathematically eliminated!</span>`;
             canEarnPoints = false;
             if (checkansBtn) checkansBtn.style.display = 'none';
             if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
         } else {
             canEarnPoints = false;
-            feedback.innerHTML = `<span style='color: #dc3545;'>Incorrect. Check your logic—some necessary gates were crossed out, or redundant ones were left in!</span>`;
+            // Uses our custom contextual feedback, or a default message
+            feedback.innerHTML = `<span style='color: #dc3545;'>${customFeedback || "Incorrect. Check your logic and try again!"}</span>`;
             const solDiv = document.getElementById('solutions');
             if (solDiv) solDiv.style.display = 'block';
         }
@@ -8430,8 +9616,83 @@ if (currentMode === 'grade9nand') {
     if (typeof updateScoreboard === "function") updateScoreboard();
     return; 
 }
-    //New function code pasted above this line
+
+  // ==========================================
+    // BLOCK DIAGRAMS INTERCEPTOR
+    // ==========================================
+    if (currentMode === 'block_diagram') {
+        const feedback = document.getElementById('feedback');
+        
+        // Find all the dropzones generated by generateBlockBuilderProblem
+        const dropzones = document.querySelectorAll('.dropzone');
+        
+        let allFilled = true;
+        let allCorrect = true;
+
+        // 1. Safety Check: Are all dropzones filled?
+        dropzones.forEach(zone => {
+            // Your builder saves the dropped text in dataset.current
+            const filledItem = zone.dataset.current || "";
+            if (filledItem.trim() === "") {
+                allFilled = false;
+            }
+        });
+
+        if (!allFilled) {
+            if (feedback) feedback.innerHTML = "<span style='color: #dc3545;'>Please fill all the empty boxes before checking!</span>";
+            return; // Stop grading until they fill everything out
+        }
+
+        if (!hasCheckedCurrentProblem) { 
+            problemsAttempted++; 
+            hasCheckedCurrentProblem = true; 
+        }
+
+        // 2. Grade the dropzones
+        dropzones.forEach(zone => {
+            const expectedAnswer = zone.dataset.answer; 
+            const filledItem = zone.dataset.current;
+
+            if (filledItem === expectedAnswer) {
+                // Correct! Make it light green.
+                zone.style.backgroundColor = "#d4edda"; 
+                zone.style.border = "2px solid #28a745";
+            } else {
+                // Incorrect! Make it light red.
+                allCorrect = false;
+                zone.style.backgroundColor = "#f8d7da"; 
+                zone.style.border = "2px solid #dc3545";
+            }
+        });
+
+        const checkansBtn = document.getElementById('checkansBtn');
+        const showsolutionsBtn = document.getElementById('showsolutionsBtn');
+
+        // 3. Final Feedback
+        if (allCorrect) {
+            isCurrentProblemSolved = true;
+            if (canEarnPoints) { problemsCorrect++; }
+            if (feedback) feedback.innerHTML = `<span style='color: #198754;'><b>Perfect!</b> You correctly mapped the system architecture!</span>`;
+            canEarnPoints = false;
+            
+            if (checkansBtn) checkansBtn.style.display = 'none';
+            if (showsolutionsBtn) showsolutionsBtn.style.display = 'none';
+        } else {
+            canEarnPoints = false;
+            if (feedback) feedback.innerHTML = `<span style='color: #dc3545;'>Not quite. Look at the red boxes, re-read the specifications carefully, and try again!</span>`;
+            
+            const solDiv = document.getElementById('solutions');
+            if (solDiv) solDiv.style.display = 'block';
+            if (typeof viewedSolution !== 'undefined') viewedSolution = true;
+        }
+
+        if (typeof updateScoreboard === "function") updateScoreboard();
+        return; 
+    }
+    
+    //New function code pasted above this line for grag and drop
     //********************************************************************
+    // New function below this line in two places if need to be parsed
 
     // 2. Identify which inputs are currently active
     let activeInputs = [];
@@ -8463,12 +9724,6 @@ if (currentMode === 'grade9nand') {
     else if (currentMode === 'grade9zener') {
         activeInputs = (currentZenerState === "closed") ? ['g9IL', 'g9IZ'] : ['g9PZ', 'g9Rating'];
     }
-    else if (currentMode === 'power') {
-        activeInputs = ['inputP'];
-        if (currentAnswers.scenario === 2) {
-            activeInputs.push('ratingSelectP');
-        }
-    }
     else if (currentMode === 'grade9power') {
         activeInputs = ['g9PowerIdealR', 'g9PowerDissipated', 'g9PowerE24'];
     }
@@ -8492,7 +9747,29 @@ if (currentMode === 'grade9nand') {
             activeInputs.push('g9SilPathID1', 'g9SilPathID2', 'g9SilPathVD1', 'g9SilPathVD2', 'g9SilPathVLoad');
         }
     }
-
+    // 👇 NEW: TRANSISTOR ACTIVE INPUTS 👇
+    else if (currentMode === 'transistor') {
+        if (window.transistorMode === 1) {
+            activeInputs = ['transVIN', 'transVRB', 'transIB', 'transP']; // Top-Down Mode
+        } else if (window.transistorMode === 2) {
+            activeInputs = ['transVRB', 'transIB', 'transIC'];            // Bottom-Up Mode
+        } else {
+            activeInputs = ['transIB', 'transVRB', 'transRB'];            // Mode 3: Design Mode
+        }
+    }
+    
+    if (currentMode === 'power') {
+        activeInputs = [];
+        if (currentAnswers.scenario === 2) {
+            // Scenario 2 has two inputs: the text box and the dropdown
+            activeInputs.push('inputP', 'selectPowerRating');
+        } else {
+            // Scenarios 1 and 3 only have the single text box
+            activeInputs.push('inputP'); 
+        }
+    }
+    
+    // ------------------------------------------
     // 3. Check for empty boxes
     let hasEmptyBox = activeInputs.some(id => !document.getElementById(id) || document.getElementById(id)?.value.trim() === '');
     if (hasEmptyBox) {
@@ -8616,10 +9893,16 @@ if (currentMode === 'grade9nand') {
          }
     } else if (currentMode === 'power') {
         if (currentAnswers.scenario === 2) {
+            // Validate the exact power input
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.exactPower, currentAnswers.vUnit));
-            const userRating = document.getElementById('ratingSelectP').value;
+            
+            // FIX: Match the ID used in the HTML and generation function
+            const userRating = document.getElementById('selectPowerRating').value; 
+            
+            // Validate the dropdown selection
             results.push(userRating === currentAnswers.safeRating ? 'correct' : 'wrongval');
         } else {
+            // Standard power validation for scenarios 1 and 3
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.vValue, currentAnswers.vUnit));
         }
     } else if (currentMode === 'grade9power') {
@@ -8669,6 +9952,27 @@ if (currentMode === 'grade9nand') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathVD1').value)), currentAnswers.vD1, 'V'));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathVD2').value)), currentAnswers.vD2, 'V'));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathVLoad').value)), currentAnswers.vLoad, 'V'));
+        }
+    }
+    // 👇 NEW: TRANSISTOR GRADING LOGIC 👇
+    else if (currentMode === 'transistor') {
+        if (window.transistorMode === 1) {
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVIN').value)), currentAnswers.vin, 'V'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transP').value)), currentAnswers.p, 'W'));
+            
+        } else if (window.transistorMode === 2) {
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIC').value)), currentAnswers.ic, 'mA'));
+            
+        } else {
+            // Mode 3: Design Mode
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
+            // Note: Uses the Ω symbol for grading the resistor value!
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transRB').value)), currentAnswers.rb, 'Ω'));
         }
     }
 
@@ -9125,6 +10429,22 @@ function provideHint() {
                     <strong>💡 Hint:</strong> Look closely at the output column. Does it output a 1 when BOTH are 1? Or when ANY are 1? Don't forget to check if the whole output is inverted (NOT).
                 </div>`;
         }
+
+    } else if (currentMode === 'block_diagram') {
+        // --- STRENGTHENED LOGIC HINTS FOR BLOCK BUILDER ---
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Block Diagram Design Rules:</strong><br>
+                <ul style="margin-top: 8px; padding-left: 20px; line-height: 1.5;">
+                    <li><b>Logic Gates:</b> Look for keywords! If the text says <em>"Both X AND Y"</em>, use an <b>AND</b> gate. If it says <em>"Either X OR Y"</em>, use an <b>OR</b> gate.</li>
+                    <li><b>The Driver Rule:</b> High-power outputs <b>always</b> need a <b>Driver</b> before them to boost the logic signal.</li>
+                    <li><b>Memory (Latch):</b> If a system needs to stay ON even after the sensor is released (like a burglar alarm), you need a <b>Latch</b>.</li>
+                    <li><b>Timing:</b> 
+                        <br>• Use a <b>Delay</b> (Monostable) to keep an output on for a set time.
+                        <br>• Use a <b>Pulse Generator</b> (Astable) to make something flash or beep repeatedly.</li>
+                    <li><b>Inversion:</b> If an output should turn ON when a sensor is OFF (e.g., "turn on when it gets dark"), use a <b>NOT</b> gate.</li>
+                </ul>
+            </div>`;
     } else if (currentMode === 'grade9boolean') {
         helpText = `
             <div style="${blueBox}">
@@ -9158,14 +10478,50 @@ function provideHint() {
                     • Build each gate using standard NAND equivalents.<br>
                     • Only use a straight <b>Wire</b> in the final box if no further logic inversion is needed!
                 </div>`;
-        } else {
-            helpText = `
-                <div style="${blueBox}">
-                    <strong>💡 Hint: Redundancy Hunter:</strong><br>
-                    • A double inversion ($\\overline{\\overline{A}}$) is a waste of hardware.<br>
-                    • Look for two NOT-configured NAND gates (gates with joined inputs) sitting side-by-side on the exact same wire path!
-                </div>`;
+    } else {
+        // --- REDUNDANCY HUNTER (Symbols Removed) ---
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint: Redundancy Hunter:</strong><br>
+                • A <b>double inversion</b> (a NOT gate followed immediately by another NOT gate) is a waste of hardware.<br>
+                • Look for two NOT-configured NAND gates (gates with joined inputs) sitting side-by-side on the exact same wire path!
+            </div>`;
+    } 
+} else if (currentMode === 'transistor') {
+        let specificHint = "";
+        
+        // Matching the integer modes from generateTransistorProblem
+        if (window.transistorMode === 1) {
+            specificHint = `
+                <br><br><b>Mode: Top-Down Analysis</b><br>
+                You are trying to switch on the load. Start from the Collector! You know the required load current (I<sub>C</sub>) and the transistor's current gain (h<sub>FE</sub> = ${currentAnswers.hfe}). <br>
+                1. Calculate the required Base Current using: <b>I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub></b><br>
+                2. Calculate the voltage dropped across the base resistor (V<sub>RB</sub> = I<sub>B</sub> &times; R<sub>B</sub>).<br>
+                3. Add the 0.7V base-emitter drop to find total V<sub>IN</sub>.`;
+                
+        } else if (window.transistorMode === 2) {
+            specificHint = `
+                <br><br><b>Mode: Bottom-Up Analysis</b><br>
+                Start from the Base! <br>
+                1. Find the voltage across the base resistor by subtracting 0.7V (V<sub>BE</sub>) from V<sub>IN</sub>.<br>
+                2. Find the base current (I<sub>B</sub>) using Ohm's Law on the base resistor.<br>
+                3. Multiply I<sub>B</sub> by the current gain (h<sub>FE</sub> = ${currentAnswers.hfe}) to find the maximum possible collector current (I<sub>C</sub>).`;
+                
+        } else if (window.transistorMode === 3) {
+            specificHint = `
+                <br><br><b>Mode: Component Selection (Design)</b><br>
+                1. Calculate the base current (I<sub>B</sub>) required to drive the given load current (I<sub>C</sub>) using the current gain (h<sub>FE</sub> = ${currentAnswers.hfe}).<br>
+                2. Find the voltage across the base resistor (V<sub>RB</sub>) by subtracting V<sub>BE</sub> (0.7V) from V<sub>IN</sub>.<br>
+                3. Use Ohm's Law (R = V / I) to find the required base resistor value (R<sub>B</sub>).`;
         }
+
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong><br>
+                • Look at the circuit diagram carefully: Known values are in <b>black</b>, and the unknowns you need to solve for are indicated by <span style="color:#E64097;"><b>pink</b></span> question marks.<br>
+                • Remember your core transistor equations: <b>h<sub>FE</sub> = I<sub>C</sub> / I<sub>B</sub></b> and standard Ohm's Law (<b>V = I &times; R</b>).
+                ${specificHint}
+            </div>`;
     } else {
         // Potential Divider & General
         helpText = `
@@ -9220,8 +10576,11 @@ const topicMap = {
     'zener': 'Zener Diodes',
     'grade9zener': 'G9 Zener',
     
-    // --- Logic & Systems ---
+    // --- Systems ---
     'iposort': 'IPO Sort',  
+    'block_diagram': 'Block Diagrams',
+
+     // --- Logic ---
     'boolean': 'Boolean Logic',          
     'logic_boolean': 'Boolean Logic',
     'grade9boolean': 'G9 Boolean Logic',
@@ -9229,6 +10588,10 @@ const topicMap = {
     'logic_ic': 'Logic Gate ICs',
     'logic_nand': 'Basic NAND Equiv ',
     'grade9nand': 'Grade 9 NAND Equiv'
+
+    // --- transistors ---
+
+
 };
 
 async function processSubmission() {
@@ -9419,13 +10782,17 @@ function hideAllInputGroups() {
         'inputGroupGrade9BooleanMaster',    // Grade 9 Boolean Master
         'inputGroupLogic_ic',               // NEW: Logic Gate ICs
         'inputGroupLogicSystem',            // NEW: Logic Systems
-        'inputGroupLogic_NAND'              // NEW: NAND Equivalents
+        'inputGroupLogic_NAND',             // NEW: NAND Equivalents
+        'inputGroupNandConversion',         // Mode A: NAND Conversion
+        'inputGroupNandRedundancy',         // Mode B: Redundancy Hunter
+        'inputGroupBlockBuilder'            // NEW: Block Builder System
     ];
 
     ghostGroups.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = "none"; 
     });
+
     
     // 2c. TOGGLE BUTTONS
     if (document.getElementById('mainGrade9Btn')) {
@@ -9483,12 +10850,16 @@ function hideAllInputGroups() {
     document.querySelectorAll('.ipo-zone').forEach(zone => zone.innerHTML = "");
 
     // 9b. CLEAR NAND CANVAS OVERLAYS
-    // Prevents transparent drag-and-drop boxes from floating over other circuits!
     const nandOverlay = document.getElementById('nandCanvasOverlay');
     if (nandOverlay) nandOverlay.remove();
 
     const nandTray = document.getElementById('nandBottomTray');
     if (nandTray) nandTray.remove();
+
+    // 9c. CLEAR BLOCK BUILDER OVERLAYS
+    document.querySelectorAll('.gcse-block-ui').forEach(el => el.remove());
+    const blockOverlay = document.getElementById('canvasOverlay');
+    if (blockOverlay) blockOverlay.remove();
 
     // 10. REVEAL ACTION BUTTONS
     const checkansBtn = document.getElementById('checkansBtn');
