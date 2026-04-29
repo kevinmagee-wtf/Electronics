@@ -7799,25 +7799,25 @@ const blockScenarios = [
 // 2. THE GENERATOR FUNCTION starts here: 
 //**********************
 function generateBlockBuilderProblem(ctx, canvas) {
-// --- 1. THE JANITOR PROTOCOL (STOPS STACKING) ---
-currentMode = 'block_diagram'; 
-hasCheckedCurrentProblem = false; 
-isCurrentProblemSolved = false; 
+    // --- 1. THE JANITOR PROTOCOL (STOPS STACKING) ---
+    currentMode = 'block_diagram'; 
+    hasCheckedCurrentProblem = false; 
+    isCurrentProblemSolved = false; 
 
-// A. Clear the Wrapper
-const wrapper = document.getElementById('inputGroupBlockBuilder');
-if (wrapper) wrapper.innerHTML = ""; 
+    // A. Clear the Wrapper
+    const wrapper = document.getElementById('inputGroupBlockBuilder');
+    if (wrapper) wrapper.innerHTML = ""; 
 
-// B. THE FIX: Match the names used in generateGrade9NandProblem
-const conversionInst = document.getElementById('inputGroupNandConversion');
-const redundancyInst = document.getElementById('inputGroupNandRedundancy');
+    // B. THE FIX: Match the names used in generateGrade9NandProblem
+    const conversionInst = document.getElementById('inputGroupNandConversion');
+    const redundancyInst = document.getElementById('inputGroupNandRedundancy');
 
-if (conversionInst) conversionInst.style.display = 'none';
-if (redundancyInst) redundancyInst.style.display = 'none';
+    if (conversionInst) conversionInst.style.display = 'none';
+    if (redundancyInst) redundancyInst.style.display = 'none';
 
-// C. Remove OLD Overlays
-let oldOverlay = document.getElementById('canvasOverlay');
-if (oldOverlay) oldOverlay.remove();
+    // C. Remove OLD Overlays
+    let oldOverlay = document.getElementById('canvasOverlay');
+    if (oldOverlay) oldOverlay.remove();
 
     // --- 2. SELECT AND PREPARE THE SCENARIO ---
     const rawScenario = blockScenarios[Math.floor(Math.random() * blockScenarios.length)];
@@ -7831,20 +7831,46 @@ if (oldOverlay) oldOverlay.remove();
         w.endY -= shiftUp;
     });
 
-    window.currentBlockScenario = scenario;
+    // 👇 --- 2.5 THE DRIVER FIX (MOSFET vs TRANSISTOR) --- 👇
+    let filteredPool = [...scenario.trayPool];
+    const hasMOSFET = filteredPool.includes("MOSFET");
+    const hasTransistor = filteredPool.includes("Transistor Driver");
+    let survivingDriver = null;
 
-// --- 3. INSTRUCTIONS PANEL ---
+    if (hasMOSFET && hasTransistor) {
+        // Randomly pick one driver to keep, remove the other
+        survivingDriver = Math.random() > 0.5 ? "MOSFET" : "Transistor Driver";
+        const toRemove = survivingDriver === "MOSFET" ? "Transistor Driver" : "MOSFET";
+        filteredPool = filteredPool.filter(item => item !== toRemove);
+    } else if (hasMOSFET) {
+        survivingDriver = "MOSFET";
+    } else if (hasTransistor) {
+        survivingDriver = "Transistor Driver";
+    }
+
+    // If there is a driver in this scenario, update the answer key dynamically!
+    // This guarantees whatever driver is in the tray is marked correct.
+    if (survivingDriver) {
+        scenario.blocks.forEach(b => {
+            if (b.answer === "MOSFET" || b.answer === "Transistor Driver") {
+                b.answer = survivingDriver; 
+            }
+        });
+    }
+
+    window.currentBlockScenario = scenario;
+    window.currentFilteredPool = filteredPool; // Save for the tray rendering
+
+    // --- 3. INSTRUCTIONS PANEL ---
     let instDiv = document.createElement('div');
-    instDiv.className = 'gcse-block-ui'; // Tagged for master cleanup sweep
+    instDiv.className = 'gcse-block-ui';
     instDiv.style.cssText = "padding: 15px; background: #f8f9fa; margin-bottom: 15px; border-left: 4px solid #0d6efd; font-family: sans-serif;";
     
-    // REORDERED HERE: Instructions now appear at the top
     instDiv.innerHTML = 
         "<em style='color:#d65093;'>Drag the correct sub-systems from the tray to complete the block diagram.<br>(Double click to remove components from a box.)</em><br><br>" +
         `<strong style="font-size:16px; color:#333;">${scenario.title}</strong><br>` +
         scenario.description;
 
-    // Insert instructions into the wrapper
     if (wrapper) {
         wrapper.prepend(instDiv);
     } else {
@@ -7854,7 +7880,7 @@ if (oldOverlay) oldOverlay.remove();
     // --- 4. CREATE NEW OVERLAY ---
     canvas.parentNode.style.position = 'relative'; 
     let overlay = document.createElement('div');
-    overlay.id = 'canvasOverlay'; // Tagged for master cleanup sweep
+    overlay.id = 'canvasOverlay';
     overlay.style.position = 'absolute';
     overlay.style.top = canvas.offsetTop + 'px';
     overlay.style.left = canvas.offsetLeft + 'px';
@@ -7872,10 +7898,8 @@ if (oldOverlay) oldOverlay.remove();
     scenario.wires.forEach(wire => {
         ctx.beginPath();
         ctx.moveTo(wire.startX, wire.startY);
-        
         let midX = wire.startX + (wire.endX - wire.startX) / 2;
-
-        ctx.lineTo(midX, wire.startY);    
+        ctx.lineTo(midX, wire.startY);   
         ctx.lineTo(midX, wire.endY);      
         ctx.lineTo(wire.endX, wire.endY); 
         ctx.stroke();
@@ -7914,6 +7938,7 @@ if (oldOverlay) oldOverlay.remove();
             box.style.backgroundColor = '#a0aec0'; 
             box.style.fontWeight = 'bold';
         } else {
+            // Because of Step 2.5, b.answer is now strictly synced to the tray!
             box.dataset.answer = b.answer;
             box.classList.add('dropzone');
             
@@ -7940,16 +7965,13 @@ if (oldOverlay) oldOverlay.remove();
                 if (typeof checkBlockBuilderAnswers === "function") checkBlockBuilderAnswers(); 
             });
 
-            // 👇 NEW: DOUBLE CLICK TO REMOVE ITEMS 👇
             box.addEventListener('dblclick', () => {
-                if (isCurrentProblemSolved) return; // Lock the box if they already won
+                if (isCurrentProblemSolved) return; 
+                box.innerText = ''; 
+                box.dataset.current = ''; 
+                box.style.backgroundColor = '#fff'; 
+                box.style.borderColor = '#222'; 
                 
-                box.innerText = ''; // Clear the text visually
-                box.dataset.current = ''; // Clear the underlying data
-                box.style.backgroundColor = '#fff'; // Reset background
-                box.style.borderColor = '#222'; // Reset border (in case it was marked red/green)
-                
-                // Re-trigger the check function to instantly update any real-time grading logic
                 if (typeof checkBlockBuilderAnswers === "function") checkBlockBuilderAnswers(); 
             });
         }
@@ -7967,22 +7989,8 @@ if (oldOverlay) oldOverlay.remove();
     ctx.setLineDash([]);
     
     // --- 8. RENDER TRAY DRAGGABLE ITEMS ---
-    
-    // Create a local copy so we don't accidentally break the original scenario data
-    let filteredPool = [...scenario.trayPool];
-
-    // Check if both MOSTET and Transitor options are present
-    const hasMOSFET = filteredPool.includes("MOSFET");
-    const hasTransistor = filteredPool.includes("Transistor Driver");
-
-    if (hasMOSFET && hasTransistor) {
-        // Randomly decide which one to kick out (50/50 chance)
-        const toRemove = Math.random() > 0.5 ? "MOSFET" : "Transistor Driver";
-        filteredPool = filteredPool.filter(item => item !== toRemove);
-    }
-
-    // Now shuffle the filtered list instead of the raw scenario.trayPool
-    let shuffledOptions = filteredPool.sort(() => Math.random() - 0.5);
+    // We use the filtered pool we saved in Step 2.5
+    let shuffledOptions = window.currentFilteredPool.sort(() => Math.random() - 0.5);
 
     shuffledOptions.forEach((opt, index) => {
         const item = document.createElement('div');
@@ -8028,13 +8036,11 @@ if (oldOverlay) oldOverlay.remove();
     // --- 9. SOLUTION PANEL (BLOCK BUILDER) ---
     const solText = document.getElementById('solText');
     if (solText) {
-        // Filter the blocks to find only those that required user input (dropzones)
         let logicHTML = `<div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">`;
         logicHTML += `<strong style="color: #0d6efd; font-size: 16px;">System Configuration Solution:</strong><br>`;
         logicHTML += `<p style="margin: 10px 0;">To achieve the <strong>${scenario.title}</strong>, the subsystems must be arranged in the following logical sequence:</p>`;
         logicHTML += `<ul style="line-height: 1.6; padding-left: 20px;">`;
 
-        // Map through all blocks to describe the full path
         scenario.blocks.forEach((b, idx) => {
             if (b.type === 'static') {
                 logicHTML += `<li><strong>Fixed Stage:</strong> ${b.text}</li>`;
