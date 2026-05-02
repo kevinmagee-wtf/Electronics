@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,9 +8,8 @@
     <title>Abingdon School - Electronics Quiz</title>
     
 <style>
-    
     /* ============================================================
-       1. GLOBAL STYLES & BACKGROUND
+        1. GLOBAL STYLES & BACKGROUND
        ============================================================ */
     body { 
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -832,6 +832,11 @@
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
 </div>
 
+<div id="menuTransistors" class="tabs" style="display:none;">
+    <button class="tab" id="tab-transistor" onclick="safeSwitchTab('transistor')">Transistors</button>
+    <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Home</button>
+</div>
+
 <div id="menuPlaceholder" class="tabs" style="display:none;">
     <button class="tab" style="background:#6c757d; color:white;" onclick="safeGoHome()">🏠 Module Under Construction - Return Home</button>
 </div>
@@ -1199,7 +1204,6 @@
 </div>
     
 </div>
-</div>
                 
 <!-- Input group Zener -->                
 <div id="inputGroupZener" class="input-group" style="display:none; flex-direction: column;">
@@ -1437,22 +1441,55 @@
                         <label for="inputBandTol" style="font-weight: bold;">Band 4:</label> <input type="text" id="inputBandTol" style="width: 80px; padding: 4px;" placeholder="e.g. gold">
                     </div>
                 </div>
-                
-<!-- Input group IPO sort -->                 
-                    <div id="inputGroupIPOSort" class="input-group" style="display:none; width: 100%; margin-top: 10px;">
-                        <div style="display: flex; flex-direction: column; width: 100%; align-items: center; background-color: #ffffff; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e9ecef; box-sizing: border-box;">
-                            <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 50px; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; padding: 5px; gap: 10px; box-sizing: border-box; transition: all 0.2s ease-in-out;">
-                            </div>
-                        </div>
-                    </div>   
-            </div>
+
+<!-- Input group IPO sort--> 
+<div id="inputGroupIPOSort" class="input-group" style="display:none; width: 100%; margin-top: 10px;">
+    <div style="display: flex; flex-direction: column; width: 100%; align-items: center; background-color: #ffffff; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e9ecef; box-sizing: border-box;">
+        <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 50px; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; padding: 5px; gap: 10px; box-sizing: border-box; transition: all 0.2s ease-in-out;">
         </div>
-<!-- Input group Block Builder -->  
-        <div id="inputGroupBlockBuilder" class="input-group" style="display:none; width: 100%; margin-top: 10px;">
-    <div id="blockBuilderInstructions" style="margin-bottom: 15px; padding: 15px; background: #fdfdfd; border-left: 4px solid #3498db; border-radius: 4px; font-family: sans-serif; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-        </div>
-    
     </div>
+</div>   
+<!-- Input group Block Builder--> 
+<div id="inputGroupBlockBuilder" class="input-group" style="display:none; width: 100%; margin-top: 10px;">
+    <div id="blockBuilderInstructions" style="margin-bottom: 15px; padding: 15px; background: #fdfdfd; border-left: 4px solid #3498db; border-radius: 4px; font-family: sans-serif; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    </div>
+</div>
+<!-- Input group Transistor--> 
+<div id="inputGroupTransistor" style="display: none; flex-direction: column; align-items: center; padding: 10px 0; gap: 12px; width: 100%;">
+    
+    <div id="wrapperTransVIN" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">V<sub>IN</sub> =</div>
+        <input type="text" id="transVIN" placeholder="e.g. 3.4 V" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransVRB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">V<sub>RB</sub> =</div>
+        <input type="text" id="transVRB" placeholder="e.g. 2.7 V" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransIB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">I<sub>B</sub> =</div>
+        <input type="text" id="transIB" placeholder="e.g. 1.5 mA" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransIC" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">I<sub>C</sub> =</div>
+        <input type="text" id="transIC" placeholder="e.g. 300 mA" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransRB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">R<sub>B</sub> =</div>
+        <input type="text" id="transRB" placeholder="e.g. 1500 Ω" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+    <div id="wrapperTransP" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; gap: 8px;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; white-space: nowrap; width: 50px; text-align: right;">P =</div>
+        <input type="text" id="transP" placeholder="e.g. 3.6 W" style="width: 90px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; flex-shrink: 0;">
+    </div>
+
+</div>
+
+    </div> </div> 
 <!-- *************************************************************************************** -->   
 <!-- *************************************************************************************** -->    
 <!-- Bottom Controls, Feedback, and Solutions -->
@@ -2320,6 +2357,51 @@ const applyOverbar = (str) => {
     }
     return result;
 };
+
+/**
+ * Draws a standard GCSE NPN Transistor symbol (No Circle)
+ * Centered at (x, y) with connection bounds of 25px.
+ * Connection coordinates for your main circuit:
+ * - Base (B): Connect wire to (x - 25, y)
+ * - Collector (C): Connect wire to (x + 10, y - 25)
+ * - Emitter (E): Connect wire to (x + 10, y + 25)
+ */
+function drawTransistor(ctx, x, y) {
+    const radius = 25; // Kept to maintain exact wire connection lengths!
+    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "miter";
+
+    ctx.beginPath();
+    // 1. Base wire and vertical plate
+    ctx.moveTo(x - radius, y);  // Start at left bounding box edge
+    ctx.lineTo(x - 10, y);      // Wire connecting to plate
+    ctx.moveTo(x - 10, y - 12); // Top of base plate
+    ctx.lineTo(x - 10, y + 12); // Bottom of base plate
+
+    // 2. Collector (Top diagonal and vertical exit)
+    ctx.moveTo(x - 10, y - 5);      // Start slightly below top of plate
+    ctx.lineTo(x + 10, y - 17);     // Diagonal up
+    ctx.lineTo(x + 10, y - radius); // Straight vertical up to the bounding edge
+
+    // 3. Emitter (Bottom diagonal and vertical exit)
+    ctx.moveTo(x - 10, y + 5);      // Start slightly above bottom of plate
+    ctx.lineTo(x + 10, y + 17);     // Diagonal down
+    ctx.lineTo(x + 10, y + radius); // Straight vertical down to the bounding edge
+    ctx.stroke();
+
+    // 4. Emitter Arrow (NPN points OUT)
+    // Positioned perfectly on the bottom diagonal line
+    ctx.beginPath();
+    ctx.fillStyle = strokeColor;
+    ctx.moveTo(x + 10, y + 17); // Arrow tip
+    ctx.lineTo(x + 1, y + 16);  // Left barb
+    ctx.lineTo(x + 7, y + 7);   // Right barb
+    ctx.closePath();
+    ctx.fill();
+}
     
 // ==========================================
 // LOGIC GATE DRAWING HELPERS
@@ -3512,26 +3594,55 @@ function generateOscilloscopeProblem() {
     ctx.fillText(vGain + " " + vGainUnit + " / div", 430, 190);
 
     ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
-    let phaseDivs = Math.floor(Math.random() * (markDivs + spaceDivs)); 
     
-    // NEW LOGIC: Randomly shift the 0V base line up or down the screen
-    // Can shift between -1 (1 div above center) to +3 (3 divs below center)
+    // --- ALIGNMENT FIX ---
+    let periodDivs = markDivs + spaceDivs; 
+    let maxStartDiv = 10 - periodDivs; 
+    let startDiv = Math.floor(Math.random() * (maxStartDiv + 1));
+    
+    // JS negative modulo fix: ensuring phaseDivs is strictly positive
+    let phaseDivs = (periodDivs - (startDiv % periodDivs)) % periodDivs;
+    
     let baseOffsetDivs = Math.floor(Math.random() * 5) - 1; 
     let baseY = 180 + (baseOffsetDivs * 40); 
 
+    // --- EDGE TRANSITION FIX: PERFECT VERTICAL LINES ---
+    // Convert mathematical division grid logic to exact pixels (1 div = 40px)
+    let periodPx = periodDivs * 40;
+    let markPx = markDivs * 40;
+    let phasePx = phaseDivs * 40;
+    
     ctx.beginPath();
+    let lastY = null;
+
     for(let px = 20; px <= 420; px++) {
-        let divOffset = (px - 20) / 40;
-        let currentCycleTime = (divOffset + phaseDivs) % (markDivs + spaceDivs);
-        // Draw the trace relative to the random baseY rather than the hardcoded 180 center
-        let y = (currentCycleTime < markDivs) ? baseY - (ampDivs * 40) : baseY; 
-        if (px === 20) ctx.moveTo(px, y);
-        else ctx.lineTo(px, y);
+        let currentPx = px - 20;
+        
+        // True Modulo wrapper: guarantees cyclePx is ALWAYS safely wrapped and positive
+        let cyclePx = ((currentPx + phasePx) % periodPx + periodPx) % periodPx;
+        let y = (cyclePx < markPx) ? baseY - (ampDivs * 40) : baseY;
+
+        if (px === 20) {
+            // True Modulo for the off-screen check
+            let prevCyclePx = ((currentPx - 1 + phasePx) % periodPx + periodPx) % periodPx;
+            let prevY = (prevCyclePx < markPx) ? baseY - (ampDivs * 40) : baseY;
+            
+            ctx.moveTo(px, prevY);
+            ctx.lineTo(px, y);
+            lastY = y;
+        } else {
+            if (y !== lastY) {
+                ctx.lineTo(px, lastY);
+                ctx.lineTo(px, y);
+                lastY = y;
+            } else {
+                ctx.lineTo(px, y);
+            }
+        }
     }
     ctx.stroke();
-
+    
     // 6. QUESTION TYPE UI LOGIC 
-    // THE FIX: Use the global tracker to alternate 0, 1, 2
     const qType = scenarioTracker.oscilloscope;
     scenarioTracker.oscilloscope = (scenarioTracker.oscilloscope + 1) % 3;
     currentAnswers.oscQType = qType;
@@ -3549,7 +3660,6 @@ function generateOscilloscopeProblem() {
     let solTextStr = "<strong>Amplitude = " + amplitude + " " + vGainUnit + "</strong><br>Logic: " + ampDivs + " divs &times; " + vGain + " " + vGainUnit + "/div<br><br>";
 
     if (qType === 0) {
-        // Scenario 1: Amplitude, Period, Frequency
         document.getElementById('inputGroupOscPeriod').style.display = "inline-block";
         document.getElementById('inputGroupOscFreq').style.display = "inline-block";
         document.getElementById('inputOscPeriod').placeholder = "e.g. 20 " + tBaseUnit;
@@ -3560,7 +3670,6 @@ function generateOscilloscopeProblem() {
         solTextStr += `<strong>Frequency (f):</strong> ${fLogic} = <strong>${freq_rounded} Hz</strong>`;
 
     } else if (qType === 1) {
-        // Scenario 2: Amplitude, Mark Time, Mark Space Ratio
         document.getElementById('inputGroupOscMark').style.display = "inline-block";
         document.getElementById('inputGroupOscRatio').style.display = "inline-block";
         document.getElementById('inputOscMark').placeholder = "e.g. 10 " + tBaseUnit;
@@ -3570,7 +3679,6 @@ function generateOscilloscopeProblem() {
         solTextStr += "<strong>M/S Ratio:</strong> Mark (" + markDivs + " divs) / Space (" + spaceDivs + " divs) = <strong>" + currentAnswers.oscRatioValue + "</strong>";
 
     } else {
-        // Scenario 3: Amplitude, Space Time, Mark Space Ratio
         document.getElementById('inputGroupOscSpace').style.display = "inline-block";
         document.getElementById('inputGroupOscRatio').style.display = "inline-block";
         document.getElementById('inputOscSpace').placeholder = "e.g. 5 " + tBaseUnit;
@@ -3588,7 +3696,6 @@ function generateOscilloscopeProblem() {
     // 7. UNHIDE AND SET THE QUESTION TEXT
     const qText = document.getElementById('questionText');
     if (qText) {
-        // Wrap the text in a span to force it to 16px safely
         qText.innerHTML = '<span style="font-size: 16px;"><b>Determine the oscilloscope DC measurements.</b></span>';
         qText.style.display = 'block'; 
     }
@@ -7448,6 +7555,7 @@ function generateGrade9SiliconProblem() {
 
 //*****************************************************************************************
     
+
 // ==============================
 // IPO SORT GENERATOR & LOGIC
 // ===============================
@@ -8057,7 +8165,361 @@ function generateBlockBuilderProblem(ctx, canvas) {
         solText.innerHTML = logicHTML;
     }
 }
+//*********************************************************************************************************
+// THANSITORS
     
+function generateTransistorProblem(ctx, canvas) {
+    // 0. RESET UI & STATE (Matching the Zener setup)
+    if (typeof hideAllInputGroups === 'function') {
+        hideAllInputGroups();
+    }
+    currentMode = 'transistor';
+
+    // If you have a main wrapper for transistor inputs like you do for Zener, turn it on here
+    const transMainGroup = document.getElementById('inputGroupTransistor');
+    if (transMainGroup) transMainGroup.style.display = "block";
+
+    // 1. Setup Canvas & UI Elements
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+    const pinkColor = "#E64097"; // The designated color for Unknowns
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+
+    const solText = document.getElementById('solText');
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none"; // Hide solutions on new problem
+    if (solText) solText.innerHTML = ""; 
+
+    // 2. Decide the Mode (Alternating using scenarioTracker for 3 modes)
+    if (typeof scenarioTracker.transistor === 'undefined') {
+        scenarioTracker.transistor = 0;
+    }
+    
+    scenarioTracker.transistor++;
+    
+    if (scenarioTracker.transistor > 3) {
+        scenarioTracker.transistor = 1;
+    }
+    
+    window.transistorMode = scenarioTracker.transistor;
+    
+    // Arrays for sensible random values
+    const hfeValues = [50, 80, 100, 120, 150, 200, 250];
+    const rbValues = [1000, 1200, 1500, 2000, 2200, 3300, 4700]; // in Ohms
+    const supplyVoltage = Math.random() < 0.5 ? 9 : 12; // 9V or 12V supply
+    
+    const hfe = hfeValues[Math.floor(Math.random() * hfeValues.length)];
+    let rb = rbValues[Math.floor(Math.random() * rbValues.length)];
+    
+    // Global answers object for grading
+    window.currentAnswers = {
+        hfe: hfe,
+        rb: rb,
+        vSupply: supplyVoltage
+    };
+
+    let ic_mA, ib_mA, vrb, vin, p_mW;
+
+// ==========================================
+    // LOGIC & UI TEXT GENERATION
+    // ==========================================
+    const qText = document.getElementById('questionText');
+    
+    // We moved the unit instructions to the bottom of the text block
+    const closingInstructions = `
+        <div style="margin-top: 15px; font-weight: normal; font-size: 0.85em; color: #777;">
+            <em>Enter your calculated values followed by a standard unit symbol (e.g., 5 mA, 12 V).</em>
+        </div>
+    `;
+
+    // Force neat vertical spacing between all input boxes
+    ['wrapperTransVIN', 'wrapperTransVRB', 'wrapperTransIB', 'wrapperTransIC', 'wrapperTransP', 'wrapperTransRB'].forEach(id => {
+        const wrapper = document.getElementById(id);
+        if (wrapper) {
+            wrapper.style.marginBottom = '12px'; 
+        }
+    });
+
+    if (window.transistorMode === 1) {
+        // --- MODE 1: Top-Down (Given I_Load, find V_IN) ---
+        ic_mA = Math.floor(Math.random() * 8 + 2) * 50; 
+        
+        ib_mA = ic_mA / hfe;
+        vrb = (ib_mA / 1000) * rb; 
+        vin = vrb + 0.7; 
+        p_mW = ic_mA * supplyVoltage; 
+
+        currentAnswers.ib = ib_mA;
+        currentAnswers.vrb = vrb;
+        currentAnswers.vin = vin;
+        currentAnswers.p = p_mW / 1000; 
+
+        if (qText) {
+            qText.innerHTML = `
+                <strong>The transistor is just saturated.</strong><br><br>
+                Calculate the following unknown values:<br>
+                &bull; <strong>V<sub>IN</sub></strong>: The required input voltage.<br>
+                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
+                &bull; <strong>I<sub>B</sub></strong>: The base current into the transistor.<br>
+                &bull; <strong>P</strong>: Power dissipated in the motor.
+                ${closingInstructions}
+            `;
+            qText.style.display = 'block'; 
+        }
+        
+        if (solText) {
+            solText.innerHTML = "<strong>I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | V<sub>IN</sub> = " + parseFloat(vin.toFixed(2)) + " V | P = " + parseFloat((p_mW/1000).toFixed(2)) + " W</strong><br><br>" +
+                "<em>Core Equations:</em> <strong>h<sub>FE</sub> = I<sub>C</sub> / I<sub>B</sub></strong> &nbsp;and&nbsp; <strong>V = I &times; R</strong><br><br>" +
+                "<em>Step 1:</em> Find the required base current.<br>" +
+                "I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub> = " + ic_mA + " mA / " + hfe + " = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 2:</em> Calculate the pd across the base resistor.<br>" +
+                "V<sub>RB</sub> = I<sub>B</sub> &times; R<sub>B</sub> = " + parseFloat((ib_mA/1000).toFixed(5)) + " A &times; " + rb + " &Omega; = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 3:</em> Add the base-emitter voltage drop to find the total input voltage needed.<br>" +
+                "V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub> = " + parseFloat(vrb.toFixed(2)) + " V + 0.7 V = <strong>" + parseFloat(vin.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 4:</em> Calculate the power dissipation of the motor load.<br>" +
+                "P = I<sub>C</sub> &times; V<sub>supply</sub> = " + parseFloat((ic_mA/1000).toFixed(3)) + " A &times; " + supplyVoltage + " V = <strong>" + parseFloat((p_mW/1000).toFixed(2)) + " W</strong>";
+        }
+
+        // Toggle UI
+        document.getElementById('wrapperTransVIN').style.display = 'flex';
+        document.getElementById('wrapperTransVRB').style.display = 'flex';
+        document.getElementById('wrapperTransIB').style.display = 'flex';
+        document.getElementById('wrapperTransIC').style.display = 'none'; 
+        document.getElementById('wrapperTransP').style.display = 'flex';
+        if (document.getElementById('wrapperTransRB')) document.getElementById('wrapperTransRB').style.display = 'none';
+
+    } else if (window.transistorMode === 2) {
+        // --- MODE 2: Bottom-Up (Given V_IN, find I_C) ---
+        const vinValues = [2.2, 2.7, 3.1, 3.7, 4.0, 5.1];
+        vin = vinValues[Math.floor(Math.random() * vinValues.length)];
+        
+        vrb = vin - 0.7;
+        let ib_A = vrb / rb; 
+        ib_mA = ib_A * 1000;
+        ic_mA = ib_mA * hfe;
+
+        currentAnswers.vrb = vrb;
+        currentAnswers.ib = ib_mA;
+        currentAnswers.ic = ic_mA;
+
+        if (qText) {
+            qText.innerHTML = `
+                <strong>The transistor is just saturated.</strong><br><br>
+                Calculate the following unknown values:<br>
+                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
+                &bull; <strong>I<sub>B</sub></strong>: The resulting base current.<br>
+                &bull; <strong>I<sub>C</sub></strong>: The collector current.
+                ${closingInstructions}
+            `;
+            qText.style.display = 'block'; 
+        }
+
+        if (solText) {
+            solText.innerHTML = "<strong>V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | I<sub>C</sub> = " + parseFloat(ic_mA.toFixed(2)) + " mA</strong><br><br>" +
+                "<em>Core Equations:</em> <strong>V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub></strong> &nbsp;and&nbsp; <strong>I<sub>C</sub> = h<sub>FE</sub> &times; I<sub>B</sub></strong><br><br>" +
+                "<em>Step 1:</em> Subtract the base-emitter drop to find the voltage across the base resistor.<br>" +
+                "V<sub>RB</sub> = V<sub>IN</sub> - V<sub>BE</sub> = " + vin.toFixed(1) + " V - 0.7 V = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 2:</em> Calculate the base current using Ohm's Law.<br>" +
+                "I<sub>B</sub> = V<sub>RB</sub> / R<sub>B</sub> = " + parseFloat(vrb.toFixed(2)) + " V / " + rb + " &Omega; = " + parseFloat(ib_A.toFixed(6)) + " A = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 3:</em> Multiply by the current gain to find the final collector current.<br>" +
+                "I<sub>C</sub> = h<sub>FE</sub> &times; I<sub>B</sub> = " + hfe + " &times; " + parseFloat(ib_mA.toFixed(3)) + " mA = <strong>" + parseFloat(ic_mA.toFixed(2)) + " mA</strong>";
+        }
+
+        // Toggle UI
+        document.getElementById('wrapperTransVIN').style.display = 'none'; 
+        document.getElementById('wrapperTransVRB').style.display = 'flex';
+        document.getElementById('wrapperTransIB').style.display = 'flex';
+        document.getElementById('wrapperTransIC').style.display = 'flex';
+        document.getElementById('wrapperTransP').style.display = 'none'; 
+        if (document.getElementById('wrapperTransRB')) document.getElementById('wrapperTransRB').style.display = 'none';
+        
+    } else {
+        // --- MODE 3: Design Mode (Find RB) ---
+        ic_mA = Math.floor(Math.random() * 8 + 2) * 50; 
+        const vinValues = [3.3, 5.0, 6.0];
+        vin = vinValues[Math.floor(Math.random() * vinValues.length)];
+
+        ib_mA = ic_mA / hfe;
+        vrb = vin - 0.7;
+        rb = vrb / (ib_mA / 1000); 
+
+        currentAnswers.ib = ib_mA;
+        currentAnswers.vrb = vrb;
+        currentAnswers.rb = rb; 
+
+        if (qText) {
+            qText.innerHTML = `
+                <strong>The transistor is just saturated.</strong><br><br>
+                Calculate the following unknown values:<br>
+                &bull; <strong>I<sub>B</sub></strong>: The base current.<br>
+                &bull; <strong>V<sub>RB</sub></strong>: The pd across the base resistor.<br>
+                &bull; <strong>R<sub>B</sub></strong>: The required base resistor value.
+                ${closingInstructions}
+            `;
+            qText.style.display = 'block'; 
+        }
+
+        if (solText) {
+            solText.innerHTML = "<strong>I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | R<sub>B</sub> = " + Math.round(rb) + " &Omega;</strong><br><br>" +
+                "<em>Core Equations:</em> <strong>I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub></strong> &nbsp;and&nbsp; <strong>R = V / I</strong><br><br>" +
+                "<em>Step 1:</em> Find the required base current to drive the load.<br>" +
+                "I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub> = " + ic_mA + " mA / " + hfe + " = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 2:</em> Calculate the voltage the base resistor must drop.<br>" +
+                "V<sub>RB</sub> = V<sub>IN</sub> - V<sub>BE</sub> = " + vin.toFixed(1) + " V - 0.7 V = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 3:</em> Use Ohm's Law to calculate the base resistor value.<br>" +
+                "R<sub>B</sub> = V<sub>RB</sub> / I<sub>B</sub> = " + parseFloat(vrb.toFixed(2)) + " V / " + parseFloat((ib_mA/1000).toFixed(5)) + " A = <strong>" + Math.round(rb) + " &Omega;</strong>";
+        }
+
+        // Toggle UI
+        document.getElementById('wrapperTransVIN').style.display = 'none'; 
+        document.getElementById('wrapperTransVRB').style.display = 'flex';
+        document.getElementById('wrapperTransIB').style.display = 'flex';
+        document.getElementById('wrapperTransIC').style.display = 'none';  
+        document.getElementById('wrapperTransP').style.display = 'none';   
+        const wrapperRB = document.getElementById('wrapperTransRB');
+        if(wrapperRB) wrapperRB.style.display = 'flex';
+    }
+
+    // ==========================================
+    // 3. DRAW THE CIRCUIT
+    // ==========================================
+    
+    const topY = 40;   
+    const botY = 360;  
+    const tx = 380;    
+    const ty = 250;    
+    const rx = 200;    
+    const railStartX = 80; 
+    const railEndX = 500;
+    
+    // Draw Power Rails 
+    drawLine(ctx, railStartX, topY, railEndX, topY); 
+    drawLine(ctx, railStartX, botY, railEndX, botY); 
+    drawLabel(ctx, `+${supplyVoltage}V`, railStartX - 35, topY + 5, 16);
+    drawLabel(ctx, `0V`, railStartX - 30, botY + 5, 16);
+
+    // Draw Component: Transistor
+    drawTransistor(ctx, tx, ty);
+    
+    // --- hFE LABEL ---
+    ctx.fillStyle = strokeColor;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    ctx.font = "14px Arial";
+    ctx.fillText("h", tx + 45, ty + 5); 
+    let hW = ctx.measureText("h").width;
+    ctx.font = "10px Arial";
+    ctx.fillText("FE", tx + 45 + hW, ty + 8); 
+    let feW = ctx.measureText("FE").width;
+    ctx.font = "14px Arial";
+    ctx.fillText(" = " + hfe, tx + 45 + hW + feW, ty + 5);
+
+    // Draw Component: Base Resistor
+    ctx.save();
+    ctx.translate(rx, ty);
+    ctx.rotate(Math.PI / 2); 
+    drawResistor(ctx, 0, 0);
+    ctx.restore();
+    
+    // --- UPDATED BASE RESISTOR LABEL ---
+    let isRbUnknown = (window.transistorMode === 3);
+    ctx.fillStyle = isRbUnknown ? pinkColor : strokeColor;
+    ctx.textAlign = "left";
+    
+    let rbValText = isRbUnknown ? " = ?" : " = " + (rb >= 1000 ? (rb / 1000) + " kΩ" : rb + " Ω");
+    let rbYOffset = ty - 25; 
+    
+    let rbStartX = rx - 35; 
+
+    ctx.font = "16px Arial";
+    ctx.fillText("R", rbStartX, rbYOffset);
+    let rWidth = ctx.measureText("R").width;
+    
+    ctx.font = "12px Arial";
+    ctx.fillText("B", rbStartX + rWidth + 1, rbYOffset + 4);
+    let bWidth = ctx.measureText("B").width;
+    
+    ctx.font = "16px Arial";
+    ctx.fillText(rbValText, rbStartX + rWidth + bWidth + 3, rbYOffset);
+
+    // Draw Component: Motor (Load)
+    const lx = tx + 10; 
+    const ly = 145;     
+    drawMotor(ctx, lx, ly);
+
+    // Wires & Nodes
+    drawLine(ctx, lx, topY, lx, ly - 25);
+    drawNode(ctx, lx, topY);
+    drawLine(ctx, lx, ly + 25, lx, ty - 25);
+    drawLine(ctx, tx + 10, ty + 25, tx + 10, botY);
+    drawNode(ctx, tx + 10, botY);
+    drawLine(ctx, rx + 25, ty, tx - 25, ty);
+    drawLine(ctx, railStartX, ty, rx - 25, ty);
+    drawNode(ctx, railStartX, ty);
+
+    // --- UPDATED V_IN TERMINAL LABEL ---
+    let isVinUnknown = (window.transistorMode === 1);
+    ctx.fillStyle = isVinUnknown ? pinkColor : strokeColor;
+    ctx.textAlign = "left";
+    let vinY = ty + 20; 
+    
+    ctx.font = "18px Arial";
+    ctx.fillText("V", railStartX - 70, vinY);
+    let vW = ctx.measureText("V").width;
+    
+    ctx.font = "13px Arial";
+    ctx.fillText("IN", railStartX - 70 + vW + 2, vinY + 5);
+    let inW = ctx.measureText("IN").width;
+    
+    ctx.font = "16px Arial";
+    let vinSuffix = isVinUnknown ? " = ?" : " = " + vin.toFixed(1) + " V";
+    ctx.fillText(vinSuffix, railStartX - 70 + vW + inW + 5, vinY);
+    
+    // I_B Arrow 
+    drawArrowOnWire(ctx, rx + 45, ty, tx - 45, ty);
+    
+    // --- I_B ARROW LABEL ---
+    ctx.fillStyle = pinkColor;
+    ctx.textAlign = "left";
+    ctx.font = "16px Arial";
+    ctx.fillText("I", tx - 95, ty - 15); 
+    let ibW = ctx.measureText("I").width;
+    ctx.font = "12px Arial";
+    ctx.fillText("B", tx - 95 + ibW + 2, ty - 10); 
+    let bW = ctx.measureText("B").width;
+    ctx.font = "16px Arial";
+    ctx.fillText(" = ?", tx - 95 + ibW + bW + 5, ty - 15);
+
+    // --- CONDITIONAL DRAWING FOR MOTOR/IC ---
+    if (window.transistorMode === 1) {
+        ctx.fillStyle = strokeColor;
+        ctx.textAlign = "left";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(`${supplyVoltage}V`, lx + 30, ly - 5);
+        ctx.fillText(`${ic_mA}mA`, lx + 30, ly + 15);
+        
+    } else if (window.transistorMode === 2) {
+        drawArrowOnWire(ctx, lx, ly + 25, lx, ty - 25);
+        ctx.fillStyle = pinkColor;
+        ctx.textAlign = "left";
+        ctx.font = "16px Arial";
+        ctx.fillText("I", lx + 15, ty - 50);
+        let icW = ctx.measureText("I").width;
+        ctx.font = "12px Arial";
+        ctx.fillText("C", lx + 15 + icW + 2, ty - 45); 
+        let cW = ctx.measureText("C").width;
+        ctx.font = "16px Arial";
+        ctx.fillText(" = ?", lx + 15 + icW + cW + 5, ty - 50);
+        
+    } else {
+        ctx.fillStyle = strokeColor;
+        ctx.textAlign = "left";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(`${supplyVoltage}V`, lx + 30, ly - 5); 
+        ctx.fillText(`${ic_mA}mA`, lx + 30, ly + 15); 
+    }
+}
 // END of Content generator functions
 //**********************************************************************************************************
 //**********************************************************************************************************
@@ -8072,7 +8534,8 @@ function goHome() {
     document.getElementById('menuTiming').style.display = 'none';
     document.getElementById('menuDiodes').style.display = 'none';
     if (document.getElementById('menuSystems')) document.getElementById('menuSystems').style.display = 'none'; 
-    if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'none'; // <-- NEW FIX
+    if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'none'; 
+    if (document.getElementById('menuTransistors')) document.getElementById('menuTransistors').style.display = 'none';
     document.getElementById('menuPlaceholder').style.display = 'none';
 
     // 2. Show the main 8-button grid
@@ -8095,8 +8558,8 @@ function openModule(module) {
     // Hide Home Menu
     document.getElementById('mainMenu').style.display = 'none';
     
-    // Hide all sub-menus first (Added 'menuLogic' to this list)
-    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuLogic', 'menuPlaceholder'];
+    // Hide all sub-menus first (Added 'menuTransistors' to this list)
+    const menus = ['menuBasics', 'menuTiming', 'menuDiodes', 'menuSystems', 'menuLogic', 'menuTransistors', 'menuPlaceholder'];
     menus.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -8120,7 +8583,11 @@ function openModule(module) {
         switchTab('iposort'); 
     } else if (module === 'logic') {
         if (document.getElementById('menuLogic')) document.getElementById('menuLogic').style.display = 'flex';
-        switchTab('logic_ic'); // Automatically opens the Boolean mode to start!
+        switchTab('logic_ic'); 
+    } else if (module === 'transistors') {
+        // NEW: Handle the Transistors module opening
+        if (document.getElementById('menuTransistors')) document.getElementById('menuTransistors').style.display = 'flex';
+        switchTab('transistor'); 
     } else {
         document.getElementById('menuPlaceholder').style.display = 'flex';
         document.getElementById('contentArea').style.display = 'none';
@@ -8158,7 +8625,6 @@ function switchTab(mode) {
     }
 
     // 3. UI CLEANUP: Hide all input groups
-    // Pro-Tip: We call your master hide function first just to be perfectly safe
     if (typeof hideAllInputGroups === "function") {
         hideAllInputGroups();
     }
@@ -8176,19 +8642,18 @@ function switchTab(mode) {
         'inputGroupIPOSort', 'inputGroupSilicon', 'inputGroupSiliconVoltage', 
         'inputGroupGrade9Silicon', 'inputGroupGrade9SiliconReverse', 'inputGroupGrade9SiliconParallel',
         'inputGroupBoolean',
-        'booleanDropdownContainer',       
-        'booleanCheckboxContainer',       
+        'booleanDropdownContainer',        
+        'booleanCheckboxContainer',        
         'inputGroupGrade9BooleanSOP',     
         'inputGroupGrade9BooleanPath',    
         'inputGroupLogicSystem',          
         'inputGroupLogic_ic',             
         'inputGroupLogic_NAND',  
-        
-        'inputGroupGrade9NandMaster',      // The main wrapper for the topic
-        'inputGroupNandConversion',        // The sub-UI for Mode A
-        'inputGroupNandRedundancy',        // The sub-UI for Mode B
-        
-        'inputGroupBlockBuilder'           // 👇 NEW: Hides Block Builder UI when switching away
+        'inputGroupGrade9NandMaster',      
+        'inputGroupNandConversion',        
+        'inputGroupNandRedundancy',        
+        'inputGroupBlockBuilder',          
+        'inputGroupTransistor'            // 👇 NEW: Hides Transistor UI when switching away
     ];
 
     elementsToHide.forEach(id => {
@@ -8201,14 +8666,15 @@ function switchTab(mode) {
     if (subtitle) {
         if (mode === 'home') subtitle.innerText = "Welcome to Electronics";
         else if (['analysis', 'divider', 'resistance', 'colorcode', 'power'].includes(mode)) subtitle.innerText = "Module 1: Circuit Basics";
-        else if (['iposort', 'blockbuilder'].includes(mode)) subtitle.innerText = "Module 4: Systems"; // 👇 NEW: Added blockbuilder here
+        else if (['iposort', 'blockbuilder'].includes(mode)) subtitle.innerText = "Module 4: Systems"; 
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
         else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
         else if (['logic_ic', 'logic_system', 'logic_boolean', 'logic_nand', 'grade9boolean'].includes(mode)) subtitle.innerText = "Module 2: Logic Gates"; 
+        else if (mode === 'transistor') subtitle.innerText = "Module 6: Transistors"; // 👇 NEW: Transistor Subtitle
     }
 
     // 5. Global Cleanup
-    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '&nbsp;'; // Improved layout stability
+    if (document.getElementById('feedback')) document.getElementById('feedback').innerHTML = '&nbsp;'; 
     if (document.getElementById('solutions')) document.getElementById('solutions').style.display = 'none';
     
     document.querySelectorAll('input').forEach(i => {
@@ -8298,6 +8764,7 @@ function hubController(ctx, canvas) {
         btnCheck.parentNode.replaceChild(newBtnCheck, btnCheck);
         // Note: The specific mode generator will attach its own 'click' listener to this new button
     }
+    
     // 2. Full UI Reset (The "Master Wipe")
     // Because hideAllInputGroups() was upgraded above, all dropdown validation is wiped here!
     if (typeof hideAllInputGroups === "function") hideAllInputGroups();
@@ -8433,7 +8900,6 @@ function hubController(ctx, canvas) {
         
         if (typeof generateLogic_nandProblem === "function") generateLogic_nandProblem(ctx, canvas);
 
-
     } else if (currentMode === 'grade9nand') {
         // *** NEW: GRADE 9 SYSTEM CONVERSION & REDUNDANCY HUNTER ***
         
@@ -8452,7 +8918,6 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateGrade9NandProblem is not defined!");
         }
    
-        // UPDATED BLOCK BUILDER ROUTE
     } else if (currentMode === 'blockbuilder' || currentMode === 'block_diagram') {
         // Unhide the specific Block Builder input group
         if (document.getElementById('inputGroupBlockBuilder')) {
@@ -8463,6 +8928,18 @@ function hubController(ctx, canvas) {
             generateBlockBuilderProblem(ctx, canvas);
         } else {
             console.error("Hub: generateBlockBuilderProblem is not defined!");
+        }
+        
+    // 👇 NEW: TRANSISTOR ROUTING ADDED HERE
+    } else if (currentMode === 'transistor') {
+        if (document.getElementById('inputGroupTransistor')) {
+            document.getElementById('inputGroupTransistor').style.display = 'flex';
+        }
+        
+        if (typeof generateTransistorProblem === "function") {
+            generateTransistorProblem(ctx, canvas);
+        } else {
+            console.error("Hub: generateTransistorProblem is not defined!");
         }
     }
 }
@@ -8516,7 +8993,8 @@ function checkLogicNand() {
         displayFeedback(false, "Incorrect. Check your gate choices or make sure the other blueprints are empty.");
     }
 }
-    
+//**********************************************************
+//***********************************************************
 function checkAnswers() {
     // 1. Prevent double-checking if already solved
     if (isCurrentProblemSolved) return; 
@@ -9244,14 +9722,16 @@ if (currentMode === 'grade9nand') {
         return; 
     }
     
-    //New function code pasted above this line
+    //New function code pasted above this line for grag and drop
     //********************************************************************
+    //********************************************************************
+    // New function below this line in two places if need to be parsed
 
     // 2. Identify which inputs are currently active
     let activeInputs = [];
     if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
     else if (currentMode === 'divider') activeInputs = ['inputV'];
-    else if (currentMode === 'resistance') activeInputs = ['inputR']; 
+    else if (currentMode === 'resistance' || currentMode === 'grade9resistance') activeInputs = ['inputR'];
     else if (currentMode === 'oscilloscope') {
         activeInputs = ['inputOscAmp'];
         if (currentAnswers.oscQType === 0) {
@@ -9276,12 +9756,6 @@ if (currentMode === 'grade9nand') {
     }
     else if (currentMode === 'grade9zener') {
         activeInputs = (currentZenerState === "closed") ? ['g9IL', 'g9IZ'] : ['g9PZ', 'g9Rating'];
-    }
-    else if (currentMode === 'power') {
-        activeInputs = ['inputP'];
-        if (currentAnswers.scenario === 2) {
-            activeInputs.push('ratingSelectP');
-        }
     }
     else if (currentMode === 'grade9power') {
         activeInputs = ['g9PowerIdealR', 'g9PowerDissipated', 'g9PowerE24'];
@@ -9314,6 +9788,16 @@ if (currentMode === 'grade9nand') {
             }
         }
     }
+    // 👇 NEW: TRANSISTOR ACTIVE INPUTS 👇
+    else if (currentMode === 'transistor') {
+        if (window.transistorMode === 1) {
+            activeInputs = ['transVIN', 'transVRB', 'transIB', 'transP']; // Top-Down Mode
+        } else if (window.transistorMode === 2) {
+            activeInputs = ['transVRB', 'transIB', 'transIC'];            // Bottom-Up Mode
+        } else {
+            activeInputs = ['transIB', 'transVRB', 'transRB'];            // Mode 3: Design Mode
+        }
+    }
     
     if (currentMode === 'power') {
         activeInputs = [];
@@ -9325,6 +9809,7 @@ if (currentMode === 'grade9nand') {
             activeInputs.push('inputP'); 
         }
     }
+    
     // ------------------------------------------
     // 3. Check for empty boxes
     let hasEmptyBox = activeInputs.some(id => !document.getElementById(id) || document.getElementById(id)?.value.trim() === '');
@@ -9363,14 +9848,14 @@ if (currentMode === 'grade9nand') {
             results.push(validateMatch(parseInput(acceptSpaces(inputStr)), currentAnswers.vValue, targetUnit));
         }
 
-   } else if (currentMode === 'resistance') {
+        } else if (currentMode === 'resistance' || currentMode === 'grade9resistance') {
         let inputStr = document.getElementById('inputR').value;
         let cleanStr = acceptSpaces(inputStr); 
-            
+        
         if (cleanStr !== "" && !cleanStr.includes("Ω") && !cleanStr.toLowerCase().includes("ohm")) {
-            cleanStr += "Ω";
+        cleanStr += "Ω";
         }
-        results.push(validateMatch(parseInput(cleanStr), currentAnswers.rValue, currentAnswers.rTargetUnit || 'Ω'));
+    results.push(validateMatch(parseInput(cleanStr), currentAnswers.rValue, currentAnswers.rTargetUnit || 'Ω'));
 
     } else if (currentMode === 'oscilloscope') {
         results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscAmp').value)), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
@@ -9447,20 +9932,20 @@ if (currentMode === 'grade9nand') {
                 results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9Rating').value)), currentAnswers.rating, 'mW'));
             }
          }
-} else if (currentMode === 'power') {
-    if (currentAnswers.scenario === 2) {
-        // Validate the exact power input
-        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.exactPower, currentAnswers.vUnit));
-        
-        // FIX: Match the ID used in the HTML and generation function
-        const userRating = document.getElementById('selectPowerRating').value; 
-        
-        // Validate the dropdown selection
-        results.push(userRating === currentAnswers.safeRating ? 'correct' : 'wrongval');
-    } else {
-        // Standard power validation for scenarios 1 and 3
-        results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.vValue, currentAnswers.vUnit));
-    }
+    } else if (currentMode === 'power') {
+        if (currentAnswers.scenario === 2) {
+            // Validate the exact power input
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.exactPower, currentAnswers.vUnit));
+            
+            // FIX: Match the ID used in the HTML and generation function
+            const userRating = document.getElementById('selectPowerRating').value; 
+            
+            // Validate the dropdown selection
+            results.push(userRating === currentAnswers.safeRating ? 'correct' : 'wrongval');
+        } else {
+            // Standard power validation for scenarios 1 and 3
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputP').value)), currentAnswers.vValue, currentAnswers.vUnit));
+        }
     } else if (currentMode === 'grade9power') {
         let rInput = document.getElementById('g9PowerIdealR').value;
         let cleanR = acceptSpaces(rInput);
@@ -9494,7 +9979,7 @@ if (currentMode === 'grade9nand') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('siliconTP2').value)), currentAnswers.tp2, 'V'));
         }
 
-    } else if (currentMode === 'grade9silicon') {
+} else if (currentMode === 'grade9silicon') {
         // Grade OR-Gate if it's visible
         if (document.getElementById('inputGroupGrade9Silicon') && document.getElementById('inputGroupGrade9Silicon').style.display !== 'none') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPayload').value)), currentAnswers.vLoad, 'V'));
@@ -9515,6 +10000,33 @@ if (currentMode === 'grade9nand') {
             }
             
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9SilPathVLoad').value)), currentAnswers.vLoad, 'V'));
+        }
+    }
+    // 👇 NEW: TRANSISTOR GRADING LOGIC 👇
+    else if (currentMode === 'transistor') {
+        // Grade Transistor Modes
+        if (window.transistorMode === 1) {
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVIN').value)), currentAnswers.vin, 'V'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transP').value)), currentAnswers.p, 'W'));
+            
+        } else if (window.transistorMode === 2) {
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIC').value)), currentAnswers.ic, 'mA'));
+            
+        } else {
+            // Mode 3: Design Mode
+            let rInput = document.getElementById('transRB').value;
+            let cleanR = acceptSpaces(rInput);
+            // Safety net: if they don't type Ω or ohm, we add it for them so the grader doesn't crash
+            if (cleanR !== "" && !cleanR.includes("Ω") && !cleanR.toLowerCase().includes("ohm")) {
+                cleanR += "Ω";
+            }
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
+            results.push(validateMatch(parseInput(cleanR), currentAnswers.rb, 'Ω'));
         }
     }
 
@@ -10028,7 +10540,42 @@ function provideHint() {
                 • A <b>double inversion</b> (a NOT gate followed immediately by another NOT gate) is a waste of hardware.<br>
                 • Look for two NOT-configured NAND gates (gates with joined inputs) sitting side-by-side on the exact same wire path!
             </div>`;
-    }    
+    } 
+} else if (currentMode === 'transistor') {
+        let specificHint = "";
+        
+        // Matching the integer modes from generateTransistorProblem
+        if (window.transistorMode === 1) {
+            specificHint = `
+                <br><br><b>Mode: Top-Down Analysis</b><br>
+                You are trying to switch on the load. Start from the Collector! You know the required load current (I<sub>C</sub>) and the transistor's current gain (h<sub>FE</sub> = ${currentAnswers.hfe}). <br>
+                1. Calculate the required Base Current using: <b>I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub></b><br>
+                2. Calculate the voltage dropped across the base resistor (V<sub>RB</sub> = I<sub>B</sub> &times; R<sub>B</sub>).<br>
+                3. Add the 0.7V base-emitter drop to find total V<sub>IN</sub>.`;
+                
+        } else if (window.transistorMode === 2) {
+            specificHint = `
+                <br><br><b>Mode: Bottom-Up Analysis</b><br>
+                Start from the Base! <br>
+                1. Find the voltage across the base resistor by subtracting 0.7V (V<sub>BE</sub>) from V<sub>IN</sub>.<br>
+                2. Find the base current (I<sub>B</sub>) using Ohm's Law on the base resistor.<br>
+                3. Multiply I<sub>B</sub> by the current gain (h<sub>FE</sub> = ${currentAnswers.hfe}) to find the maximum possible collector current (I<sub>C</sub>).`;
+                
+        } else if (window.transistorMode === 3) {
+            specificHint = `
+                <br><br><b>Mode: Component Selection (Design)</b><br>
+                1. Calculate the base current (I<sub>B</sub>) required to drive the given load current (I<sub>C</sub>) using the current gain (h<sub>FE</sub> = ${currentAnswers.hfe}).<br>
+                2. Find the voltage across the base resistor (V<sub>RB</sub>) by subtracting V<sub>BE</sub> (0.7V) from V<sub>IN</sub>.<br>
+                3. Use Ohm's Law (R = V / I) to find the required base resistor value (R<sub>B</sub>).`;
+        }
+
+        helpText = `
+            <div style="${blueBox}">
+                <strong>💡 Hint:</strong><br>
+                • Look at the circuit diagram carefully: Known values are in <b>black</b>, and the unknowns you need to solve for are indicated by <span style="color:#E64097;"><b>pink</b></span> question marks.<br>
+                • Remember your core transistor equations: <b>h<sub>FE</sub> = I<sub>C</sub> / I<sub>B</sub></b> and standard Ohm's Law (<b>V = I &times; R</b>).
+                ${specificHint}
+            </div>`;
     } else {
         // Potential Divider & General
         helpText = `
@@ -10083,16 +10630,21 @@ const topicMap = {
     'zener': 'Zener Diodes',
     'grade9zener': 'G9 Zener',
     
-    // --- Logic & Systems ---
+    // --- Systems ---
     'iposort': 'IPO Sort',  
     'block_diagram': 'Block Diagrams',
+
+     // --- Logic ---
     'boolean': 'Boolean Logic',          
     'logic_boolean': 'Boolean Logic',
     'grade9boolean': 'G9 Boolean Logic',
     'logic_system': 'Logic Systems',
     'logic_ic': 'Logic Gate ICs',
     'logic_nand': 'Basic NAND Equiv ',
-    'grade9nand': 'Grade 9 NAND Equiv'
+    'grade9nand': 'Grade 9 NAND Equiv',
+
+    // --- transistors ---
+    'transistor': 'Transistors'
 };
 
 async function processSubmission() {
