@@ -9731,7 +9731,7 @@ if (currentMode === 'grade9nand') {
     let activeInputs = [];
     if (currentMode === 'analysis') activeInputs = ['inputV', 'inputI'];
     else if (currentMode === 'divider') activeInputs = ['inputV'];
-    else if (currentMode === 'resistance') activeInputs = ['inputR']; 
+    else if (currentMode === 'resistance' || currentMode === 'grade9resistance') activeInputs = ['inputR'];
     else if (currentMode === 'oscilloscope') {
         activeInputs = ['inputOscAmp'];
         if (currentAnswers.oscQType === 0) {
@@ -9848,14 +9848,14 @@ if (currentMode === 'grade9nand') {
             results.push(validateMatch(parseInput(acceptSpaces(inputStr)), currentAnswers.vValue, targetUnit));
         }
 
-   } else if (currentMode === 'resistance') {
+        } else if (currentMode === 'resistance' || currentMode === 'grade9resistance') {
         let inputStr = document.getElementById('inputR').value;
         let cleanStr = acceptSpaces(inputStr); 
-            
+        
         if (cleanStr !== "" && !cleanStr.includes("Ω") && !cleanStr.toLowerCase().includes("ohm")) {
-            cleanStr += "Ω";
+        cleanStr += "Ω";
         }
-        results.push(validateMatch(parseInput(cleanStr), currentAnswers.rValue, currentAnswers.rTargetUnit || 'Ω'));
+    results.push(validateMatch(parseInput(cleanStr), currentAnswers.rValue, currentAnswers.rTargetUnit || 'Ω'));
 
     } else if (currentMode === 'oscilloscope') {
         results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('inputOscAmp').value)), currentAnswers.oscAmpValue, currentAnswers.oscAmpUnit));
