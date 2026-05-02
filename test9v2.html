@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7972,330 +7973,6 @@ if (oldOverlay) oldOverlay.remove();
 
     // --- 6. RENDER BLOCKS ---
     scenario.blocks.forEach(b => {
-    // ==========================================
-    // ARCHITECTURE 1: (OR/AND) + Time-limited output
-    // ==========================================
-    {
-        id: 'arch1_flavour1',
-        title: 'Porch Lighting System',
-        description: `
-            1. The lights should only be able to operate if it is dark.<br>
-            2. The lights should activate if either the gate is opened OR the doorbell is pressed.<br>
-            3. Once activated, the lights stay on for 3 minutes and then switch off automatically.<br><br>
-            <strong>Sensor Information:</strong><br>
-            • The light sensing unit outputs logic 1 in the dark.<br>
-            • The switches output logic 1 when pressed/opened.
-        `,
-        blocks: [
-            { id: 'b1', type: 'drop', x: 10, y: 30, answer: 'Switch (Gate)' },
-            { id: 'b2', type: 'static', x: 10, y: 120, text: 'Switch\n(Doorbell)' },
-            { id: 'b3', type: 'drop', x: 10, y: 240, answer: 'Light sensing unit' },
-            { id: 'b4', type: 'drop', x: 120, y: 75, answer: 'OR gate' },
-            { id: 'b5', type: 'static', x: 220, y: 155, text: 'AND gate' },
-            { id: 'b6', type: 'static', x: 320, y: 155, text: 'Delay\nunit' },
-            { id: 'b7', type: 'drop', x: 420, y: 155, answer: 'Transistor driver' },
-            { id: 'b8', type: 'static', x: 510, y: 155, text: 'LED Array' }
-        ],
-        wires: [
-            { startX: 90, startY: 55, endX: 120, endY: 85 },   
-            { startX: 90, startY: 145, endX: 120, endY: 115 }, 
-            { startX: 200, startY: 100, endX: 220, endY: 165 },
-            { startX: 90, startY: 265, endX: 220, endY: 195 }, 
-            { startX: 300, startY: 180, endX: 320, endY: 180 },
-            { startX: 400, startY: 180, endX: 420, endY: 180 },
-            { startX: 500, startY: 180, endX: 510, endY: 180 } 
-        ],
-        trayPool: [
-            "Switch (Gate)", "Light sensing unit", "OR gate", "Transistor driver", 
-            "NOT gate", "Latch unit", "Temperature sensor", "Buzzer unit", "Comparator", "Motor unit"
-        ]
-    },
-
-    // ==========================================
-    // ARCHITECTURE 2: Linear + Conditional (NOT gate)
-    // ==========================================
-    {
-        id: 'arch2_flavour4',
-        title: 'Greenhouse Irrigation',
-        description: `
-            1. The watering system must start when the soil becomes dry.<br>
-            2. The water should flow for a period of 5 minutes before stopping.<br>
-            3. The system uses a solenoid valve to control the water.<br><br>
-            <strong>Sensor Information:</strong><br>
-            • The moisture sensor outputs logic 0 when dry.
-        `,
-        blocks: [
-            { id: 'b1', type: 'drop', x: 10, y: 155, answer: 'Moisture sensor' },
-            { id: 'b2', type: 'drop', x: 120, y: 155, answer: 'NOT gate' }, 
-            { id: 'b3', type: 'static', x: 220, y: 155, text: 'Delay\nunit' },
-            { id: 'b4', type: 'drop', x: 370, y: 155, answer: 'MOSFET' },
-            { id: 'b5', type: 'static', x: 510, y: 155, text: 'Solenoid\nValve' }
-        ],
-        wires: [
-            { startX: 90, startY: 180, endX: 120, endY: 180 },
-            { startX: 200, startY: 180, endX: 220, endY: 180 },
-            { startX: 300, startY: 180, endX: 370, endY: 180 },
-            { startX: 450, startY: 180, endX: 510, endY: 180 }
-        ],
-        trayPool: [
-            "Moisture sensor", "NOT gate", "MOSFET", "AND gate", "OR gate", 
-            "Transistor driver", "Loudspeaker", "Light sensing unit", "Latch unit", "Pulse generator"
-        ]
-    },
-
-    // ==========================================
-    // ARCHITECTURE 3: Flashing/Pulsing (Re-wired for Pulse Input)
-    // ==========================================
-    {
-        id: 'arch3_flavour7',
-        title: 'Roadworks Warning Signal',
-        description: `
-            1. A warning beacon must operate only when it is dark AND the master switch is on.<br>
-            2. When active, the beacon must switch on and off repeatedly to create a flashing effect.<br><br>
-            <strong>Sensor Information:</strong><br>
-            • The light sensing unit outputs logic 1 in the dark.<br>
-            • The switch unit outputs logic 1 when turned on.
-        `,
-        blocks: [
-            { id: 'b1', type: 'drop', x: 10, y: 30, answer: 'Switch Unit' },
-            { id: 'b2', type: 'static', x: 10, y: 120, text: 'Light sensing\nunit' },
-            { id: 'b3', type: 'drop', x: 10, y: 240, answer: 'Pulse Generator' }, // Moved to Input!
-            { id: 'b4', type: 'drop', x: 120, y: 75, answer: 'AND gate' },
-            { id: 'b5', type: 'static', x: 220, y: 155, text: 'AND gate' }, // Final enabling gate
-            { id: 'b6', type: 'drop', x: 320, y: 155, answer: 'Transistor driver' },
-            { id: 'b7', type: 'static', x: 420, y: 155, text: 'Warning\nBeacon' }
-        ],
-        wires: [
-            { startX: 90, startY: 55, endX: 120, endY: 85 },   // Switch to AND1
-            { startX: 90, startY: 145, endX: 120, endY: 115 }, // Light to AND1
-            { startX: 200, startY: 100, endX: 220, endY: 165 },// AND1 to AND2
-            { startX: 90, startY: 265, endX: 220, endY: 195 }, // Pulse to AND2
-            { startX: 300, startY: 180, endX: 320, endY: 180 },// AND2 to Driver
-            { startX: 400, startY: 180, endX: 420, endY: 180 } // Driver to Beacon
-        ],
-        trayPool: [
-            "Switch Unit", "Pulse Generator", "Transistor driver", "AND gate", "OR gate", 
-            "Delay unit", "Moisture sensor", "NOT gate", "NAND gate", "Latch unit"
-        ]
-    },
-
-    // ==========================================
-    // ARCHITECTURE 4: Latching Output
-    // ==========================================
-    {
-        id: 'arch4_flavour9',
-        title: 'Security Alarm',
-        description: `
-            1. The alarm is triggered if a window switch is opened.<br>
-            2. Once triggered, the siren must continue to sound even if the window is closed again.<br>
-            3. The siren stops only when a separate reset procedure is followed.<br><br>
-            <strong>Sensor Information:</strong><br>
-            • The window switch outputs logic 1 when opened.
-        `,
-        blocks: [
-            { id: 'b1', type: 'drop', x: 10, y: 155, answer: 'Window Switch' },
-            { id: 'b2', type: 'drop', x: 150, y: 155, answer: 'Latch Unit' },
-            { id: 'b3', type: 'static', x: 300, y: 155, text: 'MOSFET' },
-            { id: 'b4', type: 'drop', x: 450, y: 155, answer: 'Siren' }
-        ],
-        wires: [
-            { startX: 90, startY: 180, endX: 150, endY: 180 }, 
-            { startX: 230, startY: 180, endX: 300, endY: 180 },
-            { startX: 380, startY: 180, endX: 450, endY: 180 }
-        ],
-        trayPool: [
-            "Window Switch", "Latch Unit", "Siren", "Delay unit", "Pulse generator", 
-            "NOT gate", "Transistor driver", "AND gate", "Moisture sensor", "Comparator"
-        ]
-    },
-
-    // ==========================================
-    // ARCHITECTURE 5: Parallel Outputs
-    // ==========================================
-    {
-        id: 'arch5_flavour10',
-        title: 'Terrarium Environment',
-        description: `
-            1. A heater must turn on if the air temperature drops too low.<br>
-            2. A water pump must activate if the moisture sensor detects the soil is dry.<br><br>
-            <strong>Sensor Information:</strong><br>
-            • The temperature sensor outputs logic 1 when cold.<br>
-            • The moisture sensor outputs logic 1 when dry.
-        `,
-        blocks: [
-            { id: 'b1', type: 'static', x: 10, y: 50, text: 'Temp Sensor' },
-            { id: 'b2', type: 'drop', x: 150, y: 50, answer: 'MOSFET' },
-            { id: 'b3', type: 'static', x: 300, y: 50, text: 'Heater' },
-            { id: 'b4', type: 'drop', x: 10, y: 220, answer: 'Moisture sensor' },
-            { id: 'b5', type: 'static', x: 150, y: 220, text: 'MOSFET' },
-            { id: 'b6', type: 'drop', x: 300, y: 220, answer: 'Water Pump' }
-        ],
-        wires: [
-            { startX: 90, startY: 75, endX: 150, endY: 75 }, 
-            { startX: 230, startY: 75, endX: 300, endY: 75 },
-            { startX: 90, startY: 245, endX: 150, endY: 245 }, 
-            { startX: 230, startY: 245, endX: 300, endY: 245 }
-        ],
-        trayPool: [
-            "Moisture sensor", "MOSFET", "Water Pump", "AND gate", "OR gate", 
-            "Transistor driver", "Light sensing unit", "Delay unit", "NOT gate", "Solenoid valve"
-        ]
-    },
-
-    // ==========================================
-    // ARCHITECTURE 6: Manual Override
-    // ==========================================
-    {
-        id: 'arch6_flavour11',
-        title: 'Safety Lighting',
-        description: `
-            1. The emergency lights turn on automatically when the sensor detects it is dark.<br>
-            2. A manual switch must also be able to turn the lights on at any time for testing.<br><br>
-            <strong>Sensor Information:</strong><br>
-            • The light sensing unit outputs logic 1 in the light.<br>
-            • The manual switch outputs logic 1 when pressed.
-        `,
-        blocks: [
-            { id: 'b1', type: 'drop', x: 10, y: 40, answer: 'Manual Switch' },
-            { id: 'b2', type: 'static', x: 10, y: 180, text: 'Light sensing\nunit' },
-            { id: 'b3', type: 'drop', x: 130, y: 180, answer: 'NOT gate' },
-            { id: 'b4', type: 'drop', x: 260, y: 110, answer: 'OR gate' },
-            { id: 'b5', type: 'static', x: 380, y: 110, text: 'Transistor\ndriver' },
-            { id: 'b6', type: 'static', x: 510, y: 110, text: 'Light Array' }
-        ],
-        wires: [
-            { startX: 90, startY: 65, endX: 260, endY: 130 }, 
-            { startX: 90, startY: 205, endX: 130, endY: 205 },
-            { startX: 210, startY: 205, endX: 260, endY: 150 },
-            { startX: 340, startY: 135, endX: 380, endY: 135 },
-            { startX: 460, startY: 135, endX: 510, endY: 135 }
-        ],
-        trayPool: [
-            "Manual Switch", "NOT gate", "OR gate", "AND gate", "NAND gate", 
-            "Delay unit", "Moisture sensor", "Pulse generator", "MOSFET", "Level Sensor"
-        ]
-    }
-];
-
-// *********************
-// 2. THE GENERATOR FUNCTION starts here: 
-//**********************
-function generateBlockBuilderProblem(ctx, canvas) {
-    // --- 1. THE JANITOR PROTOCOL (STOPS STACKING) ---
-    currentMode = 'block_diagram'; 
-    hasCheckedCurrentProblem = false; 
-    isCurrentProblemSolved = false; 
-
-    // A. Clear the Wrapper
-    const wrapper = document.getElementById('inputGroupBlockBuilder');
-    if (wrapper) wrapper.innerHTML = ""; 
-
-    // B. THE FIX: Match the names used in generateGrade9NandProblem
-    const conversionInst = document.getElementById('inputGroupNandConversion');
-    const redundancyInst = document.getElementById('inputGroupNandRedundancy');
-
-    if (conversionInst) conversionInst.style.display = 'none';
-    if (redundancyInst) redundancyInst.style.display = 'none';
-
-    // C. Remove OLD Overlays
-    let oldOverlay = document.getElementById('canvasOverlay');
-    if (oldOverlay) oldOverlay.remove();
-
-    // --- 2. SELECT AND PREPARE THE SCENARIO ---
-    const rawScenario = blockScenarios[Math.floor(Math.random() * blockScenarios.length)];
-    const scenario = JSON.parse(JSON.stringify(rawScenario));
-
-    // Shift entire diagram up 30px to clear the tray
-    const shiftUp = 30; 
-    scenario.blocks.forEach(b => b.y -= shiftUp);
-    scenario.wires.forEach(w => {
-        w.startY -= shiftUp;
-        w.endY -= shiftUp;
-    });
-
-    // 👇 --- 2.5 THE DRIVER FIX (MOSFET vs TRANSISTOR) --- 👇
-    let filteredPool = [...scenario.trayPool];
-    const hasMOSFET = filteredPool.includes("MOSFET");
-    const hasTransistor = filteredPool.includes("Transistor Driver");
-    let survivingDriver = null;
-
-    if (hasMOSFET && hasTransistor) {
-        // Randomly pick one driver to keep, remove the other
-        survivingDriver = Math.random() > 0.5 ? "MOSFET" : "Transistor Driver";
-        const toRemove = survivingDriver === "MOSFET" ? "Transistor Driver" : "MOSFET";
-        filteredPool = filteredPool.filter(item => item !== toRemove);
-    } else if (hasMOSFET) {
-        survivingDriver = "MOSFET";
-    } else if (hasTransistor) {
-        survivingDriver = "Transistor Driver";
-    }
-
-    // If there is a driver in this scenario, update the answer key dynamically!
-    // This guarantees whatever driver is in the tray is marked correct.
-    if (survivingDriver) {
-        scenario.blocks.forEach(b => {
-            if (b.answer === "MOSFET" || b.answer === "Transistor Driver") {
-                b.answer = survivingDriver; 
-            }
-        });
-    }
-
-    window.currentBlockScenario = scenario;
-    window.currentFilteredPool = filteredPool; // Save for the tray rendering
-
-    // --- 3. INSTRUCTIONS PANEL ---
-    let instDiv = document.createElement('div');
-    instDiv.className = 'gcse-block-ui';
-    instDiv.style.cssText = "padding: 15px; background: #f8f9fa; margin-bottom: 15px; border-left: 4px solid #0d6efd; font-family: sans-serif;";
-    
-    instDiv.innerHTML = 
-        "<em style='color:#d65093;'>Drag the correct sub-systems from the tray to complete the block diagram.<br>(Double click to remove components from a box.)</em><br><br>" +
-        `<strong style="font-size:16px; color:#333;">${scenario.title}</strong><br>` +
-        scenario.description;
-
-    if (wrapper) {
-        wrapper.prepend(instDiv);
-    } else {
-        canvas.parentNode.insertBefore(instDiv, canvas);
-    }
-    
-    // --- 4. CREATE NEW OVERLAY ---
-    canvas.parentNode.style.position = 'relative'; 
-    let overlay = document.createElement('div');
-    overlay.id = 'canvasOverlay';
-    overlay.style.position = 'absolute';
-    overlay.style.top = canvas.offsetTop + 'px';
-    overlay.style.left = canvas.offsetLeft + 'px';
-    overlay.style.width = canvas.width + 'px';
-    overlay.style.height = canvas.height + 'px';
-    overlay.style.pointerEvents = 'none'; 
-    overlay.style.zIndex = '10';
-    canvas.parentNode.appendChild(overlay);
-
-    // --- 5. CLEAR CANVAS & DRAW STATIC WIRES ---
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#333"; 
-    ctx.lineWidth = 2;
-
-    scenario.wires.forEach(wire => {
-        ctx.beginPath();
-        ctx.moveTo(wire.startX, wire.startY);
-        let midX = wire.startX + (wire.endX - wire.startX) / 2;
-        ctx.lineTo(midX, wire.startY);   
-        ctx.lineTo(midX, wire.endY);      
-        ctx.lineTo(wire.endX, wire.endY); 
-        ctx.stroke();
-        
-        ctx.beginPath();
-        ctx.moveTo(wire.endX, wire.endY); 
-        ctx.lineTo(wire.endX - 10, wire.endY - 5);
-        ctx.lineTo(wire.endX - 10, wire.endY + 5);
-        ctx.fillStyle = "#333";
-        ctx.fill();
-    });
-
-    // --- 6. RENDER BLOCKS ---
-    scenario.blocks.forEach(b => {
         const box = document.createElement('div');
         box.className = 'gcse-block-ui';
         box.style.position = 'absolute';
@@ -8320,7 +7997,6 @@ function generateBlockBuilderProblem(ctx, canvas) {
             box.style.backgroundColor = '#a0aec0'; 
             box.style.fontWeight = 'bold';
         } else {
-            // Because of Step 2.5, b.answer is now strictly synced to the tray!
             box.dataset.answer = b.answer;
             box.classList.add('dropzone');
             
@@ -8347,13 +8023,16 @@ function generateBlockBuilderProblem(ctx, canvas) {
                 if (typeof checkBlockBuilderAnswers === "function") checkBlockBuilderAnswers(); 
             });
 
+            // 👇 NEW: DOUBLE CLICK TO REMOVE ITEMS 👇
             box.addEventListener('dblclick', () => {
-                if (isCurrentProblemSolved) return; 
-                box.innerText = ''; 
-                box.dataset.current = ''; 
-                box.style.backgroundColor = '#fff'; 
-                box.style.borderColor = '#222'; 
+                if (isCurrentProblemSolved) return; // Lock the box if they already won
                 
+                box.innerText = ''; // Clear the text visually
+                box.dataset.current = ''; // Clear the underlying data
+                box.style.backgroundColor = '#fff'; // Reset background
+                box.style.borderColor = '#222'; // Reset border (in case it was marked red/green)
+                
+                // Re-trigger the check function to instantly update any real-time grading logic
                 if (typeof checkBlockBuilderAnswers === "function") checkBlockBuilderAnswers(); 
             });
         }
@@ -8371,8 +8050,22 @@ function generateBlockBuilderProblem(ctx, canvas) {
     ctx.setLineDash([]);
     
     // --- 8. RENDER TRAY DRAGGABLE ITEMS ---
-    // We use the filtered pool we saved in Step 2.5
-    let shuffledOptions = window.currentFilteredPool.sort(() => Math.random() - 0.5);
+    
+    // Create a local copy so we don't accidentally break the original scenario data
+    let filteredPool = [...scenario.trayPool];
+
+    // Check if both MOSTET and Transitor options are present
+    const hasMOSFET = filteredPool.includes("MOSFET");
+    const hasTransistor = filteredPool.includes("Transistor Driver");
+
+    if (hasMOSFET && hasTransistor) {
+        // Randomly decide which one to kick out (50/50 chance)
+        const toRemove = Math.random() > 0.5 ? "MOSFET" : "Transistor Driver";
+        filteredPool = filteredPool.filter(item => item !== toRemove);
+    }
+
+    // Now shuffle the filtered list instead of the raw scenario.trayPool
+    let shuffledOptions = filteredPool.sort(() => Math.random() - 0.5);
 
     shuffledOptions.forEach((opt, index) => {
         const item = document.createElement('div');
@@ -8418,11 +8111,13 @@ function generateBlockBuilderProblem(ctx, canvas) {
     // --- 9. SOLUTION PANEL (BLOCK BUILDER) ---
     const solText = document.getElementById('solText');
     if (solText) {
+        // Filter the blocks to find only those that required user input (dropzones)
         let logicHTML = `<div style="font-family: sans-serif; font-size: 14px; background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">`;
         logicHTML += `<strong style="color: #0d6efd; font-size: 16px;">System Configuration Solution:</strong><br>`;
         logicHTML += `<p style="margin: 10px 0;">To achieve the <strong>${scenario.title}</strong>, the subsystems must be arranged in the following logical sequence:</p>`;
         logicHTML += `<ul style="line-height: 1.6; padding-left: 20px;">`;
 
+        // Map through all blocks to describe the full path
         scenario.blocks.forEach((b, idx) => {
             if (b.type === 'static') {
                 logicHTML += `<li><strong>Fixed Stage:</strong> ${b.text}</li>`;
