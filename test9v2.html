@@ -3595,26 +3595,48 @@ function generateOscilloscopeProblem() {
 
     ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
     
-    // --- THE FIX ---
-    // Instead of completely random phasing, we ensure at least one full cycle fits on the 10-div screen.
+    // --- ALIGNMENT FIX ---
     let periodDivs = markDivs + spaceDivs; 
-    let maxStartDiv = 10 - periodDivs; // The latest div a cycle can start and still safely fit
+    let maxStartDiv = 10 - periodDivs; 
     let startDiv = Math.floor(Math.random() * (maxStartDiv + 1));
     let phaseDivs = (periodDivs - startDiv) % periodDivs; 
-    // ---------------
     
-    // NEW LOGIC: Randomly shift the 0V base line up or down the screen
     let baseOffsetDivs = Math.floor(Math.random() * 5) - 1; 
     let baseY = 180 + (baseOffsetDivs * 40); 
 
+    // --- EDGE TRANSITION FIX: PERFECT VERTICAL LINES ---
+    // Convert mathematical division grid logic to exact pixels (1 div = 40px)
+    let periodPx = periodDivs * 40;
+    let markPx = markDivs * 40;
+    let phasePx = phaseDivs * 40;
+    
     ctx.beginPath();
+    let lastY = null;
+
     for(let px = 20; px <= 420; px++) {
-        let divOffset = (px - 20) / 40;
-        let currentCycleTime = (divOffset + phaseDivs) % (markDivs + spaceDivs);
-        // Draw the trace relative to the random baseY
-        let y = (currentCycleTime < markDivs) ? baseY - (ampDivs * 40) : baseY; 
-        if (px === 20) ctx.moveTo(px, y);
-        else ctx.lineTo(px, y);
+        let currentPx = px - 20;
+        let cyclePx = (currentPx + phasePx) % periodPx;
+        let y = (cyclePx < markPx) ? baseY - (ampDivs * 40) : baseY;
+
+        if (px === 20) {
+            // Determine state exactly 1 pixel before the screen starts
+            let prevCyclePx = (currentPx - 1 + phasePx + periodPx) % periodPx;
+            let prevY = (prevCyclePx < markPx) ? baseY - (ampDivs * 40) : baseY;
+            
+            // Draw a vertical line bridging the off-screen state to the on-screen state
+            ctx.moveTo(px, prevY);
+            ctx.lineTo(px, y);
+            lastY = y;
+        } else {
+            if (y !== lastY) {
+                // State changed! Draw perfect vertical line at the transition
+                ctx.lineTo(px, lastY);
+                ctx.lineTo(px, y);
+                lastY = y;
+            } else {
+                ctx.lineTo(px, y);
+            }
+        }
     }
     ctx.stroke();
 
