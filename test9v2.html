@@ -314,14 +314,16 @@
         color: #333 !important;
     }   
 
-    /* Stretched out g9 Transistor dropdowns */
+/* Stretched out g9 Transistor dropdowns */
     #g9TransDiodePos, 
     #g9TransDiodeReason {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    margin-bottom: 12px;
+        display: block !important;    /* Force block behavior */
+        width: 100% !important;       /* Override any other frameworks */
+        min-width: 250px;             /* Break out of shrink-wrapped parents */
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 8px;
+        margin-bottom: 12px;
     }
         /* Override the global row/important constraint for Grade 9 Silicon */
         #inputGroupGrade9Silicon, 
