@@ -9221,20 +9221,23 @@ function hubController(ctx, canvas) {
         }
         
     // 👇 TRANSISTOR ROUTING
-    } else if (currentMode === 'transistor') {
+} else if (currentMode === 'transistor') {
+        // 1. Show the Transistor Inputs
         if (document.getElementById('inputGroupTransistor')) {
             document.getElementById('inputGroupTransistor').style.display = 'flex';
         }
         
-        // This line turns the Rocket Button ON
-        if (document.getElementById('mainGrade9Btn')) {
-            document.getElementById('mainGrade9Btn').style.display = 'inline-block';
+        // 2. THE ROCKET RESCUE - This is the missing piece!
+        const rocket = document.getElementById('mainGrade9Btn');
+        if (rocket) {
+            // Using setProperty with important to beat any CSS locks
+            rocket.style.setProperty("display", "inline-block", "important");
+            console.log("Hub: Rocket button forced to visible for Transistors");
         }
         
+        // 3. Generate the actual circuit
         if (typeof generateTransistorProblem === "function") {
             generateTransistorProblem(ctx, canvas);
-        } else {
-            console.error("Hub: generateTransistorProblem is not defined!");
         }
 
     // 👇 GRADE 9 TRANSISTOR ROUTING
@@ -11188,7 +11191,12 @@ function hideAllInputGroups() {
         'inputGroupLogic_NAND',             // NEW: NAND Equivalents
         'inputGroupNandConversion',         // Mode A: NAND Conversion
         'inputGroupNandRedundancy',         // Mode B: Redundancy Hunter
-        'inputGroupBlockBuilder'            // NEW: Block Builder System
+        'inputGroupGrade9NandMaster',      // (In case you missed this from Logic)
+        'inputGroupBlockBuilder',           // NEW: Block Builder System
+        'inputGroupTransistor',           // Standard Transistor inputs
+        'inputGroupGrade9Transistor'    // Grade 9 Transistor inputs
+       
+    ];
     ];
 
     ghostGroups.forEach(id => {
