@@ -8963,7 +8963,7 @@ function generateGrade9TransistorProblem() {
         drawSafeSubscript("V", "BE", "= ?", 410, 280, 16, pinkColor);
         drawSafeSubscript("V", "CE", "= ?", 410, 210, 16, pinkColor);
     } 
-// ---------------------------------------------------------
+    // ---------------------------------------------------------
     // MODE 1: Sensor Divider (Math synthesis)
     // ---------------------------------------------------------
     else if (window.g9TransMode === 1) {
@@ -9014,6 +9014,9 @@ function generateGrade9TransistorProblem() {
         if (solText) {
             let ib_mA = ib * 1000;
             let motorPower_mW = motorPower * 1000;
+            let iBottom_mA = iBottom * 1000;
+            let iTop_mA = iTop * 1000;
+            
             solText.innerHTML = "<strong>I<sub>C</sub> = " + parseFloat(ic.toFixed(2)) + " mA | I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>mid</sub> = " + parseFloat(vMid.toFixed(2)) + " V | R<sub>LDR</sub> = " + Math.round(rLdr) + " &Omega;</strong><br><br>" +
                 "<em>Step 1:</em> Find the collector current required by the motor (I = P / V).<br>" +
                 "I<sub>C</sub> = " + motorPower_mW + " mW / " + vcc + " V = <strong>" + parseFloat(ic.toFixed(2)) + " mA</strong><br><br>" +
@@ -9021,8 +9024,12 @@ function generateGrade9TransistorProblem() {
                 "I<sub>B</sub> = " + parseFloat(ic.toFixed(2)) + " mA / " + hfe + " = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
                 "<em>Step 3:</em> Find the voltage needed at the middle of the potential divider.<br>" +
                 "V<sub>mid</sub> = V<sub>BE</sub> + V<sub>RB</sub> = 0.7 V + " + parseFloat(vrb.toFixed(2)) + " V = <strong>" + parseFloat(vMid.toFixed(2)) + " V</strong><br><br>" +
-                "<em>Step 4:</em> Calculate the divider currents to find the LDR resistance.<br>" +
-                "The LDR must be sized so that the voltage at the center point does not drop below " + parseFloat(vMid.toFixed(2)) + " V while supplying " + parseFloat(ib_mA.toFixed(3)) + " mA to the base.";
+                "<em>Step 4:</em> Find the current flowing through the bottom fixed resistor.<br>" +
+                "I<sub>bottom</sub> = V<sub>mid</sub> / R = " + parseFloat(vMid.toFixed(2)) + " V / " + rFixed + " &Omega; = <strong>" + parseFloat(iBottom_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 5:</em> Add the currents together to find the total current through the LDR.<br>" +
+                "I<sub>LDR</sub> = I<sub>bottom</sub> + I<sub>B</sub> = " + parseFloat(iBottom_mA.toFixed(3)) + " mA + " + parseFloat(ib_mA.toFixed(3)) + " mA = <strong>" + parseFloat(iTop_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 6:</em> Use Ohm's Law to find the LDR resistance.<br>" +
+                "R<sub>LDR</sub> = (V<sub>CC</sub> - V<sub>mid</sub>) / I<sub>LDR</sub> = (" + vcc + " V - " + parseFloat(vMid.toFixed(2)) + " V) / " + parseFloat(iTop.toFixed(6)) + " A = <strong>" + Math.round(rLdr) + " &Omega;</strong>";
         }
 
         if (typeof drawGrade9DividerCircuit === 'function') {
