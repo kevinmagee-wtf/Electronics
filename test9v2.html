@@ -314,18 +314,19 @@
         color: #333 !important;
     }   
 
-    /* Stretched out g9 Transistor dropdowns - Fixed Clipping */
-    #g9TransDiodePos, 
-    #g9TransDiodeReason {
-    display: block !important;    /* Force block behavior */
-    width: calc(100% - 4px) !important; /* Tiny reduction to prevent border clipping */
-    max-width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    margin: 5px auto 12px auto; /* Centering it helps keep borders visible */
-    border: 1px solid #ccc;    /* Ensures the RHS line has a clear definition */
-    border-radius: 4px;
-    }
+        /* Stretched out g9 Transistor dropdowns - Fixed Clipping */
+        #g9TransDiodePos, 
+        #g9TransDiodeReason {
+            display: block !important; 
+            width: calc(100% - 4px) !important; /* The 4px allows the border to breathe */
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            margin: 5px auto 12px auto; /* Centers the box so the RHS line isn't hidden */
+            border: 1px solid #ccc; 
+            border-radius: 4px;
+            appearance: auto !important; /* Keeps the little arrow for the user */
+        }
         /* Override the global row/important constraint for Grade 9 Silicon */
         #inputGroupGrade9Silicon, 
         #inputGroupGrade9SiliconPath {
@@ -1505,6 +1506,59 @@
 </div>
 
 <!-- Input group G9 TRANSISTOR--> 
+<div id="inputGroupGrade9Transistor" style="display: none; margin-top: 15px; width: 100%;">
+
+    <div id="g9TransModeA" style="display: none; flex-direction: column; gap: 8px;">
+        <div class="input-group">
+            <label for="g9TransVBE">V<sub>BE</sub></label>
+            <input type="text" id="g9TransVBE" placeholder="e.g. 0.7V">
+        </div>
+        <div class="input-group">
+            <label for="g9TransVCE">V<sub>CE</sub></label>
+            <input type="text" id="g9TransVCE" placeholder="e.g. 5V">
+        </div>
+    </div>
+
+    <div id="g9TransModeB" style="display: none;">
+        <div class="input-group">
+            <label for="g9TransRLDR" style="width: 140px !important;">Max LDR</label>
+            <input type="text" id="g9TransRLDR" placeholder="e.g. 1.2kΩ" style="width: 110px !important;">
+        </div>
+    </div>
+
+    <div id="g9TransModeC" style="display: none; flex-direction: column; gap: 15px; width: 100%;">
+        
+        <div style="width: 100%;">
+            <label for="g9TransDiodePos" style="font-weight: bold; display: block; margin-bottom: 5px; text-align: center; color: #E64097;">
+                Required Component:
+            </label>
+            <select id="g9TransDiodePos">
+                <option value="" disabled selected>Select an option...</option>
+            </select>
+        </div>
+
+        <div style="width: 100%;">
+            <label for="g9TransDiodeReason" style="font-weight: bold; display: block; margin-bottom: 5px; text-align: center; color: #E64097;">
+                Reason:
+            </label>
+            <select id="g9TransDiodeReason">
+                <option value="" disabled selected>Select an option...</option>
+            </select>
+        </div>
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+                
 <div id="inputGroupGrade9Transistor" style="display: none; text-align: center; margin-top: 20px;">
     
     <div id="g9TransModeA" style="display: none;">
@@ -1527,23 +1581,7 @@
         <div style="width: 100%;">
             <label for="g9TransDiodePos" style="font-weight: bold; display: block; margin-bottom: 5px;">Required Component:</label>
             <select id="g9TransDiodePos" style="border: 2px solid #ced4da; border-radius: 5px; padding: 8px; width: 80%; max-width: 400px;">
-                <option value="">-- Select Component --</option>
-                <option value="rev_para">Reverse-biased diode in parallel with motor</option>
-                <option value="fwd_para">Forward-biased diode in parallel with motor</option>
-                <option value="rev_ser">Reverse-biased diode in series with motor</option>
-                <option value="cap_para">Capacitor in parallel with motor</option>
-                <option value="res_ser">High-value resistor in series</option>
-            </select>
-        </div>
-        <div style="width: 100%;">
-            <label for="g9TransDiodeReason" style="font-weight: bold; display: block; margin-bottom: 5px;">Reason:</label>
-            <select id="g9TransDiodeReason" style="border: 2px solid #ced4da; border-radius: 5px; padding: 8px; width: 80%; max-width: 400px;">
-                <option value="">-- Select Reason --</option>
-                <option value="emf">To protect the motor from high voltage switch-off spikes</option>
-                <option value="emf">To protect the transistor from high voltage switch-off spikes</option>
-                <option value="reg">To regulate the supply voltage across the motor</option>
-                <option value="limit">To limit the base current entering the transistor</option>
-                <option value="gain">To increase the overall current gain of the circuit</option>
+              
             </select>
         </div>
     </div>
@@ -8948,7 +8986,7 @@ function generateGrade9TransistorProblem() {
         ctx.fillText(`R = ${rFixed} Ω`, 10, 230);
         ctx.fillText(`${ic} mA`, 285, 95);
     } 
-    // ---------------------------------------------------------
+// ---------------------------------------------------------
     // MODE 2: Protection Diode (Concept/Red Herring)
     // ---------------------------------------------------------
     else {
@@ -8957,13 +8995,15 @@ function generateGrade9TransistorProblem() {
         promptText = "A motor is driven by the transistor. The circuit is missing a critical component to protect it when the switch opens. Select the correct component and reason.";
         document.getElementById('questionText').innerHTML = promptText;
 
+        // Note: 'rev_para' remains the correct answer key
         currentAnswers = { pos: 'rev_para', reason: 'emf_transistor' };
 
         const positionOptions = [
-            { value: "series_motor", text: "In series with the motor" },
-            { value: "rev_para", text: "In parallel with the motor (Reverse biased)" },
-            { value: "fwd_para", text: "In parallel with the motor (Forward biased)" },
-            { value: "series_base", text: "In series with the base resistor" }
+            { value: "rev_para", text: "Reverse-biased diode in parallel with the motor" },
+            { value: "fwd_para", text: "Forward-biased diode in parallel with the motor" },
+            { value: "rev_ser", text: "Reverse-biased diode in series with the motor" },
+            { value: "cap_para", text: "High Value Capacitor in parallel with the motor" },
+            { value: "res_ser_base", text: "High value resistor in series with base resistor" }
         ];
         shuffleSelectOptions('g9TransDiodePos', positionOptions);
 
