@@ -1443,37 +1443,26 @@
                 </div>
 
 <!-- Input group IPO sort--> 
-<div id="inputGroupTransistor" style="display: none; grid-template-columns: 1fr 1fr; gap: 15px 5px; padding: 10px 0; width: 100%;">
+<div id="inputGroupTransistor" style="display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 15px 0; width: 100%;">
     
-    <div id="wrapperTransVIN" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">V<sub>IN</sub> =</div>
-        <input type="text" id="transVIN" placeholder="e.g. 3.4 V" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+    <div id="wrapperTransVIN" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; text-align: right; width: 45px; margin-right: 8px;">V<sub>IN</sub> =</div>
+        <input type="text" id="transVIN" placeholder="e.g. 3.4 V" style="width: 85px !important; height: 36px; padding: 4px; border: 2px solid #ccc; border-radius: 6px; text-align: center; font-size: 14px;">
     </div>
 
-    <div id="wrapperTransVRB" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">V<sub>RB</sub> =</div>
-        <input type="text" id="transVRB" placeholder="e.g. 2.7 V" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+    <div id="wrapperTransVRB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; text-align: right; width: 45px; margin-right: 8px;">V<sub>RB</sub> =</div>
+        <input type="text" id="transVRB" placeholder="e.g. 2.7 V" style="width: 85px !important; height: 36px; padding: 4px; border: 2px solid #ccc; border-radius: 6px; text-align: center; font-size: 14px;">
     </div>
 
-    <div id="wrapperTransIB" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">I<sub>B</sub> =</div>
-        <input type="text" id="transIB" placeholder="e.g. 1.5 mA" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+    <div id="wrapperTransIB" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; text-align: right; width: 45px; margin-right: 8px;">I<sub>B</sub> =</div>
+        <input type="text" id="transIB" placeholder="e.g. 1.5 mA" style="width: 85px !important; height: 36px; padding: 4px; border: 2px solid #ccc; border-radius: 6px; text-align: center; font-size: 14px;">
     </div>
 
-    <div id="wrapperTransIC" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">I<sub>C</sub> =</div>
-        <input type="text" id="transIC" placeholder="e.g. 300 mA" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-    </div>
-
-    <div id="wrapperTransRB" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">R<sub>B</sub> =</div>
-        <input type="text" id="transRB" placeholder="e.g. 1500" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-        <span style="font-size: 18px; font-weight: bold; color: #333; margin-left: 5px;">&Omega;</span>
-    </div>
-
-    <div id="wrapperTransP" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">P =</div>
-        <input type="text" id="transP" placeholder="e.g. 3.6 W" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+    <div id="wrapperTransP" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+        <div style="font-weight: bold; color: #E64097; font-size: 16px; text-align: right; width: 45px; margin-right: 8px;">P =</div>
+        <input type="text" id="transP" placeholder="e.g. 3.6 W" style="width: 85px !important; height: 36px; padding: 4px; border: 2px solid #ccc; border-radius: 6px; text-align: center; font-size: 14px;">
     </div>
 
 </div>
@@ -8164,9 +8153,9 @@ function generateTransistorProblem(ctx, canvas) {
     }
     currentMode = 'transistor';
 
-    // If you have a main wrapper for transistor inputs like you do for Zener, turn it on here
+    // Main wrapper for transistor inputs
     const transMainGroup = document.getElementById('inputGroupTransistor');
-    if (transMainGroup) transMainGroup.style.display = "block";
+    // We will set the specific display type (grid or flex) inside the mode conditions below!
 
     // 1. Setup Canvas & UI Elements
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -8278,6 +8267,12 @@ function generateTransistorProblem(ctx, canvas) {
         document.getElementById('wrapperTransP').style.display = 'flex';
         if (document.getElementById('wrapperTransRB')) document.getElementById('wrapperTransRB').style.display = 'none';
 
+        // --- APPLY 2x2 GRID LAYOUT (4 BOXES) ---
+        if (transMainGroup) {
+            transMainGroup.style.display = 'grid';
+            transMainGroup.style.gridTemplateColumns = '1fr 1fr';
+        }
+
     } else if (window.transistorMode === 2) {
         // --- MODE 2: Bottom-Up (Given V_IN, find I_C) ---
         const vinValues = [2.2, 2.7, 3.1, 3.7, 4.0, 5.1];
@@ -8323,6 +8318,12 @@ function generateTransistorProblem(ctx, canvas) {
         document.getElementById('wrapperTransP').style.display = 'none'; 
         if (document.getElementById('wrapperTransRB')) document.getElementById('wrapperTransRB').style.display = 'none';
         
+        // --- APPLY VERTICAL COLUMN LAYOUT (3 BOXES) ---
+        if (transMainGroup) {
+            transMainGroup.style.display = 'flex';
+            transMainGroup.style.flexDirection = 'column';
+        }
+
     } else {
         // --- MODE 3: Design Mode (Find RB) ---
         ic_mA = Math.floor(Math.random() * 8 + 2) * 50; 
@@ -8368,6 +8369,12 @@ function generateTransistorProblem(ctx, canvas) {
         document.getElementById('wrapperTransP').style.display = 'none';   
         const wrapperRB = document.getElementById('wrapperTransRB');
         if(wrapperRB) wrapperRB.style.display = 'flex';
+
+        // --- APPLY VERTICAL COLUMN LAYOUT (3 BOXES) ---
+        if (transMainGroup) {
+            transMainGroup.style.display = 'flex';
+            transMainGroup.style.flexDirection = 'column';
+        }
 
         // --- NEW: FORCE OMEGA SYMBOL FOR RB INPUT ---
         const rbDropdown = document.getElementById('unitTransRB'); 
