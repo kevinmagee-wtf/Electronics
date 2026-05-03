@@ -8930,7 +8930,7 @@ function generateGrade9TransistorProblem() {
         // --- INSTRUCTIONS ---
         if (instructionsDiv) {
             let stateText = isSaturated 
-                ? `The transistor is <strong>JUST SATURATED</strong>.` 
+                ? `The transistor is just saturated.` 
                 : `<span style="color: ${strokeColor}; font-weight: bold;">V<sub>IN</sub></span> drops to <strong>${vin}V</strong>. The transistor switches <strong>OFF</strong>.`;
                 
             instructionsDiv.innerHTML = `
@@ -11160,7 +11160,7 @@ function provideHint() {
         if (window.g9TransMode === 0) {
             specificHint = `
                 <br><br><b>Mode: Saturation vs Cut-off</b><br>
-                • <b>Fully Saturated:</b> The transistor is fully ON, acting almost like a closed switch. V<sub>CE</sub> drops to 0V, and V<sub>BE</sub> is clamped at 0.7V.<br>
+                • <b>Saturated:</b> The transistor is fully ON, acting almost like a closed switch. V<sub>CE</sub> drops to 0V, and V<sub>BE</sub> is clamped at 0.7V.<br>
                 • <b>Switched OFF:</b> If V<sub>IN</sub> drops below 0.7V, the transistor cannot turn on. It acts like an open switch, meaning V<sub>CE</sub> rises to the full supply voltage, and V<sub>BE</sub> simply equals V<sub>IN</sub>.`;
         } else if (window.g9TransMode === 1) {
             specificHint = `
