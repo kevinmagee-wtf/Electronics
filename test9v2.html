@@ -9203,8 +9203,7 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateGrade9NandProblem is not defined!");
         }
    
-    } else if (currentMode === 'blockbuilder' || currentMode === 'block_diagram') {
-        // Unhide the specific Block Builder input group
+} else if (currentMode === 'blockbuilder' || currentMode === 'block_diagram') {
         if (document.getElementById('inputGroupBlockBuilder')) {
             document.getElementById('inputGroupBlockBuilder').style.display = 'block';
         }
@@ -9215,13 +9214,13 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateBlockBuilderProblem is not defined!");
         }
         
-// 👇 UPDATED: TRANSISTOR ROUTING
+    // 👇 TRANSISTOR ROUTING
     } else if (currentMode === 'transistor') {
         if (document.getElementById('inputGroupTransistor')) {
             document.getElementById('inputGroupTransistor').style.display = 'flex';
         }
         
-        // SHOW SMART ROCKET so they can get to Grade 9!
+        // This line turns the Rocket Button ON
         if (document.getElementById('mainGrade9Btn')) {
             document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         }
@@ -9232,9 +9231,8 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateTransistorProblem is not defined!");
         }
 
-    // 👇 NEW: GRADE 9 TRANSISTOR ROUTING
+    // 👇 GRADE 9 TRANSISTOR ROUTING
     } else if (currentMode === 'grade9transistor') {
-        // Note: The generator handles unhiding the specific sub-modes (A, B, or C)
         if (document.getElementById('inputGroupGrade9Transistor')) {
             document.getElementById('inputGroupGrade9Transistor').style.display = 'block';
         }
@@ -9250,7 +9248,8 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateGrade9TransistorProblem is not defined!");
         }
     }
-}
+    
+} // This is the REAL end of the hubController function
 
 //*****************************************************************************************
 // ==============================================================
