@@ -8818,12 +8818,11 @@ function generateGrade9TransistorProblem() {
         }
         
         if (typeof drawCanvasSubscript === 'function') {
-            // Notice the 3 spaces "   =" to fix the spacing without touching the helper
-            // Moved Y to 175 to drop the text below the input dot
-            drawCanvasSubscript(ctx, "V", "IN", `   = ${vin} V`, 15, 175, 16, strokeColor);
+            // Moved Y to 280 to drop it well below the input wire
+            drawCanvasSubscript(ctx, "V", "IN", `   = ${vin} V`, 15, 280, 16, strokeColor);
             
-            // Added 3 spaces for these as well
-            drawCanvasSubscript(ctx, "V", "BE", "   = ?", 385, 280, 16, pinkColor);
+            // X coordinate for V_BE updated to 410 to align with V_CE
+            drawCanvasSubscript(ctx, "V", "BE", "   = ?", 410, 280, 16, pinkColor);
             drawCanvasSubscript(ctx, "V", "CE", "   = ?", 410, 210, 16, pinkColor);
         }
     } 
@@ -8871,7 +8870,6 @@ function generateGrade9TransistorProblem() {
         ctx.fillText(`0V`, 25, 305);
         
         if (typeof drawCanvasSubscript === 'function') {
-            // Padding added inside the suffix string
             drawCanvasSubscript(ctx, "R", "LDR", "   = ?", 25, 130, 14, pinkColor);
             drawCanvasSubscript(ctx, "R", "B", `   = ${rb} Ω`, 140, 155, 14, strokeColor);
         }
@@ -8897,8 +8895,8 @@ function generateGrade9TransistorProblem() {
         }
         
         if (typeof drawCanvasSubscript === 'function') {
-            // Added spaces and moved Y to 175
-            drawCanvasSubscript(ctx, "V", "IN", "   = 5 V", 15, 175, 16, strokeColor); 
+            // Moved Y down to 280 to sit below the wire
+            drawCanvasSubscript(ctx, "V", "IN", "   = 5 V", 15, 280, 16, strokeColor); 
         }
         
         const lx = 390; 
