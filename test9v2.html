@@ -1492,6 +1492,50 @@
 
 </div>
 
+<!-- Input group G9 TRANSISTOR--> 
+<div id="inputGroupGrade9Transistor" style="display: none; text-align: center; margin-top: 20px;">
+    
+    <div id="g9TransModeA" style="display: none;">
+        <div style="display: inline-block; margin-right: 15px;">
+            <label for="g9TransVBE" style="font-weight: bold;">V<sub>BE</sub> = </label>
+            <input type="text" id="g9TransVBE" style="width: 80px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 0.7V">
+        </div>
+        <div style="display: inline-block;">
+            <label for="g9TransVCE" style="font-weight: bold;">V<sub>CE</sub> = </label>
+            <input type="text" id="g9TransVCE" style="width: 80px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 5V">
+        </div>
+    </div>
+
+    <div id="g9TransModeB" style="display: none;">
+        <label for="g9TransRLDR" style="font-weight: bold;">Max LDR Resistance = </label>
+        <input type="text" id="g9TransRLDR" style="width: 100px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 1.2kΩ">
+    </div>
+
+    <div id="g9TransModeC" style="display: none; flex-direction: column; align-items: center; gap: 10px;">
+        <div style="width: 100%;">
+            <label for="g9TransDiodePos" style="font-weight: bold; display: block; margin-bottom: 5px;">Required Component:</label>
+            <select id="g9TransDiodePos" style="border: 2px solid #ced4da; border-radius: 5px; padding: 8px; width: 80%; max-width: 400px;">
+                <option value="">-- Select Component --</option>
+                <option value="rev_para">Reverse-biased diode in parallel with motor</option>
+                <option value="fwd_para">Forward-biased diode in parallel with motor</option>
+                <option value="rev_ser">Reverse-biased diode in series with motor</option>
+                <option value="cap_para">Capacitor in parallel with motor</option>
+                <option value="res_ser">High-value resistor in series</option>
+            </select>
+        </div>
+        <div style="width: 100%;">
+            <label for="g9TransDiodeReason" style="font-weight: bold; display: block; margin-bottom: 5px;">Reason:</label>
+            <select id="g9TransDiodeReason" style="border: 2px solid #ced4da; border-radius: 5px; padding: 8px; width: 80%; max-width: 400px;">
+                <option value="">-- Select Reason --</option>
+                <option value="emf">To protect from high voltage switch-off spikes (flyback/back-EMF)</option>
+                <option value="reg">To regulate the supply voltage across the motor</option>
+                <option value="limit">To limit the base current entering the transistor</option>
+                <option value="gain">To increase the overall current gain of the circuit</option>
+            </select>
+        </div>
+    </div>
+</div>
+    // final closing DIVS of whole section
     </div> </div> 
 <!-- *************************************************************************************** -->   
 <!-- *************************************************************************************** -->    
@@ -8642,6 +8686,136 @@ function generateTransistorProblem(ctx, canvas) {
         ctx.fillText(`${ic_mA}mA`, lx + 30, ly + 15); 
     }
 }
+function generateGrade9TransistorProblem() {
+    // 1. Reset UI and Canvas
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
+    
+    const mainGroup = document.getElementById('inputGroupGrade9Transistor');
+    const modeA = document.getElementById('g9TransModeA');
+    const modeB = document.getElementById('g9TransModeB');
+    const modeC = document.getElementById('g9TransModeC');
+    
+    if (mainGroup) mainGroup.style.display = 'block';
+    if (modeA) modeA.style.display = 'none';
+    if (modeB) modeB.style.display = 'none';
+    if (modeC) modeC.style.display = 'none';
+
+    // Clear previous inputs & formatting
+    ['g9TransVBE', 'g9TransVCE', 'g9TransRLDR', 'g9TransDiodePos', 'g9TransDiodeReason'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.value = '';
+            el.style.removeProperty('border-color');
+            el.style.removeProperty('box-shadow');
+            el.style.removeProperty('border-width');
+        }
+    });
+
+    currentMode = 'grade9transistor';
+    window.g9TransMode = Math.floor(Math.random() * 3); // 0 = Hidden Voltages, 1 = Divider, 2 = Protection
+
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Set standard drawing styles
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#000';
+    ctx.fillStyle = '#000';
+    ctx.font = '16px Arial';
+
+    let promptText = "";
+
+    // ---------------------------------------------------------
+    // MODE 0: Hidden Voltages (State testing)
+    // ---------------------------------------------------------
+    if (window.g9TransMode === 0) {
+        modeA.style.display = 'block';
+        const isSaturated = Math.random() > 0.5;
+        const vcc = [5, 9, 12, 24][Math.floor(Math.random() * 4)];
+        
+        let vin;
+        if (isSaturated) {
+            vin = (Math.random() * 2 + 2).toFixed(1); // e.g. 2.0V to 4.0V
+            promptText = `The transistor is fully SATURATED. State the values of V_BE and V_CE.`;
+            currentAnswers = { vbe: 0.7, vce: 0 };
+        } else {
+            vin = [0.1, 0.2, 0.3, 0.4][Math.floor(Math.random() * 4)];
+            promptText = `V_IN drops to ${vin}V. The transistor switches OFF. State the values of V_BE and V_CE.`;
+            // If off, Vbe mirrors Vin (no drop across Rb), and Vce sees full supply
+            currentAnswers = { vbe: vin, vce: vcc }; 
+        }
+
+        document.getElementById('questionText').innerHTML = promptText;
+
+        // Note: Insert your standard drawTransistor(ctx, ...) here.
+        // Label the top rail as Vcc + "V", label the input as Vin + "V".
+        ctx.fillText(`Vcc = ${vcc}V`, 200, 30);
+        ctx.fillText(`Vin = ${vin}V`, 20, 150);
+        ctx.fillText(`Find Vbe & Vce`, 200, 280);
+    } 
+    // ---------------------------------------------------------
+    // MODE 1: Sensor Divider (Math synthesis)
+    // ---------------------------------------------------------
+    else if (window.g9TransMode === 1) {
+        modeB.style.display = 'block';
+        
+        let vcc, rFixed, rb, ic, hfe, ib, vrb, vMid, iBottom, iTop, rLdr;
+        let valid = false;
+
+        // Loop until we generate values that make physical sense (Vmid < Vcc)
+        while (!valid) {
+            vcc = [9, 12, 24][Math.floor(Math.random() * 3)];
+            rFixed = [1000, 2200, 4700][Math.floor(Math.random() * 3)]; // Ohms
+            rb = [1000, 2200, 3300][Math.floor(Math.random() * 3)]; // Ohms
+            ic = [100, 200, 500][Math.floor(Math.random() * 3)]; // mA
+            hfe = [50, 100, 200][Math.floor(Math.random() * 3)];
+            
+            ib = (ic / hfe) / 1000; // Convert to Amps for calculation
+            vrb = ib * rb;
+            vMid = vrb + 0.7; // Voltage required at the divider center
+            
+            if (vMid < (vcc - 1)) { 
+                valid = true;
+                iBottom = vMid / rFixed;
+                iTop = iBottom + ib; // Kirchhoff's Current Law at the base node!
+                rLdr = (vcc - vMid) / iTop;
+            }
+        }
+
+        currentAnswers = { rLdr: rLdr };
+        
+        document.getElementById('questionText').innerHTML = 
+            `A motor requires ${ic}mA to spin. The transistor has an h<sub>FE</sub> of ${hfe}. <br>` +
+            `Calculate the maximum resistance the LDR can have while keeping the motor spinning.`;
+
+        // Note: Insert your drawing code for a voltage divider connected to a base resistor.
+        ctx.fillText(`Vcc = ${vcc}V`, 200, 30);
+        ctx.fillText(`LDR`, 80, 80);
+        ctx.fillText(`R_fixed = ${rFixed}Ω`, 80, 220);
+        ctx.fillText(`Rb = ${rb}Ω`, 160, 150);
+        ctx.fillText(`Motor`, 280, 80);
+    } 
+    // ---------------------------------------------------------
+    // MODE 2: Protection Diode (Concept/Red Herring)
+    // ---------------------------------------------------------
+    else {
+        modeC.style.display = 'flex';
+        
+        promptText = "A motor is driven by the transistor. The circuit is missing a critical component to protect it when the switch opens. Select the correct component and reason.";
+        document.getElementById('questionText').innerHTML = promptText;
+
+        currentAnswers = { 
+            pos: 'rev_para', 
+            reason: 'emf' 
+        };
+
+        // Note: Draw standard transistor switching a motor, leaving empty space parallel to the motor.
+        ctx.fillText(`Vcc = 12V`, 200, 30);
+        ctx.fillText(`Motor`, 250, 100);
+        ctx.fillText(`Vin`, 50, 150);
+    }
+}
 // END of Content generator functions
 //**********************************************************************************************************
 //**********************************************************************************************************
@@ -8775,7 +8949,8 @@ function switchTab(mode) {
         'inputGroupNandConversion',        
         'inputGroupNandRedundancy',        
         'inputGroupBlockBuilder',          
-        'inputGroupTransistor'            // 👇 NEW: Hides Transistor UI when switching away
+        'inputGroupTransistor',
+        'inputGroupGrade9Transistor'
     ];
 
     elementsToHide.forEach(id => {
@@ -9052,16 +9227,39 @@ function hubController(ctx, canvas) {
             console.error("Hub: generateBlockBuilderProblem is not defined!");
         }
         
-    // 👇 NEW: TRANSISTOR ROUTING ADDED HERE
+// 👇 UPDATED: TRANSISTOR ROUTING
     } else if (currentMode === 'transistor') {
         if (document.getElementById('inputGroupTransistor')) {
             document.getElementById('inputGroupTransistor').style.display = 'flex';
+        }
+        
+        // SHOW SMART ROCKET so they can get to Grade 9!
+        if (document.getElementById('mainGrade9Btn')) {
+            document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         }
         
         if (typeof generateTransistorProblem === "function") {
             generateTransistorProblem(ctx, canvas);
         } else {
             console.error("Hub: generateTransistorProblem is not defined!");
+        }
+
+    // 👇 NEW: GRADE 9 TRANSISTOR ROUTING
+    } else if (currentMode === 'grade9transistor') {
+        // Note: The generator handles unhiding the specific sub-modes (A, B, or C)
+        if (document.getElementById('inputGroupGrade9Transistor')) {
+            document.getElementById('inputGroupGrade9Transistor').style.display = 'block';
+        }
+
+        // Keep rocket visible to cycle through Grade 9 challenges
+        if (document.getElementById('mainGrade9Btn')) {
+            document.getElementById('mainGrade9Btn').style.display = 'inline-block';
+        }
+
+        if (typeof generateGrade9TransistorProblem === "function") {
+            generateGrade9TransistorProblem(ctx, canvas);
+        } else {
+            console.error("Hub: generateGrade9TransistorProblem is not defined!");
         }
     }
 }
@@ -9845,8 +10043,8 @@ if (currentMode === 'grade9nand') {
     }
     
     //New function code pasted above this line for grag and drop
-    //********************************************************************
-    //********************************************************************
+    //*******************************************************************************************************************************
+    //********************************************************************************************************************************
     // New function below this line in two places if need to be parsed
 
     // 2. Identify which inputs are currently active
@@ -9919,6 +10117,12 @@ if (currentMode === 'grade9nand') {
         } else {
             activeInputs = ['transIB', 'transVRB', 'transRB'];            // Mode 3: Design Mode
         }
+    }
+    // 👇 GRADE 9 TRANSISTOR ACTIVE INPUTS 👇
+    else if (currentMode === 'grade9transistor') {
+        if (window.g9TransMode === 0) activeInputs = ['g9TransVBE', 'g9TransVCE'];
+        else if (window.g9TransMode === 1) activeInputs = ['g9TransRLDR'];
+        else activeInputs = ['g9TransDiodePos', 'g9TransDiodeReason'];
     }
     
     if (currentMode === 'power') {
@@ -10149,6 +10353,24 @@ if (currentMode === 'grade9nand') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transIB').value)), currentAnswers.ib, 'mA'));
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('transVRB').value)), currentAnswers.vrb, 'V'));
             results.push(validateMatch(parseInput(cleanR), currentAnswers.rb, 'Ω'));
+        }
+    }
+
+    // 👇 GRADE 9 TRANSISTOR GRADING LOGIC 👇
+    else if (currentMode === 'grade9transistor') {
+        if (window.g9TransMode === 0) {
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9TransVBE').value)), currentAnswers.vbe, 'V'));
+            results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9TransVCE').value)), currentAnswers.vce, 'V'));
+        } 
+        else if (window.g9TransMode === 1) {
+            let rInput = document.getElementById('g9TransRLDR').value;
+            let cleanR = acceptSpaces(rInput);
+            if (cleanR !== "" && !cleanR.includes("Ω") && !cleanR.toLowerCase().includes("ohm")) cleanR += "Ω";
+            results.push(validateMatch(parseInput(cleanR), currentAnswers.rLdr, 'Ω'));
+        } 
+        else {
+            results.push(document.getElementById('g9TransDiodePos').value === currentAnswers.pos ? 'correct' : 'wrongval');
+            results.push(document.getElementById('g9TransDiodeReason').value === currentAnswers.reason ? 'correct' : 'wrongval');
         }
     }
 
