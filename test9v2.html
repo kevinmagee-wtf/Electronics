@@ -8772,7 +8772,6 @@ function generateGrade9TransistorProblem() {
     });
 
     currentMode = 'grade9transistor';
-    // 👇 ADD THIS HERE TO RESCUE THE ROCKET 👇
     const rocket = document.getElementById('mainGrade9Btn');
     if (rocket) {
         rocket.style.setProperty("display", "inline-block", "important");
@@ -8803,34 +8802,29 @@ function generateGrade9TransistorProblem() {
         
         let vin;
         if (isSaturated) {
-            vin = (Math.random() * 2 + 2).toFixed(1); // e.g. 2.0V to 4.0V
+            vin = (Math.random() * 2 + 2).toFixed(1);
             promptText = `The transistor is fully SATURATED. State the values of V<sub>BE</sub> and V<sub>CE</sub>.`;
             currentAnswers = { vbe: 0.7, vce: 0 };
         } else {
             vin = [0.1, 0.2, 0.3, 0.4][Math.floor(Math.random() * 4)];
             promptText = `V<sub>IN</sub> drops to ${vin}V. The transistor switches OFF. State the values of V<sub>BE</sub> and V<sub>CE</sub>.`;
-            // If off, Vbe mirrors Vin (no drop across Rb), and Vce sees full supply
             currentAnswers = { vbe: vin, vce: vcc }; 
         }
 
         document.getElementById('questionText').innerHTML = promptText;
 
-        // --- DRAWING: Mode 0 ---
         if (typeof drawStandardTransistorCircuit === 'function') {
             drawStandardTransistorCircuit(ctx, vcc);
         }
         
-        // Add Mode 0 Specific Labels
-        ctx.fillStyle = strokeColor;
-        ctx.textAlign = "left";
-        ctx.font = "16px Arial";
-        ctx.fillText(`V IN = ${vin} V`, 15, 255); // Input terminal label
-        
-        // Highlight the junctions they need to find
-        ctx.fillStyle = pinkColor;
-        ctx.font = "bold 16px Arial";
-        ctx.fillText("V_BE = ?", 385, 280);
-        ctx.fillText("V_CE = ?", 410, 210);
+        // Use global helper for V_IN (moved down to clear the wire)
+        if (typeof drawCanvasSubscript === 'function') {
+            drawCanvasSubscript(ctx, "V", "IN", ` = ${vin} V`, 15, 275, 16, strokeColor);
+            
+            // Highlight the junctions they need to find
+            drawCanvasSubscript(ctx, "V", "BE", " = ?", 385, 280, 16, pinkColor);
+            drawCanvasSubscript(ctx, "V", "CE", " = ?", 410, 210, 16, pinkColor);
+        }
     } 
     // ---------------------------------------------------------
     // MODE 1: Sensor Divider (Math synthesis)
@@ -8841,22 +8835,21 @@ function generateGrade9TransistorProblem() {
         let vcc, rFixed, rb, ic, hfe, ib, vrb, vMid, iBottom, iTop, rLdr;
         let valid = false;
 
-        // Loop until we generate values that make physical sense (Vmid < Vcc)
         while (!valid) {
             vcc = [9, 12, 24][Math.floor(Math.random() * 3)];
-            rFixed = [1000, 2200, 4700][Math.floor(Math.random() * 3)]; // Ohms
-            rb = [1000, 2200, 3300][Math.floor(Math.random() * 3)]; // Ohms
-            ic = [100, 200, 500][Math.floor(Math.random() * 3)]; // mA
+            rFixed = [1000, 2200, 4700][Math.floor(Math.random() * 3)]; 
+            rb = [1000, 2200, 3300][Math.floor(Math.random() * 3)]; 
+            ic = [100, 200, 500][Math.floor(Math.random() * 3)]; 
             hfe = [50, 100, 200][Math.floor(Math.random() * 3)];
             
-            ib = (ic / hfe) / 1000; // Convert to Amps for calculation
+            ib = (ic / hfe) / 1000; 
             vrb = ib * rb;
-            vMid = vrb + 0.7; // Voltage required at the divider center
+            vMid = vrb + 0.7; 
             
             if (vMid < (vcc - 1)) { 
                 valid = true;
                 iBottom = vMid / rFixed;
-                iTop = iBottom + ib; // Kirchhoff's Current Law at the base node!
+                iTop = iBottom + ib; 
                 rLdr = (vcc - vMid) / iTop;
             }
         }
@@ -8867,28 +8860,23 @@ function generateGrade9TransistorProblem() {
             `A motor requires ${ic}mA to spin. The transistor has an h<sub>FE</sub> of ${hfe}. <br>` +
             `Calculate the maximum resistance the LDR can have while keeping the motor spinning.`;
 
-        // --- DRAWING: Mode 1 ---
         if (typeof drawGrade9DividerCircuit === 'function') {
             drawGrade9DividerCircuit(ctx);
         }
         
-        // Add Mode 1 Specific Labels matching the helper's coordinates
         ctx.fillStyle = strokeColor;
         ctx.font = "bold 14px Arial";
         ctx.fillText(`+${vcc}V`, 15, 55);
         ctx.fillText(`0V`, 25, 305);
         
-        ctx.font = "14px Arial";
-        ctx.fillStyle = pinkColor;
-        ctx.fillText(`R LDR = ?`, 25, 130);
+        if (typeof drawCanvasSubscript === 'function') {
+            drawCanvasSubscript(ctx, "R", "LDR", " = ?", 25, 130, 14, pinkColor);
+            drawCanvasSubscript(ctx, "R", "B", ` = ${rb} Ω`, 140, 155, 14, strokeColor);
+        }
         
+        ctx.font = "bold 14px Arial";
         ctx.fillStyle = strokeColor;
         ctx.fillText(`R = ${rFixed} Ω`, 10, 230);
-        
-        // Rb label above the horizontal resistor
-        ctx.fillText(`Rb = ${rb} Ω`, 140, 155);
-        
-        // Motor current label
         ctx.fillText(`${ic} mA`, 285, 95);
     } 
     // ---------------------------------------------------------
@@ -8900,47 +8888,36 @@ function generateGrade9TransistorProblem() {
         promptText = "A motor is driven by the transistor. The circuit is missing a critical component to protect it when the switch opens. Select the correct component and reason.";
         document.getElementById('questionText').innerHTML = promptText;
 
-        currentAnswers = { 
-            pos: 'rev_para', 
-            reason: 'emf' 
-        };
+        currentAnswers = { pos: 'rev_para', reason: 'emf' };
 
-        // --- DRAWING: Mode 2 ---
         if (typeof drawStandardTransistorCircuit === 'function') {
-            drawStandardTransistorCircuit(ctx, 12); // Standard 12V supply
+            drawStandardTransistorCircuit(ctx, 12); 
         }
         
-        ctx.fillStyle = strokeColor;
-        ctx.textAlign = "left";
-        ctx.font = "16px Arial";
-        ctx.fillText(`V IN = 5 V`, 15, 255); // Typical saturation input
+        if (typeof drawCanvasSubscript === 'function') {
+            drawCanvasSubscript(ctx, "V", "IN", " = 5 V", 15, 275, 16, strokeColor); 
+        }
         
-        // Draw the dashed pink box indicating the missing component
-        const lx = 390; // Standard motor X coordinate from helper
-        const ly = 145; // Standard motor Y coordinate from helper
-        const boxX = lx + 50; // Place it in parallel to the right
+        const lx = 390; 
+        const ly = 145; 
+        const boxX = lx + 50; 
         
         ctx.strokeStyle = pinkColor;
         ctx.lineWidth = 2;
         ctx.beginPath();
-        
-        // Wires connecting parallel branch
         ctx.moveTo(lx, ly - 25); ctx.lineTo(boxX, ly - 25); ctx.lineTo(boxX, ly - 15);
         ctx.moveTo(lx, ly + 25); ctx.lineTo(boxX, ly + 25); ctx.lineTo(boxX, ly + 15);
         ctx.stroke();
         
-        // Draw the nodes where it connects
         if (typeof drawNode === 'function') {
             drawNode(ctx, lx, ly - 25);
             drawNode(ctx, lx, ly + 25);
         }
         
-        // Dashed box for the missing component
         ctx.setLineDash([5, 5]);
         ctx.strokeRect(boxX - 15, ly - 15, 30, 30);
-        ctx.setLineDash([]); // Reset line dash for future drawings
+        ctx.setLineDash([]); 
         
-        // Question mark inside the box
         ctx.fillStyle = pinkColor;
         ctx.font = "bold 20px Arial";
         ctx.fillText("?", boxX - 6, ly + 6);
