@@ -1443,48 +1443,36 @@
                 </div>
 
 <!-- Input group IPO sort--> 
-<div id="inputGroupIPOSort" class="input-group" style="display:none; width: 100%; margin-top: 10px;">
-    <div style="display: flex; flex-direction: column; width: 100%; align-items: center; background-color: #ffffff; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e9ecef; box-sizing: border-box;">
-        <div id="ipoBank" class="ipo-zone" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height: 50px; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; padding: 5px; gap: 10px; box-sizing: border-box; transition: all 0.2s ease-in-out;">
-        </div>
-    </div>
-</div>   
-<!-- Input group Block Builder--> 
-<div id="inputGroupBlockBuilder" class="input-group" style="display:none; width: 100%; margin-top: 10px;">
-    <div id="blockBuilderInstructions" style="margin-bottom: 15px; padding: 15px; background: #fdfdfd; border-left: 4px solid #3498db; border-radius: 4px; font-family: sans-serif; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-    </div>
-</div>
-<!-- Input group Transistor--> 
-<div id="inputGroupTransistor" style="display: none; flex-direction: row; flex-wrap: wrap; justify-content: space-between; padding: 10px 0; row-gap: 15px; width: 100%;">
+<div id="inputGroupTransistor" style="display: none; grid-template-columns: 1fr 1fr; gap: 15px 5px; padding: 10px 0; width: 100%;">
     
-    <div id="wrapperTransVIN" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; width: 48%;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; white-space: nowrap; width: 40px; text-align: right; margin-right: 5px;">V<sub>IN</sub> =</div>
+    <div id="wrapperTransVIN" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
+        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">V<sub>IN</sub> =</div>
         <input type="text" id="transVIN" placeholder="e.g. 3.4 V" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
     </div>
 
-    <div id="wrapperTransVRB" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; width: 48%;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; white-space: nowrap; width: 40px; text-align: right; margin-right: 5px;">V<sub>RB</sub> =</div>
+    <div id="wrapperTransVRB" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
+        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">V<sub>RB</sub> =</div>
         <input type="text" id="transVRB" placeholder="e.g. 2.7 V" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
     </div>
 
-    <div id="wrapperTransIB" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; width: 48%;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; white-space: nowrap; width: 40px; text-align: right; margin-right: 5px;">I<sub>B</sub> =</div>
+    <div id="wrapperTransIB" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
+        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">I<sub>B</sub> =</div>
         <input type="text" id="transIB" placeholder="e.g. 1.5 mA" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
     </div>
 
-    <div id="wrapperTransIC" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; width: 48%;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; white-space: nowrap; width: 40px; text-align: right; margin-right: 5px;">I<sub>C</sub> =</div>
+    <div id="wrapperTransIC" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
+        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">I<sub>C</sub> =</div>
         <input type="text" id="transIC" placeholder="e.g. 300 mA" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
     </div>
 
-    <div id="wrapperTransRB" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; width: 48%;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; white-space: nowrap; width: 40px; text-align: right; margin-right: 5px;">R<sub>B</sub> =</div>
+    <div id="wrapperTransRB" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
+        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">R<sub>B</sub> =</div>
         <input type="text" id="transRB" placeholder="e.g. 1500" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
-        <span style="font-size: 18px; font-weight: bold; color: #333; position: absolute; margin-left: 100px;">&Omega;</span>
+        <span style="font-size: 18px; font-weight: bold; color: #333; margin-left: 5px;">&Omega;</span>
     </div>
 
-    <div id="wrapperTransP" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; width: 48%;">
-        <div style="font-weight: bold; color: #E64097; font-size: 15px; white-space: nowrap; width: 40px; text-align: right; margin-right: 5px;">P =</div>
+    <div id="wrapperTransP" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-end; white-space: nowrap;">
+        <div style="font-weight: bold; color: #E64097; font-size: 15px; text-align: right; margin-right: 5px;">P =</div>
         <input type="text" id="transP" placeholder="e.g. 3.6 W" style="width: 75px !important; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
     </div>
 
