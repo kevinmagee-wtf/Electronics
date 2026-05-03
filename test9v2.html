@@ -8204,20 +8204,29 @@ function generateBlockBuilderProblem(ctx, canvas) {
 // THANSITORS
     
 function generateTransistorProblem(ctx, canvas) {
-// 0. RESET UI & STATE
+    // 0. RESET UI & STATE
     if (typeof hideAllInputGroups === 'function') {
         hideAllInputGroups();
     }
 
-    // NEW: Surgical strike to remove !important validation styles
-    // (Note: Using the IDs that checkanswers uses: transVIN, transVRB, etc.)
+    // 👇 --- ROCKET & UI RESCUE BLOCK --- 👇
+    // This forces the UI back on right after hideAllInputGroups wipes it
+    const rocket = document.getElementById('mainGrade9Btn');
+    if (rocket) {
+        rocket.style.setProperty("display", "inline-block", "important");
+    }
+    const transMainGroup = document.getElementById('inputGroupTransistor');
+    if (transMainGroup) {
+        transMainGroup.style.display = 'flex';
+    }
+    // 👆 --- END RESCUE BLOCK --- 👆
+
+    // Surgical strike to remove !important validation styles
     ['transVIN', 'transVRB', 'transIB', 'transIC', 'transP', 'transRB', 
      'inputTransVIN', 'inputTransVRB', 'inputTransIB', 'inputTransIC', 'inputTransP', 'inputTransRB'].forEach(id => {
         const inputEl = document.getElementById(id);
         if (inputEl) {
-            inputEl.value = ''; // Clear the old typed answer
-            
-            // Remove the exact !important properties applied by checkanswers
+            inputEl.value = ''; 
             inputEl.style.removeProperty('border-color');
             inputEl.style.removeProperty('border-width');
             inputEl.style.removeProperty('border-style');
