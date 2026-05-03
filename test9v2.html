@@ -325,6 +325,19 @@
         padding: 8px;
         margin-bottom: 12px;
     }
+
+    /* Stretched out g9 Transistor dropdowns - Fixed Clipping */
+#g9TransDiodePos, 
+#g9TransDiodeReason {
+    display: block !important;    /* Force block behavior */
+    width: calc(100% - 4px) !important; /* Tiny reduction to prevent border clipping */
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    margin: 5px auto 12px auto; /* Centering it helps keep borders visible */
+    border: 1px solid #ccc;    /* Ensures the RHS line has a clear definition */
+    border-radius: 4px;
+}
         /* Override the global row/important constraint for Grade 9 Silicon */
         #inputGroupGrade9Silicon, 
         #inputGroupGrade9SiliconPath {
