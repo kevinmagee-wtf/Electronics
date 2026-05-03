@@ -8930,7 +8930,7 @@ function generateGrade9TransistorProblem() {
         // --- INSTRUCTIONS ---
         if (instructionsDiv) {
             let stateText = isSaturated 
-                ? `The transistor is fully <strong>SATURATED</strong>.` 
+                ? `The transistor is <strong>JUST SATURATED</strong>.` 
                 : `<span style="color: ${strokeColor}; font-weight: bold;">V<sub>IN</sub></span> drops to <strong>${vin}V</strong>. The transistor switches <strong>OFF</strong>.`;
                 
             instructionsDiv.innerHTML = `
@@ -8944,7 +8944,7 @@ function generateGrade9TransistorProblem() {
         if (solText) {
             if (isSaturated) {
                 solText.innerHTML = "<strong>State = Saturated | V<sub>BE</sub> = 0.7 V | V<sub>CE</sub> = 0 V</strong><br><br>" +
-                    "<em>Step 1:</em> V<sub>IN</sub> (" + vin + "V) is greater than 0.7V, so the transistor is fully turned ON (Saturated).<br><br>" +
+                    "<em>Step 1:</em> V<sub>IN</sub> (" + vin + "V) is greater than 0.7V, so the transistor turns ON and is just saturated.<br><br>" +
                     "<em>Step 2:</em> Because it is saturated, the base-emitter junction clamps at exactly <strong>0.7 V</strong>.<br><br>" +
                     "<em>Step 3:</em> A saturated transistor acts like a closed switch. Therefore, the voltage drop across the collector-emitter (V<sub>CE</sub>) is <strong>0 V</strong>.";
             } else {
@@ -8999,9 +8999,9 @@ function generateGrade9TransistorProblem() {
         // --- INSTRUCTIONS ---
         if (instructionsDiv) {
             instructionsDiv.innerHTML = `
-                A motor is operating at its recommended power rating of <strong>${motorPower} W</strong>. The transistor has an h<sub>FE</sub> of <strong>${hfe}</strong>.<br><br>
+                A motor is operating at its recommended power rating of <strong>${motorPower} W</strong>. The transistor has a gain of <strong>${hfe}</strong>.<br><br>
                 1. Calculate the maximum LDR resistance required to turn the transistor fully ON.<br>
-                2. Assume the transistor is fully saturated (V<sub>CE</sub> = 0V).
+                2. Assume the transistor is just saturated.
             `;
         }
         
@@ -9050,9 +9050,9 @@ function generateGrade9TransistorProblem() {
         // --- INSTRUCTIONS ---
         if (instructionsDiv) {
             instructionsDiv.innerHTML = `
-                A motor is driven by the transistor. The circuit is missing a critical component to protect it when the switch opens.<br><br>
+                A motor is driven by the circuit. The circuit is missing a critical component to protect it when the switch opens.<br><br>
                 1. Identify the missing component required to protect the circuit.<br>
-                2. Select this component's function.
+                2. State the component's function.
             `;
         }
 
@@ -9060,7 +9060,7 @@ function generateGrade9TransistorProblem() {
 
         // --- SOLUTIONS TEXT FOR MODE 2 ---
         if (solText) {
-            solText.innerHTML = "<strong>Component: Reverse-biased diode in parallel with the motor<br>Function: To protect the transistor from high voltage switch-off spikes</strong><br><br>" +
+            solText.innerHTML = "<strong>Component: Reverse-biased diode in parallel with the motor<br>Function: To protect the circuit from high voltage switch-off spikes</strong><br><br>" +
                 "<em>Explanation:</em> Motors contain coils of wire (inductors). When the transistor switches off, the magnetic field in the motor collapses rapidly. This creates a massive surge of voltage (called Back EMF) that can destroy the transistor or other sensitive components.<br><br>" +
                 "Placing a diode in <strong>parallel</strong> with the motor provides a safe loop for this spike to dissipate safely. It must be <strong>reverse-biased</strong> so that it blocks normal power from short-circuiting to ground during regular operation.";
         }
@@ -9076,7 +9076,7 @@ function generateGrade9TransistorProblem() {
 
         const reasonOptions = [
             { value: "emf_motor", text: "To protect the motor from high voltage switch-off spikes" },
-            { value: "emf_transistor", text: "To protect the transistor from high voltage switch-off spikes" }, 
+            { value: "emf_transistor", text: "To protect the circuit from high voltage switch-off spikes" }, 
             { value: "reg", text: "To regulate the supply voltage across the motor" },
             { value: "limit", text: "To limit the base current entering the transistor" },
             { value: "gain", text: "To increase the overall current gain of the circuit" }
