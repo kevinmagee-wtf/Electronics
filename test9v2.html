@@ -8252,12 +8252,32 @@ function generateTransistorProblem(ctx, canvas) {
     // Standard high-current options to guarantee > 500mA
     const icOptions = [500, 600, 750, 800, 900, 1000, 1200, 1500];
 
+    // ==========================================
+    // --- MODE 1: Top-Down (4 Boxes - 2x2 Grid) ---
+    // ==========================================
     if (window.transistorMode === 1) {
-        // --- MODE 1: Top-Down (4 Boxes - 2x2 Grid) ---
-        ic_mA = icOptions[Math.floor(Math.random() * icOptions.length)]; 
-        ib_mA = ic_mA / hfe;
-        vrb = (ib_mA / 1000) * rb; 
-        vin = vrb + 0.7; 
+        
+        let validMode1 = false;
+        
+        // Loop until we find a combination where VIN is strictly less than the supply voltage
+        while (!validMode1) {
+            ic_mA = icOptions[Math.floor(Math.random() * icOptions.length)]; 
+            hfe = hfeValues[Math.floor(Math.random() * hfeValues.length)];
+            rb = rbValues[Math.floor(Math.random() * rbValues.length)];
+            
+            ib_mA = ic_mA / hfe;
+            vrb = (ib_mA / 1000) * rb; 
+            vin = vrb + 0.7; 
+            
+            if (vin < supplyVoltage) {
+                validMode1 = true;
+            }
+        }
+        
+        // Update the global tracking since we might have re-rolled hfe and rb in the loop
+        window.currentAnswers.hfe = hfe;
+        window.currentAnswers.rb = rb;
+
         p_mW = ic_mA * supplyVoltage; 
 
         currentAnswers.ib = ib_mA;
@@ -8305,8 +8325,11 @@ function generateTransistorProblem(ctx, canvas) {
             transMainGroup.style.alignItems = 'center';
         }
 
+    // ==========================================
+    // --- MODE 2: Bottom-Up (3 Boxes - Top row of 2, 1 centered below) ---
+    // ==========================================
     } else if (window.transistorMode === 2) {
-        // --- MODE 2: Bottom-Up (3 Boxes - Top row of 2, 1 centered below) ---
+        
         const vinValues = [2.2, 2.7, 3.1, 3.7, 4.0, 5.1];
         let valid = false;
 
@@ -8375,8 +8398,11 @@ function generateTransistorProblem(ctx, canvas) {
             wrapperIC.style.justifySelf = 'center';
         }
 
+    // ==========================================
+    // --- MODE 3: Design Mode (3 Boxes - Top row of 2, 1 centered below) ---
+    // ==========================================
     } else {
-        // --- MODE 3: Design Mode (3 Boxes - Top row of 2, 1 centered below) ---
+        
         ic_mA = icOptions[Math.floor(Math.random() * icOptions.length)]; 
         const vinValues = [3.3, 5.0, 6.0];
         vin = vinValues[Math.floor(Math.random() * vinValues.length)];
