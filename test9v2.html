@@ -8983,6 +8983,12 @@ function switchTab(mode) {
         return; 
     }
 
+    // 👇 ROCKET RESCUE: If we just switched to Transistors, show the G9 button!
+    if (mode === 'transistor') {
+        const rocket = document.getElementById('mainGrade9Btn');
+        if (rocket) rocket.style.display = 'inline-block';
+    }
+
     // Call the hub
     if (typeof hubController === "function") {
         hubController(ctx, canvas);
