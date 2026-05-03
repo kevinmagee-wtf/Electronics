@@ -8822,6 +8822,12 @@ function generateGrade9TransistorProblem() {
 
     const pinkColor = "#E64097";
 
+    // --- SOLUTIONS UI RESET ---
+    const solText = document.getElementById('solText');
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none"; 
+    if (solText) solText.innerHTML = ""; 
+
     // Clear previous inputs & color right-panel labels pink
     ['g9TransVBE', 'g9TransVCE', 'g9TransRLDR', 'g9TransDiodePos', 'g9TransDiodeReason'].forEach(id => {
         const el = document.getElementById(id);
@@ -8911,7 +8917,6 @@ function generateGrade9TransistorProblem() {
     if (window.g9TransMode === 0) {
         modeA.style.display = 'block';
         
-        // --- NEW: Inject Mode 0 Instructions ---
         if (instructionsDiv) {
             instructionsDiv.innerHTML = `
                 1. Calculate the base-emitter voltage (V<sub>BE</sub>).<br>
@@ -8933,6 +8938,21 @@ function generateGrade9TransistorProblem() {
             currentAnswers = { vbe: vin, vce: vcc }; 
         }
 
+        // --- SOLUTIONS TEXT FOR MODE 0 ---
+        if (solText) {
+            if (isSaturated) {
+                solText.innerHTML = "<strong>State = Saturated | V<sub>BE</sub> = 0.7 V | V<sub>CE</sub> = 0 V</strong><br><br>" +
+                    "<em>Step 1:</em> V<sub>IN</sub> (" + vin + "V) is greater than 0.7V, so the transistor is fully turned ON (Saturated).<br><br>" +
+                    "<em>Step 2:</em> Because it is saturated, the base-emitter junction clamps at exactly <strong>0.7 V</strong>.<br><br>" +
+                    "<em>Step 3:</em> A saturated transistor acts like a closed switch. Therefore, the voltage drop across the collector-emitter (V<sub>CE</sub>) is <strong>0 V</strong>.";
+            } else {
+                solText.innerHTML = "<strong>State = Cut-off | V<sub>BE</sub> = " + vin + " V | V<sub>CE</sub> = " + vcc + " V</strong><br><br>" +
+                    "<em>Step 1:</em> V<sub>IN</sub> (" + vin + "V) is less than 0.7V, so the transistor cannot turn ON. It is <strong>Cut-off</strong>.<br><br>" +
+                    "<em>Step 2:</em> Since no base current flows, the base-emitter voltage simply equals the input voltage (<strong>" + vin + " V</strong>).<br><br>" +
+                    "<em>Step 3:</em> A cut-off transistor acts like an open switch. No current flows through the load, so the full supply voltage drops across the transistor (V<sub>CE</sub> = <strong>" + vcc + " V</strong>).";
+            }
+        }
+
         document.getElementById('questionText').innerHTML = promptText;
 
         if (typeof drawStandardTransistorCircuit === 'function') {
@@ -8947,10 +8967,8 @@ function generateGrade9TransistorProblem() {
     // MODE 1: Sensor Divider (Math synthesis)
     // ---------------------------------------------------------
     else if (window.g9TransMode === 1) {
-        // Use 'flex' instead of 'block' so the input aligns centrally!
         modeB.style.display = 'flex'; 
         
-        // --- NEW: Inject Mode 1 Instructions ---
         if (instructionsDiv) {
             instructionsDiv.innerHTML = `
                 1. Calculate the maximum LDR resistance required to turn the transistor fully ON.<br>
@@ -8985,6 +9003,21 @@ function generateGrade9TransistorProblem() {
 
         currentAnswers = { rLdr: rLdr };
         
+        // --- SOLUTIONS TEXT FOR MODE 1 ---
+        if (solText) {
+            let ib_mA = ib * 1000;
+            let motorPower_mW = motorPower * 1000;
+            solText.innerHTML = "<strong>I<sub>C</sub> = " + parseFloat(ic.toFixed(2)) + " mA | I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>mid</sub> = " + parseFloat(vMid.toFixed(2)) + " V | R<sub>LDR</sub> = " + Math.round(rLdr) + " &Omega;</strong><br><br>" +
+                "<em>Step 1:</em> Find the collector current required by the motor (I = P / V).<br>" +
+                "I<sub>C</sub> = " + motorPower_mW + " mW / " + vcc + " V = <strong>" + parseFloat(ic.toFixed(2)) + " mA</strong><br><br>" +
+                "<em>Step 2:</em> Calculate the required base current (I<sub>B</sub> = I<sub>C</sub> / h<sub>FE</sub>).<br>" +
+                "I<sub>B</sub> = " + parseFloat(ic.toFixed(2)) + " mA / " + hfe + " = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "<em>Step 3:</em> Find the voltage needed at the middle of the potential divider.<br>" +
+                "V<sub>mid</sub> = V<sub>BE</sub> + V<sub>RB</sub> = 0.7 V + " + parseFloat(vrb.toFixed(2)) + " V = <strong>" + parseFloat(vMid.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 4:</em> Calculate the divider currents to find the LDR resistance.<br>" +
+                "The LDR must be sized so that the voltage at the center point does not drop below " + parseFloat(vMid.toFixed(2)) + " V while supplying " + parseFloat(ib_mA.toFixed(3)) + " mA to the base.";
+        }
+
         promptText = 
             `A motor is operating at its recommended power rating of <strong>${motorPower} W</strong>. The transistor has an h<sub>FE</sub> of <strong>${hfe}</strong>. <br>` +
             `Calculate the maximum resistance the <span style="color: ${pinkColor}; font-weight: bold;">LDR</span> can have while keeping the motor spinning.`;
@@ -9012,8 +9045,6 @@ function generateGrade9TransistorProblem() {
         ctx.fillStyle = strokeColor;
         
         ctx.fillText(`R = ${rFixed} Ω`, 75, 310); 
-        
-        // Notice the motor current label has been entirely removed!
     }
     // ---------------------------------------------------------
     // MODE 2: Protection Diode (Concept/Red Herring)
@@ -9021,7 +9052,6 @@ function generateGrade9TransistorProblem() {
     else {
         modeC.style.display = 'block'; 
         
-        // --- NEW: Inject Mode 2 Instructions ---
         if (instructionsDiv) {
             instructionsDiv.innerHTML = `
                 1. Identify the missing component required to protect the circuit.<br>
@@ -9033,6 +9063,13 @@ function generateGrade9TransistorProblem() {
         document.getElementById('questionText').innerHTML = promptText;
 
         currentAnswers = { pos: 'rev_para', reason: 'emf_transistor' };
+
+        // --- SOLUTIONS TEXT FOR MODE 2 ---
+        if (solText) {
+            solText.innerHTML = "<strong>Component: Reverse-biased diode in parallel with the motor<br>Function: To protect the transistor from high voltage switch-off spikes</strong><br><br>" +
+                "<em>Explanation:</em> Motors contain coils of wire (inductors). When the transistor switches off, the magnetic field in the motor collapses rapidly. This creates a massive surge of voltage (called Back EMF) that can destroy the transistor or other sensitive components.<br><br>" +
+                "Placing a diode in <strong>parallel</strong> with the motor provides a safe loop for this spike to dissipate safely. It must be <strong>reverse-biased</strong> so that it blocks normal power from short-circuiting to ground during regular operation.";
+        }
 
         const positionOptions = [
             { value: "rev_para", text: "Reverse-biased diode in parallel with the motor" },
