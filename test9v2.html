@@ -8172,29 +8172,35 @@ function generateBlockBuilderProblem(ctx, canvas) {
 // THANSITORS
     
 function generateTransistorProblem(ctx, canvas) {
-    // 0. RESET UI & STATE (Matching the Zener setup)
+    // 0. RESET UI & STATE
     if (typeof hideAllInputGroups === 'function') {
         hideAllInputGroups();
     }
     currentMode = 'transistor';
 
-    // Main wrapper for transistor inputs
     const transMainGroup = document.getElementById('inputGroupTransistor');
-    // We will set the specific display type (grid or flex) inside the mode conditions below!
 
     // 1. Setup Canvas & UI Elements
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
-    const pinkColor = "#E64097"; // The designated color for Unknowns
+    const pinkColor = "#E64097"; 
     ctx.strokeStyle = strokeColor;
     ctx.lineWidth = 2;
 
     const solText = document.getElementById('solText');
     const solContainer = document.getElementById('solutions');
-    if (solContainer) solContainer.style.display = "none"; // Hide solutions on new problem
+    if (solContainer) solContainer.style.display = "none"; 
     if (solText) solText.innerHTML = ""; 
 
-    // 2. Decide the Mode (Alternating using scenarioTracker for 3 modes)
+    // Force neat vertical spacing between all input boxes
+    ['wrapperTransVIN', 'wrapperTransVRB', 'wrapperTransIB', 'wrapperTransIC', 'wrapperTransP', 'wrapperTransRB'].forEach(id => {
+        const wrapper = document.getElementById(id);
+        if (wrapper) {
+            wrapper.style.marginBottom = '12px'; 
+        }
+    });
+
+    // 2. Decide the Mode
     if (typeof scenarioTracker.transistor === 'undefined') {
         scenarioTracker.transistor = 0;
     }
@@ -8207,15 +8213,14 @@ function generateTransistorProblem(ctx, canvas) {
     
     window.transistorMode = scenarioTracker.transistor;
     
-    // Arrays for sensible random values
+    // UPDATED: Lower base resistor values to support high currents (>500mA)
     const hfeValues = [50, 80, 100, 120, 150, 200, 250];
-    const rbValues = [1000, 1200, 1500, 2000, 2200, 3300, 4700]; // in Ohms
-    const supplyVoltage = Math.random() < 0.5 ? 9 : 12; // 9V or 12V supply
+    const rbValues = [220, 330, 470, 680, 1000, 1200, 1500, 2200]; 
+    const supplyVoltage = Math.random() < 0.5 ? 9 : 12; 
     
-    const hfe = hfeValues[Math.floor(Math.random() * hfeValues.length)];
+    let hfe = hfeValues[Math.floor(Math.random() * hfeValues.length)];
     let rb = rbValues[Math.floor(Math.random() * rbValues.length)];
     
-    // Global answers object for grading
     window.currentAnswers = {
         hfe: hfe,
         rb: rb,
@@ -8223,31 +8228,20 @@ function generateTransistorProblem(ctx, canvas) {
     };
 
     let ic_mA, ib_mA, vrb, vin, p_mW;
-
-    // ==========================================
-    // LOGIC & UI TEXT GENERATION
-    // ==========================================
     const qText = document.getElementById('questionText');
     
-    // We moved the unit instructions to the bottom of the text block
     const closingInstructions = `
         <div style="margin-top: 15px; font-weight: normal; font-size: 0.85em; color: #777;">
             <em>Enter your calculated values followed by a standard unit symbol (e.g., 5 mA, 12 V).</em>
         </div>
     `;
 
-    // Force neat vertical spacing between all input boxes
-    ['wrapperTransVIN', 'wrapperTransVRB', 'wrapperTransIB', 'wrapperTransIC', 'wrapperTransP', 'wrapperTransRB'].forEach(id => {
-        const wrapper = document.getElementById(id);
-        if (wrapper) {
-            wrapper.style.marginBottom = '12px'; 
-        }
-    });
+    // UPDATED: Standard high-current options to guarantee > 500mA
+    const icOptions = [500, 600, 750, 800, 900, 1000, 1200, 1500];
 
     if (window.transistorMode === 1) {
-        // --- MODE 1: Top-Down (Given I_Load, find V_IN) ---
-        ic_mA = Math.floor(Math.random() * 8 + 2) * 50; 
-        
+        // --- MODE 1: Top-Down (4 Boxes - 2x2 Grid) ---
+        ic_mA = icOptions[Math.floor(Math.random() * icOptions.length)]; 
         ib_mA = ic_mA / hfe;
         vrb = (ib_mA / 1000) * rb; 
         vin = vrb + 0.7; 
@@ -8284,30 +8278,42 @@ function generateTransistorProblem(ctx, canvas) {
                 "P = I<sub>C</sub> &times; V<sub>supply</sub> = " + parseFloat((ic_mA/1000).toFixed(3)) + " A &times; " + supplyVoltage + " V = <strong>" + parseFloat((p_mW/1000).toFixed(2)) + " W</strong>";
         }
 
-        // Toggle UI
         document.getElementById('wrapperTransVIN').style.display = 'flex';
         document.getElementById('wrapperTransVRB').style.display = 'flex';
         document.getElementById('wrapperTransIB').style.display = 'flex';
         document.getElementById('wrapperTransIC').style.display = 'none'; 
-        document.getElementById('wrapperTransP').style.display = 'flex';
         if (document.getElementById('wrapperTransRB')) document.getElementById('wrapperTransRB').style.display = 'none';
+        document.getElementById('wrapperTransP').style.display = 'flex';
 
-        // --- APPLY 2x2 GRID LAYOUT (4 BOXES) ---
         if (transMainGroup) {
             transMainGroup.style.display = 'grid';
             transMainGroup.style.gridTemplateColumns = '1fr 1fr';
+            transMainGroup.style.gap = '10px'; // GUARANTEES SPACING
         }
 
     } else if (window.transistorMode === 2) {
-        // --- MODE 2: Bottom-Up (Given V_IN, find I_C) ---
+        // --- MODE 2: Bottom-Up (3 Boxes - Stacked) ---
         const vinValues = [2.2, 2.7, 3.1, 3.7, 4.0, 5.1];
-        vin = vinValues[Math.floor(Math.random() * vinValues.length)];
-        
-        vrb = vin - 0.7;
-        let ib_A = vrb / rb; 
-        ib_mA = ib_A * 1000;
-        ic_mA = ib_mA * hfe;
+        let valid = false;
 
+        // SAFEGUARD: Ensures we only present a problem with >500mA
+        while (!valid) {
+            vin = vinValues[Math.floor(Math.random() * vinValues.length)];
+            vrb = vin - 0.7;
+            let ib_A = vrb / rb; 
+            ib_mA = ib_A * 1000;
+            ic_mA = ib_mA * hfe;
+
+            if (ic_mA >= 500) {
+                valid = true;
+            } else {
+                rb = rbValues[Math.floor(Math.random() * rbValues.length)];
+                hfe = hfeValues[Math.floor(Math.random() * hfeValues.length)];
+            }
+        }
+
+        currentAnswers.hfe = hfe;
+        currentAnswers.rb = rb;
         currentAnswers.vrb = vrb;
         currentAnswers.ib = ib_mA;
         currentAnswers.ic = ic_mA;
@@ -8330,12 +8336,11 @@ function generateTransistorProblem(ctx, canvas) {
                 "<em>Step 1:</em> Subtract the base-emitter drop to find the voltage across the base resistor.<br>" +
                 "V<sub>RB</sub> = V<sub>IN</sub> - V<sub>BE</sub> = " + vin.toFixed(1) + " V - 0.7 V = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
                 "<em>Step 2:</em> Calculate the base current using Ohm's Law.<br>" +
-                "I<sub>B</sub> = V<sub>RB</sub> / R<sub>B</sub> = " + parseFloat(vrb.toFixed(2)) + " V / " + rb + " &Omega; = " + parseFloat(ib_A.toFixed(6)) + " A = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
+                "I<sub>B</sub> = V<sub>RB</sub> / R<sub>B</sub> = " + parseFloat(vrb.toFixed(2)) + " V / " + rb + " &Omega; = " + parseFloat((vrb/rb).toFixed(6)) + " A = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
                 "<em>Step 3:</em> Multiply by the current gain to find the final collector current.<br>" +
                 "I<sub>C</sub> = h<sub>FE</sub> &times; I<sub>B</sub> = " + hfe + " &times; " + parseFloat(ib_mA.toFixed(3)) + " mA = <strong>" + parseFloat(ic_mA.toFixed(2)) + " mA</strong>";
         }
 
-        // Toggle UI
         document.getElementById('wrapperTransVIN').style.display = 'none'; 
         document.getElementById('wrapperTransVRB').style.display = 'flex';
         document.getElementById('wrapperTransIB').style.display = 'flex';
@@ -8343,15 +8348,15 @@ function generateTransistorProblem(ctx, canvas) {
         document.getElementById('wrapperTransP').style.display = 'none'; 
         if (document.getElementById('wrapperTransRB')) document.getElementById('wrapperTransRB').style.display = 'none';
         
-        // --- APPLY VERTICAL COLUMN LAYOUT (3 BOXES) ---
         if (transMainGroup) {
             transMainGroup.style.display = 'flex';
             transMainGroup.style.flexDirection = 'column';
+            transMainGroup.style.alignItems = 'center';
         }
 
     } else {
-        // --- MODE 3: Design Mode (Find RB) ---
-        ic_mA = Math.floor(Math.random() * 8 + 2) * 50; 
+        // --- MODE 3: Design Mode (3 Boxes - Stacked) ---
+        ic_mA = icOptions[Math.floor(Math.random() * icOptions.length)]; 
         const vinValues = [3.3, 5.0, 6.0];
         vin = vinValues[Math.floor(Math.random() * vinValues.length)];
 
@@ -8386,19 +8391,19 @@ function generateTransistorProblem(ctx, canvas) {
                 "R<sub>B</sub> = V<sub>RB</sub> / I<sub>B</sub> = " + parseFloat(vrb.toFixed(2)) + " V / " + parseFloat((ib_mA/1000).toFixed(5)) + " A = <strong>" + Math.round(rb) + " &Omega;</strong>";
         }
 
-        // Toggle UI
         document.getElementById('wrapperTransVIN').style.display = 'none'; 
         document.getElementById('wrapperTransVRB').style.display = 'flex';
         document.getElementById('wrapperTransIB').style.display = 'flex';
         document.getElementById('wrapperTransIC').style.display = 'none';  
         document.getElementById('wrapperTransP').style.display = 'none';   
+        
         const wrapperRB = document.getElementById('wrapperTransRB');
         if(wrapperRB) wrapperRB.style.display = 'flex';
 
-        // --- APPLY VERTICAL COLUMN LAYOUT (3 BOXES) ---
         if (transMainGroup) {
             transMainGroup.style.display = 'flex';
             transMainGroup.style.flexDirection = 'column';
+            transMainGroup.style.alignItems = 'center';
         }
 
         // --- NEW: FORCE OMEGA SYMBOL FOR RB INPUT ---
@@ -8413,7 +8418,7 @@ function generateTransistorProblem(ctx, canvas) {
 
         const inputRB = document.getElementById('inputTransRB');
         if (inputRB) {
-            inputRB.placeholder = "e.g. 1500"; 
+            inputRB.placeholder = "e.g. 150"; 
         }
     }
 
@@ -8482,7 +8487,7 @@ function generateTransistorProblem(ctx, canvas) {
     // --- NEW: V_RB LABEL (Always an unknown in all 3 modes) ---
     ctx.fillStyle = pinkColor;
     ctx.textAlign = "left";
-    let vrbYOffset = ty + 35; // Positioned under the resistor
+    let vrbYOffset = ty + 35; 
     
     ctx.font = "16px Arial";
     ctx.fillText("V", rbStartX, vrbYOffset);
@@ -8551,7 +8556,6 @@ function generateTransistorProblem(ctx, canvas) {
         ctx.fillText(`${supplyVoltage}V`, lx + 30, ly - 5);
         ctx.fillText(`${ic_mA}mA`, lx + 30, ly + 15);
         
-        // --- NEW: POWER LABEL (To the left of the motor) ---
         ctx.fillStyle = pinkColor;
         ctx.font = "16px Arial";
         ctx.fillText("P = ?", lx - 75, ly + 5); 
