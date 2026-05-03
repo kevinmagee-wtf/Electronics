@@ -8760,7 +8760,9 @@ function generateGrade9TransistorProblem() {
     if (modeB) modeB.style.display = 'none';
     if (modeC) modeC.style.display = 'none';
 
-    // Clear previous inputs & formatting
+    const pinkColor = "#E64097";
+
+    // Clear previous inputs & formatting, AND color right-panel labels pink
     ['g9TransVBE', 'g9TransVCE', 'g9TransRLDR', 'g9TransDiodePos', 'g9TransDiodeReason'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -8768,6 +8770,15 @@ function generateGrade9TransistorProblem() {
             el.style.removeProperty('border-color');
             el.style.removeProperty('box-shadow');
             el.style.removeProperty('border-width');
+            
+            // Look for the label associated with this input to make it (and the =) pink
+            const label = document.querySelector(`label[for="${id}"]`);
+            if (label) {
+                label.style.color = pinkColor;
+            } else if (el.previousElementSibling) {
+                // Fallback if there is no "for" attribute, targets the element right before the input
+                el.previousElementSibling.style.color = pinkColor;
+            }
         }
     });
 
@@ -8784,7 +8795,6 @@ function generateGrade9TransistorProblem() {
     
     // Set standard drawing styles
     const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
-    const pinkColor = "#E64097";
     ctx.lineWidth = 2;
     ctx.strokeStyle = strokeColor;
     ctx.fillStyle = strokeColor;
@@ -8803,11 +8813,12 @@ function generateGrade9TransistorProblem() {
         let vin;
         if (isSaturated) {
             vin = (Math.random() * 2 + 2).toFixed(1);
-            promptText = `The transistor is fully SATURATED. State the values of V<sub>BE</sub> and V<sub>CE</sub>.`;
+            // Added pink spans to the prompt variables
+            promptText = `The transistor is fully SATURATED. State the values of <span style="color: ${pinkColor}; font-weight: bold;">V<sub>BE</sub></span> and <span style="color: ${pinkColor}; font-weight: bold;">V<sub>CE</sub></span>.`;
             currentAnswers = { vbe: 0.7, vce: 0 };
         } else {
             vin = [0.1, 0.2, 0.3, 0.4][Math.floor(Math.random() * 4)];
-            promptText = `V<sub>IN</sub> drops to ${vin}V. The transistor switches OFF. State the values of V<sub>BE</sub> and V<sub>CE</sub>.`;
+            promptText = `<span style="color: ${strokeColor}; font-weight: bold;">V<sub>IN</sub></span> drops to ${vin}V. The transistor switches OFF. State the values of <span style="color: ${pinkColor}; font-weight: bold;">V<sub>BE</sub></span> and <span style="color: ${pinkColor}; font-weight: bold;">V<sub>CE</sub></span>.`;
             currentAnswers = { vbe: vin, vce: vcc }; 
         }
 
@@ -8818,12 +8829,11 @@ function generateGrade9TransistorProblem() {
         }
         
         if (typeof drawCanvasSubscript === 'function') {
-            // Moved Y to 280 to drop it well below the input wire
-            drawCanvasSubscript(ctx, "V", "IN", `   = ${vin} V`, 15, 280, 16, strokeColor);
+            // Replaced spaces with \xA0 to force the canvas to render the gap
+            drawCanvasSubscript(ctx, "V", "IN", " \xA0\xA0= " + vin + " V", 15, 280, 16, strokeColor);
             
-            // X coordinate for V_BE updated to 410 to align with V_CE
-            drawCanvasSubscript(ctx, "V", "BE", "   = ?", 410, 280, 16, pinkColor);
-            drawCanvasSubscript(ctx, "V", "CE", "   = ?", 410, 210, 16, pinkColor);
+            drawCanvasSubscript(ctx, "V", "BE", " \xA0\xA0= ?", 410, 280, 16, pinkColor);
+            drawCanvasSubscript(ctx, "V", "CE", " \xA0\xA0= ?", 410, 210, 16, pinkColor);
         }
     } 
     // ---------------------------------------------------------
@@ -8858,7 +8868,7 @@ function generateGrade9TransistorProblem() {
         
         document.getElementById('questionText').innerHTML = 
             `A motor requires ${ic}mA to spin. The transistor has an h<sub>FE</sub> of ${hfe}. <br>` +
-            `Calculate the maximum resistance the LDR can have while keeping the motor spinning.`;
+            `Calculate the maximum resistance the <span style="color: ${pinkColor}; font-weight: bold;">LDR</span> can have while keeping the motor spinning.`;
 
         if (typeof drawGrade9DividerCircuit === 'function') {
             drawGrade9DividerCircuit(ctx);
@@ -8870,8 +8880,9 @@ function generateGrade9TransistorProblem() {
         ctx.fillText(`0V`, 25, 305);
         
         if (typeof drawCanvasSubscript === 'function') {
-            drawCanvasSubscript(ctx, "R", "LDR", "   = ?", 25, 130, 14, pinkColor);
-            drawCanvasSubscript(ctx, "R", "B", `   = ${rb} Ω`, 140, 155, 14, strokeColor);
+            // Applied the \xA0 non-breaking space trick here as well
+            drawCanvasSubscript(ctx, "R", "LDR", " \xA0\xA0= ?", 25, 130, 14, pinkColor);
+            drawCanvasSubscript(ctx, "R", "B", " \xA0\xA0= " + rb + " Ω", 140, 155, 14, strokeColor);
         }
         
         ctx.font = "bold 14px Arial";
@@ -8895,8 +8906,8 @@ function generateGrade9TransistorProblem() {
         }
         
         if (typeof drawCanvasSubscript === 'function') {
-            // Moved Y down to 280 to sit below the wire
-            drawCanvasSubscript(ctx, "V", "IN", "   = 5 V", 15, 280, 16, strokeColor); 
+            // Applied \xA0 trick
+            drawCanvasSubscript(ctx, "V", "IN", " \xA0\xA0= 5 V", 15, 280, 16, strokeColor); 
         }
         
         const lx = 390; 
