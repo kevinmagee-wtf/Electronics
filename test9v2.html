@@ -8805,7 +8805,8 @@ function shuffleSelectOptions(selectId, optionsArray) {
         select.appendChild(el);
     });
 }
-
+//*************************************************************************************
+    
 function generateGrade9TransistorProblem() {
     // 1. Reset UI and Canvas
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
@@ -8926,7 +8927,7 @@ function generateGrade9TransistorProblem() {
             currentAnswers = { vbe: vin, vce: vcc }; 
         }
 
-        // --- NEW: Inject variables directly into instructions ---
+        // --- INSTRUCTIONS ---
         if (instructionsDiv) {
             let stateText = isSaturated 
                 ? `The transistor is fully <strong>SATURATED</strong>.` 
@@ -8995,7 +8996,7 @@ function generateGrade9TransistorProblem() {
 
         currentAnswers = { rLdr: rLdr };
 
-        // --- NEW: Inject variables directly into instructions ---
+        // --- INSTRUCTIONS ---
         if (instructionsDiv) {
             instructionsDiv.innerHTML = `
                 A motor is operating at its recommended power rating of <strong>${motorPower} W</strong>. The transistor has an h<sub>FE</sub> of <strong>${hfe}</strong>.<br><br>
@@ -9046,7 +9047,7 @@ function generateGrade9TransistorProblem() {
     else {
         modeC.style.display = 'block'; 
         
-        // --- NEW: Inject variables directly into instructions ---
+        // --- INSTRUCTIONS ---
         if (instructionsDiv) {
             instructionsDiv.innerHTML = `
                 A motor is driven by the transistor. The circuit is missing a critical component to protect it when the switch opens.<br><br>
