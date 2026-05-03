@@ -8176,6 +8176,17 @@ function generateTransistorProblem(ctx, canvas) {
     if (typeof hideAllInputGroups === 'function') {
         hideAllInputGroups();
     }
+    // NEW: Scrub leftover validation styles and values from inputs
+    ['inputTransVIN', 'inputTransVRB', 'inputTransIB', 'inputTransIC', 'inputTransP', 'inputTransRB'].forEach(id => {
+        const inputEl = document.getElementById(id);
+        if (inputEl) {
+            inputEl.value = ''; // Clear the old typed answer
+            inputEl.style.boxShadow = ''; // Clear inline green/red shadows
+            inputEl.style.borderColor = ''; // Clear inline border colors
+            // If your validation uses CSS classes, strip them here (adjust class names if needed):
+            inputEl.classList.remove('correct', 'incorrect', 'valid', 'invalid'); 
+        }
+    });
     currentMode = 'transistor';
 
     const transMainGroup = document.getElementById('inputGroupTransistor');
