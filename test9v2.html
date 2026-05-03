@@ -11171,7 +11171,7 @@ function provideHint() {
         } else if (window.g9TransMode === 2) {
             specificHint = `
                 <br><br><b>Mode: Inductive Load Protection</b><br>
-                Motors contain coils (inductors). When the transistor suddenly switches OFF, the collapsing magnetic field in the motor creates a massive, damaging voltage spike (Back EMF). You need a component configured to safely loop this spike away from the rest of the circuit without shorting out the normal power supply.`;
+                Motors contain coils (inductors). When the transistor suddenly switches OFF, the collapsing magnetic field in the motor creates a massive, damaging voltage spike. You need a component that can provide an alternate pathway away from the sensitive transistor without shorting out the normal power supply.`;
         }
 
         helpText = `
