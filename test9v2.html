@@ -8204,24 +8204,20 @@ function generateBlockBuilderProblem(ctx, canvas) {
 // THANSITORS
     
 function generateTransistorProblem(ctx, canvas) {
-    // 0. RESET UI & STATE
+// 0. RESET UI & STATE
     if (typeof hideAllInputGroups === 'function') {
         hideAllInputGroups();
     }
 
-    // --- ROCKET RESCUE ---
-    // We must force this back to visible because hideAllInputGroups just hid it!
-    const rocket = document.getElementById('mainGrade9Btn');
-    if (rocket) {
-        rocket.style.setProperty("display", "inline-block", "important");
-    }
-
     // NEW: Surgical strike to remove !important validation styles
+    // (Note: Using the IDs that checkanswers uses: transVIN, transVRB, etc.)
     ['transVIN', 'transVRB', 'transIB', 'transIC', 'transP', 'transRB', 
      'inputTransVIN', 'inputTransVRB', 'inputTransIB', 'inputTransIC', 'inputTransP', 'inputTransRB'].forEach(id => {
         const inputEl = document.getElementById(id);
         if (inputEl) {
-            inputEl.value = ''; 
+            inputEl.value = ''; // Clear the old typed answer
+            
+            // Remove the exact !important properties applied by checkanswers
             inputEl.style.removeProperty('border-color');
             inputEl.style.removeProperty('border-width');
             inputEl.style.removeProperty('border-style');
@@ -8233,13 +8229,11 @@ function generateTransistorProblem(ctx, canvas) {
 
     currentMode = 'transistor';
     const transMainGroup = document.getElementById('inputGroupTransistor');
-    
-    // Ensure the input group itself is visible
-    if (transMainGroup) transMainGroup.style.display = 'flex';
 
     // 1. Setup Canvas & UI Elements
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+    const pinkColor = "#E64097"; 
     ctx.strokeStyle = strokeColor;
     ctx.lineWidth = 2;
 
