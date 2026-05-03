@@ -1507,6 +1507,9 @@
 
 <!-- Input group G9 TRANSISTOR--> 
 <div id="inputGroupGrade9Transistor" style="display: none; text-align: center; margin-top: 20px;">
+
+    <div id="g9TransInstructions" style="text-align: left; margin-bottom: 15px; font-weight: bold; font-size: 15px; color: #333; line-height: 1.5; display: none;">
+    </div>
     
     <div id="g9TransModeA" style="display: none;">
         <div style="display: inline-block; margin-right: 15px;">
@@ -8893,11 +8896,26 @@ function generateGrade9TransistorProblem() {
 
     let promptText = "";
 
+    // Grab the new instructions container and make it visible
+    const instructionsDiv = document.getElementById('g9TransInstructions');
+    if (instructionsDiv) {
+        instructionsDiv.style.display = 'block';
+    }
+
     // ---------------------------------------------------------
     // MODE 0: SATURATED OR NOT Voltages (ON/OFF State testing)
     // ---------------------------------------------------------
     if (window.g9TransMode === 0) {
         modeA.style.display = 'block';
+        
+        // --- NEW: Inject Mode 0 Instructions ---
+        if (instructionsDiv) {
+            instructionsDiv.innerHTML = `
+                1. Calculate the base-emitter voltage (V<sub>BE</sub>).<br>
+                2. Calculate the collector-emitter voltage (V<sub>CE</sub>).
+            `;
+        }
+
         const isSaturated = Math.random() > 0.5;
         const vcc = [5, 9, 12, 24][Math.floor(Math.random() * 4)];
         
@@ -8928,6 +8946,14 @@ function generateGrade9TransistorProblem() {
     else if (window.g9TransMode === 1) {
         // Use 'flex' instead of 'block' so the input aligns centrally!
         modeB.style.display = 'flex'; 
+        
+        // --- NEW: Inject Mode 1 Instructions ---
+        if (instructionsDiv) {
+            instructionsDiv.innerHTML = `
+                1. Calculate the maximum LDR resistance required to turn the transistor fully ON.<br>
+                2. Assume the transistor is fully saturated (V<sub>CE</sub> = 0V).
+            `;
+        }
         
         let vcc, rFixed, rb, ic, hfe, ib, vrb, vMid, iBottom, iTop, rLdr, motorPower;
         let valid = false;
@@ -8991,6 +9017,14 @@ function generateGrade9TransistorProblem() {
     // ---------------------------------------------------------
     else {
         modeC.style.display = 'block'; 
+        
+        // --- NEW: Inject Mode 2 Instructions ---
+        if (instructionsDiv) {
+            instructionsDiv.innerHTML = `
+                1. Identify the missing component required to protect the transistor.<br>
+                2. Select the correct reason for its placement in the circuit.
+            `;
+        }
         
         promptText = "A motor is driven by the transistor. The circuit is missing a critical component to protect it when the switch opens. Select the correct component and reason.";
         document.getElementById('questionText').innerHTML = promptText;
