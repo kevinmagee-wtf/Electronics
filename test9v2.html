@@ -8822,28 +8822,41 @@ function generateGrade9TransistorProblem() {
     ctx.strokeStyle = strokeColor;
 
     // =======================================================================
-    // THE BULLETPROOF LOCAL HELPER: 
-    // Bypasses the buggy global helper to guarantee perfect spacing
+    // THE INSULATED HELPER: 
+    // Forces left-alignment to prevent squishing, then restores state
     // =======================================================================
     function drawSafeSubscript(mainStr, subStr, suffixStr, x, y, size, color) {
-        ctx.fillStyle = color;
+        ctx.save(); // Lock in the current canvas state
         
-        // 1. Draw Main Letter (e.g., "V")
+        ctx.fillStyle = color || "#000000";
+        ctx.textAlign = "left"; // THIS FIXES THE SQUISH
+        ctx.textBaseline = "alphabetic"; 
+        
+        // 1. Draw Main Letter
         ctx.font = "bold " + size + "px Arial";
         ctx.fillText(mainStr, x, y);
         let w1 = ctx.measureText(mainStr).width;
         
-        // 2. Draw Subscript (e.g., "IN")
+        // 2. Draw Subscript
         let subSize = size * 0.75;
         ctx.font = "bold " + subSize + "px Arial";
-        let subY = y + (size * 0.25); // Drop it down slightly
+        let subY = y + (size * 0.25);
         ctx.fillText(subStr, x + w1 + 1, subY);
         let w2 = ctx.measureText(subStr).width;
         
-        // 3. Draw Suffix with a guaranteed 8px gap so it NEVER overlaps
-        ctx.font = "bold " + size + "px Arial";
-        ctx.fillText(suffixStr, x + w1 + w2 + 8, y); 
+        // 3. Draw Suffix with a guaranteed gap
+        if (suffixStr && suffixStr.trim() !== "") {
+            ctx.font = "bold " + size + "px Arial";
+            let safeSuffix = suffixStr.trim();
+            if (safeSuffix.startsWith("=")) {
+                safeSuffix = "= " + safeSuffix.substring(1).trim();
+            }
+            ctx.fillText(safeSuffix, x + w1 + w2 + 8, y); 
+        }
+        
+        ctx.restore(); // Give the canvas back exactly as we found it
     }
+    // =======================================================================
 
     let promptText = "";
 
@@ -8872,7 +8885,6 @@ function generateGrade9TransistorProblem() {
             drawStandardTransistorCircuit(ctx, vcc);
         }
         
-        // Using the new safe helper
         drawSafeSubscript("V", "IN", "= " + vin + " V", 15, 280, 16, strokeColor);
         drawSafeSubscript("V", "BE", "= ?", 410, 280, 16, pinkColor);
         drawSafeSubscript("V", "CE", "= ?", 410, 210, 16, pinkColor);
@@ -8920,7 +8932,6 @@ function generateGrade9TransistorProblem() {
         ctx.fillText(`+${vcc}V`, 15, 55);
         ctx.fillText(`0V`, 25, 305);
         
-        // Using the new safe helper
         drawSafeSubscript("R", "LDR", "= ?", 25, 130, 14, pinkColor);
         drawSafeSubscript("R", "B", "= " + rb + " Ω", 140, 155, 14, strokeColor);
         
@@ -8961,7 +8972,6 @@ function generateGrade9TransistorProblem() {
             drawStandardTransistorCircuit(ctx, 12); 
         }
         
-        // Using the new safe helper
         drawSafeSubscript("V", "IN", "= 5 V", 15, 280, 16, strokeColor); 
     }
 }
