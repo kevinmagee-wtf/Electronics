@@ -9007,7 +9007,7 @@ function generateGrade9TransistorProblem() {
             `;
         }
         
-        // --- SOLUTIONS TEXT FOR MODE 1 ---
+// --- SOLUTIONS TEXT FOR MODE 1 ---
         if (solText) {
             let ib_mA = ib * 1000;
             let motorPower_mW = motorPower * 1000;
@@ -9015,7 +9015,12 @@ function generateGrade9TransistorProblem() {
             // Calculate the "Fake" voltage they would get if they used the trap formula
             let fakeVin = vcc * (rFixed / (rFixed + rLdr));
             
-            solText.innerHTML = "<strong>I<sub>C</sub> = " + parseFloat(ic.toFixed(2)) + " mA | I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | V<sub>IN</sub> = " + parseFloat(vMid.toFixed(2)) + " V</strong><br><br>" +
+            solText.innerHTML = "<div style='background-color:#ffe6e6; border-left: 4px solid #ff4d4d; padding: 10px; margin-bottom: 15px; font-size: 0.9em; color: #b30000;'>" +
+                "<strong>🚨 THE POTENTIAL DIVIDER EQUATION CANNOT BE USED</strong><br>" +
+                "If you used V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>)), you probably got an answer around <strong>" + parseFloat(fakeVin.toFixed(2)) + " V</strong>.<br><br>" +
+                "That equation <strong>only</strong> works if no current leaves the middle junction! Because the transistor is 'stealing' " + parseFloat(ib_mA.toFixed(3)) + " mA to run the base, the standard equation breaks down. This is called a <em>Loaded Potential Divider</em>. You must always work backwards from the load!" +
+                "</div>" +
+                "<strong>I<sub>C</sub> = " + parseFloat(ic.toFixed(2)) + " mA | I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | V<sub>IN</sub> = " + parseFloat(vMid.toFixed(2)) + " V</strong><br><br>" +
                 "<em>Step 1:</em> Find the collector current required by the motor (I = P / V).<br>" +
                 "I<sub>C</sub> = " + motorPower_mW + " mW / " + vcc + " V = <strong>" + parseFloat(ic.toFixed(2)) + " mA</strong><br><br>" +
                 "<em>Step 2:</em> Calculate the required base current (I<sub>B</sub> = I<sub>C</sub> / gain).<br>" +
@@ -9023,12 +9028,7 @@ function generateGrade9TransistorProblem() {
                 "<em>Step 3:</em> Calculate the voltage dropped across the base resistor (V = I &times; R).<br>" +
                 "V<sub>RB</sub> = " + parseFloat((ib_mA/1000).toFixed(5)) + " A &times; " + rb + " &Omega; = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
                 "<em>Step 4:</em> Add the 0.7V base-emitter drop to find the total V<sub>IN</sub> required.<br>" +
-                "V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub> = " + parseFloat(vrb.toFixed(2)) + " V + 0.7 V = <strong style='color:#E64097; font-size:1.1em;'>" + parseFloat(vMid.toFixed(2)) + " V</strong><br><br>" +
-                "<div style='background-color:#ffe6e6; border-left: 4px solid #ff4d4d; padding: 10px; margin-top: 15px; font-size: 0.9em; color: #b30000;'>" +
-                "<strong>🚨 WHY DID THE POTENTIAL DIVIDER EQUATION FAIL?</strong><br>" +
-                "If you used V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>)), you probably got an answer around <strong>" + parseFloat(fakeVin.toFixed(2)) + " V</strong>.<br><br>" +
-                "That equation <strong>only</strong> works if no current leaves the middle junction! Because the transistor is 'stealing' " + parseFloat(ib_mA.toFixed(3)) + " mA to run the base, the standard equation breaks down. This is called a <em>Loaded Potential Divider</em>. You must always work backwards from the load!" +
-                "</div>";
+                "V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub> = " + parseFloat(vrb.toFixed(2)) + " V + 0.7 V = <strong style='color:#E64097; font-size:1.1em;'>" + parseFloat(vMid.toFixed(2)) + " V</strong>";
         }
 
         if (typeof drawGrade9DividerCircuit === 'function') {
