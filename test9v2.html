@@ -9524,6 +9524,10 @@ function generateGrade9MosfetProblem() {
 
     currentMode = 'grade9mosfet';
 
+    // Toggle between finding R_bottom (0) and R_top (1)
+    if (typeof window.g9MosfetSubMode === 'undefined') window.g9MosfetSubMode = 0;
+    else window.g9MosfetSubMode = (window.g9MosfetSubMode + 1) % 2;
+
     // 2. Canvas Setup
     const canvas = document.getElementById('circuitCanvas');
     const ctx = canvas.getContext('2d');
@@ -9559,12 +9563,40 @@ function generateGrade9MosfetProblem() {
     let gm = [1, 2][Math.floor(Math.random() * 2)];
     
     let vgs = (iD / gm) + 3;
+    
+    // Generate clean values for both first
     let r1_k = (vcc - vgs) * [1, 2][Math.floor(Math.random() * 2)]; 
     let r2_k = (vgs * r1_k) / (vcc - vgs); 
 
-    window.currentAnswers = { vgs: vgs, r2: r2_k };
+    let knownR, answerR, targetLabel, fixedResistorText, step2Formula;
 
-    // 3. Update Text (
+    if (window.g9MosfetSubMode === 0) {
+        // Mode 0: Find R_bottom
+        knownR = r1_k;
+        answerR = r2_k;
+        targetLabel = "R<sub>bottom</sub>";
+        fixedResistorText = `R<sub>top</sub> is fixed at <strong>${knownR} kΩ</strong>`;
+        step2Formula = `R<sub>bottom</sub> = (V<sub>GS</sub> &times; R<sub>top</sub>) / (V<sub>supply</sub> - V<sub>GS</sub>)<br>
+        R<sub>bottom</sub> = (${vgs} &times; ${knownR}) / (${vcc} - ${vgs})`;
+    } else {
+        // Mode 1: Find R_top
+        knownR = r2_k;
+        answerR = r1_k;
+        targetLabel = "R<sub>top</sub>";
+        fixedResistorText = `R<sub>bottom</sub> is fixed at <strong>${knownR} kΩ</strong>`;
+        step2Formula = `R<sub>top</sub> = (R<sub>bottom</sub> &times; (V<sub>supply</sub> - V<sub>GS</sub>)) / V<sub>GS</sub><br>
+        R<sub>top</sub> = (${knownR} &times; (${vcc} - ${vgs})) / ${vgs}`;
+    }
+
+    window.currentAnswers = { vgs: vgs, r2: answerR };
+
+    // Update the HTML label next to the input box so it asks for the correct resistor
+    const rLabel = document.querySelector('label[for="g9MosfetR2"]');
+    if (rLabel) {
+        rLabel.innerHTML = `${targetLabel} = `;
+    }
+
+    // 3. Update Text 
     const qText = document.getElementById('questionText');
     const instructionsDiv = document.getElementById('g9MosfetInstructions');
     
@@ -9573,9 +9605,9 @@ function generateGrade9MosfetProblem() {
         qText.innerHTML = `
             <strong>🚀 GRADE 9 CHALLENGE: SYSTEM DESIGN</strong><br><br>
             A cooling fan requires exactly <strong>${iD} A</strong> to run. The MOSFET has a transconductance (g<sub>m</sub>) of <strong>${gm} S</strong> and a threshold voltage of <strong>3V</strong>.<br><br>
-            The potential divider uses a <strong>${vcc}V</strong> supply. R<sub>top</sub> is fixed at <strong>${r1_k} kΩ</strong>.<br><br>
+            The potential divider uses a <strong>${vcc}V</strong> supply. ${fixedResistorText}.<br><br>
             1. Calculate the target <strong>V<sub>GS</sub></strong> needed for the fan.<br>
-            2. Determine the required value for <strong>R<sub>bottom</sub></strong>.
+            2. Determine the required value for <strong>${targetLabel}</strong>.
         `;
         // Ensure the internal hidden div stays hidden so layout is clean
         if (instructionsDiv) instructionsDiv.style.display = 'none';
@@ -9586,18 +9618,24 @@ function generateGrade9MosfetProblem() {
         drawStandardMosfetCircuit(ctx, vcc);
     }
 
-    drawSafeSubscript("R", "top", "= " + r1_k + " kΩ", 235, 150, 14, strokeColor);
-    drawSafeSubscript("R", "bottom", "= ?", 125, 310, 14, pinkColor);
+    // Dynamically draw the ? and the known value in the correct spots
+    if (window.g9MosfetSubMode === 0) {
+        drawSafeSubscript("R", "top", "= " + knownR + " kΩ", 235, 150, 14, strokeColor);
+        drawSafeSubscript("R", "bottom", "= ?", 125, 310, 14, pinkColor);
+    } else {
+        drawSafeSubscript("R", "top", "= ?", 235, 150, 14, pinkColor);
+        drawSafeSubscript("R", "bottom", "= " + knownR + " kΩ", 125, 310, 14, strokeColor);
+    }
+    
     drawSafeSubscript("V", "GS", "= ?", 245, 245, 16, pinkColor);
 
     // 5. Solution Logic
     if (solText) {
-        solText.innerHTML = `<strong>V<sub>GS</sub> = ${vgs} V | R<sub>bottom</sub> = ${r2_k.toFixed(2)} k&Omega;</strong><br><br>
+        solText.innerHTML = `<strong>V<sub>GS</sub> = ${vgs} V | ${targetLabel} = ${answerR.toFixed(2)} k&Omega;</strong><br><br>
         <em>Step 1:</em> Find V<sub>GS</sub> using I<sub>D</sub> = g<sub>m</sub>(V<sub>GS</sub> - V<sub>th</sub>):<br>
         V<sub>GS</sub> = (${iD} / ${gm}) + 3 = <strong>${vgs} V</strong><br><br>
         <em>Step 2:</em> Use the divider ratio:<br>
-        R<sub>bottom</sub> = (V<sub>GS</sub> &times; R<sub>top</sub>) / (V<sub>supply</sub> - V<sub>GS</sub>)<br>
-        R<sub>bottom</sub> = (${vgs} &times; ${r1_k}) / (${vcc} - ${vgs}) = <strong>${r2_k.toFixed(2)} k&Omega;</strong>`;
+        ${step2Formula} = <strong>${answerR.toFixed(2)} k&Omega;</strong>`;
     }
 }
 //*************************************************************************************************************************************
