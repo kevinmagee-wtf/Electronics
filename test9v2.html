@@ -9317,31 +9317,30 @@ function drawDirectMosfetCircuit(ctx, vcc) {
 
     function generateMosfetProblem(ctx, canvas) {
     console.log("Standard MOSFET generator successfully fired!");
-    
+
     // 1. Reset UI
     if (typeof hideAllInputGroups === 'function') {
         hideAllInputGroups();
     }
 
     // 👇 --- ROCKET & UI RESCUE BLOCK --- 👇
-    // Updated to use the correct ID: mainGrade9Btn
     const rocket = document.getElementById('mainGrade9Btn');
     if (rocket) {
         rocket.style.setProperty("display", "inline-block", "important");
     }
-    
+
     const mainGroup = document.getElementById('inputGroupMosfet');
     if (mainGroup) {
-        mainGroup.style.display = 'block';
+        mainGroup.style.display = 'flex'; // Changed to flex to match your HTML class
     }
     // 👆 --- END RESCUE BLOCK --- 👆
 
     // 2. Define other UI elements
     const mode0 = document.getElementById('mosfetMode0');
     const mode1 = document.getElementById('mosfetMode1');
-    
-    if (mainGroup) mainGroup.style.display = 'block';
-    if (g9Btn) g9Btn.style.display = 'inline-block';
+
+    // REMOVED THE BROKEN LINE: if (g9Btn) g9Btn.style.display = 'inline-block';
+    // (The rescue block above already handled the button using the 'rocket' variable)
 
     const pinkColor = "#E64097";
     const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
@@ -9481,30 +9480,28 @@ function drawDirectMosfetCircuit(ctx, vcc) {
 }
 
 
-//************************************************************************************************    
+//************************************************************************************************ 
     
-function generateGrade9MosfetProblem() {
+    function generateGrade9MosfetProblem() {
     // 1. Reset UI
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
 
-    // FORCE the Grade 9 button to show regardless of what was just hidden
-    const g9Btn = document.getElementById('mainGrade9MosfetBtn');
-    if (g9Btn) {
-        g9Btn.style.setProperty("display", "inline-block", "important");
-    }
-    
-    const mainGroup = document.getElementById('inputGroupGrade9Mosfet');
-    if (mainGroup) mainGroup.style.display = 'block';
-
-    // Ensure the Grade 9 button itself remains visible
-    const rocket = document.getElementById('mainGrade9MosfetBtn'); 
+    // 👇 --- ROCKET & UI RESCUE BLOCK --- 👇
+    // Fixed ID to match your HTML: mainGrade9Btn
+    const rocket = document.getElementById('mainGrade9Btn');
     if (rocket) {
         rocket.style.setProperty("display", "inline-block", "important");
     }
 
+    const mainGroup = document.getElementById('inputGroupGrade9Mosfet');
+    if (mainGroup) {
+        mainGroup.style.display = 'flex'; 
+    }
+    // 👆 --- END RESCUE BLOCK --- 👆
+
     const pinkColor = "#E64097";
     const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
-
+    
     // --- SOLUTIONS UI RESET ---
     const solText = document.getElementById('solText');
     const solContainer = document.getElementById('solutions');
