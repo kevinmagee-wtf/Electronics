@@ -1789,6 +1789,7 @@ function handleNewQuestionClick() {
     else if (currentMode === 'grade9boolean') { currentMode = 'logic_boolean'; escapedGrade9 = true; }
     else if (currentMode === 'grade9nand') { currentMode = 'logic_nand'; escapedGrade9 = true; }
     else if (currentMode === 'grade9transistor') { currentMode = 'transistor'; escapedGrade9 = true; }
+    else if (currentMode === 'grade9mosfet') { currentMode = 'mosfet'; escapedGrade9 = true; } // 👇 NEW: MOSFET Escape
 
     if (escapedGrade9 && (typeof problemsAttempted !== 'undefined' && problemsAttempted > 0)) {
         const wantsToProceed = confirm("Warning: Returning to standard mode will reset your Grade 9 score to 0. Do you want to continue?");
@@ -1839,7 +1840,7 @@ function handleNewQuestionClick() {
     } else if (currentMode === 'block_diagram') {
         if (typeof generateBlockBuilderProblem === "function") generateBlockBuilderProblem(ctx, canvas);
     } else {
-        // This calls hubController which handles 'transistor' and 'grade9transistor'
+        // This calls hubController which handles 'transistor', 'grade9transistor', and now 'mosfet'!
         if (typeof hubController === "function") hubController(ctx, canvas);
     }
 }
