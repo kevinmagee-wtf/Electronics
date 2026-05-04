@@ -9265,195 +9265,293 @@ function generateGrade9TransistorProblem() {
     
 //**********************************************************************************************************
 
-function generateMosfetProblem(ctx, canvas) {
-    console.log("MOSFET generator successfully fired!");
+//*************************************************************************************
+// GRADE 9 MOSFET GENERATOR
+//*************************************************************************************
     
-    // 1. Reset UI
+function generateGrade9MosfetProblem() {
+    // 1. Reset UI and Canvas
     if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
     
-    const mainGroup = document.getElementById('inputGroupMosfet');
-    const mode0 = document.getElementById('mosfetMode0');
-    const mode1 = document.getElementById('mosfetMode1');
-    const mode2 = document.getElementById('mosfetMode2');
+    const mainGroup = document.getElementById('inputGroupGrade9Mosfet');
+    const modeA = document.getElementById('g9MosfetModeA');
+    const modeB = document.getElementById('g9MosfetModeB');
+    const modeC = document.getElementById('g9MosfetModeC');
     
     if (mainGroup) mainGroup.style.display = 'block';
-    if (mode0) mode0.style.display = 'none';
-    if (mode1) mode1.style.display = 'none';
-    if (mode2) mode2.style.display = 'none';
+    if (modeA) modeA.style.display = 'none';
+    if (modeB) modeB.style.display = 'none';
+    if (modeC) modeC.style.display = 'none';
 
     const pinkColor = "#E64097";
-    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
 
-    // Clear solutions
+    // --- SOLUTIONS UI RESET ---
     const solText = document.getElementById('solText');
     const solContainer = document.getElementById('solutions');
     if (solContainer) solContainer.style.display = "none"; 
     if (solText) solText.innerHTML = ""; 
 
-    // Clear previous inputs
-    ['mosfetID0', 'mosfetGM0', 'mosfetVGS1', 'mosfetID1', 'mosfetVGS2', 'mosfetR2'].forEach(id => {
+    // Clear previous inputs & color right-panel labels pink
+    ['g9MosfetVGS', 'g9MosfetVDS', 'g9MosfetVIN', 'g9MosfetDiodePos', 'g9MosfetDiodeReason'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
             el.value = '';
             el.style.removeProperty('border-color');
             el.style.removeProperty('box-shadow');
+            el.style.removeProperty('border-width');
+            
             const label = document.querySelector(`label[for="${id}"]`);
-            if (label) label.style.color = pinkColor;
+            if (label) {
+                label.style.color = pinkColor;
+            } else if (el.previousElementSibling) {
+                el.previousElementSibling.style.color = pinkColor;
+            }
         }
     });
 
-    currentMode = 'mosfet';
-    
-    // Cycle modes: 0 -> 1 -> 2
-    if (typeof window.mosfetMode === 'undefined') window.mosfetMode = 0;
-    else window.mosfetMode = (window.mosfetMode + 1) % 3;
-
-    // Handle canvas gracefully from the Hub
-    if (!ctx || !canvas) {
-        canvas = document.getElementById('circuitCanvas');
-        ctx = canvas ? canvas.getContext('2d') : null;
+    currentMode = 'grade9mosfet';
+    const rocket = document.getElementById('mainGrade9MosfetBtn'); // Adjust ID if needed
+    if (rocket) {
+        rocket.style.setProperty("display", "inline-block", "important");
     }
-    if (ctx && canvas) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // =======================================================================
+    // CYCLING LOGIC: Sequentially cycles 0 -> 1 -> 2 -> 0
+    // =======================================================================
+    if (typeof window.g9MosfetMode === 'undefined') {
+        window.g9MosfetMode = 0; 
+    } else {
+        window.g9MosfetMode = (window.g9MosfetMode + 1) % 3; 
     }
+    // =======================================================================
+
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 👇 FIX: Use the main question text box to guarantee visibility!
-    const qText = document.getElementById('questionText');
-    if (qText) qText.style.display = 'block';
+    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = strokeColor;
 
-    // ---------------------------------------------------------
-    // MODE 0: Basic Power and Transconductance (gm)
-    // ---------------------------------------------------------
-    if (window.mosfetMode === 0) {
-        if (mode0) mode0.style.display = 'flex';
-
-        let vcc = 12;
-        let pLoad = [24, 36, 48][Math.floor(Math.random() * 3)]; // 2A, 3A, or 4A
-        let iD = pLoad / vcc;
-        let vgs = [5, 6, 7, 8][Math.floor(Math.random() * 4)];
+    // THE INSULATED HELPER: Forces left-alignment to prevent squishing
+    function drawSafeSubscript(mainStr, subStr, suffixStr, x, y, size, color) {
+        ctx.save(); 
         
-        let gm = Number((iD / (vgs - 3)).toFixed(2));
+        ctx.fillStyle = color || "#000000";
+        ctx.textAlign = "left"; 
+        ctx.textBaseline = "alphabetic"; 
+        
+        // 1. Draw Main Letter
+        ctx.font = "bold " + size + "px Arial";
+        ctx.fillText(mainStr, x, y);
+        let w1 = ctx.measureText(mainStr).width;
+        
+        // 2. Draw Subscript
+        let subSize = size * 0.75;
+        ctx.font = "bold " + subSize + "px Arial";
+        let subY = y + (size * 0.25);
+        ctx.fillText(subStr, x + w1 + 1, subY);
+        let w2 = ctx.measureText(subStr).width;
+        
+        // 3. Draw Suffix with a guaranteed gap
+        if (suffixStr && suffixStr.trim() !== "") {
+            ctx.font = "bold " + size + "px Arial";
+            let safeSuffix = suffixStr.trim();
+            if (safeSuffix.startsWith("=")) {
+                safeSuffix = "= " + safeSuffix.substring(1).trim();
+            }
+            ctx.fillText(safeSuffix, x + w1 + w2 + 8, y); 
+        }
+        
+        ctx.restore(); 
+    }
 
-        window.currentAnswers = { id: iD, gm: gm }; // 👇 FIX: Safe assignment
+    // Quick helper for Mode 0 & 2 (No divider, just direct gate input)
+    function drawDirectMosfetCircuit(ctx, vdd) {
+        const topY = 40, botY = 360, tx = 380, ty = 250, lx = tx + 10, ly = 145;
+        const railStartX = 80, railEndX = 500;
 
-        if (qText) {
-            qText.innerHTML = `
-                A MOSFET is used to switch a <strong>${vcc}V, ${pLoad}W</strong> lamp. A gate voltage of <strong>${vgs}V</strong> is applied.<br>
-                <em>(Assume threshold voltage V<sub>th</sub> = 3V)</em><br><br>
-                1. Calculate the drain current (I<sub>D</sub>) through the lamp.<br>
-                2. Calculate the transconductance (g<sub>m</sub>) required to fully switch on the lamp.
+        drawLine(ctx, railStartX, topY, railEndX, topY); 
+        drawLine(ctx, railStartX, botY, railEndX, botY); 
+        
+        if (vdd) {
+            drawLabel(ctx, `+${vdd}V`, railStartX - 35, topY + 5, 16);
+            drawLabel(ctx, `0V`, railStartX - 30, botY + 5, 16);
+        }
+
+        drawMosfet(ctx, tx, ty);
+        drawMotor(ctx, lx, ly);
+
+        // Direct Gate Wire
+        drawLine(ctx, railStartX, ty, tx - 25, ty);
+        drawNode(ctx, railStartX, ty);
+
+        // Motor/Drain/Source Wires
+        drawLine(ctx, lx, topY, lx, ly - 25);
+        drawNode(ctx, lx, topY);
+        drawLine(ctx, lx, ly + 25, lx, ty - 25);
+        drawLine(ctx, tx + 10, ty + 25, tx + 10, botY);
+        drawNode(ctx, tx + 10, botY);
+    }
+
+    const instructionsDiv = document.getElementById('g9MosfetInstructions');
+    if (instructionsDiv) {
+        instructionsDiv.style.display = 'block';
+    }
+
+    // ---------------------------------------------------------
+    // MODE 0: SATURATED OR NOT Voltages (MOSFET Thresholds)
+    // ---------------------------------------------------------
+    if (window.g9MosfetMode === 0) {
+        modeA.style.display = 'block';
+
+        const isSaturated = Math.random() > 0.5;
+        const vdd = [9, 12, 24][Math.floor(Math.random() * 3)];
+        const vth = [2.0, 2.5, 3.0][Math.floor(Math.random() * 3)]; // Threshold Voltage
+        let vin;
+        
+        if (isSaturated) {
+            vin = (vth + Math.random() * 2 + 1).toFixed(1); // Definitely above Vth
+            currentAnswers = { vgs: vin, vds: 0 };
+        } else {
+            vin = (vth - (Math.random() * 1 + 0.5)).toFixed(1); // Definitely below Vth
+            currentAnswers = { vgs: vin, vds: vdd }; 
+        }
+
+        if (instructionsDiv) {
+            let stateText = isSaturated 
+                ? `The MOSFET is driven fully ON (Saturated).` 
+                : `The input voltage drops, switching the MOSFET <strong>OFF</strong>.`;
+                
+            instructionsDiv.innerHTML = `
+                The N-Channel MOSFET has a Threshold Voltage (V<sub>TH</sub>) of <strong>${vth.toFixed(1)}V</strong>.<br>
+                ${stateText}<br><br>
+                1. Determine the gate-source voltage (V<sub>GS</sub>) if V<sub>IN</sub> is <strong>${vin}V</strong>.<br>
+                2. Determine the drain-source voltage (V<sub>DS</sub>) across the MOSFET.
             `;
         }
 
         if (solText) {
-            solText.innerHTML = `<strong>I<sub>D</sub> = ${iD} A | g<sub>m</sub> = ${gm} S</strong><br><br>
-            <em>Step 1:</em> Find the current required by the lamp (I = P / V).<br>
-            I<sub>D</sub> = ${pLoad} W / ${vcc} V = <strong>${iD} A</strong><br><br>
-            <em>Step 2:</em> Use the MOSFET data sheet formula: <strong>I<sub>D</sub> = g<sub>m</sub>(V<sub>GS</sub> - 3)</strong><br>
-            Rearrange to find g<sub>m</sub>: g<sub>m</sub> = I<sub>D</sub> / (V<sub>GS</sub> - 3)<br>
-            g<sub>m</sub> = ${iD} / (${vgs} - 3) = ${iD} / ${vgs - 3} = <strong>${gm} S</strong>`;
+            if (isSaturated) {
+                solText.innerHTML = "<strong>State = Saturated (ON) | V<sub>GS</sub> = " + vin + " V | V<sub>DS</sub> = 0 V</strong><br><br>" +
+                    "<em>Step 1:</em> V<sub>IN</sub> (" + vin + "V) is applied directly to the gate. Since MOSFETs draw no gate current, V<sub>GS</sub> is exactly <strong>" + vin + " V</strong>.<br><br>" +
+                    "<em>Step 2:</em> V<sub>GS</sub> is greater than the Threshold Voltage (" + vth.toFixed(1) + "V), so the MOSFET turns fully ON.<br><br>" +
+                    "<em>Step 3:</em> An ideal saturated MOSFET acts like a closed switch. Therefore, the voltage drop across the drain-source (V<sub>DS</sub>) is <strong>0 V</strong>.";
+            } else {
+                solText.innerHTML = "<strong>State = Cut-off (OFF) | V<sub>GS</sub> = " + vin + " V | V<sub>DS</sub> = " + vdd + " V</strong><br><br>" +
+                    "<em>Step 1:</em> V<sub>IN</sub> (" + vin + "V) is applied directly to the gate. V<sub>GS</sub> is exactly <strong>" + vin + " V</strong>.<br><br>" +
+                    "<em>Step 2:</em> V<sub>GS</sub> is less than the Threshold Voltage (" + vth.toFixed(1) + "V), so the channel cannot form. It is <strong>OFF</strong>.<br><br>" +
+                    "<em>Step 3:</em> A cut-off MOSFET acts like an open switch. No current flows, so the full supply voltage drops across it (V<sub>DS</sub> = <strong>" + vdd + " V</strong>).";
+            }
         }
 
-        if (ctx) {
-            ctx.fillStyle = strokeColor;
-            ctx.font = "16px Arial";
-            ctx.fillText(`Direct Voltage applied to Gate = ${vgs}V`, 50, 100);
-            ctx.fillText(`Load: ${vcc}V, ${pLoad}W`, 50, 150);
-        }
+        drawDirectMosfetCircuit(ctx, vdd);
+        
+        drawSafeSubscript("V", "IN", "= " + vin + " V", 15, 280, 16, strokeColor);
+        drawSafeSubscript("V", "GS", "= ?", 410, 280, 16, pinkColor);
+        drawSafeSubscript("V", "DS", "= ?", 410, 210, 16, pinkColor);
     } 
     // ---------------------------------------------------------
-    // MODE 1: Potential Divider Drive
+    // MODE 1: The MOSFET Divider (It actually works!)
     // ---------------------------------------------------------
-    else if (window.mosfetMode === 1) {
-        if (mode1) mode1.style.display = 'flex'; 
-
-        let vcc = 12;
-        let r1 = [10, 20, 30][Math.floor(Math.random() * 3)]; // in kOhms
-        let r2 = [10, 20, 30][Math.floor(Math.random() * 3)]; // in kOhms
-        let gm = [1, 1.5, 2][Math.floor(Math.random() * 3)];
+    else if (window.g9MosfetMode === 1) {
+        modeB.style.display = 'flex'; 
         
-        let vgs = Number((vcc * (r2 / (r1 + r2))).toFixed(2));
-        let iD = 0;
-        if (vgs > 3) {
-            iD = Number((gm * (vgs - 3)).toFixed(2));
-        }
+        // Ensure clean numbers for the divider
+        const vdd = 12;
+        const rFixedChoices = [1000, 2000, 5000];
+        const rFixed = rFixedChoices[Math.floor(Math.random() * rFixedChoices.length)];
+        
+        // Generate a clean VGS (e.g., 3V, 4V, 6V, 8V)
+        const vgsTarget = [3, 4, 6, 8][Math.floor(Math.random() * 4)];
+        
+        // Reverse engineer the top resistor (LDR) to hit the exact VGS
+        // VGS = VDD * (R_fixed / (R_fixed + R_LDR))
+        const rLdr = rFixed * ((vdd / vgsTarget) - 1); 
 
-        window.currentAnswers = { vgs: vgs, id: iD };
+        currentAnswers = { vin: vgsTarget }; // The user must calculate V_IN / V_GS
 
-        if (qText) {
-            qText.innerHTML = `
-                A potential divider is connected directly to the gate of a MOSFET.<br>
-                Supply Voltage = <strong>${vcc}V</strong>. Top Resistor R<sub>1</sub> = <strong>${r1}kΩ</strong>. Bottom Resistor R<sub>2</sub> = <strong>${r2}kΩ</strong>.<br>
-                The MOSFET has a transconductance (g<sub>m</sub>) of <strong>${gm} S</strong>.<br><br>
-                1. Calculate the gate-source voltage (V<sub>GS</sub>).<br>
-                2. Calculate the resulting drain current (I<sub>D</sub>).
+        if (instructionsDiv) {
+            instructionsDiv.innerHTML = `
+                A potential divider is connected directly to the gate of a MOSFET.<br><br>
+                1. Calculate the input voltage (<span style="color: ${pinkColor}; font-weight: bold;">V<sub>IN</sub></span>) arriving at the gate.<br>
+                2. <em>Hint: Think about how the gate resistance of a MOSFET affects the circuit compared to a bipolar transistor.</em>
             `;
         }
-
+        
         if (solText) {
-            solText.innerHTML = `<strong>V<sub>GS</sub> = ${vgs} V | I<sub>D</sub> = ${iD} A</strong><br><br>
-            <em>Step 1:</em> Because a MOSFET gate draws zero current, you CAN use the standard potential divider formula!<br>
-            V<sub>GS</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))<br>
-            V<sub>GS</sub> = ${vcc} &times; (${r2} / ${r1 + r2}) = <strong>${vgs} V</strong><br><br>
-            <em>Step 2:</em> Use the MOSFET data sheet formula: <strong>I<sub>D</sub> = g<sub>m</sub>(V<sub>GS</sub> - 3)</strong><br>
-            I<sub>D</sub> = ${gm} &times; (${vgs} - 3)<br>
-            I<sub>D</sub> = ${gm} &times; ${Number((vgs - 3).toFixed(2))} = <strong>${iD} A</strong>`;
+            solText.innerHTML = "<div style='background-color:#e6ffe6; border-left: 4px solid #4dff4d; padding: 10px; margin-bottom: 15px; font-size: 0.9em; color: #008000;'>" +
+                "<strong>💡 THE POTENTIAL DIVIDER EQUATION WORKS!</strong><br>" +
+                "Unlike a bipolar transistor, a MOSFET gate has nearly infinite resistance. It draws <strong>zero steady current</strong>. Because no current leaks out of the middle junction, the standard unloaded potential divider equation works perfectly here!" +
+                "</div>" +
+                "<strong>V<sub>IN</sub> (or V<sub>GS</sub>) = " + vgsTarget.toFixed(2) + " V</strong><br><br>" +
+                "<em>Step 1:</em> Use the standard equation: V<sub>OUT</sub> = V<sub>DD</sub> &times; (R<sub>bottom</sub> / (R<sub>top</sub> + R<sub>bottom</sub>))<br><br>" +
+                "<em>Step 2:</em> Plug in the values:<br>" +
+                "V<sub>IN</sub> = " + vdd + " V &times; (" + rFixed + " &Omega; / (" + rLdr + " &Omega; + " + rFixed + " &Omega;))<br><br>" +
+                "<em>Step 3:</em> Solve:<br>" +
+                "V<sub>IN</sub> = " + vdd + " &times; (" + rFixed + " / " + (rLdr + rFixed) + ") = <strong style='color:#E64097; font-size:1.1em;'>" + vgsTarget.toFixed(2) + " V</strong>";
+        }
+
+        if (typeof drawStandardMosfetCircuit === 'function') {
+            drawStandardMosfetCircuit(ctx, vdd);
         }
         
-        if (ctx) {
-            ctx.fillStyle = strokeColor;
-            ctx.font = "16px Arial";
-            ctx.fillText(`Potential Divider: R1 = ${r1}kΩ, R2 = ${r2}kΩ`, 50, 100);
-            ctx.fillText(`MOSFET: gm = ${gm} S`, 50, 150);
-        }
+        ctx.fillStyle = strokeColor;
+        ctx.font = "bold 14px Arial";
+        
+        // Resistor Labels
+        drawSafeSubscript("R", "LDR", "= " + rLdr + " Ω", 230, 150, 14, strokeColor); 
+        ctx.fillText(`R = ${rFixed} Ω`, 125, 310); 
+        
+        // Target Unknown is VIN (Pink) at the junction
+        drawSafeSubscript("V", "IN", "= ?", 230, 245, 16, pinkColor); 
     }
     // ---------------------------------------------------------
-    // MODE 2: Grade 9 Reverse Engineering
+    // MODE 2: Protection Diode (Concept/Red Herring)
     // ---------------------------------------------------------
     else {
-        if (mode2) mode2.style.display = 'flex'; 
-
-        let vcc = 12;
-        let iD = [2, 3, 4][Math.floor(Math.random() * 3)];
-        let gm = [1, 2][Math.floor(Math.random() * 2)];
+        modeC.style.display = 'block'; 
         
-        let vgs = (iD / gm) + 3;
-        
-        let r1_k = vcc - vgs; 
-        let multiplier = [1, 2][Math.floor(Math.random() * 2)];
-        let r1 = r1_k * multiplier; 
-        
-        let r2 = (vgs * r1) / (vcc - vgs);
-
-        window.currentAnswers = { vgs: vgs, r2: r2 };
-
-        if (qText) {
-            qText.innerHTML = `
-                <strong>🚀 GRADE 9 CHALLENGE</strong><br>
-                A fan requires exactly <strong>${iD} A</strong> to run. The MOSFET driving it has a transconductance of <strong>${gm} S</strong>.<br>
-                A potential divider runs from a <strong>${vcc}V</strong> supply. The top resistor is <strong>${r1} kΩ</strong>.<br><br>
-                1. Calculate the required gate voltage (V<sub>GS</sub>) to turn on the fan.<br>
-                2. Calculate the required value for the bottom resistor.
+        if (instructionsDiv) {
+            instructionsDiv.innerHTML = `
+                A motor is driven by the MOSFET circuit. The circuit is missing a critical component to protect it when switching off.<br><br>
+                1. Identify the missing component required to protect the circuit.<br>
+                2. State the component's function.
             `;
         }
 
+        currentAnswers = { pos: 'rev_para', reason: 'emf_mosfet' };
+
         if (solText) {
-            solText.innerHTML = `<strong>V<sub>GS</sub> = ${vgs} V | R<sub>bottom</sub> = ${r2} k&Omega;</strong><br><br>
-            <em>Step 1:</em> Rearrange the formula <strong>I<sub>D</sub> = g<sub>m</sub>(V<sub>GS</sub> - 3)</strong> to find V<sub>GS</sub>.<br>
-            V<sub>GS</sub> = (I<sub>D</sub> / g<sub>m</sub>) + 3<br>
-            V<sub>GS</sub> = (${iD} / ${gm}) + 3 = <strong>${vgs} V</strong><br><br>
-            <em>Step 2:</em> Use the potential divider formula backward to find R<sub>bottom</sub>.<br>
-            V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>bottom</sub> / (R<sub>top</sub> + R<sub>bottom</sub>))<br>
-            ${vgs}V = ${vcc}V &times; (R<sub>bottom</sub> / (${r1}k + R<sub>bottom</sub>))<br>
-            <strong>R<sub>bottom</sub> = ${r2} k&Omega;</strong>`;
+            solText.innerHTML = "<strong>Component: Reverse-biased diode in parallel with the motor<br>Function: To protect the MOSFET from high voltage switch-off spikes</strong><br><br>" +
+                "<em>Explanation:</em> Motors contain coils of wire (inductors). When the MOSFET switches off abruptly, the magnetic field in the motor collapses. This creates a massive surge of voltage (called Back EMF) that can destroy the delicate oxide layer inside the MOSFET.<br><br>" +
+                "Placing a diode in <strong>parallel</strong> with the motor provides a safe loop for this spike to dissipate. It must be <strong>reverse-biased</strong> so that it blocks normal power from short-circuiting to ground during regular operation.";
         }
 
-        if (ctx) {
-            ctx.fillStyle = strokeColor;
-            ctx.font = "16px Arial";
-            ctx.fillText(`Target Current: ${iD} A. gm: ${gm} S.`, 50, 100);
-            ctx.fillText(`Top Resistor: ${r1} kΩ. Bottom: ???`, 50, 150);
+        const positionOptions = [
+            { value: "rev_para", text: "Reverse-biased diode in parallel with the motor" },
+            { value: "fwd_para", text: "Forward-biased diode in parallel with the motor" },
+            { value: "rev_ser", text: "Reverse-biased diode in series with the motor" },
+            { value: "cap_para", text: "High Value Capacitor in parallel with the motor" },
+            { value: "res_ser_gate", text: "High value resistor in series with the gate" }
+        ];
+        if (typeof shuffleSelectOptions === 'function') {
+            shuffleSelectOptions('g9MosfetDiodePos', positionOptions);
         }
+
+        const reasonOptions = [
+            { value: "emf_motor", text: "To protect the motor from high voltage switch-off spikes" },
+            { value: "emf_mosfet", text: "To protect the MOSFET from high voltage switch-off spikes" }, 
+            { value: "reg", text: "To regulate the supply voltage across the motor" },
+            { value: "limit", text: "To limit the gate current entering the MOSFET" },
+            { value: "threshold", text: "To lower the required threshold voltage (Vth)" }
+        ];
+        if (typeof shuffleSelectOptions === 'function') {
+            shuffleSelectOptions('g9MosfetDiodeReason', reasonOptions);
+        }
+
+        drawDirectMosfetCircuit(ctx, 12); 
+        drawSafeSubscript("V", "IN", "= 5 V", 15, 280, 16, strokeColor); 
     }
 }
 //*****************************************************************************************
