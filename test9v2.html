@@ -9555,6 +9555,7 @@ function closeModal() {
 // MASTER PROBLEM GENERATOR (The "Traffic Cop")
 // ========================================================== 
 function hubController(ctx, canvas) {
+    console.log("HubController started! The current mode is:", currentMode);
     // 1. Force Canvas Resolution & Clear
     canvas.width = 600;
     canvas.height = 420;
