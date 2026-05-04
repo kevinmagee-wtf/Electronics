@@ -1544,6 +1544,44 @@
         
     </div>
 </div>
+                
+<!-- Input group MOSTET--> 
+<div id="inputGroupMosfet" style="display: none;" class="input-group">
+    <div id="mosfetInstructions" style="text-align: left; margin-bottom: 15px; font-weight: bold; font-size: 15px; color: #333; line-height: 1.5; display: none;"></div>
+    
+    <div id="mosfetMode0" style="display: none; justify-content: center; gap: 15px;">
+        <div>
+            <label for="mosfetID0" style="font-weight: bold;">I<sub>D</sub> = </label>
+            <input type="text" id="mosfetID0" style="width: 80px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 2A">
+        </div>
+        <div>
+            <label for="mosfetGM0" style="font-weight: bold;">g<sub>m</sub> = </label>
+            <input type="text" id="mosfetGM0" style="width: 80px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 1.5S">
+        </div>
+    </div>
+
+    <div id="mosfetMode1" style="display: none; justify-content: center; gap: 15px;">
+        <div>
+            <label for="mosfetVGS1" style="font-weight: bold;">V<sub>GS</sub> = </label>
+            <input type="text" id="mosfetVGS1" style="width: 80px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 6V">
+        </div>
+        <div>
+            <label for="mosfetID1" style="font-weight: bold;">I<sub>D</sub> = </label>
+            <input type="text" id="mosfetID1" style="width: 80px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 3A">
+        </div>
+    </div>
+
+    <div id="mosfetMode2" style="display: none; justify-content: center; gap: 15px;">
+        <div>
+            <label for="mosfetVGS2" style="font-weight: bold;">Required V<sub>GS</sub> = </label>
+            <input type="text" id="mosfetVGS2" style="width: 100px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 5V">
+        </div>
+        <div>
+            <label for="mosfetR2" style="font-weight: bold;">Missing R = </label>
+            <input type="text" id="mosfetR2" style="width: 100px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 10kΩ">
+        </div>
+    </div>
+</div>
     <!-- final closing DIVS of whole section-->  
     </div> </div> 
 <!-- *************************************************************************************** -->   
@@ -9100,6 +9138,191 @@ function generateGrade9TransistorProblem() {
         drawSafeSubscript("V", "IN", "= 5 V", 15, 280, 16, strokeColor); 
     }
 }
+    
+//**********************************************************************************************************
+
+function generateMosfetProblem() {
+    // 1. Reset UI
+    if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
+    
+    const mainGroup = document.getElementById('inputGroupMosfet');
+    const mode0 = document.getElementById('mosfetMode0');
+    const mode1 = document.getElementById('mosfetMode1');
+    const mode2 = document.getElementById('mosfetMode2');
+    
+    if (mainGroup) mainGroup.style.display = 'block';
+    if (mode0) mode0.style.display = 'none';
+    if (mode1) mode1.style.display = 'none';
+    if (mode2) mode2.style.display = 'none';
+
+    const pinkColor = "#E64097";
+    const strokeColor = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+
+    // Clear solutions
+    const solText = document.getElementById('solText');
+    const solContainer = document.getElementById('solutions');
+    if (solContainer) solContainer.style.display = "none"; 
+    if (solText) solText.innerHTML = ""; 
+
+    // Clear previous inputs
+    ['mosfetID0', 'mosfetGM0', 'mosfetVGS1', 'mosfetID1', 'mosfetVGS2', 'mosfetR2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.value = '';
+            el.style.removeProperty('border-color');
+            el.style.removeProperty('box-shadow');
+            const label = document.querySelector(`label[for="${id}"]`);
+            if (label) label.style.color = pinkColor;
+        }
+    });
+
+    currentMode = 'mosfet';
+    
+    // Cycle modes: 0 -> 1 -> 2
+    if (typeof window.mosfetMode === 'undefined') window.mosfetMode = 0;
+    else window.mosfetMode = (window.mosfetMode + 1) % 3;
+
+    const canvas = document.getElementById('circuitCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const instructionsDiv = document.getElementById('mosfetInstructions');
+    if (instructionsDiv) instructionsDiv.style.display = 'block';
+
+    // ---------------------------------------------------------
+    // MODE 0: Basic Power and Transconductance (gm)
+    // ---------------------------------------------------------
+    if (window.mosfetMode === 0) {
+        mode0.style.display = 'flex';
+
+        let vcc = 12;
+        let pLoad = [24, 36, 48][Math.floor(Math.random() * 3)]; // 2A, 3A, or 4A
+        let iD = pLoad / vcc;
+        let vgs = [5, 6, 7, 8][Math.floor(Math.random() * 4)];
+        
+        // Math: gm = I_D / (V_GS - 3)
+        let gm = Number((iD / (vgs - 3)).toFixed(2));
+
+        currentAnswers = { id: iD, gm: gm };
+
+        instructionsDiv.innerHTML = `
+            A MOSFET is used to switch a <strong>${vcc}V, ${pLoad}W</strong> lamp. A gate voltage of <strong>${vgs}V</strong> is applied.<br>
+            <em>(Assume threshold voltage V<sub>th</sub> = 3V)</em><br><br>
+            1. Calculate the drain current (I<sub>D</sub>) through the lamp.<br>
+            2. Calculate the transconductance (g<sub>m</sub>) required to fully switch on the lamp.
+        `;
+
+        if (solText) {
+            solText.innerHTML = `<strong>I<sub>D</sub> = ${iD} A | g<sub>m</sub> = ${gm} S</strong><br><br>
+            <em>Step 1:</em> Find the current required by the lamp (I = P / V).<br>
+            I<sub>D</sub> = ${pLoad} W / ${vcc} V = <strong>${iD} A</strong><br><br>
+            <em>Step 2:</em> Use the MOSFET data sheet formula: <strong>I<sub>D</sub> = g<sub>m</sub>(V<sub>GS</sub> - 3)</strong><br>
+            Rearrange to find g<sub>m</sub>: g<sub>m</sub> = I<sub>D</sub> / (V<sub>GS</sub> - 3)<br>
+            g<sub>m</sub> = ${iD} / (${vgs} - 3) = ${iD} / ${vgs - 3} = <strong>${gm} S</strong>`;
+        }
+
+        // Placeholder Text Drawing
+        ctx.fillStyle = strokeColor;
+        ctx.font = "16px Arial";
+        ctx.fillText(`Direct Voltage applied to Gate = ${vgs}V`, 50, 100);
+        ctx.fillText(`Load: ${vcc}V, ${pLoad}W`, 50, 150);
+    } 
+    // ---------------------------------------------------------
+    // MODE 1: Potential Divider Drive
+    // ---------------------------------------------------------
+    else if (window.mosfetMode === 1) {
+        mode1.style.display = 'flex'; 
+
+        let vcc = 12;
+        let r1 = [10, 20, 30][Math.floor(Math.random() * 3)]; // in kOhms
+        let r2 = [10, 20, 30][Math.floor(Math.random() * 3)]; // in kOhms
+        let gm = [1, 1.5, 2][Math.floor(Math.random() * 3)];
+        
+        // Math
+        let vgs = Number((vcc * (r2 / (r1 + r2))).toFixed(2));
+        let iD = 0;
+        if (vgs > 3) {
+            iD = Number((gm * (vgs - 3)).toFixed(2));
+        }
+
+        currentAnswers = { vgs: vgs, id: iD };
+
+        instructionsDiv.innerHTML = `
+            A potential divider is connected directly to the gate of a MOSFET.<br>
+            Supply Voltage = <strong>${vcc}V</strong>. Top Resistor R<sub>1</sub> = <strong>${r1}kΩ</strong>. Bottom Resistor R<sub>2</sub> = <strong>${r2}kΩ</strong>.<br>
+            The MOSFET has a transconductance (g<sub>m</sub>) of <strong>${gm} S</strong>.<br><br>
+            1. Calculate the gate-source voltage (V<sub>GS</sub>).<br>
+            2. Calculate the resulting drain current (I<sub>D</sub>).
+        `;
+
+        if (solText) {
+            solText.innerHTML = `<strong>V<sub>GS</sub> = ${vgs} V | I<sub>D</sub> = ${iD} A</strong><br><br>
+            <em>Step 1:</em> Because a MOSFET gate draws zero current, you CAN use the standard potential divider formula!<br>
+            V<sub>GS</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>))<br>
+            V<sub>GS</sub> = ${vcc} &times; (${r2} / ${r1 + r2}) = <strong>${vgs} V</strong><br><br>
+            <em>Step 2:</em> Use the MOSFET data sheet formula: <strong>I<sub>D</sub> = g<sub>m</sub>(V<sub>GS</sub> - 3)</strong><br>
+            I<sub>D</sub> = ${gm} &times; (${vgs} - 3)<br>
+            I<sub>D</sub> = ${gm} &times; ${Number((vgs - 3).toFixed(2))} = <strong>${iD} A</strong>`;
+        }
+        
+        // Placeholder Text Drawing
+        ctx.fillStyle = strokeColor;
+        ctx.font = "16px Arial";
+        ctx.fillText(`Potential Divider: R1 = ${r1}kΩ, R2 = ${r2}kΩ`, 50, 100);
+        ctx.fillText(`MOSFET: gm = ${gm} S`, 50, 150);
+    }
+    // ---------------------------------------------------------
+    // MODE 2: Grade 9 Reverse Engineering
+    // ---------------------------------------------------------
+    else {
+        mode2.style.display = 'flex'; 
+
+        let vcc = 12;
+        let iD = [2, 3, 4][Math.floor(Math.random() * 3)];
+        let gm = [1, 2][Math.floor(Math.random() * 2)];
+        
+        // Calculate required VGS: VGS = (ID / gm) + 3
+        let vgs = (iD / gm) + 3;
+        
+        // We need VGS to be an integer less than VCC (12V) for clean math.
+        // e.g. ID=2, gm=1 -> VGS=5V. ID=4, gm=2 -> VGS=5V. ID=3, gm=1 -> VGS=6V.
+        
+        // Pick a top resistor that makes math clean
+        let r1_k = vcc - vgs; // e.g. 12 - 5 = 7. Let R1 = 7k, 14k, 21k.
+        let multiplier = [1, 2][Math.floor(Math.random() * 2)];
+        let r1 = r1_k * multiplier; // in kOhms
+        
+        // Calculate missing R2: R2 = (VGS * R1) / (VCC - VGS)
+        let r2 = (vgs * r1) / (vcc - vgs);
+
+        currentAnswers = { vgs: vgs, r2: r2 };
+
+        instructionsDiv.innerHTML = `
+            <strong>🚀 GRADE 9 CHALLENGE</strong><br>
+            A fan requires exactly <strong>${iD} A</strong> to run. The MOSFET driving it has a transconductance of <strong>${gm} S</strong>.<br>
+            A potential divider runs from a <strong>${vcc}V</strong> supply. The top resistor is <strong>${r1} kΩ</strong>.<br><br>
+            1. Calculate the required gate voltage (V<sub>GS</sub>) to turn on the fan.<br>
+            2. Calculate the required value for the bottom resistor.
+        `;
+
+        if (solText) {
+            solText.innerHTML = `<strong>V<sub>GS</sub> = ${vgs} V | R<sub>bottom</sub> = ${r2} k&Omega;</strong><br><br>
+            <em>Step 1:</em> Rearrange the formula <strong>I<sub>D</sub> = g<sub>m</sub>(V<sub>GS</sub> - 3)</strong> to find V<sub>GS</sub>.<br>
+            V<sub>GS</sub> = (I<sub>D</sub> / g<sub>m</sub>) + 3<br>
+            V<sub>GS</sub> = (${iD} / ${gm}) + 3 = <strong>${vgs} V</strong><br><br>
+            <em>Step 2:</em> Use the potential divider formula backward to find R<sub>bottom</sub>.<br>
+            V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>bottom</sub> / (R<sub>top</sub> + R<sub>bottom</sub>))<br>
+            ${vgs}V = ${vcc}V &times; (R<sub>bottom</sub> / (${r1}k + R<sub>bottom</sub>))<br>
+            <strong>R<sub>bottom</sub> = ${r2} k&Omega;</strong>`;
+        }
+
+        // Placeholder Text Drawing
+        ctx.fillStyle = strokeColor;
+        ctx.font = "16px Arial";
+        ctx.fillText(`Target Current: ${iD} A. gm: ${gm} S.`, 50, 100);
+        ctx.fillText(`Top Resistor: ${r1} kΩ. Bottom: ???`, 50, 150);
+    }
+}
 // END of Content generator functions
 //**********************************************************************************************************
 //**********************************************************************************************************
@@ -9224,7 +9447,7 @@ function switchTab(mode) {
         'inputGroupBoolean',
         'booleanDropdownContainer',        
         'booleanCheckboxContainer',        
-        'inputGroupGrade9BooleanSOP',     
+        'inputGroupGrade9BooleanSOP',      
         'inputGroupGrade9BooleanPath',    
         'inputGroupLogicSystem',          
         'inputGroupLogic_ic',             
@@ -9234,7 +9457,8 @@ function switchTab(mode) {
         'inputGroupNandRedundancy',        
         'inputGroupBlockBuilder',          
         'inputGroupTransistor',
-        'inputGroupGrade9Transistor'
+        'inputGroupGrade9Transistor',
+        'inputGroupMosfet' // 👇 NEW: Added MOSFET group to hide list
     ];
 
     elementsToHide.forEach(id => {
@@ -9251,7 +9475,8 @@ function switchTab(mode) {
         else if (['oscilloscope', 'astable', 'monostable'].includes(mode)) subtitle.innerText = "Module 3: Timing Circuits";
         else if (['silicon', 'zener', 'grade9zener', 'grade9silicon'].includes(mode)) subtitle.innerText = "Module 8: Diodes"; 
         else if (['logic_ic', 'logic_system', 'logic_boolean', 'logic_nand', 'grade9boolean'].includes(mode)) subtitle.innerText = "Module 2: Logic Gates"; 
-        else if (mode === 'transistor') subtitle.innerText = "Module 6: Transistors"; // 👇 NEW: Transistor Subtitle
+        // 👇 NEW: Grouped MOSFET and Transistor together under Module 6
+        else if (['transistor', 'mosfet'].includes(mode)) subtitle.innerText = "Module 6: Transistors"; 
     }
 
     // 5. Global Cleanup
@@ -9279,8 +9504,8 @@ function switchTab(mode) {
         return; 
     }
 
-    // 👇 ROCKET RESCUE: If we just switched to Transistors, show the G9 button!
-    if (mode === 'transistor') {
+    // 👇 ROCKET RESCUE: If we just switched to Transistors OR MOSFETs, show the G9 button!
+    if (mode === 'transistor' || mode === 'mosfet') {
         const rocket = document.getElementById('mainGrade9Btn');
         if (rocket) rocket.style.display = 'inline-block';
     }
@@ -11269,7 +11494,8 @@ const topicMap = {
 
     // --- transistors ---
     'transistor': 'Transistors',
-    'grade9transistor': 'Grade 9 Transistors'
+    'grade9transistor': 'Grade 9 Transistors',
+    'mosfet': 'MOSFETs'
 };
 
 async function processSubmission() {
