@@ -1508,7 +1508,7 @@
 <!-- Input group G9 TRANSISTOR--> 
 <div id="inputGroupGrade9Transistor" style="display: none; text-align: center; margin-top: 20px;">
 
-    <div id="g9TransInstructions" style="text-align: left; margin-bottom: 15px; font-weight: bold; font-size: 15px; color: #333; line-height: 1.5; display: none;">
+<div id="g9TransInstructions" style="text-align: left; margin-bottom: 15px; font-weight: bold; font-size: 15px; color: #333; line-height: 1.5; display: none;">
     </div>
     
     <div id="g9TransModeA" style="display: none;">
@@ -1522,12 +1522,12 @@
         </div>
     </div>
 
-    <div id="g9TransModeB" style="display: none;">
-        <label for="g9TransRLDR" style="font-weight: bold;">Max LDR Resistance = </label>
-        <input type="text" id="g9TransRLDR" style="width: 100px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 1.2kΩ">
+    <div id="g9TransModeB" style="display: none; align-items: center; justify-content: center;">
+        <label for="g9TransVIN" style="font-weight: bold; margin-right: 10px;">V<sub>IN</sub> = </label>
+        <input type="text" id="g9TransVIN" style="width: 100px; text-align: center; border: 2px solid #ced4da; border-radius: 5px; padding: 5px;" placeholder="e.g. 5.2V">
     </div>
 
-<div id="g9TransModeC" style="display: none; flex-direction: column; align-items: center; gap: 15px;">
+    <div id="g9TransModeC" style="display: none; flex-direction: column; align-items: center; gap: 15px;">
         
         <div style="width: 80%; max-width: 400px; text-align: left;">
             <label for="g9TransDiodePos" style="font-weight: bold; display: block; margin-bottom: 5px; color: #d1438a; font-size: 18px;">Required Component:</label>
@@ -8830,7 +8830,7 @@ function generateGrade9TransistorProblem() {
     if (solText) solText.innerHTML = ""; 
 
     // Clear previous inputs & color right-panel labels pink
-    ['g9TransVBE', 'g9TransVCE', 'g9TransRLDR', 'g9TransDiodePos', 'g9TransDiodeReason'].forEach(id => {
+    ['g9TransVBE', 'g9TransVCE', 'g9TransVIN', 'g9TransDiodePos', 'g9TransDiodeReason'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
             el.value = '';
@@ -8963,8 +8963,8 @@ function generateGrade9TransistorProblem() {
         drawSafeSubscript("V", "BE", "= ?", 410, 280, 16, pinkColor);
         drawSafeSubscript("V", "CE", "= ?", 410, 210, 16, pinkColor);
     } 
-    // ---------------------------------------------------------
-    // MODE 1: Sensor Divider (Math synthesis)
+// ---------------------------------------------------------
+    // MODE 1: The "Loaded" Divider Trap (Calculate VIN)
     // ---------------------------------------------------------
     else if (window.g9TransMode === 1) {
         modeB.style.display = 'flex'; 
@@ -8975,37 +8975,34 @@ function generateGrade9TransistorProblem() {
         while (!valid) {
             vcc = [9, 12, 24][Math.floor(Math.random() * 3)];
             rFixed = [1000, 2200, 4700][Math.floor(Math.random() * 3)]; 
-            
-            // LOWERED Rb to handle the larger base currents without exceeding Vcc
             rb = [220, 330, 470, 680][Math.floor(Math.random() * 4)]; 
-            
-            // INCREASED Ic to represent larger motors (500mA to 1.5A)
             ic = [500, 800, 1000, 1200, 1500][Math.floor(Math.random() * 5)]; 
-            
             hfe = [50, 100, 200][Math.floor(Math.random() * 3)];
             
-            // Calculate Power (P = I * V) based on VCC and the generated IC
+            // Calculate Power (P = I * V)
             motorPower = Number(((ic / 1000) * vcc).toFixed(2));
             
             ib = (ic / hfe) / 1000; 
             vrb = ib * rb;
             vMid = vrb + 0.7; 
             
+            // Generate a valid physical RLDR to put on the diagram
             if (vMid < (vcc - 1)) { 
                 valid = true;
                 iBottom = vMid / rFixed;
                 iTop = iBottom + ib; 
-                rLdr = (vcc - vMid) / iTop;
+                rLdr = Math.round((vcc - vMid) / iTop); // Rounded to look like a normal component
             }
         }
 
-        currentAnswers = { rLdr: rLdr };
+        // The expected answer is now VIN (vMid), not RLDR!
+        currentAnswers = { vin: vMid };
 
         // --- INSTRUCTIONS ---
         if (instructionsDiv) {
             instructionsDiv.innerHTML = `
                 A motor is operating at its recommended power rating of <strong>${motorPower} W</strong>. The transistor has a gain of <strong>${hfe}</strong>.<br><br>
-                1. Calculate the maximum LDR resistance required to turn the transistor fully ON.<br>
+                1. Calculate the input voltage (<span style="color: ${pinkColor}; font-weight: bold;">V<sub>IN</sub></span>) required at the base of the potential divider.<br>
                 2. Assume the transistor is just saturated.
             `;
         }
@@ -9014,22 +9011,24 @@ function generateGrade9TransistorProblem() {
         if (solText) {
             let ib_mA = ib * 1000;
             let motorPower_mW = motorPower * 1000;
-            let iBottom_mA = iBottom * 1000;
-            let iTop_mA = iTop * 1000;
             
-            solText.innerHTML = "<strong>I<sub>C</sub> = " + parseFloat(ic.toFixed(2)) + " mA | I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>mid</sub> = " + parseFloat(vMid.toFixed(2)) + " V | R<sub>LDR</sub> = " + Math.round(rLdr) + " &Omega;</strong><br><br>" +
+            // Calculate the "Fake" voltage they would get if they used the trap formula
+            let fakeVin = vcc * (rFixed / (rFixed + rLdr));
+            
+            solText.innerHTML = "<strong>I<sub>C</sub> = " + parseFloat(ic.toFixed(2)) + " mA | I<sub>B</sub> = " + parseFloat(ib_mA.toFixed(3)) + " mA | V<sub>RB</sub> = " + parseFloat(vrb.toFixed(2)) + " V | V<sub>IN</sub> = " + parseFloat(vMid.toFixed(2)) + " V</strong><br><br>" +
                 "<em>Step 1:</em> Find the collector current required by the motor (I = P / V).<br>" +
                 "I<sub>C</sub> = " + motorPower_mW + " mW / " + vcc + " V = <strong>" + parseFloat(ic.toFixed(2)) + " mA</strong><br><br>" +
                 "<em>Step 2:</em> Calculate the required base current (I<sub>B</sub> = I<sub>C</sub> / gain).<br>" +
                 "I<sub>B</sub> = " + parseFloat(ic.toFixed(2)) + " mA / " + hfe + " = <strong>" + parseFloat(ib_mA.toFixed(3)) + " mA</strong><br><br>" +
-                "<em>Step 3:</em> Find the voltage needed at the middle of the potential divider.<br>" +
-                "V<sub>mid</sub> = V<sub>BE</sub> + V<sub>RB</sub> = 0.7 V + " + parseFloat(vrb.toFixed(2)) + " V = <strong>" + parseFloat(vMid.toFixed(2)) + " V</strong><br><br>" +
-                "<em>Step 4:</em> Find the current flowing through the bottom fixed resistor.<br>" +
-                "I<sub>bottom</sub> = V<sub>mid</sub> / R = " + parseFloat(vMid.toFixed(2)) + " V / " + rFixed + " &Omega; = <strong>" + parseFloat(iBottom_mA.toFixed(3)) + " mA</strong><br><br>" +
-                "<em>Step 5:</em> Add the currents together to find the total current through the LDR.<br>" +
-                "I<sub>LDR</sub> = I<sub>bottom</sub> + I<sub>B</sub> = " + parseFloat(iBottom_mA.toFixed(3)) + " mA + " + parseFloat(ib_mA.toFixed(3)) + " mA = <strong>" + parseFloat(iTop_mA.toFixed(3)) + " mA</strong><br><br>" +
-                "<em>Step 6:</em> Use Ohm's Law to find the LDR resistance.<br>" +
-                "R<sub>LDR</sub> = (V<sub>CC</sub> - V<sub>mid</sub>) / I<sub>LDR</sub> = (" + vcc + " V - " + parseFloat(vMid.toFixed(2)) + " V) / " + parseFloat(iTop.toFixed(6)) + " A = <strong>" + Math.round(rLdr) + " &Omega;</strong>";
+                "<em>Step 3:</em> Calculate the voltage dropped across the base resistor (V = I &times; R).<br>" +
+                "V<sub>RB</sub> = " + parseFloat((ib_mA/1000).toFixed(5)) + " A &times; " + rb + " &Omega; = <strong>" + parseFloat(vrb.toFixed(2)) + " V</strong><br><br>" +
+                "<em>Step 4:</em> Add the 0.7V base-emitter drop to find the total V<sub>IN</sub> required.<br>" +
+                "V<sub>IN</sub> = V<sub>RB</sub> + V<sub>BE</sub> = " + parseFloat(vrb.toFixed(2)) + " V + 0.7 V = <strong style='color:#E64097; font-size:1.1em;'>" + parseFloat(vMid.toFixed(2)) + " V</strong><br><br>" +
+                "<div style='background-color:#ffe6e6; border-left: 4px solid #ff4d4d; padding: 10px; margin-top: 15px; font-size: 0.9em; color: #b30000;'>" +
+                "<strong>🚨 WHY DID THE POTENTIAL DIVIDER EQUATION FAIL?</strong><br>" +
+                "If you used V<sub>OUT</sub> = V<sub>IN</sub> &times; (R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>)), you probably got an answer around <strong>" + parseFloat(fakeVin.toFixed(2)) + " V</strong>.<br><br>" +
+                "That equation <strong>only</strong> works if no current leaves the middle junction! Because the transistor is 'stealing' " + parseFloat(ib_mA.toFixed(3)) + " mA to run the base, the standard equation breaks down. This is called a <em>Loaded Potential Divider</em>. You must always work backwards from the load!" +
+                "</div>";
         }
 
         if (typeof drawGrade9DividerCircuit === 'function') {
@@ -9043,15 +9042,13 @@ function generateGrade9TransistorProblem() {
         ctx.fillText(`+${vcc}V`, 45, 45);
         ctx.fillText(`0V`, 50, 365);
         
-        // Resistor Labels
-        drawSafeSubscript("R", "LDR", "= ?", 170, 150, 14, pinkColor); 
+        // Resistor Labels (LDR is now BLACK and shows its value)
+        drawSafeSubscript("R", "LDR", "= " + rLdr + " Ω", 170, 150, 14, strokeColor); 
         drawSafeSubscript("R", "B", "= " + rb + " Ω", 225, 227, 14, strokeColor); 
-        
-        // Standard Text Labels
-        ctx.font = "bold 14px Arial";
-        ctx.fillStyle = strokeColor;
-        
         ctx.fillText(`R = ${rFixed} Ω`, 75, 310); 
+        
+        // Target Unknown is now VIN (Pink)
+        drawSafeSubscript("V", "IN", "= ?", 160, 227, 16, pinkColor); 
     }
     // ---------------------------------------------------------
     // MODE 2: Protection Diode (Concept/Red Herring)
@@ -10351,10 +10348,14 @@ if (currentMode === 'grade9nand') {
         }
     }
     // 👇 GRADE 9 TRANSISTOR ACTIVE INPUTS 👇
-    else if (currentMode === 'grade9transistor') {
-        if (window.g9TransMode === 0) activeInputs = ['g9TransVBE', 'g9TransVCE'];
-        else if (window.g9TransMode === 1) activeInputs = ['g9TransRLDR'];
-        else activeInputs = ['g9TransDiodePos', 'g9TransDiodeReason'];
+} else if (currentMode === 'grade9transistor') {
+        if (window.g9TransMode === 0) {
+            activeInputs = ['g9TransVBE', 'g9TransVCE'];
+        } else if (window.g9TransMode === 1) {
+            activeInputs = ['g9TransVIN'];
+        } else {
+            activeInputs = ['g9TransDiodePos', 'g9TransDiodeReason'];
+        }
     }
     
     if (currentMode === 'power') {
@@ -10595,7 +10596,7 @@ if (currentMode === 'grade9nand') {
             results.push(validateMatch(parseInput(acceptSpaces(document.getElementById('g9TransVCE').value)), currentAnswers.vce, 'V'));
         } 
         else if (window.g9TransMode === 1) {
-            let rInput = document.getElementById('g9TransRLDR').value;
+            let rInput = document.getElementById('g9TransVIN').value;
             let cleanR = acceptSpaces(rInput);
             if (cleanR !== "" && !cleanR.includes("Ω") && !cleanR.toLowerCase().includes("ohm")) cleanR += "Ω";
             results.push(validateMatch(parseInput(cleanR), currentAnswers.rLdr, 'Ω'));
@@ -11176,11 +11177,12 @@ function provideHint() {
                 • <b>Switched OFF:</b> If V<sub>IN</sub> drops below 0.7V, the transistor cannot turn on. It acts like an open switch, meaning V<sub>CE</sub> rises to the full supply voltage, and V<sub>BE</sub> simply equals V<sub>IN</sub>.`;
         } else if (window.g9TransMode === 1) {
             specificHint = `
-                <br><br><b>Mode: Sensor Divider Synthesis</b><br>
-                1. Work backward! First, find the required collector current (I<sub>C</sub>) using the motor's power formula (P = I &times; V).<br>
-                2. Calculate the required base current (I<sub>B</sub>) using h<sub>FE</sub>.<br>
-                3. Calculate the required voltage at the middle of the divider (V<sub>mid</sub> = V<sub>BE</sub> + V<sub>RB</sub>).<br>
-                4. Finally, analyze the divider currents (I<sub>bottom</sub> and I<sub>top</sub>) to find the LDR's maximum resistance.`;
+                <br><br><b>Mode: The Loaded Divider</b><br>
+                1. 🚨 <strong>STOP:</strong> Do NOT use the standard potential divider equation! The transistor is drawing current, so that equation will give you the wrong answer.<br>
+                2. Instead, work backward from the motor. Find the required collector current (I<sub>C</sub>) using the motor's power formula (P = I &times; V).<br>
+                3. Calculate the required base current (I<sub>B</sub>) using the gain.<br>
+                4. Calculate the voltage drop across the base resistor (V = I &times; R).<br>
+                5. Finally, add the 0.7V base-emitter drop to find V<sub>IN</sub>.`;
         } else if (window.g9TransMode === 2) {
             specificHint = `
                 <br><br><b>Mode: Inductive Load Protection</b><br>
