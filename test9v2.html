@@ -9479,43 +9479,6 @@ function drawDirectMosfetCircuit(ctx, vcc) {
     }
 }
 
-
-
-
-
-
-
-
-                                          function generateGrade9MosfetProblem() {
-    // 1. Reset UI (Hides previous inputs)
-    if (typeof hideAllInputGroups === 'function') hideAllInputGroups();
-
-    // ... (Your Math Logic Here) ...
-
-    // 2. THE HTML STYLE FIX: Target the global questionText
-    const qText = document.getElementById('questionText');
-    const g9Instructions = document.getElementById('g9MosfetInstructions');
-
-    if (qText) {
-        qText.style.display = 'block'; // Make sure the global container is visible
-        qText.innerHTML = `
-            <strong>🚀 GRADE 9 CHALLENGE: SYSTEM DESIGN</strong><br><br>
-            A cooling fan requires exactly <strong>${iD} A</strong> to run. The MOSFET has a transconductance (g<sub>m</sub>) of <strong>${gm} S</strong> and a threshold voltage of <strong>3V</strong>.<br><br>
-            The potential divider uses a <strong>${vcc}V</strong> supply. R<sub>top</sub> is fixed at <strong>${r1_k} kΩ</strong>.<br><br>
-            1. Calculate the target <strong>V<sub>GS</sub></strong> needed for the fan.<br>
-            2. Determine the required value for <strong>R<sub>bottom</sub></strong>.
-        `;
-        
-        // Hide the "broken" internal div so it doesn't take up space
-        if (g9Instructions) g9Instructions.style.display = 'none';
-    }
-
-    // 3. Show the Grade 9 Input Group (Below the text)
-    const mainGroup = document.getElementById('inputGroupGrade9Mosfet');
-    if (mainGroup) {
-        mainGroup.style.display = 'flex';
-    }
-
 //************************************************************************************************ 
     
 function generateGrade9MosfetProblem() {
