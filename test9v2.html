@@ -9679,6 +9679,19 @@ function hubController(ctx, canvas) {
         }
         if (typeof generateBlockBuilderProblem === "function") generateBlockBuilderProblem(ctx, canvas);
         
+    // 👇 NEW: MOSFET ROUTE ADDED HERE 👇
+    } else if (currentMode === 'mosfet') {
+        if (document.getElementById('inputGroupMosfet')) {
+            document.getElementById('inputGroupMosfet').style.display = 'flex';
+        }
+        if (document.getElementById('mainGrade9Btn')) {
+            document.getElementById('mainGrade9Btn').style.display = 'inline-block';
+        }
+        if (typeof generateMosfetProblem === "function") {
+            generateMosfetProblem(ctx, canvas);
+        }
+    // 👆 END NEW MOSFET ROUTE 👆
+
     } else if (currentMode === 'transistor') {
         if (document.getElementById('inputGroupTransistor')) {
             document.getElementById('inputGroupTransistor').style.display = 'flex';
@@ -9690,6 +9703,7 @@ function hubController(ctx, canvas) {
         }
         if (typeof generateTransistorProblem === "function") generateTransistorProblem(ctx, canvas);
 
+    // 👇 FIXED: GRADE 9 TRANSISTOR ROUTE 👇
     } else if (currentMode === 'grade9transistor') {
         if (document.getElementById('inputGroupGrade9Transistor')) {
             document.getElementById('inputGroupGrade9Transistor').style.display = 'block';
@@ -9697,8 +9711,11 @@ function hubController(ctx, canvas) {
         if (document.getElementById('mainGrade9Btn')) {
             document.getElementById('mainGrade9Btn').style.display = 'inline-block';
         }
-        console.log("Attempting to run MOSFET generator...");
-        generateMosfetProblem(ctx, canvas); // Removed the safety check!
+        
+        // Correctly calls the Grade 9 Transistor function instead of the MOSFET one
+        if (typeof generateGrade9TransistorProblem === "function") {
+            generateGrade9TransistorProblem(ctx, canvas);
+        }
     }
 } // <--- This closes the hubController function // This is the REAL end of the hubController function
 
