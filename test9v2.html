@@ -11363,8 +11363,8 @@ function parseInput(str, dropdownUnit = null) {
             normalizedUnit = "A"; 
         } else if (rawUnit === 'ms' || lowerUnit.match(/^(milliseconds|millisecond)$/)) {
             normalizedUnit = "ms";
-        } else if (lowerUnit.match(/^(s|sec|secs|seconds|second)$/)) {
-            normalizedUnit = "s";
+        } else if (rawUnit === 's' || lowerUnit.match(/^(sec|secs|seconds|second)$/)) {
+        normalizedUnit = "s";
         } else if (lowerUnit.match(/^(milliwatts|milliwatt|mwatts|mwatt)$/) || rawUnit === 'mW') {
             normalizedUnit = "mW";
         } else if (lowerUnit.match(/^(watts|watt)$/) || rawUnit === 'W') {
