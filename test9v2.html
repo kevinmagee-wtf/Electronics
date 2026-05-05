@@ -2831,7 +2831,8 @@ function drawStandardMosfetCircuit(ctx, supplyVoltage) {
     drawLine(ctx, railStartX, botY, railEndX, botY); 
     
     if (supplyVoltage) {
-        drawLabel(ctx, `+${supplyVoltage}V`, railStartX - 35, topY + 5, 16);
+        // Nudged railStartX - 45 so it isn't squashed against the edge
+        drawLabel(ctx, `+${supplyVoltage}V`, railStartX - 45, topY + 5, 16);
         drawLabel(ctx, `0V`, railStartX - 30, botY + 5, 16);
     }
 
@@ -2871,6 +2872,28 @@ function drawStandardMosfetCircuit(ctx, supplyVoltage) {
     drawLine(ctx, lx, ly + 25, lx, ty - 25); 
     drawLine(ctx, tx + 10, ty + 25, tx + 10, botY); 
     drawNode(ctx, tx + 10, botY);
+
+    
+    // --- DRAW MOTOR LABEL (Safe Version + Shield) ---
+    // Safely grab the global power variable if it exists
+    let motorLabel = (typeof power !== 'undefined') ? `Load: ${power}W` : "";
+
+    if (motorLabel !== "") {
+        ctx.save();
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "left"; 
+        
+        // 1. Pro-Tip Shield: Draw a white box behind the text to clear the wire
+        let metrics = ctx.measureText(motorLabel);
+        ctx.fillStyle = "white";
+        // Position it 35px right of motor center, slightly lifted
+        ctx.fillRect(lx + 35, ly - 10, metrics.width + 10, 20); 
+
+        // 2. Draw the actual text on top of the shield
+        ctx.fillStyle = (typeof brandBlack !== 'undefined') ? brandBlack : "#000000";
+        ctx.fillText(motorLabel, lx + 35, ly + 5);
+        ctx.restore();
+    }
 }
   
 // =========================================================================================================      
