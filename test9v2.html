@@ -9413,7 +9413,7 @@ function drawDirectMosfetCircuit(ctx, vcc) {
         let vgs = [5, 6, 7, 8][Math.floor(Math.random() * 4)];
         let gm = Number((iD / (vgs - 3)).toFixed(2));
 
-        window.currentAnswers = { mosfetID0: iD, mosfetGM0: gm };
+        currentAnswers = { mosfetID0: iD, mosfetGM0: gm };
 
         if (qText) {
             qText.innerHTML = `
@@ -9452,7 +9452,7 @@ function drawDirectMosfetCircuit(ctx, vcc) {
         let vgs = Number((vcc * (r2 / (r1 + r2))).toFixed(2));
         let iD = vgs > 3 ? Number((gm * (vgs - 3)).toFixed(2)) : 0;
 
-        window.currentAnswers = { mosfetVGS1: vgs, mosfetID1: iD };
+        currentAnswers = { mosfetVGS1: vgs, mosfetID1: iD };
 
         if (qText) {
             qText.innerHTML = `
@@ -9588,7 +9588,7 @@ function generateGrade9MosfetProblem() {
         R<sub>top</sub> = (${knownR} &times; (${vcc} - ${vgs})) / ${vgs}`;
     }
 
-    window.currentAnswers = { vgs: vgs, r2: answerR };
+    currentAnswers = { vgs: vgs, r2: answerR };
 
     // Update the HTML label next to the input box so it asks for the correct resistor
     const rLabel = document.querySelector('label[for="g9MosfetR2"]');
