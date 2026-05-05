@@ -9321,6 +9321,14 @@ function drawDirectMosfetCircuit(ctx, vcc) {
     if (typeof hideAllInputGroups === 'function') {
         hideAllInputGroups();
     }
+    // --- RESET BORDERS & COLORS ---
+['mosfetID', 'mosfetGM', 'mosfetVGS'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.borderColor = ""; // This removes the "ghost" green/red border
+        el.style.boxShadow = "";   // This removes any glow effects
+    }
+});
 
 // 👇 --- RE-BINDING RESCUE BLOCK --- 👇
     const rocket = document.getElementById('mainGrade9Btn');
