@@ -11176,33 +11176,37 @@ if (currentMode === 'grade9nand') {
         }
     }
     
-    // 👇 UPDATED: NORMAL MOSFET GRADING LOGIC 👇
+// 👇 UPDATED: NORMAL MOSFET GRADING LOGIC 👇
     else if (currentMode === 'mosfet') {
         if (window.mosfetMode === 0) {
             // Grade Drain Current (ID) with Amps fallback
             let idInput = document.getElementById('mosfetID0').value;
             let cleanID = acceptSpaces(idInput);
             if (cleanID !== "" && !cleanID.toLowerCase().includes("a")) cleanID += "A";
-            results.push(validateMatch(parseInput(cleanID), currentAnswers.id, 'A')); 
+            // FIX: Ask for currentAnswers.mosfetID0
+            results.push(validateMatch(parseInput(cleanID), currentAnswers.mosfetID0, 'A')); 
 
             // Grade Transconductance (gm) with Siemens fallback
             let gmInput = document.getElementById('mosfetGM0').value;
             let cleanGM = acceptSpaces(gmInput);
             if (cleanGM !== "" && !cleanGM.toLowerCase().includes("s")) cleanGM += "S";
-            results.push(validateMatch(parseInput(cleanGM), currentAnswers.gm, 'S'));
+            // FIX: Ask for currentAnswers.mosfetGM0
+            results.push(validateMatch(parseInput(cleanGM), currentAnswers.mosfetGM0, 'S'));
 
         } else {
             // Grade VGS with Volts fallback
             let vgsInput = document.getElementById('mosfetVGS1').value;
             let cleanVGS = acceptSpaces(vgsInput);
             if (cleanVGS !== "" && !cleanVGS.toLowerCase().includes("v")) cleanVGS += "V"; 
-            results.push(validateMatch(parseInput(cleanVGS), currentAnswers.vgs, 'V'));
+            // FIX: Ask for currentAnswers.mosfetVGS1 (assuming you updated this in the generator too!)
+            results.push(validateMatch(parseInput(cleanVGS), currentAnswers.mosfetVGS1, 'V'));
 
             // Grade Drain Current (ID) with Amps fallback
             let idInput = document.getElementById('mosfetID1').value;
             let cleanID = acceptSpaces(idInput);
             if (cleanID !== "" && !cleanID.toLowerCase().includes("a")) cleanID += "A";
-            results.push(validateMatch(parseInput(cleanID), currentAnswers.id, 'A')); 
+            // FIX: Ask for currentAnswers.mosfetID1
+            results.push(validateMatch(parseInput(cleanID), currentAnswers.mosfetID1, 'A')); 
         }
     }
 
